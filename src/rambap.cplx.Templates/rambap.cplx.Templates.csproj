@@ -1,0 +1,66 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <!-- The package metadata. Fill in the properties marked as TODO below -->
+    <!-- Follow the instructions on https://learn.microsoft.com/en-us/nuget/create-packages/package-authoring-best-practices -->
+    <Version>0.1.0-alpha1</Version>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <PackageOutputPath>..\nupckgs</PackageOutputPath>
+    <Title>CPLX Templates</Title>
+    <Authors>rambap</Authors>
+    <Description>Project and file templates for cplx, a C# internal DSL to define and document hardware systems.</Description>
+    <PackageIcon>icon.png</PackageIcon>
+    <PackageTags>hardware;system;documentation;cplx</PackageTags>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    
+    
+    <!-- Keep package type as 'Template' to show the package as a template package on nuget.org and make your template available in dotnet new search.-->
+    <PackageType>Template</PackageType>
+    <TargetFramework>net8.0</TargetFramework>
+    <IncludeContentInPack>true</IncludeContentInPack>
+    <IncludeBuildOutput>false</IncludeBuildOutput>
+    <ContentTargetFolders>content</ContentTargetFolders>
+    <NoWarn>$(NoWarn);NU5128</NoWarn>
+    <NoDefaultExcludes>true</NoDefaultExcludes>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <LocalizeTemplates>false</LocalizeTemplates>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="..\icon.png">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+  </ItemGroup>
+  
+  <ItemGroup>
+    <PackageReference Include="Microsoft.TemplateEngine.Tasks" Version="*" PrivateAssets="all" IsImplicitlyDefined="true" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="content\**\*" Exclude="content\**\bin\**;content\**\obj\**" />
+    <Compile Remove="**\*" />
+  </ItemGroup>
+
+  <!--<ItemGroup>
+    <Content Remove="content\cplxExecutable\Program.cs" />
+    <Content Remove="content\cplxExecutable\_csysconfig.cs" />
+    <Content Remove="content\cplxLibrary\Car.cs" />
+    <Content Remove="content\cplxLibrary\_csysconfig.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="content\cplxExecutable\Program.cs" />
+    <Compile Include="content\cplxExecutable\_csysconfig.cs" />
+    <Compile Include="content\cplxLibrary\Car.cs" />
+    <Compile Include="content\cplxLibrary\_csysconfig.cs" />
+  </ItemGroup>-->
+
+  <ItemGroup>
+    <None Include="README.md" Pack="true" PackagePath="" />
+  </ItemGroup>
+
+</Project>

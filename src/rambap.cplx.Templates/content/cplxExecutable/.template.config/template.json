@@ -1,0 +1,13 @@
+﻿{
+  "$schema": "http://json.schemastore.org/template",
+  "author": "rambap",
+  "classifications": [ "Common", "Console" ],
+  "identity": "rambap.cplx.Template.Exe",
+  "name": "Cplx project Template : Exe",
+  "shortName": "cplxExecutable",
+  "sourceName": "rambap.cplx.Template.Exe",
+  "tags": {
+    "language": "C#",
+    "type": "project"
+  }
+}
