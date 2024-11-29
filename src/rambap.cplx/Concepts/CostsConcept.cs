@@ -24,13 +24,18 @@ internal class CostsConcept : IConcept<InstanceCost>
         ScanObjectContentFor<Cost>(template,
             (c, i) => nativeCosts.Add(new(i.Name,c)),
             AutoContent.IgnoreNulls);
-        decimal totalnativeCost = nativeCosts.Sum(c => c.value.price);
 
+        bool anyComponentHasACost = instance.Components.Where(c => c.Instance.Cost() != null).Any();
+        bool hasACost = anyComponentHasACost || nativeCosts.Any();
+        if(! hasACost) return null; // Do not add a cost property needlessly
+
+        decimal totalnativeCost = nativeCosts.Sum(c => c.value.price);
+        decimal composedCost = instance.Components.Select(c => c.Instance.Cost()?.Total ?? 0).Sum();
         return new InstanceCost()
         {
             NativeCosts = nativeCosts,
             Native = totalnativeCost,
-            Composed = instance.Components.Select(c => c.Instance.Cost()?.Total ?? 0).Sum()
+            Composed = composedCost
         };
     }
 }

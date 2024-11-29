@@ -38,8 +38,8 @@ public static class Costs
             i => i.Component.Instance.Cost()?.Total.ToString("0.00"),
             i => i.Cost()?.Total.ToString());
 
-    public static DelegateColumn<PartTtreeItem> GroupTotalCost() =>
-        new DelegateColumn<PartTtreeItem>("Total Cost", ColumnTypeHint.Numeric,
+    public static DelegateColumn<PartTreeItem> GroupTotalCost() =>
+        new DelegateColumn<PartTreeItem>("Total Cost", ColumnTypeHint.Numeric,
             i =>
             {
                 if (i is LeafPartPropertyTableItem lp)
@@ -65,8 +65,8 @@ public static class Costs
                 }
             });
 
-    public static DelegateColumn<PartTtreeItem> Group_CostName()
-        => new DelegateColumn<PartTtreeItem>("Detail", ColumnTypeHint.String,
+    public static DelegateColumn<PartTreeItem> Group_CostName()
+        => new DelegateColumn<PartTreeItem>("Detail", ColumnTypeHint.String,
             i =>
             {
                 if (i is LeafPartPropertyTableItem lpi)
@@ -81,8 +81,8 @@ public static class Costs
                 return "";
             });
 
-    public static DelegateColumn<PartTtreeItem> Group_UnitCost()
-        => new DelegateColumn<PartTtreeItem>("Unit Cost", ColumnTypeHint.Numeric,
+    public static DelegateColumn<PartTreeItem> Group_UnitCost()
+        => new DelegateColumn<PartTreeItem>("Unit Cost", ColumnTypeHint.Numeric,
             i =>
             {
                 if (i is LeafPartPropertyTableItem lpi)

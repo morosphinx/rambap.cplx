@@ -15,9 +15,16 @@ public class Breakout9 : Part
     NonRecurrentTask Achats = 2.0;
     NonRecurrentTask PlanCablage = 2;
     NonRecurrentTask Relecture = 4;
+
+    ASticker Sticker;
+
+    Part Sticket2;
 }
 
-
+class ASticker : Part
+{
+    
+}
 
 [PN("408-209")]
 [PartDescription("Gaine Tressée 10mm RS PRO, Noir en PET, 5m")]

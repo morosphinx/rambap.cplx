@@ -81,7 +81,7 @@ public static class ComponentTreeCommons
              i => i.Component.Instance.PN);
 
     public static DelegateColumn<ComponentTreeItem> ComponentComment() =>
-        new DelegateColumn<ComponentTreeItem>("Description", ColumnTypeHint.String,
+        new DelegateColumn<ComponentTreeItem>("Component description", ColumnTypeHint.String,
             i => i.Component.Comment);
 }
 

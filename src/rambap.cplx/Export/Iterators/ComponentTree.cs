@@ -15,8 +15,27 @@ public abstract record ComponentTreeItem()
     public required RecursionLocation Location { get; init; }
     public required Component Component { get; init; }
 }
-public record LeafComponent : ComponentTreeItem { }
+public enum LeafCause
+{
+    RecursionBreak,
+    NoChild,
+}
+/// <summary>
+/// An Item of the component Tree representing a component. Has no child itm
+/// </summary>
+public record LeafComponent : ComponentTreeItem
+{
+    public required LeafCause IsLeafBecause { get; init ; }
+}
+
+/// <summary>
+/// An Item of the component Tree representing a component. Has descendants, either <see cref="LeafComponent"/> or <see cref="LeafProperty"/>
+/// </summary>
 public record BranchComponent : ComponentTreeItem { }
+
+/// <summary>
+/// An Item of the component Tree representing a property of a component.
+/// </summary>
 public record LeafProperty : ComponentTreeItem
 {
     public object? Property { get; init; } = null;
@@ -47,14 +66,24 @@ public class ComponentTree : IIterator<ComponentTreeItem>
         IEnumerable<ComponentTreeItem> Recurse(Component c, RecursionLocation location)
         {
             bool mayRecursePastThis = RecursionCondition == null || RecursionCondition(c, location)
-                || location.Depth == 0; // Always recurse the forst layer
-            bool isLeaf = ! mayRecursePastThis ;
-
-            if (isLeaf)
+                || location.Depth == 0; // Always recurse the first iteration (root node)
+            bool isLeafDueToRecursionBreak = ! mayRecursePastThis ;
+            if (isLeafDueToRecursionBreak)
             {
-                yield return new LeafComponent() { Component = c, Location = location };
+                yield return new LeafComponent() { Component = c, Location = location, IsLeafBecause = LeafCause.RecursionBreak};
                 yield break ; // Leaf component : stop iteration here, do not write subcomponent or properties
             }
+
+            bool willHaveAnyChildItem =
+                c.Instance.Components.Any() ||
+                (WriteProperties && PropertyIterator!(c.Instance).Any());
+            bool isLeafDueToNoChild = ! willHaveAnyChildItem ;
+            if (isLeafDueToNoChild)
+            {
+                yield return new LeafComponent() { Component = c, Location = location, IsLeafBecause = LeafCause.NoChild };
+                yield break;
+            }
+
             if (WriteBranches)
             {
                 yield return new BranchComponent() { Component = c, Location = location };

@@ -11,8 +11,25 @@ public static class SystemView
             Tree = new ComponentTree(),
             Columns = [
                 ComponentTreeCommons.ComponentPrettyTree(),
-                ComponentTreeCommons.PartNumber(),
                 ComponentTreeCommons.ComponentComment(),
+                ComponentTreeCommons.PartNumber(),
+                Documentations.PartDescription(),
+            ],
+        };
+
+    public static Table<PartTreeItem> ComponentInventory()
+        => new()
+        {
+            Tree = new PartTree()
+            {
+                WriteBranches = true,
+            },
+            Columns = [
+                PartTreeCommons.GroupNumber(),
+                PartTreeCommons.GroupPN(),
+                PartTreeCommons.GroupCNs(),
+                Documentations.GroupDescription(),
+                PartTreeCommons.GroupCount(),
             ],
         };
 }

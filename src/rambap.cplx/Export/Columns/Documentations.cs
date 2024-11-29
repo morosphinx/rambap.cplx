@@ -5,8 +5,8 @@ namespace rambap.cplx.Export.Columns;
 
 public static class Documentations
 {
-    public static DelegateColumn<PartTtreeItem> GroupDescription() =>
-        new DelegateColumn<PartTtreeItem>("Description", ColumnTypeHint.String,
+    public static DelegateColumn<PartTreeItem> GroupDescription() =>
+        new DelegateColumn<PartTreeItem>("Description", ColumnTypeHint.String,
             i =>
             {
                 var descriptions = i.PrimaryItem.Component.Instance.Descriptions()?.Descriptions.Select(d => d.Text)

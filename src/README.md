@@ -127,6 +127,6 @@ dotnet new install rambap.cplx.Templates
 ```
 dotnet new cplxExecutable --name MyProjectName
 ```
-3 - Edit the <i>MyPart.cs</i> file
+3 - Edit the MyPart.cs file
 
 4 - Run the project

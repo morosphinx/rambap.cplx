@@ -5,19 +5,19 @@ namespace rambap.cplx.Export.Columns;
 
 public static class PartTreeCommons
 {
-    public static IColumn<PartTtreeItem> LineNumber()
-        => new LineNumberColumn<PartTtreeItem>();
-    public static IColumn<PartTtreeItem> GroupNumber()
-        => new LineNumberColumnWithContinuation<PartTtreeItem>()
+    public static IColumn<PartTreeItem> LineNumber()
+        => new LineNumberColumn<PartTreeItem>();
+    public static IColumn<PartTreeItem> GroupNumber()
+        => new LineNumberColumnWithContinuation<PartTreeItem>()
         { ContinuationCondition = (i, j) => i == null || i.Items != j.Items };
 
-    public static DelegateColumn<PartTtreeItem> GroupPN() =>
-        new DelegateColumn<PartTtreeItem>("PN", ColumnTypeHint.String,
+    public static DelegateColumn<PartTreeItem> GroupPN() =>
+        new DelegateColumn<PartTreeItem>("PN", ColumnTypeHint.String,
             i => i.PrimaryItem.Component.Instance.PN,
             i => "TOTAL");
 
-    public static DelegateColumn<PartTtreeItem> GroupCNs() =>
-        new DelegateColumn<PartTtreeItem>("Component IDs", ColumnTypeHint.String,
+    public static DelegateColumn<PartTreeItem> GroupCNs() =>
+        new DelegateColumn<PartTreeItem>("Component IDs", ColumnTypeHint.String,
             i =>
             {
                 var componentCNs = i.Items
@@ -27,8 +27,8 @@ public static class PartTreeCommons
                 return string.Join(", ", componentCNs);
             });
 
-    public static DelegateColumn<PartTtreeItem> GroupCount() =>
-        new DelegateColumn<PartTtreeItem>("Count", ColumnTypeHint.Numeric,
+    public static DelegateColumn<PartTreeItem> GroupCount() =>
+        new DelegateColumn<PartTreeItem>("Count", ColumnTypeHint.Numeric,
             i =>
             {
                 return i.Items.Count().ToString();

@@ -4,8 +4,8 @@ namespace rambap.cplx.Export.Columns;
 
 public static class Manufacturers
 {
-    public static DelegateColumn<PartTtreeItem> PartManufacturer() =>
-        new DelegateColumn<PartTtreeItem>("Manufacturer", ColumnTypeHint.String,
+    public static DelegateColumn<PartTreeItem> PartManufacturer() =>
+        new DelegateColumn<PartTreeItem>("Manufacturer", ColumnTypeHint.String,
             i => i.PrimaryItem.Component.Instance.Manufacturer()?.Company?.Name ?? "");
 
     public static DelegateColumn<ComponentTreeItem> ComponentManufacturer() =>

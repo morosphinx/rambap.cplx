@@ -5,8 +5,8 @@ namespace rambap.cplx.Export.Columns;
 
 public static class Tasks
 {
-    public static DelegateColumn<PartTtreeItem> TaskName()
-        => new DelegateColumn<PartTtreeItem>("Task Name", ColumnTypeHint.String,
+    public static DelegateColumn<PartTreeItem> TaskName()
+        => new DelegateColumn<PartTreeItem>("Task Name", ColumnTypeHint.String,
             i =>
             {
                 if (i is LeafPartPropertyTableItem lpi)
@@ -19,8 +19,8 @@ public static class Tasks
                 return "";
             });
 
-    public static DelegateColumn<PartTtreeItem> TaskType()
-        => new DelegateColumn<PartTtreeItem>("Task Type", ColumnTypeHint.String,
+    public static DelegateColumn<PartTreeItem> TaskType()
+        => new DelegateColumn<PartTreeItem>("Task Type", ColumnTypeHint.String,
             i =>
             {
                 if (i is LeafPartPropertyTableItem lpi)
@@ -33,8 +33,8 @@ public static class Tasks
                 return "";
             });
 
-    public static DelegateColumn<PartTtreeItem> TaskCategory()
-        => new DelegateColumn<PartTtreeItem>("Task Category", ColumnTypeHint.String,
+    public static DelegateColumn<PartTreeItem> TaskCategory()
+        => new DelegateColumn<PartTreeItem>("Task Category", ColumnTypeHint.String,
             i =>
             {
                 if (i is LeafPartPropertyTableItem lpi)
@@ -47,8 +47,8 @@ public static class Tasks
                 return "";
             });
 
-    public static DelegateColumn<PartTtreeItem> TaskTotalDuration()
-        => new DelegateColumn<PartTtreeItem>("Task Total Duration", ColumnTypeHint.String,
+    public static DelegateColumn<PartTreeItem> TaskTotalDuration()
+        => new DelegateColumn<PartTreeItem>("Task Total Duration", ColumnTypeHint.String,
             i =>
             {
                 if (i is LeafPartPropertyTableItem lpi)

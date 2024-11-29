@@ -113,7 +113,8 @@ public partial class Part
     /// You can override the Part() constructor to implement some custom logic. <br/>
     /// Otherwise keep a parameterless constructor.
     /// </summary>
-    protected Part()
+    /// Part constructor is public to be able to use it as a convenient placeholder
+    public Part()
     {
     }
 }

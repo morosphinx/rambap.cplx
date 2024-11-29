@@ -21,6 +21,7 @@ public static class FileGroups
     {
         return [
                 ($"Tree_{filenamePattern}.csv", new FixedWidthTableFile(i) { Table = SystemView.ComponentTree() }),
+                ($"Inventory_{filenamePattern}.csv", new MarkdownTableFile(i) { Table = SystemView.ComponentInventory() }),
                 ];
     }
 }
