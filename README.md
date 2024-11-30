@@ -119,7 +119,7 @@ CPLX is build with extensibility in mind, and can document more concepts and phy
 ## Getting started
 Prerequisites : Use either [Visual Studio](https://visualstudio.microsoft.com/) or [VisualStudio Code](https://code.visualstudio.com/) IDE with C# support installed. 
 
-1 - Install the [rambap.cplx.Templates](TODO_NUGGET_LINK) template package. To do so in a console :
+1 - Install the [rambap.cplx.Templates](https://www.nuget.org/packages/rambap.cplx.Templates/) template package. To do so in a console :
 ```
 dotnet new install rambap.cplx.Templates
 ```

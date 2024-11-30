@@ -15,6 +15,7 @@
     <PackageLicenseExpression>LGPL-3.0-or-later</PackageLicenseExpression>
     <Description>Core library of cplx, a C# internal DSL to define and document hardware systems.</Description>
     <PackageId>rambap.cplx.Core</PackageId>
+    <RepositoryUrl>https://github.com/morosphinx/rambap.cplx/</RepositoryUrl>
   </PropertyGroup>
 
   <ItemGroup>
@@ -22,7 +23,7 @@
       <Pack>True</Pack>
       <PackagePath>\</PackagePath>
     </None>
-    <None Include="..\README.md">
+    <None Include="..\..\README.md">
       <Pack>True</Pack>
       <PackagePath>\</PackagePath>
     </None>

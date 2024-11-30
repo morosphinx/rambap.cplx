@@ -12,6 +12,7 @@
     <PackageIcon>icon.png</PackageIcon>
     <PackageTags>hardware;system;documentation;cplx</PackageTags>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <RepositoryUrl>https://github.com/morosphinx/rambap.cplx/</RepositoryUrl>
     
     
     <!-- Keep package type as 'Template' to show the package as a template package on nuget.org and make your template available in dotnet new search.-->
