@@ -10,8 +10,8 @@ public class InstanceCost : IInstanceConceptProperty
     public record NativeCostInfo (string name, Cost value);
 
     public List<NativeCostInfo> NativeCosts { get; init; } = new();
-    public decimal Native {  get; init; }
-    public decimal Composed { get; init; }
+    public required decimal Native {  get; init; }
+    public required decimal Composed { get; init; }
     public decimal Total => Native + Composed;
 }
 

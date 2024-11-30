@@ -14,6 +14,12 @@ public class InstanceTasks : IInstanceConceptProperty
 
     public IEnumerable<NamedTask> RecurentTasks => recurentTasks;
     internal List<NamedTask> recurentTasks { private get; init; } = new();
+
+    public decimal NativeRecurentTaskDuration => RecurentTasks.Select(t => t.Duration_day).Sum();
+    public required decimal ComposedRecurentTaskDuration { get; init; }
+    public decimal TotalRecurentTaskDuration =>
+        NativeRecurentTaskDuration + ComposedRecurentTaskDuration;
+    
 }
 
 internal class TasksConcept : IConcept<InstanceTasks>
@@ -28,12 +34,18 @@ internal class TasksConcept : IConcept<InstanceTasks>
         ScanObjectContentFor<RecurrentTask>(template,
             (t, i) => recurrentTasks.Add(new(false, i.Name, t.Duration_day, t.Category)));
 
-        bool hasAnyTask = nonRecurrentTasks.Count() > 0 || recurrentTasks.Count() > 0;
+        decimal totalComposedRecurentTask = i.Components.Select(c => c.Instance.Tasks()?.TotalRecurentTaskDuration ?? 0).Sum();
+
+        bool hasAnyTask = nonRecurrentTasks.Count() > 0
+            || recurrentTasks.Count() > 0
+            || totalComposedRecurentTask > 0;
+        
         if (!hasAnyTask) return null;
         else return new InstanceTasks()
         {
             nonRecurentTasks = nonRecurrentTasks,
-            recurentTasks = recurrentTasks
+            recurentTasks = recurrentTasks,
+            ComposedRecurentTaskDuration = totalComposedRecurentTask,
         };
     }
 }

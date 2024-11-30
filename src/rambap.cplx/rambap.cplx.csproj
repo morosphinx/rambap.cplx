@@ -12,7 +12,7 @@
     <PackageIcon>icon.png</PackageIcon>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageTags>hardware;system;documentation;cplx</PackageTags>
-    <PackageLicenseExpression>LGPL-3.0-or-later</PackageLicenseExpression>
+    <PackageLicenseExpression>LGPL-3.0-only</PackageLicenseExpression>
     <Description>Core library of cplx, a C# internal DSL to define and document hardware systems.</Description>
     <PackageId>rambap.cplx.Core</PackageId>
     <RepositoryUrl>https://github.com/morosphinx/rambap.cplx/</RepositoryUrl>
