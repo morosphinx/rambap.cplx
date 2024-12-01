@@ -8,7 +8,7 @@ public class TestTaskOutputs
 {
     // Tested Methods
     [TestMethod]
-    public void TestColumn_CostBreakdown_Value()
+    public void TestColumn_ComponentRecurentTaskDuration()
     {
         var part = new DecimalPropertyPartExemple<RecurrentTask>.Part_A();
         var i = new Pinstance(part);
@@ -20,7 +20,7 @@ public class TestTaskOutputs
     }
 
     [TestMethod]
-    public void TestColumn_GroupTotalCost()
+    public void TestColumn_RecurentTaskTotalDuration()
     {
         var part = new DecimalPropertyPartExemple<RecurrentTask>.Part_A();
         var i = new Pinstance(part);
@@ -29,5 +29,17 @@ public class TestTaskOutputs
             Tasks.TaskTotalDuration(),
             i => i.Tasks()?.RecurentTasks ?? [],
             DecimalPropertyPartExemple.ExpectedTotal_ExtensiveT);
+    }
+
+    [TestMethod]
+    public void TestColumn_NonRecurentTaskTotalDuration()
+    {
+        var part = new DecimalPropertyPartExemple<NonRecurrentTask>.Part_A();
+        var i = new Pinstance(part);
+        ColumnTester.TestPartTreeColumn_Decimal(
+            i,
+            Tasks.TaskTotalDuration(),
+            i => i.Tasks()?.NonRecurentTasks ?? [],
+            DecimalPropertyPartExemple.ExpectedTotal_IntensiveT);
     }
 }

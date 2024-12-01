@@ -97,8 +97,7 @@ public static class Costing
                     return [.. tasks.RecurentTasks, .. tasks.NonRecurentTasks];
                 }
                 else return [];
-            },
-            RecursionCondition = (i,c)=> false
+            }
         },
         Columns = [
             PartTreeCommons.GroupNumber(),

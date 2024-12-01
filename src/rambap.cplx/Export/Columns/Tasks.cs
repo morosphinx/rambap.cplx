@@ -68,7 +68,7 @@ public static class Tasks
                 if (i is LeafPartPropertyTableItem lpi)
                 {
                     if (lpi.Property is Concepts.InstanceTasks.NamedTask n)
-                        return n.IsRecurent ? "Recurrent" : "Design";
+                        return n.IsRecurent ? "Recurrent" : "Nonrec.";
                     else
                         throw new NotImplementedException();
                 }
@@ -109,10 +109,24 @@ public static class Tasks
                 }
                 else if(i is LeafPartTableItem lc)
                 {
-                    if (lc.PrimaryItem.Component.Instance.Tasks() == null) return "";
-                    var recurrentDurationPerCom = lc.PrimaryItem.Component.Instance.Tasks()!.TotalRecurentTaskDuration;
+                    // 
+                    var intance = lc.PrimaryItem.Component.Instance;
+                    var primatryTaskData = intance.Tasks();
+                    if (primatryTaskData == null) return "";
+
+                    // RecurentData
+                    var recurrentDurationPerCom = primatryTaskData.TotalRecurentTaskDuration;
                     var recurrentDurationTotal = recurrentDurationPerCom * lc.Items.Count();
-                    return recurrentDurationTotal.ToString() ;
+
+                    // Non RecurentData
+                    var nonRecurentTotal = primatryTaskData.NativeNonRecurentTaskDuration + Concepts.InstanceTasks.GetInheritedRecurentCosts(intance);
+
+                    // Total
+                    var totalDuration = recurrentDurationTotal + nonRecurentTotal;
+                    return totalDuration.ToString();
+                } else if(i is BranchPartTableItem lb)
+                {
+                    throw new InvalidOperationException();
                 }
                 return "";
             });

@@ -23,7 +23,8 @@ public class Breakout9 : Part
 
 class ASticker : Part
 {
-    
+    NonRecurrentTask Design = 2.0;
+
 }
 
 [PN("408-209")]

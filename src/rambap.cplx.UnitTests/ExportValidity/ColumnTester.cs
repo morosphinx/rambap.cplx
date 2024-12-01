@@ -73,11 +73,10 @@ internal static class ColumnTester
     {
         foreach (var t in AllComponentTrees(propertyIterator))
         {
-            Console.WriteLine(t.name);
             var res = t.iterator.MakeContent(pinstance);
             var values = res.Select(column.CellFor);
             var total = values.Select(s => (s != "") ? Convert.ToDecimal(s) : 0M).Sum();
-            Assert.AreEqual(expectedTotal, total);
+            Assert.AreEqual(expectedTotal, total, $"Incoherent column sum for {t.name}");
         }
     }
 
@@ -89,11 +88,10 @@ internal static class ColumnTester
     {
         foreach (var t in AllPartTrees(propertyIterator))
         {
-            Console.WriteLine(t.name);
             var res = t.iterator.MakeContent(pinstance);
             var values = res.Select(column.CellFor);
             var total = values.Select(s => (s != "") ? Convert.ToDecimal(s) : 0M).Sum();
-            Assert.AreEqual(expectedTotal, total);
+            Assert.AreEqual(expectedTotal, total, $"Incoherent column sum for {t.name}");
         }
     }
 }
