@@ -32,7 +32,7 @@ internal class TasksConcept : IConcept<InstanceTasks>
 
         List<NamedTask> recurrentTasks = new();
         ScanObjectContentFor<RecurrentTask>(template,
-            (t, i) => recurrentTasks.Add(new(false, i.Name, t.Duration_day, t.Category)));
+            (t, i) => recurrentTasks.Add(new(true, i.Name, t.Duration_day, t.Category)));
 
         decimal totalComposedRecurentTask = i.Components.Select(c => c.Instance.Tasks()?.TotalRecurentTaskDuration ?? 0).Sum();
 

@@ -6,6 +6,7 @@ using rambap.cplx.Export.Iterators;
 using System.Reflection.Emit;
 using static rambap.cplx.Export.Generators;
 using rambap.cplx.Export.Tables;
+using rambap.cplx.UnitTests.ExportValidity;
 
 namespace rambap.cplx.UnitTests
 {
@@ -18,13 +19,8 @@ namespace rambap.cplx.UnitTests
             {
                 return new Folder(
                 [
-                    ("BillOfMaterial_tree.csv", new MarkdownTableFile(i) { Table = Costing.BillOfMaterial_CompleteTree() }),
-                    ("BillOfMaterial_flat.csv", new MarkdownTableFile(i) { Table = Costing.BillOfMaterial_Flat() }),
-                    ("ComponentTree.csv", new FixedWidthTableFile(i) { Table = SystemView.ComponentTree()}),
-                    ("CostBreakdown.csv", new MarkdownTableFile(i){ Table =  Costing.CostBreakdown(), WriteTotalLine = true }),
-                    ("Tasks.csv", new MarkdownTableFile(i) { Table = Costing.BillOfTasks()}),
-                    ("BillOfMaterial_tree.xlsx", new ExcelTableFile_FromTemplate(i) { Table = Costing.BillOfMaterial_CompleteTree() }),
-                    ("BillOfMaterial_flat.xlsx", new ExcelTableFile_FromTemplate(i) { Table = Costing.BillOfMaterial_Flat() }),
+                    ("BillOfMaterial_tree.xlsx", new ExcelTableFile_FromTemplate(i) { Table = Costing.BillOfMaterial() }),
+                    ("BillOfMaterial_flat.xlsx", new ExcelTableFile_FromTemplate(i) { Table = Costing.BillOfMaterial() }),
                     ("ComponentTree.xlsx", new ExcelTableFile_FromTemplate(i) { Table = SystemView.ComponentTree()}),
                     ("CostBreakdown.xlsx", new ExcelTableFile_FromTemplate(i){ Table =  Costing.CostBreakdown()}),
                     ("Tasks.xlsx", new ExcelTableFile_FromTemplate(i) { Table = Costing.BillOfTasks()}),
@@ -90,6 +86,15 @@ namespace rambap.cplx.UnitTests
             var i = new Pinstance(p);
             var generator = GetDemoGeneratorWithEverything();
             generator.Do(i, "C:\\TestFolder\\Exemple4");
+        }
+
+        [TestMethod]
+        public void TestGeneration_DecimalPropTask()
+        {
+            var p = new DecimalPropertyPartExemple<RecurrentTask>.Part_A();
+            var i = new Pinstance(p);
+            var generator = GetDemoGeneratorWithEverything();
+            generator.Do(i, "C:\\TestFolder\\Exemple6");
         }
     }
 }

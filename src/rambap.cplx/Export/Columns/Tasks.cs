@@ -13,6 +13,8 @@ public static class Tasks
             {
                 if (lp.Property is Concepts.InstanceTasks.NamedTask n)
                     return n.Name;
+                else
+                    throw new NotImplementedException();
             }
             else if (i is LeafComponent lc)
             {
@@ -29,6 +31,8 @@ public static class Tasks
                 {
                     if (lp.Property is Concepts.InstanceTasks.NamedTask n)
                         return n.Duration_day.ToString();
+                    else
+                        throw new NotImplementedException();
                 }
                 else if(i is LeafComponent lc)
                 {
@@ -45,9 +49,13 @@ public static class Tasks
                 if (i is LeafPartPropertyTableItem lpi)
                 {
                     if (lpi.Property is Concepts.InstanceTasks.NamedTask n)
-                    {
                         return n.Name;
-                    }
+                    else
+                        throw new NotImplementedException();
+                }
+                else if (i is LeafPartTableItem lc)
+                {
+                    return "unit";
                 }
                 return "";
             });
@@ -60,9 +68,13 @@ public static class Tasks
                 if (i is LeafPartPropertyTableItem lpi)
                 {
                     if (lpi.Property is Concepts.InstanceTasks.NamedTask n)
-                    {
-                        return n.IsRecurent ? "Recurrent" : "Design" ;
-                    }
+                        return n.IsRecurent ? "Recurrent" : "Design";
+                    else
+                        throw new NotImplementedException();
+                }
+                else if (i is LeafPartTableItem lc)
+                {
+                    return "Recurrent (sum)";
                 }
                 return "";
             });
@@ -74,9 +86,9 @@ public static class Tasks
                 if (i is LeafPartPropertyTableItem lpi)
                 {
                     if (lpi.Property is Concepts.InstanceTasks.NamedTask n)
-                    {
                         return n.Category;
-                    }
+                    else
+                        throw new NotImplementedException();
                 }
                 return "";
             });
@@ -92,10 +104,15 @@ public static class Tasks
                         var total_duration = (n.IsRecurent ? lpi.Items.Count() : 1) * n.Duration_day;
                         return $"{total_duration}";
                     }
+                    else
+                        throw new NotImplementedException();
                 }
-                if(i is LeafPartTableItem lc)
+                else if(i is LeafPartTableItem lc)
                 {
-                    return lc.PrimaryItem.Component.Instance.Tasks()?.TotalRecurentTaskDuration.ToString() ?? "";
+                    if (lc.PrimaryItem.Component.Instance.Tasks() == null) return "";
+                    var recurrentDurationPerCom = lc.PrimaryItem.Component.Instance.Tasks()!.TotalRecurentTaskDuration;
+                    var recurrentDurationTotal = recurrentDurationPerCom * lc.Items.Count();
+                    return recurrentDurationTotal.ToString() ;
                 }
                 return "";
             });

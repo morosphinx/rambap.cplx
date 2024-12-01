@@ -1,5 +1,6 @@
 ﻿using rambap.cplx;
 using rambap.cplx.Export.Iterators;
+using System.Linq.Expressions;
 
 namespace rambap.cplx.Export.Columns;
 public static class Costs
@@ -89,6 +90,8 @@ public static class Costs
                 {
                     if (lpi.Property is Concepts.InstanceCost.NativeCostInfo n)
                         return n.value.price.ToString("0.00");
+                    else
+                        throw new NotImplementedException();
                 }
                 else if (i is LeafPartTableItem lp)
                 {

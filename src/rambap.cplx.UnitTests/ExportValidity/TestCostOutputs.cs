@@ -14,7 +14,7 @@ public class TestCostOutputs
             i,
             Costs.CostBreakdown_Value(),
             i => i.Cost()?.NativeCosts ?? [],
-            DecimalPropertyPartExemple.ExpectedTotalT);
+            DecimalPropertyPartExemple.ExpectedTotal_ExtensiveT);
     }
 
     [TestMethod]
@@ -26,6 +26,6 @@ public class TestCostOutputs
             i,
             Costs.GroupTotalCost(),
             i => i.Cost()?.NativeCosts ?? [],
-            DecimalPropertyPartExemple.ExpectedTotalT);
+            DecimalPropertyPartExemple.ExpectedTotal_ExtensiveT);
     }
 }

@@ -4,7 +4,8 @@
 
 internal static class DecimalPropertyPartExemple
 {
-    public static decimal ExpectedTotalT => 2483;
+    public static decimal ExpectedTotal_ExtensiveT => 2483;
+    public static decimal ExpectedTotal_IntensiveT => 2223;
 }
 
 internal abstract class DecimalPropertyPartExemple<T>

@@ -16,7 +16,7 @@ public class TestTaskOutputs
             i,
             Tasks.RecurentTaskDuration(),
             i => i.Tasks()?.RecurentTasks ?? [],
-            DecimalPropertyPartExemple.ExpectedTotalT);
+            DecimalPropertyPartExemple.ExpectedTotal_ExtensiveT);
     }
 
     [TestMethod]
@@ -28,6 +28,6 @@ public class TestTaskOutputs
             i,
             Tasks.TaskTotalDuration(),
             i => i.Tasks()?.RecurentTasks ?? [],
-            DecimalPropertyPartExemple.ExpectedTotalT);
+            DecimalPropertyPartExemple.ExpectedTotal_ExtensiveT);
     }
 }

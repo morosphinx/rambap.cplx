@@ -6,63 +6,63 @@ namespace rambap.cplx.UnitTests.ExportValidity;
 
 internal static class ColumnTester
 {
-    public static IEnumerable<ComponentTree> AllComponentTrees(Func<Pinstance, IEnumerable<object>> propertyIterator)
+    public static IEnumerable<(string name, ComponentTree iterator)> AllComponentTrees(Func<Pinstance, IEnumerable<object>> propertyIterator)
     {
-        yield return new ComponentTree()
+        yield return ("Component Tree, Flat, No Branches", new ComponentTree()
         {
             RecursionCondition = (c, l) => false,
             WriteBranches = false,
             PropertyIterator = propertyIterator
-        };
-        yield return new ComponentTree()
+        });
+        yield return ("Component Tree, Recursive, No Branches", new ComponentTree()
         {
             RecursionCondition = (c, l) => true,
             WriteBranches = false,
             PropertyIterator = propertyIterator
-        };
-        yield return new ComponentTree()
+        });
+        yield return ("Component Tree, Flat, With Branches", new ComponentTree()
         {
             RecursionCondition = (c, l) => false,
             WriteBranches = true,
             PropertyIterator = propertyIterator
-        };
-        yield return new ComponentTree()
+        });
+        yield return ("Component Tree, Recursive, With Branches", new ComponentTree()
         {
             RecursionCondition = (c, l) => true,
             WriteBranches = true,
             PropertyIterator = propertyIterator
-        };
+        });
     }
 
-    public static IEnumerable<PartTree> AllPartTrees(Func<Pinstance, IEnumerable<object>> propertyIterator)
+    public static IEnumerable<(string name, PartTree iterator)> AllPartTrees(Func<Pinstance, IEnumerable<object>> propertyIterator)
     {
-        yield return new PartTree()
+        yield return ("Part list, Flat, No Branches", new PartTree()
         {
             RecursionCondition = (c, l) => false,
             WriteBranches = false,
             PropertyIterator = propertyIterator
-        };
+        });
 
-        yield return new PartTree()
+        yield return ("Part list, Recursive, No Branches", new PartTree()
         {
             RecursionCondition = (c, l) => true,
             WriteBranches = false,
             PropertyIterator = propertyIterator
-        };
+        });
 
-        yield return new PartTree()
+        yield return ("Part list, Flat, With Branches", new PartTree()
         {
             RecursionCondition = (c, l) => false,
             WriteBranches = true,
             PropertyIterator = propertyIterator
-        };
+        });
 
-        yield return new PartTree()
+        yield return ("Part list, Recursive, With Branches", new PartTree()
         {
             RecursionCondition = (c, l) => true,
             WriteBranches = true,
             PropertyIterator = propertyIterator
-        };
+        });
     }
 
     public static void TestComponentTreeColumn_Decimal(
@@ -71,9 +71,10 @@ internal static class ColumnTester
         Func<Pinstance, IEnumerable<object>> propertyIterator,
         decimal expectedTotal)
     {
-        foreach (var iterator in AllComponentTrees(propertyIterator))
+        foreach (var t in AllComponentTrees(propertyIterator))
         {
-            var res = iterator.MakeContent(pinstance);
+            Console.WriteLine(t.name);
+            var res = t.iterator.MakeContent(pinstance);
             var values = res.Select(column.CellFor);
             var total = values.Select(s => (s != "") ? Convert.ToDecimal(s) : 0M).Sum();
             Assert.AreEqual(expectedTotal, total);
@@ -86,9 +87,10 @@ internal static class ColumnTester
        Func<Pinstance, IEnumerable<object>> propertyIterator,
        decimal expectedTotal)
     {
-        foreach (var iterator in AllPartTrees(propertyIterator))
+        foreach (var t in AllPartTrees(propertyIterator))
         {
-            var res = iterator.MakeContent(pinstance);
+            Console.WriteLine(t.name);
+            var res = t.iterator.MakeContent(pinstance);
             var values = res.Select(column.CellFor);
             var total = values.Select(s => (s != "") ? Convert.ToDecimal(s) : 0M).Sum();
             Assert.AreEqual(expectedTotal, total);
