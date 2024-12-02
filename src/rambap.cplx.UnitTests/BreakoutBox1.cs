@@ -64,5 +64,14 @@ class Fiche4mmNoir : Part
 
     NonRecurrentTask Nego = 1.0;
     RecurrentTask Assembly = 0.05;
+
+    SubComp A;
+    SubComp B;
+}
+
+class SubComp : Part
+{
+    Cost Buy = 4;
+    NonRecurrentTask test = 1;
 }
 

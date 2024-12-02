@@ -5,10 +5,10 @@ namespace rambap.cplx.Export.Tables;
 
 public static class SystemView
 {
-    public static Table<ComponentTreeItem> ComponentTree()
+    public static Table<ComponentContent> ComponentTree()
         => new()
         {
-            Tree = new ComponentTree(),
+            Tree = new ComponentContentTree(),
             Columns = [
                 ComponentTreeCommons.ComponentPrettyTree(),
                 ComponentTreeCommons.ComponentComment(),
@@ -17,10 +17,10 @@ public static class SystemView
             ],
         };
 
-    public static Table<PartTreeItem> ComponentInventory()
+    public static Table<PartContent> ComponentInventory()
         => new()
         {
-            Tree = new PartTree()
+            Tree = new PartContentList()
             {
                 WriteBranches = true,
             },

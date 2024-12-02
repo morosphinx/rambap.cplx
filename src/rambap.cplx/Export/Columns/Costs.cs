@@ -5,8 +5,8 @@ using System.Linq.Expressions;
 namespace rambap.cplx.Export.Columns;
 public static class Costs
 {
-    public static DelegateColumn<ComponentTreeItem> CostBreakdown_Name()
-    => new DelegateColumn<ComponentTreeItem>("Detail", ColumnTypeHint.String,
+    public static DelegateColumn<ComponentContent> CostBreakdown_Name()
+    => new DelegateColumn<ComponentContent>("Cost Name", ColumnTypeHint.String,
         i =>
         {
             if (i is LeafProperty lp)
@@ -15,12 +15,17 @@ public static class Costs
                     return n.name;
             }
             else if (i is LeafComponent lc)
-                return "unit";
+            {
+                if (lc.IsLeafBecause == LeafCause.RecursionBreak)
+                    return "unit";
+                else
+                    return "";
+            }
             return "";
         });
 
-    public static DelegateColumn<ComponentTreeItem> CostBreakdown_Value()
-        => new DelegateColumn<ComponentTreeItem>("Cost", ColumnTypeHint.Numeric,
+    public static DelegateColumn<ComponentContent> CostBreakdown_Value()
+        => new DelegateColumn<ComponentContent>("Cost", ColumnTypeHint.Numeric,
             i =>
             {
                 if (i is LeafProperty lp)
@@ -34,16 +39,16 @@ public static class Costs
             },
             i => i.Cost()?.Total.ToString("0.00"));
 
-    public static DelegateColumn<ComponentTreeItem> TotalCost() =>
-        new DelegateColumn<ComponentTreeItem>("Cost", ColumnTypeHint.Numeric,
+    public static DelegateColumn<ComponentContent> TotalCost() =>
+        new DelegateColumn<ComponentContent>("Cost", ColumnTypeHint.Numeric,
             i => i.Component.Instance.Cost()?.Total.ToString("0.00"),
             i => i.Cost()?.Total.ToString());
 
-    public static DelegateColumn<PartTreeItem> GroupTotalCost() =>
-        new DelegateColumn<PartTreeItem>("Total Cost", ColumnTypeHint.Numeric,
+    public static DelegateColumn<PartContent> GroupTotalCost() =>
+        new DelegateColumn<PartContent>("Total Cost", ColumnTypeHint.Numeric,
             i =>
             {
-                if (i is LeafPartPropertyTableItem lp)
+                if (i is LeafPropertyPartContent lp)
                 {
                     if (lp.Property is Concepts.InstanceCost.NativeCostInfo prop)
                     {
@@ -55,7 +60,7 @@ public static class Costs
                     }
 
                 }
-                else if (i is LeafPartTableItem)
+                else if (i is LeafPartContent)
                 {
                     var prices = i.Items.Select(c => c.Component.Instance.Cost()?.Total ?? 0);
                     return prices.Sum().ToString("0.00");
@@ -66,34 +71,34 @@ public static class Costs
                 }
             });
 
-    public static DelegateColumn<PartTreeItem> Group_CostName()
-        => new DelegateColumn<PartTreeItem>("Detail", ColumnTypeHint.String,
+    public static DelegateColumn<PartContent> Group_CostName()
+        => new DelegateColumn<PartContent>("Cost Name", ColumnTypeHint.String,
             i =>
             {
-                if (i is LeafPartPropertyTableItem lpi)
+                if (i is LeafPropertyPartContent lpi)
                 {
                     if (lpi.Property is Concepts.InstanceCost.NativeCostInfo n)
                         return n.name;
                 }
-                else if (i is LeafPartTableItem lp)
+                else if (i is LeafPartContent lp)
                 {
                     return "unit";
                 }
                 return "";
             });
 
-    public static DelegateColumn<PartTreeItem> Group_UnitCost()
-        => new DelegateColumn<PartTreeItem>("Unit Cost", ColumnTypeHint.Numeric,
+    public static DelegateColumn<PartContent> Group_UnitCost()
+        => new DelegateColumn<PartContent>("Unit Cost", ColumnTypeHint.Numeric,
             i =>
             {
-                if (i is LeafPartPropertyTableItem lpi)
+                if (i is LeafPropertyPartContent lpi)
                 {
                     if (lpi.Property is Concepts.InstanceCost.NativeCostInfo n)
                         return n.value.price.ToString("0.00");
                     else
                         throw new NotImplementedException();
                 }
-                else if (i is LeafPartTableItem lp)
+                else if (i is LeafPartContent lp)
                 {
                     var costs = lp.Items.Select(i => i.Component.Instance.Cost()?.Total).ToList();
                     // Parts may be edited, without changing the PN => This would be a mistake, detect it

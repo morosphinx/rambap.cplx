@@ -5,15 +5,15 @@ namespace rambap.cplx.Export.Columns;
 
 public static class ComponentTreeCommons
 {
-    public static IColumn<ComponentTreeItem> LineNumber()
-        => new LineNumberColumn<ComponentTreeItem>();
+    public static IColumn<ComponentContent> LineNumber()
+        => new LineNumberColumn<ComponentContent>();
 
-    public static DelegateColumn<ComponentTreeItem> ComponentDepth() =>
-    new DelegateColumn<ComponentTreeItem>("Depth", ColumnTypeHint.Numeric,
+    public static DelegateColumn<ComponentContent> ComponentDepth() =>
+    new DelegateColumn<ComponentContent>("Depth", ColumnTypeHint.Numeric,
         i => i.Location.Depth.ToString());
 
-    public static DelegateColumn<ComponentTreeItem> ComponentID() =>
-        new DelegateColumn<ComponentTreeItem>("CID", ColumnTypeHint.String,
+    public static DelegateColumn<ComponentContent> ComponentID() =>
+        new DelegateColumn<ComponentContent>("CID", ColumnTypeHint.String,
             i =>
             {
                 var CID = Core.CID.Append(i.Location.CIN, i.Component.CN);
@@ -22,13 +22,13 @@ public static class ComponentTreeCommons
             i => "TOTAL"
             );
 
-    private class ComponentPrettyTreeColumn : IColumn<ComponentTreeItem>
+    private class ComponentPrettyTreeColumn : IColumn<ComponentContent>
     {
         public string Title => "CN";
         public ColumnTypeHint TypeHint => ColumnTypeHint.String;
 
         private List<bool> LevelDone { get; } = new List<bool>();
-        public string CellFor(ComponentTreeItem item)
+        public string CellFor(ComponentContent item)
         {
             if (LevelDone.Count() <= item.Location.Depth) LevelDone.Add(false);
             LevelDone[item.Location.Depth] = false;
@@ -54,11 +54,11 @@ public static class ComponentTreeCommons
         public string TotalFor(Pinstance root) => "";
     }
 
-    public static IColumn<ComponentTreeItem> ComponentPrettyTree() =>
+    public static IColumn<ComponentContent> ComponentPrettyTree() =>
         new ComponentPrettyTreeColumn();
 
-    public static DelegateColumn<ComponentTreeItem> ComponentID_And_Property(string propname) =>
-        new DelegateColumn<ComponentTreeItem>("CID", ColumnTypeHint.String,
+    public static DelegateColumn<ComponentContent> ComponentID_And_Property(string propname) =>
+        new DelegateColumn<ComponentContent>("CID", ColumnTypeHint.String,
             i =>
             {
                 var CID = Core.CID.Append(i.Location.CIN, i.Component.CN);
@@ -72,16 +72,16 @@ public static class ComponentTreeCommons
                     return CID;
             });
 
-    public static DelegateColumn<ComponentTreeItem> ComponentNumber() =>
-        new DelegateColumn<ComponentTreeItem>("CN", ColumnTypeHint.String,
+    public static DelegateColumn<ComponentContent> ComponentNumber() =>
+        new DelegateColumn<ComponentContent>("CN", ColumnTypeHint.String,
             i => i.Component.CN);
 
-    public static DelegateColumn<ComponentTreeItem> PartNumber() =>
-         new DelegateColumn<ComponentTreeItem>("PN", ColumnTypeHint.String,
+    public static DelegateColumn<ComponentContent> PartNumber() =>
+         new DelegateColumn<ComponentContent>("PN", ColumnTypeHint.String,
              i => i.Component.Instance.PN);
 
-    public static DelegateColumn<ComponentTreeItem> ComponentComment() =>
-        new DelegateColumn<ComponentTreeItem>("Component description", ColumnTypeHint.String,
+    public static DelegateColumn<ComponentContent> ComponentComment() =>
+        new DelegateColumn<ComponentContent>("Component description", ColumnTypeHint.String,
             i => i.Component.Comment);
 }
 
