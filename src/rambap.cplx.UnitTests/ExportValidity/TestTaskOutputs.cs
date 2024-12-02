@@ -26,7 +26,7 @@ public class TestTaskOutputs
         var i = new Pinstance(part);
         ColumnTester.TestPartTreeColumn_Decimal(
             i,
-            Tasks.TaskTotalDuration(),
+            Tasks.TaskTotalDuration(includeNonRecurent:false),
             i => i.Tasks()?.RecurentTasks ?? [],
             DecimalPropertyPartExemple.ExpectedTotal_ExtensiveT);
     }
@@ -38,7 +38,7 @@ public class TestTaskOutputs
         var i = new Pinstance(part);
         ColumnTester.TestPartTreeColumn_Decimal(
             i,
-            Tasks.TaskTotalDuration(),
+            Tasks.TaskTotalDuration(includeNonRecurent:true),
             i => i.Tasks()?.NonRecurentTasks ?? [],
             DecimalPropertyPartExemple.ExpectedTotal_IntensiveT);
     }

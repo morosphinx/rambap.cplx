@@ -104,10 +104,11 @@ public static class Costing
             PartTreeCommons.GroupPN(),
             PartTreeCommons.GroupCNs(),
             Documentations.GroupDescription(),
-            PartTreeCommons.GroupCount(),
             Tasks.TaskName(),
-            Tasks.TaskType(),
-            Tasks.TaskTotalDuration(),
+            Tasks.TaskCategory(),
+            Tasks.TaskDuration(),
+            Tasks.TaskCount(),
+            Tasks.TaskTotalDuration(includeNonRecurent: true),
         ],
 
     };

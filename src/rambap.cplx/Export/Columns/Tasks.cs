@@ -61,7 +61,7 @@ public static class Tasks
             });
 
 
-    public static DelegateColumn<PartTreeItem> TaskType()
+    public static DelegateColumn<PartTreeItem> TaskRecurence()
         => new DelegateColumn<PartTreeItem>("Task Type", ColumnTypeHint.String,
             i =>
             {
@@ -93,7 +93,35 @@ public static class Tasks
                 return "";
             });
 
-    public static DelegateColumn<PartTreeItem> TaskTotalDuration()
+    public static DelegateColumn<PartTreeItem> TaskDuration()
+        => new DelegateColumn<PartTreeItem>("Task Duration", ColumnTypeHint.Numeric,
+            i =>
+            {
+                if (i is LeafPartPropertyTableItem lpi)
+                {
+                    if (lpi.Property is Concepts.InstanceTasks.NamedTask n)
+                        return n.Duration_day.ToString();
+                    else
+                        throw new NotImplementedException();
+                }
+                return "";
+            });
+
+    public static DelegateColumn<PartTreeItem> TaskCount()
+        => new DelegateColumn<PartTreeItem>("Task Count", ColumnTypeHint.Numeric,
+            i =>
+            {
+                if (i is LeafPartPropertyTableItem lpi)
+                {
+                    if (lpi.Property is Concepts.InstanceTasks.NamedTask n)
+                        return n.IsRecurent ? i.Items.Count().ToString() : "";
+                    else
+                        throw new NotImplementedException();
+                }
+                return "";
+            });
+
+    public static DelegateColumn<PartTreeItem> TaskTotalDuration(bool includeNonRecurent)
         => new DelegateColumn<PartTreeItem>("Task Total Duration", ColumnTypeHint.Numeric,
             i =>
             {
@@ -118,15 +146,18 @@ public static class Tasks
                     var recurrentDurationPerCom = primatryTaskData.TotalRecurentTaskDuration;
                     var recurrentDurationTotal = recurrentDurationPerCom * lc.Items.Count();
 
-                    // Non RecurentData
-                    var nonRecurentTotal = primatryTaskData.NativeNonRecurentTaskDuration + Concepts.InstanceTasks.GetInheritedRecurentCosts(intance);
+                    decimal totalDuration = recurrentDurationTotal;
+                    if (includeNonRecurent)
+                    {
+                        // Non RecurentData
+                        var nonRecurentTotal = primatryTaskData.NativeNonRecurentTaskDuration + Concepts.InstanceTasks.GetInheritedRecurentCosts(intance);
 
-                    // Total
-                    var totalDuration = recurrentDurationTotal + nonRecurentTotal;
+                        totalDuration += nonRecurentTotal;
+                    }
                     return totalDuration.ToString();
-                } else if(i is BranchPartTableItem lb)
+                } else if(includeNonRecurent && i is BranchPartTableItem lb)
                 {
-                    throw new InvalidOperationException();
+                    throw new NotSupportedException("This columns display a mix of intensive (NonRecurentTask) and extensive (RecurentTask) properties. Calculations may have caveats");
                 }
                 return "";
             });

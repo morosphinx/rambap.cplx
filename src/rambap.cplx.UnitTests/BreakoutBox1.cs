@@ -12,9 +12,9 @@ public class Breakout9 : Part
     Cost Fil = 50;
 
     RecurrentTask Assembly = 0.5;
-    NonRecurrentTask Achats = 2.0;
-    NonRecurrentTask PlanCablage = 2;
-    NonRecurrentTask Relecture = 4;
+    NonRecurrentTask Achats =new(2.0, TaskCategory.Delivery);
+    NonRecurrentTask PlanCablage = new(2,"Electronics");
+    NonRecurrentTask Relecture = new(4,"Validation");
 
     ASticker Sticker;
 
