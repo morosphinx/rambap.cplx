@@ -51,13 +51,14 @@ public class PartTree : IIterator<PartTreeItem>
             // Groups have same PN, same PartType, and same type of Component tree node // TODO : This last point may be false
             var itemList = group.ToList();
             var primaryItem = group.First();
+            var shouldIShowThisPartContent = itemList.OfType<BranchComponent>().Any()
+                || itemList.OfType<LeafComponent>().Where(c => c.IsLeafBecause == LeafCause.NoChild).Any();
             // If the components are branches OR could be recursed further on other condition,
             // We want to know their inside, Therefore we return a BranchPartTableItem
             // And apply the property iterator
             // This is due to not iterating with properties when making ComponentTable() earlier
             // => The component may have a property to iterate, but appear as a LeafComponent after the ComponentTable() 
-            if ((primaryItem is BranchComponent)
-             || (primaryItem is LeafComponent lc && lc.IsLeafBecause == LeafCause.NoChild))
+            if (shouldIShowThisPartContent)
             {
                 if (WriteBranches)
                     yield return new BranchPartTableItem { Items = itemList };

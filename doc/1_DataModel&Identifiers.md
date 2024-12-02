@@ -1,7 +1,7 @@
 ﻿### Parts & PN
 cplx model **Parts**. Parts are plans to build or procure a thing. Defining a Part is a design activity.[^1]
 
-[^1] : Parts are NOT references tracking real, physical objects, such as inventory items, [digital twins](https://en.wikipedia.org/wiki/Digital_twin), or anything with a [serial number ](https://en.wikipedia.org/wiki/Serial_number)
+[^1]: Parts are NOT references tracking real, physical objects, such as inventory items, [digital twins](https://en.wikipedia.org/wiki/Digital_twin), or anything with a [serial number ](https://en.wikipedia.org/wiki/Serial_number)
 
 Parts are identified through an unique [**part number**](https://en.wikipedia.org/wiki/Part_number) (PN).
 
@@ -9,7 +9,7 @@ Parts are identified through an unique [**part number**](https://en.wikipedia.or
 // cplx define Parts as classes, using (by default) its classname as a PN
 class BENCH_001 : Part
 {
-	// This define a part of PN 'R012_456'
+	// This define a part of PN 'BENCH_001'
 }
 ```
 
@@ -28,7 +28,7 @@ class BENCH_001 : Part {
 ### Properties 
 Parts have properties. Properties of the part and its components are used by [**Concepts**](2_DataConcepts) to calculate the overall properties of each part instance. These instances properties are then used to generate documentation.
 ``` Csharp
-// cplx properties are defined in the cplx.Core.PartProperties namespace.
+// Core cplx properties are defined in the rambap.cplx.PartProperties namespace.
 // Add them as field to each part
 class BENCH_001 : Part {
 	Cost PowerSupply = 5000 ;

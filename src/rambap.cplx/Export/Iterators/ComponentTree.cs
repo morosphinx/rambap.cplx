@@ -1,4 +1,6 @@
 ﻿using rambap.cplx.Core;
+using rambap.cplx.PartAttributes;
+using System.Reflection;
 
 namespace rambap.cplx.Export.Iterators;
 
@@ -65,8 +67,14 @@ public class ComponentTree : IIterator<ComponentTreeItem>
     {
         IEnumerable<ComponentTreeItem> Recurse(Component c, RecursionLocation location)
         {
-            bool mayRecursePastThis = RecursionCondition == null || RecursionCondition(c, location)
-                || location.Depth == 0; // Always recurse the first iteration (root node)
+            var stopRecurseAttrib = c.Instance.PartType.GetCustomAttribute(typeof(CplxHideContentsAttribute));
+            bool mayRecursePastThis =
+                stopRecurseAttrib == null &&
+                (
+                    RecursionCondition == null
+                    || RecursionCondition(c, location)
+                    || location.Depth == 0 // Always recurse the first iteration (root node), no mater the recursion condition
+                ); 
             bool isLeafDueToRecursionBreak = ! mayRecursePastThis ;
             if (isLeafDueToRecursionBreak)
             {
