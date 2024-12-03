@@ -12,40 +12,56 @@ public record RecursionLocation()
     public required int ComponentCount { get; init; }
 }
 
-public abstract record ComponentTreeItem()
+public abstract record ComponentContent()
 {
     public required RecursionLocation Location { get; init; }
     public required Component Component { get; init; }
 }
+
+/// <summary>
+/// Waht caused a Content to be a leaf
+/// </summary>
 public enum LeafCause
 {
+    /// <summary>
+    /// Recursion was here stopped on user-defined purpose
+    /// </summary>
     RecursionBreak,
+
+    /// <summary>
+    /// Recursion was here stopped because there is no component or prperty to recurse to
+    /// </summary>
     NoChild,
 }
+
 /// <summary>
-/// An Item of the component Tree representing a component. Has no child itm
+/// A content of a component Tree representing a component. Has no child content
 /// </summary>
-public record LeafComponent : ComponentTreeItem
+public record LeafComponent : ComponentContent
 {
     public required LeafCause IsLeafBecause { get; init ; }
 }
 
 /// <summary>
-/// An Item of the component Tree representing a component. Has descendants, either <see cref="LeafComponent"/> or <see cref="LeafProperty"/>
+/// A content of a component Tree representing a component. Has descendants, either <see cref="LeafComponent"/> or <see cref="LeafProperty"/>
 /// </summary>
-public record BranchComponent : ComponentTreeItem { }
+public record BranchComponent : ComponentContent { }
 
 /// <summary>
-/// An Item of the component Tree representing a property of a component.
+/// A content of a component Tree representing a property of a component.
 /// </summary>
-public record LeafProperty : ComponentTreeItem
+public record LeafProperty : ComponentContent
 {
     public object? Property { get; init; } = null;
 }
 
-public class ComponentTree : IIterator<ComponentTreeItem>
+/// <summary>
+/// Produce an IEnumerable iterating over the component tree of an instance, and its properties <br/>
+/// Output is structured like a tree of <see cref="ComponentContent"/>. <br/>
+/// </summary>
+public class ComponentContentTree : IIterator<ComponentContent>
 {
-    /// <summary> If true, return every component encountered when traversing the tree. Otherwise, return only the final leaf components and properties</summary>
+    /// <summary> If true, return every component encountered when traversing the tree. Otherwise, return only the final leaf components and leaf properties. </summary>
     public bool WriteBranches { get; init; } = true;
 
     /// <summary> If true, iterate on the component properties </summary>
@@ -63,9 +79,9 @@ public class ComponentTree : IIterator<ComponentTreeItem>
     /// </summary>
     public Func<Component, RecursionLocation, bool>? RecursionCondition { private get; init ; }
 
-    public IEnumerable<ComponentTreeItem> MakeContent(Pinstance content)
+    public IEnumerable<ComponentContent> MakeContent(Pinstance content)
     {
-        IEnumerable<ComponentTreeItem> Recurse(Component c, RecursionLocation location)
+        IEnumerable<ComponentContent> Recurse(Component c, RecursionLocation location)
         {
             var stopRecurseAttrib = c.Instance.PartType.GetCustomAttribute(typeof(CplxHideContentsAttribute));
             bool mayRecursePastThis =

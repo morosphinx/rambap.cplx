@@ -27,10 +27,10 @@ public static class Costing
             return [new InstanceCost.NativeCostInfo("", 0)];
     }
 
-    public static Table<PartTreeItem> BillOfMaterial(bool recurse = true)
+    public static Table<PartContent> BillOfMaterial(bool recurse = true)
         => new()
         {
-            Tree = new PartTree()
+            Tree = new PartContentList()
             {
                 WriteBranches = false,
                 RecursionCondition = recurse ? null : (c, l) => false, // null = always recurse
@@ -39,19 +39,18 @@ public static class Costing
             Columns = [
                 PartTreeCommons.GroupNumber(),
                 PartTreeCommons.GroupPN(),
-                PartTreeCommons.GroupCNs(),
                 Documentations.GroupDescription(),
-                PartTreeCommons.GroupCount(),
                 Costs.Group_CostName(),
                 Costs.Group_UnitCost(),
+                PartTreeCommons.GroupCount(),
                 Costs.GroupTotalCost(),
             ],
         };
 
-    public static Table<ComponentTreeItem> CostBreakdown()
+    public static Table<ComponentContent> CostBreakdown()
         => new()
         {
-            Tree = new ComponentTree()
+            Tree = new ComponentContentTree()
             {
                 WriteBranches = false,
                 PropertyIterator =
@@ -65,10 +64,13 @@ public static class Costing
             ],
         };
 
-    public static Table<ComponentTreeItem> TaskBreakdown()
+    /// <summary>
+    /// Table detailling all recurent task in a component tree
+    /// </summary>
+    public static Table<ComponentContent> RecurentTaskBreakdown()
         => new()
         {
-            Tree = new ComponentTree()
+            Tree = new ComponentContentTree()
             {
                 WriteBranches = false,
                 PropertyIterator =
@@ -78,14 +80,18 @@ public static class Costing
                 ComponentTreeCommons.ComponentID(),
                 ComponentTreeCommons.PartNumber(),
                 Tasks.RecurentTaskName(),
+                Tasks.RecurentTaskCategory(),
                 Tasks.RecurentTaskDuration(),
             ],
         };
 
-    public static Table<PartTreeItem> BillOfTasks()
+    /// <summary>
+    /// Table breaking down all tasks, by PartType
+    /// </summary>
+    public static Table<PartContent> BillOfTasks()
     => new()
     {
-        Tree = new PartTree()
+        Tree = new PartContentList()
         {
             WriteBranches = false,
             PropertyIterator =
@@ -102,11 +108,11 @@ public static class Costing
         Columns = [
             PartTreeCommons.GroupNumber(),
             PartTreeCommons.GroupPN(),
-            PartTreeCommons.GroupCNs(),
             Documentations.GroupDescription(),
             Tasks.TaskName(),
             Tasks.TaskCategory(),
             Tasks.TaskDuration(),
+            Tasks.TaskRecurence(),
             Tasks.TaskCount(),
             Tasks.TaskTotalDuration(includeNonRecurent: true),
         ],

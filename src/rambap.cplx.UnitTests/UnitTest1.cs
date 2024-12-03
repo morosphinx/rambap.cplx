@@ -33,6 +33,13 @@ namespace rambap.cplx.UnitTests
             return Generators.ConfigureGenerator(
                 [Content.Costing, Content.SystemView], HierarchyMode.Flat, c => fileContentRecursion);
         }
+        public static IGenerator GetDemoGeneratorWithEverything_excel(bool fileContentRecursion = false)
+        {
+            return Generators.ConfigureGenerator(
+                i => [.. ExcelGenerators.CostingFiles(i, IGenerator.SimplefileNameFor(i)),
+                      .. ExcelGenerators.SystemViewTables(i, IGenerator.SimplefileNameFor(i)) ]
+                , HierarchyMode.Flat, c => fileContentRecursion);
+        }
 
         [TestMethod]
         public void TestGeneration_ReadmeExample()
@@ -62,12 +69,21 @@ namespace rambap.cplx.UnitTests
         }
 
         [TestMethod]
-        public void TestGeneration_Breakout9()
+        public void TestGeneration_BreakoutBox1_txt()
         {
-            var p = new Breakout9();
+            var p = new BreakoutBox1();
             var i = new Pinstance(p);
             var generator = GetDemoGeneratorWithEverything();
-            generator.Do(i, "C:\\TestFolder\\Breakout9");
+            generator.Do(i, "C:\\TestFolder\\Breakout9_txt");
+        }
+
+        [TestMethod]
+        public void TestGeneration_BreakoutBox1_Excel()
+        {
+            var p = new BreakoutBox1();
+            var i = new Pinstance(p);
+            var generator = GetDemoGeneratorWithEverything_excel();
+            generator.Do(i, "C:\\TestFolder\\Breakout9_Excel");
         }
 
         [TestMethod]

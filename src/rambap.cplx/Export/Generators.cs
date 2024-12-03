@@ -12,10 +12,9 @@ public static class FileGroups
     {
         return [
                 ($"BOMR_{filenamePattern}.csv", new MarkdownTableFile(i) { Table = Costing.BillOfMaterial() }),
-                ($"BOMF_{filenamePattern}.csv", new MarkdownTableFile(i) { Table = Costing.BillOfMaterial(recurse:false) }),
                 ($"Costs_{filenamePattern}.csv", new MarkdownTableFile(i) { Table = Costing.CostBreakdown(), WriteTotalLine = true }),
                 ($"BOTR_{filenamePattern}.csv", new MarkdownTableFile(i) { Table = Costing.BillOfTasks()}),
-                ($"Tasks_{filenamePattern}.csv", new MarkdownTableFile(i) { Table = Costing.TaskBreakdown(), WriteTotalLine = true }),
+                ($"Tasks_{filenamePattern}.csv", new MarkdownTableFile(i) { Table = Costing.RecurentTaskBreakdown(), WriteTotalLine = true }),
                 ];
     }
 
@@ -66,6 +65,14 @@ public static class Generators
                 .. (contents.Contains(Content.Costing) ? FileGroups.CostingFiles(i, IGenerator.SimplefileNameFor(i)) : []),
                 .. (contents.Contains(Content.SystemView) ? FileGroups.SystemViewTables(i, IGenerator.SimplefileNameFor(i)) : []),
             ];
+        return ConfigureGenerator(makeInstanceFiles, hierarchyMode, subComponentInclusionCondition);
+    }
+
+    public static IGenerator ConfigureGenerator(
+        Func<Pinstance, IEnumerable<(string, IInstruction)>> makeInstanceFiles,
+        HierarchyMode hierarchyMode,
+        Func<Component, bool>? subComponentInclusionCondition = null)
+    {
         return hierarchyMode switch
         {
             HierarchyMode.Flat => new FlattenedDocumentationTreeGenerator()
@@ -121,7 +128,7 @@ public class FlattenedDocumentationTreeGenerator : IGenerator
 
     public override IInstruction PrepareInstruction(Pinstance i)
     {
-        var partTree= new PartTree()
+        var partTree= new PartContentList()
         {
             RecursionCondition = (c, l) => this.SubComponentInclusionCondition?.Invoke(c) ?? false
         };

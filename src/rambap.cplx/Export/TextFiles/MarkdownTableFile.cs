@@ -48,11 +48,13 @@ public class MarkdownTableFile : AbstractTableFile
                     :[]
             ];
         var columnWidths = CalculateColumnWidths(cellTexts);
-        CompleteSeparatorLine(separatorLineContent, columnWidths);
         // Now that we know column size, update the separator line
+        CompleteSeparatorLine(separatorLineContent, columnWidths);
+
+        var columnLeftPad = Table.ColumnTypeHints().Select(c => c == ColumnTypeHint.Numeric).ToList();
 
         var linesText = cellTexts.Select(l =>
-            CellSeparator + AggregateCells_FixedWidth(l, columnWidths, CellSeparator, CellPadding) + CellSeparator);
+            CellSeparator + AggregateCells_FixedWidth(l, columnWidths, columnLeftPad, CellSeparator, CellPadding) + CellSeparator);
         File.WriteAllLines(path, linesText);
     }
 }

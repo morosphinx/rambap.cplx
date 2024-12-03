@@ -17,7 +17,9 @@ public class FixedWidthTableFile : AbstractTableFile
                 .. Table.MakeContentLines(Content),
             ];
         var columnWidths = CalculateColumnWidths(cellTexts);
-        var linesText = cellTexts.Select(l => AggregateCells_FixedWidth(l, columnWidths, CellSeparator, CellPadding));
+
+        var columnLeftPad = Table.ColumnTypeHints().Select(c => c == ColumnTypeHint.Numeric).ToList();
+        var linesText = cellTexts.Select(l => AggregateCells_FixedWidth(l, columnWidths, columnLeftPad, CellSeparator, CellPadding));
         File.WriteAllLines(path, linesText);
     }
 }

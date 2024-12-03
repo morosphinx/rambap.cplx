@@ -18,7 +18,7 @@ public class InstanceTasks : IInstanceConceptProperty
     public static decimal GetInheritedRecurentCosts(Pinstance instance)
     {
         decimal total = 0;
-        var tree = new PartTree() ;
+        var tree = new PartContentList() ;
         foreach(var i in tree.MakeContent(instance))
         {
             var tasks = i.PrimaryItem.Component.Instance.Tasks();

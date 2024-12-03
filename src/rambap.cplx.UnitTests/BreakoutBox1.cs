@@ -2,7 +2,7 @@
 
 [PN("456_123_456")]
 [PartDescription("Eclateur SubD9 vers fiches banane 4mm")]
-public class Breakout9 : Part
+public class BreakoutBox1 : Part
 {
     ConnecteurSubD9 J01;
 
@@ -64,5 +64,14 @@ class Fiche4mmNoir : Part
 
     NonRecurrentTask Nego = 1.0;
     RecurrentTask Assembly = 0.05;
+
+    SubComp A;
+    SubComp B;
+}
+
+class SubComp : Part
+{
+    Cost Buy = 4;
+    NonRecurrentTask test = 1;
 }
 

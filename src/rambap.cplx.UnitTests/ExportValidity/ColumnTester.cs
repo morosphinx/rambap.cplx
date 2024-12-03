@@ -6,27 +6,27 @@ namespace rambap.cplx.UnitTests.ExportValidity;
 
 internal static class ColumnTester
 {
-    public static IEnumerable<(string name, ComponentTree iterator)> AllComponentTrees(Func<Pinstance, IEnumerable<object>> propertyIterator)
+    public static IEnumerable<(string name, ComponentContentTree iterator)> AllComponentTrees(Func<Pinstance, IEnumerable<object>> propertyIterator)
     {
-        yield return ("Component Tree, Flat, No Branches", new ComponentTree()
+        yield return ("Component Tree, Flat, No Branches", new ComponentContentTree()
         {
             RecursionCondition = (c, l) => false,
             WriteBranches = false,
             PropertyIterator = propertyIterator
         });
-        yield return ("Component Tree, Recursive, No Branches", new ComponentTree()
+        yield return ("Component Tree, Recursive, No Branches", new ComponentContentTree()
         {
             RecursionCondition = (c, l) => true,
             WriteBranches = false,
             PropertyIterator = propertyIterator
         });
-        yield return ("Component Tree, Flat, With Branches", new ComponentTree()
+        yield return ("Component Tree, Flat, With Branches", new ComponentContentTree()
         {
             RecursionCondition = (c, l) => false,
             WriteBranches = true,
             PropertyIterator = propertyIterator
         });
-        yield return ("Component Tree, Recursive, With Branches", new ComponentTree()
+        yield return ("Component Tree, Recursive, With Branches", new ComponentContentTree()
         {
             RecursionCondition = (c, l) => true,
             WriteBranches = true,
@@ -34,30 +34,30 @@ internal static class ColumnTester
         });
     }
 
-    public static IEnumerable<(string name, PartTree iterator)> AllPartTrees(Func<Pinstance, IEnumerable<object>> propertyIterator)
+    public static IEnumerable<(string name, PartContentList iterator)> AllPartTrees(Func<Pinstance, IEnumerable<object>> propertyIterator)
     {
-        yield return ("Part list, Flat, No Branches", new PartTree()
+        yield return ("Part list, Flat, No Branches", new PartContentList()
         {
             RecursionCondition = (c, l) => false,
             WriteBranches = false,
             PropertyIterator = propertyIterator
         });
 
-        yield return ("Part list, Recursive, No Branches", new PartTree()
+        yield return ("Part list, Recursive, No Branches", new PartContentList()
         {
             RecursionCondition = (c, l) => true,
             WriteBranches = false,
             PropertyIterator = propertyIterator
         });
 
-        yield return ("Part list, Flat, With Branches", new PartTree()
+        yield return ("Part list, Flat, With Branches", new PartContentList()
         {
             RecursionCondition = (c, l) => false,
             WriteBranches = true,
             PropertyIterator = propertyIterator
         });
 
-        yield return ("Part list, Recursive, With Branches", new PartTree()
+        yield return ("Part list, Recursive, With Branches", new PartContentList()
         {
             RecursionCondition = (c, l) => true,
             WriteBranches = true,
@@ -67,7 +67,7 @@ internal static class ColumnTester
 
     public static void TestComponentTreeColumn_Decimal(
         Pinstance pinstance,
-        IColumn<ComponentTreeItem> column,
+        IColumn<ComponentContent> column,
         Func<Pinstance, IEnumerable<object>> propertyIterator,
         decimal expectedTotal)
     {
@@ -82,7 +82,7 @@ internal static class ColumnTester
 
     public static void TestPartTreeColumn_Decimal(
        Pinstance pinstance,
-       IColumn<PartTreeItem> column,
+       IColumn<PartContent> column,
        Func<Pinstance, IEnumerable<object>> propertyIterator,
        decimal expectedTotal)
     {

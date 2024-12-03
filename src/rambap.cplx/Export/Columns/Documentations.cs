@@ -5,8 +5,8 @@ namespace rambap.cplx.Export.Columns;
 
 public static class Documentations
 {
-    public static DelegateColumn<PartTreeItem> GroupDescription() =>
-        new DelegateColumn<PartTreeItem>("Description", ColumnTypeHint.String,
+    public static DelegateColumn<PartContent> GroupDescription() =>
+        new DelegateColumn<PartContent>("Description", ColumnTypeHint.String,
             i =>
             {
                 var descriptions = i.PrimaryItem.Component.Instance.Descriptions()?.Descriptions.Select(d => d.Text)
@@ -14,8 +14,8 @@ public static class Documentations
                 return string.Join(" ", descriptions);
             });
 
-    public static DelegateColumn<ComponentTreeItem> PartDescription() =>
-        new DelegateColumn<ComponentTreeItem>("Part description", ColumnTypeHint.String,
+    public static DelegateColumn<ComponentContent> PartDescription() =>
+        new DelegateColumn<ComponentContent>("Part description", ColumnTypeHint.String,
             i => i.Component.Instance.Descriptions()?.Descriptions.First().Text);
 }
 
