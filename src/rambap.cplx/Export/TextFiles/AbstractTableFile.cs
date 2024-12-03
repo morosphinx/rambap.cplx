@@ -26,9 +26,13 @@ public abstract class AbstractTableFile : IInstruction
     {
         return string.Join(separator, cells);
     }
-    protected static string AggregateCells_FixedWidth(IEnumerable<string> cells, List<int> cellLengths, string separator, char padding)
+    protected static string AggregateCells_FixedWidth(IEnumerable<string> cells, List<int> cellLengths, List<bool> cellLeftPad, string separator, char padding)
     {
-        var cellTexts = cells.DefaultIfEmpty("").Select((c, i) => c.PadRight(cellLengths[i], padding));
+        var cellTexts = cells.DefaultIfEmpty("").Select(
+            (c, i) => cellLeftPad[i]
+                ? c.PadLeft(cellLengths[i], padding) 
+                : c.PadRight(cellLengths[i], padding)
+            );
         return string.Join(separator, cellTexts);
     }
 

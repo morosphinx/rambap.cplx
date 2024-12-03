@@ -4,14 +4,17 @@
     <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <Version>0.1.0-alpha3</Version>
+    <Version>0.1.0-alpha4</Version>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     <PackageOutputPath>..\nupckgs</PackageOutputPath>
+    <Title>CPLX Spreadsheet Export</Title>
+    <Authors>rambap</Authors>
     <PackageIcon>icon.png</PackageIcon>
     <PackageTags>hardware;system;documentation;cplx</PackageTags>
-    <PackageLicenseExpression>LGPL-3.0-or-later</PackageLicenseExpression>
+    <PackageLicenseExpression>LGPL-3.0-only</PackageLicenseExpression>
     <RepositoryUrl>https://github.com/morosphinx/rambap.cplx/</RepositoryUrl>
-    <Description>OpenXML output for cplx.</Description>
+    <Description>Excel Spreadsheet export for cplx, a C# internal DSL to define and document hardware systems</Description>
+    <RepositoryUrl>https://github.com/morosphinx/rambap.cplx/</RepositoryUrl>
   </PropertyGroup>
 
   <ItemGroup>

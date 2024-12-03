@@ -2,7 +2,7 @@
 
 [PN("456_123_456")]
 [PartDescription("Eclateur SubD9 vers fiches banane 4mm")]
-public class Breakout9 : Part
+public class BreakoutBox1 : Part
 {
     ConnecteurSubD9 J01;
 

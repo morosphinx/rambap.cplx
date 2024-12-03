@@ -7,7 +7,7 @@ public static class Tasks
 {
 
     public static DelegateColumn<ComponentContent> RecurentTaskName()
-    => new DelegateColumn<ComponentContent>("Task Name", ColumnTypeHint.Numeric,
+    => new DelegateColumn<ComponentContent>("Task Name", ColumnTypeHint.String,
         i =>
         {
             if (i is LeafProperty lp)
@@ -28,7 +28,7 @@ public static class Tasks
         });
 
     public static DelegateColumn<ComponentContent> RecurentTaskCategory()
-    => new DelegateColumn<ComponentContent>("Task Category", ColumnTypeHint.Numeric,
+    => new DelegateColumn<ComponentContent>("Task Category", ColumnTypeHint.String,
         i =>
         {
             if (i is LeafProperty lp)
