@@ -11,11 +11,11 @@ public static class Globals
     /// </summary>
     public static List<IConcept> EvaluatedConcepts =
         [
-            new Concepts.Documentation.DocumentationConcept(),
-            new Concepts.Documentation.ManufacturerConcept(),
-            new Concepts.Costing.CostsConcept(),
-            new Concepts.Costing.TasksConcept(),
-            new Concepts.Connectivity.SlotConcept(),
-            new Concepts.Connectivity.ConnectionConcept(),
+            new Modules.Documentation.DocumentationConcept(),
+            new Modules.Documentation.ManufacturerConcept(),
+            new Modules.Costing.CostsConcept(),
+            new Modules.Costing.TasksConcept(),
+            new Modules.Connectivity.SlotConcept(),
+            new Modules.Connectivity.ConnectionConcept(),
         ];
 }

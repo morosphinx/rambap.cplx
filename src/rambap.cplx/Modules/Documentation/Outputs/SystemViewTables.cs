@@ -1,8 +1,8 @@
-﻿using rambap.cplx.Export;
-using rambap.cplx.Export.Columns;
+﻿using rambap.cplx.Modules.Base.Output;
+using rambap.cplx.Export;
 using rambap.cplx.Export.Iterators;
 
-namespace rambap.cplx.Concepts.Documentation.Outputs;
+namespace rambap.cplx.Modules.Documentation.Outputs;
 
 public static class SystemViewTables
 {
@@ -11,9 +11,9 @@ public static class SystemViewTables
         {
             Tree = new ComponentContentTree(),
             Columns = [
-                ComponentTreeCommons.ComponentPrettyTree(),
-                ComponentTreeCommons.ComponentComment(),
-                ComponentTreeCommons.PartNumber(),
+                ComponentContentColumns.ComponentPrettyTree(),
+                ComponentContentColumns.ComponentComment(),
+                ComponentContentColumns.PartNumber(),
                 DescriptionColumns.PartDescription(),
             ],
         };
@@ -26,11 +26,11 @@ public static class SystemViewTables
                 WriteBranches = true,
             },
             Columns = [
-                PartTreeCommons.GroupNumber(),
-                PartTreeCommons.GroupPN(),
-                PartTreeCommons.GroupCNs(),
+                PartContentColumns.GroupNumber(),
+                PartContentColumns.GroupPN(),
+                PartContentColumns.GroupCNs(),
                 DescriptionColumns.GroupDescription(),
-                PartTreeCommons.GroupCount(),
+                PartContentColumns.GroupCount(),
             ],
         };
 }

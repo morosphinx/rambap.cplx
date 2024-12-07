@@ -1,10 +1,10 @@
 ﻿using rambap.cplx.Core;
 using rambap.cplx.Export.Iterators;
 using rambap.cplx.PartProperties;
-using static rambap.cplx.Concepts.Costing.InstanceTasks;
+using static rambap.cplx.Modules.Costing.InstanceTasks;
 using static rambap.cplx.Core.Support;
 
-namespace rambap.cplx.Concepts.Costing;
+namespace rambap.cplx.Modules.Costing;
 
 public class InstanceTasks : IInstanceConceptProperty
 {

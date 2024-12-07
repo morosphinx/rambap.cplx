@@ -1,9 +1,10 @@
 ﻿using rambap.cplx.Core;
+using rambap.cplx.Export;
 using rambap.cplx.Export.Iterators;
 
-namespace rambap.cplx.Export.Columns;
+namespace rambap.cplx.Modules.Base.Output;
 
-public static class ComponentTreeCommons
+public static class ComponentContentColumns
 {
     public static IColumn<ComponentContent> LineNumber()
         => new LineNumberColumn<ComponentContent>();

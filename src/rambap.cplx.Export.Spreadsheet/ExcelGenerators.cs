@@ -1,4 +1,4 @@
-﻿using rambap.cplx.Concepts.Costing.Outputs;
+﻿using rambap.cplx.Modules.Costing.Outputs;
 using rambap.cplx.Core;
 using rambap.cplx.Export.Spreadsheet;
 
@@ -19,8 +19,8 @@ public class ExcelGenerators
     public static IEnumerable<(string, IInstruction)> SystemViewTables(Pinstance i, string filenamePattern)
     {
         return [
-                ($"Tree_{filenamePattern}.xlsx", new ExcelTableFile_CreatedNew(i) { Table = Concepts.Documentation.Outputs.SystemViewTables.ComponentTree() }),
-                ($"Inventory_{filenamePattern}.xlsx", new ExcelTableFile_CreatedNew(i) { Table = Concepts.Documentation.Outputs.SystemViewTables.ComponentInventory() }),
+                ($"Tree_{filenamePattern}.xlsx", new ExcelTableFile_CreatedNew(i) { Table = Modules.Documentation.Outputs.SystemViewTables.ComponentTree() }),
+                ($"Inventory_{filenamePattern}.xlsx", new ExcelTableFile_CreatedNew(i) { Table = Modules.Documentation.Outputs.SystemViewTables.ComponentInventory() }),
                 ];
     }
 }

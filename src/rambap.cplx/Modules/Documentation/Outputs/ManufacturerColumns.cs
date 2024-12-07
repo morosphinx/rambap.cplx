@@ -1,7 +1,7 @@
 ﻿using rambap.cplx.Export;
 using rambap.cplx.Export.Iterators;
 
-namespace rambap.cplx.Concepts.Documentation.Outputs;
+namespace rambap.cplx.Modules.Documentation.Outputs;
 
 public static class ManufacturerColumns
 {

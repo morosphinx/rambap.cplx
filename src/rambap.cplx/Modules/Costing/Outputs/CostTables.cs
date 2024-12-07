@@ -1,9 +1,9 @@
-﻿using rambap.cplx.Concepts.Documentation.Outputs;
+﻿using rambap.cplx.Modules.Base.Output;
+using rambap.cplx.Modules.Documentation.Outputs;
 using rambap.cplx.Export;
-using rambap.cplx.Export.Columns;
 using rambap.cplx.Export.Iterators;
 
-namespace rambap.cplx.Concepts.Costing.Outputs;
+namespace rambap.cplx.Modules.Costing.Outputs;
 
 public static class CostTables
 {
@@ -43,12 +43,12 @@ public static class CostTables
                 PropertyIterator = ListCostOr0
             },
             Columns = [
-                PartTreeCommons.GroupNumber(),
-                PartTreeCommons.GroupPN(),
+                PartContentColumns.GroupNumber(),
+                PartContentColumns.GroupPN(),
                 DescriptionColumns.GroupDescription(),
                 CostColumns.Group_CostName(),
                 CostColumns.Group_UnitCost(),
-                PartTreeCommons.GroupCount(),
+                PartContentColumns.GroupCount(),
                 CostColumns.GroupTotalCost(),
             ],
         };
@@ -66,8 +66,8 @@ public static class CostTables
                 (i) => i.Cost()?.NativeCosts ?? new(),
             },
             Columns = [
-                ComponentTreeCommons.ComponentID(),
-                ComponentTreeCommons.PartNumber(),
+                ComponentContentColumns.ComponentID(),
+                ComponentContentColumns.PartNumber(),
                 CostColumns.CostBreakdown_Name(),
                 CostColumns.CostBreakdown_Value(),
             ],

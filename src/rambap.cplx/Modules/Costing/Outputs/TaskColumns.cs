@@ -1,9 +1,9 @@
-﻿using rambap.cplx.Concepts.Costing;
+﻿using rambap.cplx.Modules.Costing;
 using rambap.cplx.Core;
 using rambap.cplx.Export;
 using rambap.cplx.Export.Iterators;
 
-namespace rambap.cplx.Concepts.Costing.Outputs;
+namespace rambap.cplx.Modules.Costing.Outputs;
 
 public static class TaskColumns
 {

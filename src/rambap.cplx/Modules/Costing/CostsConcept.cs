@@ -2,7 +2,7 @@
 using rambap.cplx.PartProperties;
 using static rambap.cplx.Core.Support;
 
-namespace rambap.cplx.Concepts.Costing;
+namespace rambap.cplx.Modules.Costing;
 
 
 public class InstanceCost : IInstanceConceptProperty

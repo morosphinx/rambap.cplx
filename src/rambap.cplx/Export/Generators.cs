@@ -1,7 +1,7 @@
 ﻿using rambap.cplx.Core;
 using rambap.cplx.Export.TextFiles;
 using rambap.cplx.Export.Iterators;
-using rambap.cplx.Concepts.Costing.Outputs;
+using rambap.cplx.Modules.Costing.Outputs;
 
 namespace rambap.cplx.Export;
 
@@ -20,8 +20,8 @@ public static class FileGroups
     public static IEnumerable<(string, IInstruction)> SystemViewTables(Pinstance i, string filenamePattern)
     {
         return [
-                ($"Tree_{filenamePattern}.csv", new FixedWidthTableFile(i) { Table = Concepts.Documentation.Outputs.SystemViewTables.ComponentTree() }),
-                ($"Inventory_{filenamePattern}.csv", new MarkdownTableFile(i) { Table = Concepts.Documentation.Outputs.SystemViewTables.ComponentInventory() }),
+                ($"Tree_{filenamePattern}.csv", new FixedWidthTableFile(i) { Table = Modules.Documentation.Outputs.SystemViewTables.ComponentTree() }),
+                ($"Inventory_{filenamePattern}.csv", new MarkdownTableFile(i) { Table = Modules.Documentation.Outputs.SystemViewTables.ComponentInventory() }),
                 ];
     }
 }

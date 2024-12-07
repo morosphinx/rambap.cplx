@@ -1,4 +1,4 @@
-﻿using rambap.cplx.Concepts.Costing.Outputs;
+﻿using rambap.cplx.Modules.Costing.Outputs;
 
 namespace rambap.cplx.UnitTests.ExportValidity;
 

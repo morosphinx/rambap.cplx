@@ -1,6 +1,7 @@
 ﻿using rambap.cplx.Core;
+using rambap.cplx.Export;
 
-namespace rambap.cplx.Export.Columns;
+namespace rambap.cplx.Modules.Base.Output;
 
 public class LineNumberColumn<T> : IColumn<T>
 {

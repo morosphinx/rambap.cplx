@@ -1,7 +1,7 @@
 ﻿using rambap.cplx.Export;
 using rambap.cplx.Export.Iterators;
 
-namespace rambap.cplx.Concepts.Costing.Outputs;
+namespace rambap.cplx.Modules.Costing.Outputs;
 public static class CostColumns
 {
     public static DelegateColumn<ComponentContent> CostBreakdown_Name()

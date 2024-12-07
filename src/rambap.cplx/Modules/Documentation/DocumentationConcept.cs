@@ -2,10 +2,10 @@
 using rambap.cplx.PartAttributes;
 using rambap.cplx.PartProperties;
 using System.Reflection;
-using static rambap.cplx.Concepts.Documentation.InstanceDocumentation;
+using static rambap.cplx.Modules.Documentation.InstanceDocumentation;
 using static rambap.cplx.Core.Support;
 
-namespace rambap.cplx.Concepts.Documentation;
+namespace rambap.cplx.Modules.Documentation;
 
 public class InstanceDocumentation : IInstanceConceptProperty
 {

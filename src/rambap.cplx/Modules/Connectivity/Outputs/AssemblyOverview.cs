@@ -1,7 +1,7 @@
 ﻿using rambap.cplx.Core;
 using rambap.cplx.Export;
 
-namespace rambap.cplx.Concepts.Connectivity.Outputs;
+namespace rambap.cplx.Modules.Connectivity.Outputs;
 
 public class AssemblyOverview : IInstruction
 {

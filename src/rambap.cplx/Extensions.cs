@@ -1,8 +1,8 @@
 ﻿using rambap.cplx.Core;
-using rambap.cplx.Concepts.Mass;
-using rambap.cplx.Concepts.Documentation;
-using rambap.cplx.Concepts.Costing;
-using rambap.cplx.Concepts.Connectivity;
+using rambap.cplx.Modules.Mass;
+using rambap.cplx.Modules.Documentation;
+using rambap.cplx.Modules.Costing;
+using rambap.cplx.Modules.Connectivity;
 
 namespace rambap.cplx;
 
