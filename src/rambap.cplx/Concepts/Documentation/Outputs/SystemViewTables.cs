@@ -1,9 +1,10 @@
-﻿using rambap.cplx.Export.Columns;
+﻿using rambap.cplx.Export;
+using rambap.cplx.Export.Columns;
 using rambap.cplx.Export.Iterators;
 
-namespace rambap.cplx.Export.Tables;
+namespace rambap.cplx.Concepts.Documentation.Outputs;
 
-public static class SystemView
+public static class SystemViewTables
 {
     public static Table<ComponentContent> ComponentTree()
         => new()
@@ -13,7 +14,7 @@ public static class SystemView
                 ComponentTreeCommons.ComponentPrettyTree(),
                 ComponentTreeCommons.ComponentComment(),
                 ComponentTreeCommons.PartNumber(),
-                Documentations.PartDescription(),
+                DescriptionColumns.PartDescription(),
             ],
         };
 
@@ -28,7 +29,7 @@ public static class SystemView
                 PartTreeCommons.GroupNumber(),
                 PartTreeCommons.GroupPN(),
                 PartTreeCommons.GroupCNs(),
-                Documentations.GroupDescription(),
+                DescriptionColumns.GroupDescription(),
                 PartTreeCommons.GroupCount(),
             ],
         };

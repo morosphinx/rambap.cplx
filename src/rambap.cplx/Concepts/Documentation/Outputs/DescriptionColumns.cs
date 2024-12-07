@@ -1,10 +1,10 @@
-﻿using rambap.cplx;
-using rambap.cplx.Core;
+﻿using rambap.cplx.Core;
+using rambap.cplx.Export;
 using rambap.cplx.Export.Iterators;
 
-namespace rambap.cplx.Export.Columns;
+namespace rambap.cplx.Concepts.Documentation.Outputs;
 
-public static class Documentations
+public static class DescriptionColumns
 {
     private static string GetDescription(Pinstance instance)
     {

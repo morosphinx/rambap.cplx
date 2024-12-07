@@ -1,10 +1,11 @@
-﻿using rambap.cplx.Concepts;
+﻿using rambap.cplx.Concepts.Documentation.Outputs;
+using rambap.cplx.Export;
 using rambap.cplx.Export.Columns;
 using rambap.cplx.Export.Iterators;
 
-namespace rambap.cplx.Export.Tables;
+namespace rambap.cplx.Concepts.Costing.Outputs;
 
-public static class Costing
+public static class CostTables
 {
     /// <summary>
     /// Enumerate the instance native costs, OR return a single 0 if there is no cost.
@@ -23,7 +24,7 @@ public static class Costing
             else
                 return nativeCosts;
         }
-        else 
+        else
             return [new InstanceCost.NativeCostInfo("", 0)];
     }
 
@@ -44,11 +45,11 @@ public static class Costing
             Columns = [
                 PartTreeCommons.GroupNumber(),
                 PartTreeCommons.GroupPN(),
-                Documentations.GroupDescription(),
-                Costs.Group_CostName(),
-                Costs.Group_UnitCost(),
+                DescriptionColumns.GroupDescription(),
+                CostColumns.Group_CostName(),
+                CostColumns.Group_UnitCost(),
                 PartTreeCommons.GroupCount(),
-                Costs.GroupTotalCost(),
+                CostColumns.GroupTotalCost(),
             ],
         };
 
@@ -67,66 +68,8 @@ public static class Costing
             Columns = [
                 ComponentTreeCommons.ComponentID(),
                 ComponentTreeCommons.PartNumber(),
-                Costs.CostBreakdown_Name(),
-                Costs.CostBreakdown_Value(),
-            ],
-        };
-
-
-    /// <summary>
-    /// Table listing the amount and duration of all tasks kind in the instance
-    /// </summary>
-    public static Table<PartContent> BillOfTasks()
-    => new()
-    {
-        Tree = new PartContentList()
-        {
-            WriteBranches = false,
-            PropertyIterator =
-            (i) =>
-            {
-                var tasks = i.Tasks();
-                if (tasks != null)
-                {
-                    return [.. tasks.RecurentTasks, .. tasks.NonRecurentTasks];
-                }
-                else return [];
-            }
-        },
-        Columns = [
-            PartTreeCommons.GroupNumber(),
-            PartTreeCommons.GroupPN(),
-            Documentations.GroupDescription(),
-            Tasks.TaskName(),
-            Tasks.TaskCategory(),
-            Tasks.TaskDuration(),
-            Tasks.TaskRecurence(),
-            Tasks.TaskCount(),
-            Tasks.TaskTotalDuration(includeNonRecurent: true),
-        ],
-
-    };
-
-
-    /// <summary>
-    /// Table detailing the amount and duration of each individual Recurent Task. <br/>
-    /// This does NOT list NonRecurent Task, due to NonRecurent Task begin an intensive property.
-    /// </summary>
-    public static Table<ComponentContent> RecurentTaskBreakdown()
-        => new()
-        {
-            Tree = new ComponentContentTree()
-            {
-                WriteBranches = false,
-                PropertyIterator =
-                (i) => i.Tasks()?.RecurentTasks ?? [],
-            },
-            Columns = [
-                ComponentTreeCommons.ComponentID(),
-                ComponentTreeCommons.PartNumber(),
-                Tasks.RecurentTaskName(),
-                Tasks.RecurentTaskCategory(),
-                Tasks.RecurentTaskDuration(),
+                CostColumns.CostBreakdown_Name(),
+                CostColumns.CostBreakdown_Value(),
             ],
         };
 }

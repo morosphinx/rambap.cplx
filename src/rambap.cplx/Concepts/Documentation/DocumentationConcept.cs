@@ -2,10 +2,10 @@
 using rambap.cplx.PartAttributes;
 using rambap.cplx.PartProperties;
 using System.Reflection;
-using static rambap.cplx.Concepts.InstanceDocumentation;
+using static rambap.cplx.Concepts.Documentation.InstanceDocumentation;
 using static rambap.cplx.Core.Support;
 
-namespace rambap.cplx.Concepts;
+namespace rambap.cplx.Concepts.Documentation;
 
 public class InstanceDocumentation : IInstanceConceptProperty
 {
@@ -26,26 +26,26 @@ internal class DocumentationConcept : IConcept<InstanceDocumentation>
         List<NamedText> descriptions = new();
         // Add description defined in attributes
         var descattrs = template.GetType().GetCustomAttributes<PartDescriptionAttribute>(); // TODO / TBD : inherit ?
-        if( descattrs != null)
+        if (descattrs != null)
         {
-            foreach(var d in descattrs)
+            foreach (var d in descattrs)
             {
                 descriptions.Add(new NamedText(d.Title, d.Text));
             }
         }
         // Add Description defined in properties
         ScanObjectContentFor<Description>(template,
-            (d, i) => descriptions.Add(new InstanceDocumentation.NamedText(i.Name,d.Text)));
+            (d, i) => descriptions.Add(new NamedText(i.Name, d.Text)));
 
         List<NamedText> links = new();
         // Add links defined in properties
         ScanObjectContentFor<Link>(template,
-            (d, i) => links.Add(new InstanceDocumentation.NamedText(i.Name, d.Hyperlink)));
+            (d, i) => links.Add(new NamedText(i.Name, d.Hyperlink)));
 
         bool hasDocumentation = descriptions.Count > 0 || links.Count > 0;
 
         if (hasDocumentation)
-            return new InstanceDocumentation() { Descriptions = descriptions, Links = links};
+            return new InstanceDocumentation() { Descriptions = descriptions, Links = links };
         else
             return null;
     }

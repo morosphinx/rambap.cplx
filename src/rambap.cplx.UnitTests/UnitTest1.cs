@@ -1,11 +1,5 @@
-using rambap.cplx.Core;
 using rambap.cplx.Export;
-using rambap.cplx.Export.Spreadsheet;
-using rambap.cplx.Export.TextFiles;
-using rambap.cplx.Export.Iterators;
-using System.Reflection.Emit;
 using static rambap.cplx.Export.Generators;
-using rambap.cplx.Export.Tables;
 using rambap.cplx.UnitTests.ExportValidity;
 
 namespace rambap.cplx.UnitTests

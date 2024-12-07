@@ -1,10 +1,10 @@
 ﻿using rambap.cplx.Core;
 using rambap.cplx.Export.Iterators;
 using rambap.cplx.PartProperties;
-using static rambap.cplx.Concepts.InstanceTasks;
+using static rambap.cplx.Concepts.Costing.InstanceTasks;
 using static rambap.cplx.Core.Support;
 
-namespace rambap.cplx.Concepts;
+namespace rambap.cplx.Concepts.Costing;
 
 public class InstanceTasks : IInstanceConceptProperty
 {
@@ -18,8 +18,8 @@ public class InstanceTasks : IInstanceConceptProperty
     public static decimal GetInheritedRecurentCosts(Pinstance instance)
     {
         decimal total = 0;
-        var tree = new PartContentList() ;
-        foreach(var i in tree.MakeContent(instance))
+        var tree = new PartContentList();
+        foreach (var i in tree.MakeContent(instance))
         {
             var tasks = i.PrimaryItem.Component.Instance.Tasks();
             if (tasks != null)
@@ -37,7 +37,7 @@ public class InstanceTasks : IInstanceConceptProperty
     public required decimal ComposedRecurentTaskDuration { get; init; }
     public decimal TotalRecurentTaskDuration =>
         NativeRecurentTaskDuration + ComposedRecurentTaskDuration;
-    
+
 }
 
 internal class TasksConcept : IConcept<InstanceTasks>
@@ -57,7 +57,7 @@ internal class TasksConcept : IConcept<InstanceTasks>
         bool hasAnyTask = nonRecurrentTasks.Count() > 0
             || recurrentTasks.Count() > 0
             || totalComposedRecurentTask > 0;
-        
+
         if (!hasAnyTask) return null;
         else return new InstanceTasks()
         {

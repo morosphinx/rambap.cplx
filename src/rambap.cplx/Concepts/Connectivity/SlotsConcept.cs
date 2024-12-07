@@ -4,7 +4,7 @@ using rambap.cplx.PartProperties;
 using static rambap.cplx.Core.Support;
 using static rambap.cplx.PartInterfaces.IPartMechanical;
 
-namespace rambap.cplx.Concepts;
+namespace rambap.cplx.Concepts.Connectivity;
 
 public class InstanceMechanicalAssembly : IInstanceConceptProperty
 {
@@ -37,18 +37,18 @@ internal class SlotConcept : IConcept<InstanceMechanicalAssembly>
         // ... add part to instance relation ?
 
         var tbdslottinginfo = new SlottingBuilder();
-        if(template is IPartMechanical a)
+        if (template is IPartMechanical a)
             a.Assembly_MechanicalSlots(tbdslottinginfo);
 
         //TBD: FAIL ?
-       /* foreach(var r in receptacles)
-        {
-            foreach(var module in r.receptacle.SlottedParts)
-            {
-                var component = LookForComponent(instance,module.part);
-                if (component == null) throw new InvalidOperationException("Module is not a component or subcomponent of the part");
-            }
-        }*/
+        /* foreach(var r in receptacles)
+         {
+             foreach(var module in r.receptacle.SlottedParts)
+             {
+                 var component = LookForComponent(instance,module.part);
+                 if (component == null) throw new InvalidOperationException("Module is not a component or subcomponent of the part");
+             }
+         }*/
         // TODO : What do we need for generating an image of the solltings ?
         // Information about the owner of the receptacle would be nice, but not required
         // Receptable type, size, and other info are

@@ -1,6 +1,5 @@
 ﻿using rambap.cplx.Core;
 using rambap.cplx.PartProperties;
-using static rambap.cplx.Core.Part;
 
 namespace rambap.cplx.PartInterfaces;
 

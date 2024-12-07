@@ -1,6 +1,6 @@
-﻿using rambap.cplx.Export;
+﻿using rambap.cplx.Concepts.Costing.Outputs;
+using rambap.cplx.Export;
 using rambap.cplx.Export.Spreadsheet;
-using rambap.cplx.Export.Tables;
 using static rambap.cplx.Export.Generators;
 
 namespace rambap.cplx.UnitTests.ExcelTemplates;
@@ -18,13 +18,13 @@ public class CplxExcelTemplateTests
                         SheetName = "Parts",
                         ColStart = 1,
                         RowStart = 2,
-                        Table = Costing.BillOfMaterial()
+                        Table = CostTables.BillOfMaterial()
                     },
                     new TableWriteInstruction(){
                         SheetName = "Tasks",
                         ColStart = 1,
                         RowStart = 2,
-                        Table = Costing.BillOfTasks()
+                        Table = TaskTables.BillOfTasks()
                     }
                 ]
         };

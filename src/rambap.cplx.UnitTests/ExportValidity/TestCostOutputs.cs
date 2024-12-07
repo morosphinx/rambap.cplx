@@ -1,4 +1,4 @@
-﻿using rambap.cplx.Export.Columns;
+﻿using rambap.cplx.Concepts.Costing.Outputs;
 
 namespace rambap.cplx.UnitTests.ExportValidity;
 
@@ -12,7 +12,7 @@ public class TestCostOutputs
         var i = new Pinstance(part);
         ColumnTester.TestComponentTreeColumn_Decimal(
             i,
-            Costs.CostBreakdown_Value(),
+            CostColumns.CostBreakdown_Value(),
             i => i.Cost()?.NativeCosts ?? [],
             DecimalPropertyPartExemple.ExpectedTotal_ExtensiveT);
     }
@@ -24,7 +24,7 @@ public class TestCostOutputs
         var i = new Pinstance(part);
         ColumnTester.TestPartTreeColumn_Decimal(
             i,
-            Costs.GroupTotalCost(),
+            CostColumns.GroupTotalCost(),
             i => i.Cost()?.NativeCosts ?? [],
             DecimalPropertyPartExemple.ExpectedTotal_ExtensiveT);
     }

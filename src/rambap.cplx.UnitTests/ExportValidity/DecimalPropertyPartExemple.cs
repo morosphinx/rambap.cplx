@@ -49,6 +49,7 @@ internal abstract class DecimalPropertyPartExemple<T>
         T Cost_B2 = Make(100);
         Part_C C1;
         Part_N N1;
+        
     }
 
     class Part_C : Part

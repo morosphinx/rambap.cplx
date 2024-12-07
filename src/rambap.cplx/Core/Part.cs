@@ -58,10 +58,10 @@ public partial class Part
     private string DefaultPNifNoOverride => this.GetType().Name.TrimStart('_');
 
     /// <summary>
-    /// Description of this par
+    /// Description of the usage of this part, when considered as a component in another part
     /// </summary>
     /// <remarks>
-    /// Additional description can be added by the <see cref="PartDescriptionAttribute"/>
+    /// Additional description can be added by the <see cref="ComponentDescriptionAttribute"/>
     /// </remarks>
     public string ComponentDescription { get; init; } = "";
 

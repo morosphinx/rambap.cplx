@@ -1,8 +1,9 @@
-﻿using rambap.cplx.Export.Iterators;
+﻿using rambap.cplx.Export;
+using rambap.cplx.Export.Iterators;
 
-namespace rambap.cplx.Export.Columns;
+namespace rambap.cplx.Concepts.Documentation.Outputs;
 
-public static class Manufacturers
+public static class ManufacturerColumns
 {
     public static DelegateColumn<PartContent> PartManufacturer() =>
         new DelegateColumn<PartContent>("Manufacturer", ColumnTypeHint.String,

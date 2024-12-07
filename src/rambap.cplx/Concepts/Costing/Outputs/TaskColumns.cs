@@ -1,18 +1,19 @@
-﻿using rambap.cplx.Core;
+﻿using rambap.cplx.Concepts.Costing;
+using rambap.cplx.Core;
+using rambap.cplx.Export;
 using rambap.cplx.Export.Iterators;
 
-namespace rambap.cplx.Export.Columns;
+namespace rambap.cplx.Concepts.Costing.Outputs;
 
-public static class Tasks
+public static class TaskColumns
 {
-
     public static DelegateColumn<ComponentContent> RecurentTaskName()
     => new DelegateColumn<ComponentContent>("Task Name", ColumnTypeHint.String,
         i =>
         {
             if (i is LeafProperty lp)
             {
-                if (lp.Property is Concepts.InstanceTasks.NamedTask n)
+                if (lp.Property is InstanceTasks.NamedTask n)
                     return n.Name;
                 else
                     throw new NotImplementedException();
@@ -33,7 +34,7 @@ public static class Tasks
         {
             if (i is LeafProperty lp)
             {
-                if (lp.Property is Concepts.InstanceTasks.NamedTask n)
+                if (lp.Property is InstanceTasks.NamedTask n)
                     return n.Category;
                 else
                     throw new NotImplementedException();
@@ -47,12 +48,12 @@ public static class Tasks
             {
                 if (i is LeafProperty lp)
                 {
-                    if (lp.Property is Concepts.InstanceTasks.NamedTask n)
+                    if (lp.Property is InstanceTasks.NamedTask n)
                         return n.Duration_day.ToString();
                     else
                         throw new NotImplementedException();
                 }
-                else if(i is LeafComponent lc)
+                else if (i is LeafComponent lc)
                 {
                     return lc.Component.Instance.Tasks()?.TotalRecurentTaskDuration.ToString() ?? "";
                 }
@@ -70,7 +71,7 @@ public static class Tasks
             {
                 if (i is LeafPropertyPartContent lpi)
                 {
-                    if (lpi.Property is Concepts.InstanceTasks.NamedTask n)
+                    if (lpi.Property is InstanceTasks.NamedTask n)
                         return n.Name;
                     else
                         throw new NotImplementedException();
@@ -89,7 +90,7 @@ public static class Tasks
             {
                 if (i is LeafPropertyPartContent lpi)
                 {
-                    if (lpi.Property is Concepts.InstanceTasks.NamedTask n)
+                    if (lpi.Property is InstanceTasks.NamedTask n)
                         return n.IsRecurent ? "*" : "";
                     else
                         throw new NotImplementedException();
@@ -108,7 +109,7 @@ public static class Tasks
             {
                 if (i is LeafPropertyPartContent lpi)
                 {
-                    if (lpi.Property is Concepts.InstanceTasks.NamedTask n)
+                    if (lpi.Property is InstanceTasks.NamedTask n)
                         return n.Category;
                     else
                         throw new NotImplementedException();
@@ -122,7 +123,7 @@ public static class Tasks
             {
                 if (i is LeafPropertyPartContent lpi)
                 {
-                    if (lpi.Property is Concepts.InstanceTasks.NamedTask n)
+                    if (lpi.Property is InstanceTasks.NamedTask n)
                         return n.Duration_day.ToString();
                     else
                         throw new NotImplementedException();
@@ -136,7 +137,7 @@ public static class Tasks
             {
                 if (i is LeafPropertyPartContent lpi)
                 {
-                    if (lpi.Property is Concepts.InstanceTasks.NamedTask n)
+                    if (lpi.Property is InstanceTasks.NamedTask n)
                         return n.IsRecurent ? i.Items.Count().ToString() : "";
                     else
                         throw new NotImplementedException();
@@ -150,7 +151,7 @@ public static class Tasks
             {
                 if (i is LeafPropertyPartContent lpi)
                 {
-                    if (lpi.Property is Concepts.InstanceTasks.NamedTask n)
+                    if (lpi.Property is InstanceTasks.NamedTask n)
                     {
                         var total_duration = (n.IsRecurent ? lpi.Items.Count() : 1) * n.Duration_day;
                         return $"{total_duration}";
@@ -158,7 +159,7 @@ public static class Tasks
                     else
                         throw new NotImplementedException();
                 }
-                else if(i is LeafPartContent lc)
+                else if (i is LeafPartContent lc)
                 {
                     // 
                     var intance = lc.PrimaryItem.Component.Instance;
@@ -173,12 +174,13 @@ public static class Tasks
                     if (includeNonRecurent)
                     {
                         // Non RecurentData
-                        var nonRecurentTotal = primatryTaskData.NativeNonRecurentTaskDuration + Concepts.InstanceTasks.GetInheritedRecurentCosts(intance);
+                        var nonRecurentTotal = primatryTaskData.NativeNonRecurentTaskDuration + InstanceTasks.GetInheritedRecurentCosts(intance);
 
                         totalDuration += nonRecurentTotal;
                     }
                     return totalDuration.ToString();
-                } else if(includeNonRecurent && i is BranchPartContent lb)
+                }
+                else if (includeNonRecurent && i is BranchPartContent lb)
                 {
                     throw new NotSupportedException("This columns display a mix of intensive (NonRecurentTask) and extensive (RecurentTask) properties. Calculations have caveats, and are disabled.");
                 }

@@ -1,9 +1,8 @@
-﻿using rambap.cplx;
+﻿using rambap.cplx.Export;
 using rambap.cplx.Export.Iterators;
-using System.Linq.Expressions;
 
-namespace rambap.cplx.Export.Columns;
-public static class Costs
+namespace rambap.cplx.Concepts.Costing.Outputs;
+public static class CostColumns
 {
     public static DelegateColumn<ComponentContent> CostBreakdown_Name()
     => new DelegateColumn<ComponentContent>("Cost Name", ColumnTypeHint.String,
@@ -11,7 +10,7 @@ public static class Costs
         {
             if (i is LeafProperty lp)
             {
-                if (lp.Property is Concepts.InstanceCost.NativeCostInfo n)
+                if (lp.Property is InstanceCost.NativeCostInfo n)
                     return n.name;
             }
             else if (i is LeafComponent lc)
@@ -30,7 +29,7 @@ public static class Costs
             {
                 if (i is LeafProperty lp)
                 {
-                    if (lp.Property is Concepts.InstanceCost.NativeCostInfo n)
+                    if (lp.Property is InstanceCost.NativeCostInfo n)
                         return n.value.price.ToString("0.00");
                 }
                 else if (i is LeafComponent lc)
@@ -50,7 +49,7 @@ public static class Costs
             {
                 if (i is LeafPropertyPartContent lp)
                 {
-                    if (lp.Property is Concepts.InstanceCost.NativeCostInfo prop)
+                    if (lp.Property is InstanceCost.NativeCostInfo prop)
                     {
                         return (prop.value.price * lp.Items.Count()).ToString("0.00");
                     }
@@ -77,7 +76,7 @@ public static class Costs
             {
                 if (i is LeafPropertyPartContent lpi)
                 {
-                    if (lpi.Property is Concepts.InstanceCost.NativeCostInfo n)
+                    if (lpi.Property is InstanceCost.NativeCostInfo n)
                         return n.name;
                 }
                 else if (i is LeafPartContent lp)
@@ -93,7 +92,7 @@ public static class Costs
             {
                 if (i is LeafPropertyPartContent lpi)
                 {
-                    if (lpi.Property is Concepts.InstanceCost.NativeCostInfo n)
+                    if (lpi.Property is InstanceCost.NativeCostInfo n)
                         return n.value.price.ToString("0.00");
                     else
                         throw new NotImplementedException();

@@ -2,7 +2,7 @@
 using rambap.cplx.PartProperties;
 using static rambap.cplx.Core.Support;
 
-namespace rambap.cplx.Concepts;
+namespace rambap.cplx.Concepts.Mass;
 
 public class InstanceMass : IInstanceConceptProperty
 {

@@ -1,6 +1,7 @@
 ﻿using rambap.cplx.Core;
+using rambap.cplx.Export;
 
-namespace rambap.cplx.Export.Text;
+namespace rambap.cplx.Concepts.Connectivity.Outputs;
 
 public class AssemblyOverview : IInstruction
 {
@@ -18,7 +19,7 @@ public class AssemblyOverview : IInstruction
         // TODO
         if (m != null)
         {
-            foreach(var r in m.InstructedReceptacles)
+            foreach (var r in m.InstructedReceptacles)
             {
                 lines.Add($"{r.Name}");
                 lines.Add($"{r.Owner?.PN} {r.Type} : {r.SlotAmount}");

@@ -5,7 +5,7 @@ using static rambap.cplx.Core.Support;
 using static rambap.cplx.PartInterfaces.IPartConnectable;
 using static rambap.cplx.PartInterfaces.IPartConnectable.ConnectionBuilder;
 
-namespace rambap.cplx.Concepts;
+namespace rambap.cplx.Concepts.Connectivity;
 
 public class InstanceConnectivity : IInstanceConceptProperty
 {
