@@ -27,6 +27,11 @@ public static class Costing
             return [new InstanceCost.NativeCostInfo("", 0)];
     }
 
+    /// <summary>
+    /// Table listing the amount and cost of each part kind in the instance
+    /// </summary>
+    /// <param name="recurse">If true, the entire component tree is returned. <br/>
+    /// If false, only the immediate components are returned.</param>
     public static Table<PartContent> BillOfMaterial(bool recurse = true)
         => new()
         {
@@ -47,6 +52,9 @@ public static class Costing
             ],
         };
 
+    /// <summary>
+    /// Table detailing the amount and duration of each individual Cost of the instance.
+    /// </summary>
     public static Table<ComponentContent> CostBreakdown()
         => new()
         {
@@ -64,29 +72,9 @@ public static class Costing
             ],
         };
 
-    /// <summary>
-    /// Table detailling all recurent task in a component tree
-    /// </summary>
-    public static Table<ComponentContent> RecurentTaskBreakdown()
-        => new()
-        {
-            Tree = new ComponentContentTree()
-            {
-                WriteBranches = false,
-                PropertyIterator =
-                (i) => i.Tasks()?.RecurentTasks ?? [],
-            },
-            Columns = [
-                ComponentTreeCommons.ComponentID(),
-                ComponentTreeCommons.PartNumber(),
-                Tasks.RecurentTaskName(),
-                Tasks.RecurentTaskCategory(),
-                Tasks.RecurentTaskDuration(),
-            ],
-        };
 
     /// <summary>
-    /// Table breaking down all tasks, by PartType
+    /// Table listing the amount and duration of all tasks kind in the instance
     /// </summary>
     public static Table<PartContent> BillOfTasks()
     => new()
@@ -118,5 +106,28 @@ public static class Costing
         ],
 
     };
+
+
+    /// <summary>
+    /// Table detailing the amount and duration of each individual Recurent Task. <br/>
+    /// This does NOT list NonRecurent Task, due to NonRecurent Task begin an intensive property.
+    /// </summary>
+    public static Table<ComponentContent> RecurentTaskBreakdown()
+        => new()
+        {
+            Tree = new ComponentContentTree()
+            {
+                WriteBranches = false,
+                PropertyIterator =
+                (i) => i.Tasks()?.RecurentTasks ?? [],
+            },
+            Columns = [
+                ComponentTreeCommons.ComponentID(),
+                ComponentTreeCommons.PartNumber(),
+                Tasks.RecurentTaskName(),
+                Tasks.RecurentTaskCategory(),
+                Tasks.RecurentTaskDuration(),
+            ],
+        };
 }
 
