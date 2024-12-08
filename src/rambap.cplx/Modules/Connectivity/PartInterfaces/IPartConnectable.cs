@@ -53,10 +53,10 @@ public interface IPartConnectable
 
         private void CheckIsThisOrParent(Part part)
         {
-            if (part.Parent == null)
-                throw new InvalidOperationException("Part is connected in a non-owner component");
-            else if (part.Parent == Context)
+            if (part == Context)
                 return; // We are in self component tree, all is good
+            else if (part.Parent == null)
+                throw new InvalidOperationException("Part is connected is not in this component's tree");
             else
                 CheckIsThisOrParent(part.Parent);
         }
