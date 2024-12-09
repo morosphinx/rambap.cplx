@@ -52,7 +52,7 @@ public class ExcelTableFile_CreatedNew : IInstruction
             currentRow++, firstColl);
         FillInTableContents(sheetData,
             Table.MakeContentLines(Content),
-            Table.ColumnTypeHints().ToList(),
+            Table.IColumns.Select(t=>t.TypeHint).ToList(),
             currentRow, firstColl);
 
         worksheetPart.Worksheet.Save();

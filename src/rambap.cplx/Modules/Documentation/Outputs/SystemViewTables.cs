@@ -9,7 +9,7 @@ public static class SystemViewTables
     public static Table<ComponentContent> ComponentTree()
         => new()
         {
-            Tree = new ComponentContentTree(),
+            Iterator = new ComponentContentTree(),
             Columns = [
                 ComponentContentColumns.ComponentPrettyTree(),
                 ComponentContentColumns.ComponentComment(),
@@ -21,7 +21,7 @@ public static class SystemViewTables
     public static Table<PartContent> ComponentInventory()
         => new()
         {
-            Tree = new PartContentList()
+            Iterator = new PartContentList()
             {
                 WriteBranches = true,
             },

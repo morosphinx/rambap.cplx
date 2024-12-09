@@ -18,8 +18,9 @@ public class FixedWidthTableFile : AbstractTableFile
             ];
         var columnWidths = CalculateColumnWidths(cellTexts);
 
-        var columnLeftPad = Table.ColumnTypeHints().Select(c => c == ColumnTypeHint.Numeric).ToList();
-        var linesText = cellTexts.Select(l => AggregateCells_FixedWidth(l, columnWidths, columnLeftPad, CellSeparator, CellPadding));
+        var columnIndexesToLeftPad = Table.IColumns.Select(c => c.TypeHint == ColumnTypeHint.Numeric).ToList();
+
+        var linesText = cellTexts.Select(l => AggregateCells_FixedWidth(l, columnWidths, columnIndexesToLeftPad, CellSeparator, CellPadding));
         File.WriteAllLines(path, linesText);
     }
 }

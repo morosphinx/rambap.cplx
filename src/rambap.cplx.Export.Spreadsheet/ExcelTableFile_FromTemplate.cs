@@ -84,7 +84,7 @@ public class ExcelTableFile_FromTemplate : IInstruction
     private void EditSheet(WorksheetPart worksheetPart, TableWriteInstruction instruction)
     {
         var sheetData = worksheetPart.Worksheet.GetFirstChild<SheetData>()!;
-        var colRange = Enumerable.Range(instruction.ColStart, instruction.Table.ColumunCount);
+        var colRange = Enumerable.Range(instruction.ColStart, instruction.Table.IColumns.Count());
         var columnStyles = GetColumnStyles(worksheetPart.Worksheet, colRange);
 
         // Excel Col and Rows are 1 indexed
@@ -99,7 +99,7 @@ public class ExcelTableFile_FromTemplate : IInstruction
         }
         FillInTableContents(sheetData,
             instruction.Table.MakeContentLines(Content),
-            instruction.Table.ColumnTypeHints().ToList(),
+            instruction.Table.IColumns.Select(c => c.TypeHint).ToList(),
             currentRow, firstColl, columnStyles);
 
         worksheetPart.Worksheet.Save();

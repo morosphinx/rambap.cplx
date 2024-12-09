@@ -1,6 +1,7 @@
 using rambap.cplx.Export;
 using static rambap.cplx.Export.Generators;
 using rambap.cplx.UnitTests.ExportValidity;
+using rambap.cplx.Modules.Costing.Outputs;
 
 namespace rambap.cplx.UnitTests
 {

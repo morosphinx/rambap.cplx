@@ -36,7 +36,7 @@ public static class CostTables
     public static Table<PartContent> BillOfMaterial(bool recurse = true)
         => new()
         {
-            Tree = new PartContentList()
+            Iterator = new PartContentList()
             {
                 WriteBranches = false,
                 RecursionCondition = recurse ? null : (c, l) => false, // null = always recurse
@@ -59,7 +59,7 @@ public static class CostTables
     public static Table<ComponentContent> CostBreakdown()
         => new()
         {
-            Tree = new ComponentContentTree()
+            Iterator = new ComponentContentTree()
             {
                 WriteBranches = false,
                 PropertyIterator =

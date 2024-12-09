@@ -7,14 +7,11 @@ using Line = List<string>;
 
 public interface ITable
 {
+    public IEnumerable<IColumn> IColumns { get; }
+
     Line MakeHeaderLine();
     IEnumerable<Line> MakeContentLines(Pinstance rootComponent);
     Line MakeTotalLine(Pinstance rootComponent);
-
-    /// TBD : Can't expose type Column<T> list int the ITable interface. Workarounds :
-    int ColumunCount { get; }
-    ColumnTypeHint ColumnTypeHint(int columnIndex);
-    IEnumerable<ColumnTypeHint> ColumnTypeHints();
 }
 
 /// <summary>
@@ -25,26 +22,25 @@ public interface ITable
 public partial class Table<T> : ITable
 {
     /// <summary> Iterator that select that lines content </summary>
-    public required IIterator<T> Tree { get; init; }
+    public required IIterator<T> Iterator { get; init; }
 
     /// <summary> Definition of the columns of the table </summary>
     public required List<IColumn<T>> Columns { get; init; }
-    public int ColumunCount => Columns.Count();
-    public ColumnTypeHint ColumnTypeHint(int columnIndex) => Columns[columnIndex].TypeHint;
-    public IEnumerable<ColumnTypeHint> ColumnTypeHints() => Columns.Select(x => x.TypeHint);
+
+    public IEnumerable<IColumn> IColumns => Columns;
 
     public Line MakeHeaderLine()
-        => Columns.Select(col => col.Title).ToList();
+        => IColumns.Select(col => col.Title).ToList();
     private Line MakeContentLine(T item)
         => Columns.Select(col => col.CellFor(item)).ToList();
 
     public IEnumerable<Line> MakeContentLines(Pinstance rootComponent)
     {
-        foreach (var c in Tree.MakeContent(rootComponent))
+        foreach (var c in Iterator.MakeContent(rootComponent))
             yield return MakeContentLine(c);
     }
 
     public Line MakeTotalLine(Pinstance rootComponent)
-        => Columns.Select(col => col.TotalFor(rootComponent)).ToList();
+        => IColumns.Select(col => col.TotalFor(rootComponent)).ToList();
 }
 
