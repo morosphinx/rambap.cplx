@@ -2,6 +2,7 @@
 using rambap.cplx.Export;
 using rambap.cplx.Export.Spreadsheet;
 using static rambap.cplx.Export.Generators;
+using rambap.cplx.Modules.Base.Output;
 
 namespace rambap.cplx.UnitTests.ExcelTemplates;
 
@@ -10,9 +11,24 @@ public class CplxExcelTemplateTests
 {
     public static IInstruction CplxCostingTemplate(Pinstance i)
     {
+        var a = CostTables.BillOfMaterial();
+        var b = a with { Columns = [] };
         return new ExcelTableFile_FromTemplate(i)
         {
             TemplatePath = "ExcelTemplates\\CplxCostingTemplate.xlsx",
+            InstanceContents = [
+                    new InstanceContentInstruction(){
+                        SheetName = "Overview",
+                        ColStart = 2,
+                        RowStart = 2,
+                        Lines =[
+                                i => i.PN,
+                                i => i.Revision,
+                                i => i.Version,
+                                i => DateTime.Now.ToString()
+                            ]
+                    }
+                ],
             Tables = [
                     new TableWriteInstruction(){
                         SheetName = "Parts",

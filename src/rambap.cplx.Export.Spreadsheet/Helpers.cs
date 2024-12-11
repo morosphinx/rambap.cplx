@@ -51,10 +51,10 @@ internal static partial class Helpers
     }
 
     /// <summary>
-    /// Write a Row of data to an OpenXML SheetData, startign at an arbitrary column
+    /// Write a Row of data to an OpenXML SheetData
     /// </summary>
     /// <param name="sheetData">Sheet to write it to</param>
-    /// <param name="line">Row to write</param>
+    /// <param name="line">Data to write</param>
     /// <param name="columnTypeHints">Column type hints</param>
     /// <param name="row">Row to write to. 1-indexed</param>
     /// <param name="colStart">Starting Column.  1-index</param>
@@ -80,6 +80,29 @@ internal static partial class Helpers
                 }
             }
             currentCol++;
+        }
+    }
+
+    /// <summary>
+    /// Write a Column of data to an OpenXML SheetData
+    /// </summary>
+    /// <param name="sheetData">Sheet to write it to</param>
+    /// <param name="column">Data to write</param>
+    /// <param name="rowStart">Starting Row. 1-indexed</param>
+    /// <param name="col">Column to write to.  1-index</param>
+    public static void FillInColumnContent(SheetData sheetData, List<string> column, uint rowStart, int col)
+    {
+        uint currentRow = rowStart;
+        foreach (var c in column)
+        {
+            if (c != "")
+            {
+                var currentColName = GetExcelColumnName(col);
+                var currentCell = sheetData.GetOrMakeCell(currentColName, currentRow);
+                currentCell.CellValue = MakeValidCellValue(c);
+                currentCell.DataType = TypeHintToDataType(ColumnTypeHint.String);
+            }
+            currentRow++;
         }
     }
 

@@ -19,7 +19,7 @@ public interface ITable
 /// Output 2D string array
 /// </summary>
 /// <typeparam name="T">The type of all line of the table. This may be abstract</typeparam>
-public partial class Table<T> : ITable
+public record Table<T> : ITable
 {
     /// <summary> Iterator that select that lines content </summary>
     public required IIterator<T> Iterator { get; init; }

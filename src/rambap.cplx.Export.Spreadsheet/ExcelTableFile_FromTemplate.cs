@@ -8,12 +8,21 @@ using static rambap.cplx.Export.Spreadsheet.Helpers;
 
 namespace rambap.cplx.Export.Spreadsheet;
 
-public record TableWriteInstruction
+public record SpreadsheetFillInstruction
 {
     public required string SheetName { get; init; }
-    public bool WriteHeader { get; init; } = false;
     public int ColStart { get; init; } = 1;
     public uint RowStart { get; init; } = 2;
+}
+
+public record InstanceContentInstruction : SpreadsheetFillInstruction
+{
+    public required List<Func<Pinstance, string>> Lines { get; init; }
+}
+
+public record TableWriteInstruction : SpreadsheetFillInstruction
+{
+    public bool WriteHeader { get; init; } = false;
     public required ITable Table { get; init; }
 }
 
@@ -29,6 +38,7 @@ public class ExcelTableFile_FromTemplate : IInstruction
     }
 
 
+    public List<InstanceContentInstruction> InstanceContents{ get; init; } = new();
     public List<TableWriteInstruction> Tables { get; init; } = new();
 
 
@@ -40,18 +50,29 @@ public class ExcelTableFile_FromTemplate : IInstruction
 
         WorkbookPart workbookPart = spreadsheetDocument.WorkbookPart!;
 
-        foreach(var tableInstruction in Tables)
+        WorksheetPart GetWorkSheet(string sheetName)
         {
             var sheet = workbookPart.Workbook.Sheets!.Descendants<Sheet>().First(
                 s =>
                 {
                     EnumerateSheetProperties(s);
-                    return s.GetAttributes().First(a => a.LocalName == "name").Value == tableInstruction.SheetName;
-                }); 
+                    return s.GetAttributes().First(a => a.LocalName == "name").Value == sheetName;
+                });
             var sheetID = sheet.Id!.Value!;
-
             var worksheetPart = (WorksheetPart)workbookPart.GetPartById(sheetID);
-            EditSheet(worksheetPart, tableInstruction);
+            return worksheetPart;
+        }
+
+        foreach (var instanceContentInstruction in InstanceContents)
+        {
+            var worksheetPart = GetWorkSheet(instanceContentInstruction.SheetName);
+            ApplyInstanceContentInstruction(worksheetPart, instanceContentInstruction);
+        }
+
+        foreach(var tableInstruction in Tables)
+        {
+            var worksheetPart = GetWorkSheet(tableInstruction.SheetName);
+            ApplyTableWriteInstruction(worksheetPart, tableInstruction);
         }
 
         workbookPart.Workbook.Save();
@@ -81,7 +102,16 @@ public class ExcelTableFile_FromTemplate : IInstruction
         return styleKeys;
     }
 
-    private void EditSheet(WorksheetPart worksheetPart, TableWriteInstruction instruction)
+    private void ApplyInstanceContentInstruction(WorksheetPart worksheetPart, InstanceContentInstruction instruction)
+    {
+        var sheetData = worksheetPart.Worksheet.GetFirstChild<SheetData>()!;
+
+        List<string> Lines = instruction.Lines.Select(l => l.Invoke(Content)).ToList();
+
+        FillInColumnContent(sheetData, Lines, instruction.RowStart, instruction.ColStart);
+    }
+
+    private void ApplyTableWriteInstruction(WorksheetPart worksheetPart, TableWriteInstruction instruction)
     {
         var sheetData = worksheetPart.Worksheet.GetFirstChild<SheetData>()!;
         var colRange = Enumerable.Range(instruction.ColStart, instruction.Table.IColumns.Count());
