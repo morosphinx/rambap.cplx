@@ -17,6 +17,8 @@ public record SpreadsheetFillInstruction
 
 public record InstanceContentInstruction : SpreadsheetFillInstruction
 {
+    public enum WriteDirection { Line, Column }
+    public WriteDirection Direction { get; init; } = WriteDirection.Column;
     public required List<Func<Pinstance, string>> Lines { get; init; }
 }
 
@@ -105,10 +107,19 @@ public class ExcelTableFile_FromTemplate : IInstruction
     private void ApplyInstanceContentInstruction(WorksheetPart worksheetPart, InstanceContentInstruction instruction)
     {
         var sheetData = worksheetPart.Worksheet.GetFirstChild<SheetData>()!;
-
         List<string> Lines = instruction.Lines.Select(l => l.Invoke(Content)).ToList();
 
-        FillInColumnContent(sheetData, Lines, instruction.RowStart, instruction.ColStart);
+        switch (instruction.Direction)
+        {
+            case InstanceContentInstruction.WriteDirection.Line:
+                var typeHints = Lines.Select(c => ColumnTypeHint.String).ToList();
+                FillInLineContent(sheetData, Lines, typeHints, instruction.RowStart, instruction.ColStart);
+                break;
+            case InstanceContentInstruction.WriteDirection.Column:
+                FillInColumnContent(sheetData, Lines, instruction.RowStart, instruction.ColStart);
+                break;
+            default:throw new NotImplementedException();
+        }
     }
 
     private void ApplyTableWriteInstruction(WorksheetPart worksheetPart, TableWriteInstruction instruction)

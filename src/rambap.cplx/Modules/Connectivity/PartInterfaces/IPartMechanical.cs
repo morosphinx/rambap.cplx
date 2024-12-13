@@ -5,7 +5,7 @@ namespace rambap.cplx.PartInterfaces;
 
 public interface IPartMechanical
 {
-    // TODO : Raise warning on analyser if implemented without implementing the interface <summary>
+    // TODO : Raise warning on analyser if implemented without implementing the interface
 
     /// <summary>
     /// 
