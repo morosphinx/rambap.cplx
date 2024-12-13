@@ -1,16 +1,23 @@
 ﻿namespace rambap.cplx.Core; 
 
-// Helper Function for Part Class
+// Helper methods for Part Class
 public partial class Part
 {
     public void AssertIsOwnerOf(IPartProperty property)
     {
+        if (!HasDoneCplxImplicitInitialisation)
+            throw new InvalidOperationException("Part is not initialised. Create an Instance with this part first");
         if (this != property.Owner)
             throw new InvalidOperationException("Property must be owned by this");
     }
     public void AssertIsParentOf(IPartProperty property)
-        => AssertIsParentOf(property.Owner!);
+    {
+        if (!HasDoneCplxImplicitInitialisation)
+            throw new InvalidOperationException("Part is not initialised. Create an Instance with this part first");
+        AssertIsParentOf(property.Owner!);
+    }
 
+    // TODO : assert that the auto init has been done
     public void AssertIsParentOf(Part seekPart)
     {
         if (seekPart == this)

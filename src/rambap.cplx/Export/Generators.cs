@@ -10,10 +10,29 @@ public static class FileGroups
     public static IEnumerable<(string, IInstruction)> CostingFiles(Pinstance i, string filenamePattern)
     {
         return [
-                ($"BOMR_{filenamePattern}.csv", new MarkdownTableFile(i) { Table = CostTables.BillOfMaterial() }),
-                ($"Costs_{filenamePattern}.csv", new MarkdownTableFile(i) { Table = CostTables.CostBreakdown(), WriteTotalLine = true }),
-                ($"BOTR_{filenamePattern}.csv", new MarkdownTableFile(i) { Table = TaskTables.BillOfTasks()}),
-                ($"Tasks_{filenamePattern}.csv", new MarkdownTableFile(i) { Table = TaskTables.RecurentTaskBreakdown(), WriteTotalLine = true }),
+                ($"BOMR_{filenamePattern}.csv", new MarkdownTableFile(i)
+                {
+                    Table = CostTables.BillOfMaterial(),
+                    WriteTotalLine = true,
+                    TotalLineOnTop = true,
+                }),
+                ($"Costs_{filenamePattern}.csv", new MarkdownTableFile(i)
+                {
+                    Table = CostTables.CostBreakdown(),
+                    WriteTotalLine = true,
+                    TotalLineOnTop = true,
+                }),
+                ($"BOTR_{filenamePattern}.csv", new MarkdownTableFile(i)
+                {
+                    Table = TaskTables.BillOfTasks(),
+                    WriteTotalLine = true,
+                    TotalLineOnTop = true,
+                }),
+                ($"Tasks_{filenamePattern}.csv", new MarkdownTableFile(i) {
+                    Table = TaskTables.RecurentTaskBreakdown(),
+                    WriteTotalLine = true,
+                    TotalLineOnTop = true,
+                }),
                 ];
     }
 

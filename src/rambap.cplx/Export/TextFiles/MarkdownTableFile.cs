@@ -8,7 +8,11 @@ public class MarkdownTableFile : AbstractTableFile
 {
     public const string CellSeparator = "|";
     public char CellPadding { get; set; } = ' ';
+    
+    
     public bool WriteTotalLine { get; set; } = false;
+    public bool TotalLineOnTop { get; set; } = false;
+
 
     public MarkdownTableFile(Pinstance content) : base(content) { }
 
@@ -36,7 +40,23 @@ public class MarkdownTableFile : AbstractTableFile
     public override void Do(string path)
     {
         var separatorLineContent = MakeSeparatorLine;
-        IEnumerable<Line> cellTexts =
+        IEnumerable<Line> cellTexts;
+        if (TotalLineOnTop)
+        {
+            cellTexts =
+            [
+                Table.MakeHeaderLine(),
+                .. WriteTotalLine
+                    ? new List<Line>(){
+                        separatorLineContent,
+                        Table.MakeTotalLine(Content),}
+                    :[],
+                separatorLineContent,
+                .. Table.MakeContentLines(Content),
+            ];
+        } else // Total line should be writen on bottom
+        {
+            cellTexts =
             [
                 Table.MakeHeaderLine(),
                 separatorLineContent,
@@ -45,8 +65,9 @@ public class MarkdownTableFile : AbstractTableFile
                     ? new List<Line>(){
                         separatorLineContent,
                         Table.MakeTotalLine(Content),}
-                    :[]
+                    :[],
             ];
+        }
         var columnWidths = CalculateColumnWidths(cellTexts);
         // Now that we know column size, update the separator line
         CompleteSeparatorLine(separatorLineContent, columnWidths);

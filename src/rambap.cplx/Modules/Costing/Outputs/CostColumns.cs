@@ -68,7 +68,8 @@ public static class CostColumns
                 {
                     return ""; // Do not display branch costs : subcosts are displayed in properties or component leafs
                 }
-            });
+            },
+            i => i.Cost()?.Total.ToString("0.00"));
 
     public static DelegateColumn<PartContent> Group_CostName()
         => new DelegateColumn<PartContent>("Cost Name", ColumnTypeHint.String,
@@ -106,7 +107,6 @@ public static class CostColumns
                     else return "error";
                 }
                 return "";
-            },
-            i => i.Cost()?.Total.ToString("0.00"));
+            });
 
 }
