@@ -6,12 +6,17 @@ namespace rambap.cplx.Modules.Base.Output;
 
 public static class ComponentContentColumns
 {
+
+    public static IColumn<ComponentContent> EmptyColumn(string title = "")
+        => new DelegateColumn<ComponentContent>(title, ColumnTypeHint.String,
+            i => "");
+
     public static IColumn<ComponentContent> LineNumber()
         => new LineNumberColumn<ComponentContent>();
 
-    public static DelegateColumn<ComponentContent> ComponentDepth() =>
-    new DelegateColumn<ComponentContent>("Depth", ColumnTypeHint.Numeric,
-        i => i.Location.Depth.ToString());
+    public static DelegateColumn<ComponentContent> ComponentDepth()
+        => new DelegateColumn<ComponentContent>("Depth", ColumnTypeHint.Numeric,
+            i => i.Location.Depth.ToString());
 
     public static DelegateColumn<ComponentContent> ComponentID() =>
         new DelegateColumn<ComponentContent>("CID", ColumnTypeHint.String,

@@ -30,7 +30,7 @@ public static class CostColumns
                 if (i is LeafProperty lp)
                 {
                     if (lp.Property is InstanceCost.NativeCostInfo n)
-                        return n.value.price.ToString("0.00");
+                        return n.value.Price.ToString("0.00");
                 }
                 else if (i is LeafComponent lc)
                     return lc.Component?.Instance.Cost()?.Total.ToString("0.00") ?? "";
@@ -51,7 +51,7 @@ public static class CostColumns
                 {
                     if (lp.Property is InstanceCost.NativeCostInfo prop)
                     {
-                        return (prop.value.price * lp.Items.Count()).ToString("0.00");
+                        return (prop.value.Price * lp.Items.Count()).ToString("0.00");
                     }
                     else
                     {
@@ -94,7 +94,7 @@ public static class CostColumns
                 if (i is LeafPropertyPartContent lpi)
                 {
                     if (lpi.Property is InstanceCost.NativeCostInfo n)
-                        return n.value.price.ToString("0.00");
+                        return n.value.Price.ToString("0.00");
                     else
                         throw new NotImplementedException();
                 }

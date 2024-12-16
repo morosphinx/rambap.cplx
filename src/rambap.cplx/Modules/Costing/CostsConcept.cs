@@ -29,7 +29,7 @@ internal class CostsConcept : IConcept<InstanceCost>
         bool hasACost = anyComponentHasACost || nativeCosts.Any();
         if (!hasACost) return null; // Do not add a cost property needlessly
 
-        decimal totalnativeCost = nativeCosts.Sum(c => c.value.price);
+        decimal totalnativeCost = nativeCosts.Sum(c => c.value.Price);
         decimal composedCost = instance.Components.Select(c => c.Instance.Cost()?.Total ?? 0).Sum();
         return new InstanceCost()
         {

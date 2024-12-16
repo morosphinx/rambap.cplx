@@ -49,7 +49,9 @@ public class CplxExcelTemplateTests
     public static IGenerator CostingGenerator(bool fileContentRecursion = false)
     {
         return Generators.ConfigureGenerator(
-            i => [($"Costing_{IGenerator.SimplefileNameFor(i)}.xlsx", CplxCostingTemplate(i))],
+            i => [
+                ($"Costing_{IGenerator.SimplefileNameFor(i)}.xlsx", CplxCostingTemplate(i))
+                ],
             HierarchyMode.Flat, c => fileContentRecursion);
     }
 

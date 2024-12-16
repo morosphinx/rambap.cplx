@@ -54,8 +54,8 @@ internal class TasksConcept : IConcept<InstanceTasks>
 
         decimal totalComposedRecurentTask = i.Components.Select(c => c.Instance.Tasks()?.TotalRecurentTaskDuration ?? 0).Sum();
 
-        bool hasAnyTask = nonRecurrentTasks.Count() > 0
-            || recurrentTasks.Count() > 0
+        bool hasAnyTask = nonRecurrentTasks.Count > 0
+            || recurrentTasks.Count > 0
             || totalComposedRecurentTask > 0;
 
         if (!hasAnyTask) return null;
