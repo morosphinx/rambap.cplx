@@ -11,7 +11,7 @@ public class InstanceTasks : IInstanceConceptProperty
     public record NamedTask(bool IsRecurent, string Name, decimal Duration_day, string Category) { }
 
     public IEnumerable<NamedTask> NonRecurentTasks => nonRecurentTasks;
-    internal List<NamedTask> nonRecurentTasks { private get; init; } = new();
+    internal List<NamedTask> nonRecurentTasks { private get; init; } = [];
 
     public decimal NativeNonRecurentTaskDuration => nonRecurentTasks.Select(t => t.Duration_day).Sum();
 
@@ -31,7 +31,7 @@ public class InstanceTasks : IInstanceConceptProperty
     }
 
     public IEnumerable<NamedTask> RecurentTasks => recurentTasks;
-    internal List<NamedTask> recurentTasks { private get; init; } = new();
+    internal List<NamedTask> recurentTasks { private get; init; } = [];
 
     public decimal NativeRecurentTaskDuration => RecurentTasks.Select(t => t.Duration_day).Sum();
     public required decimal ComposedRecurentTaskDuration { get; init; }
@@ -44,11 +44,11 @@ internal class TasksConcept : IConcept<InstanceTasks>
 {
     public override InstanceTasks? Make(Pinstance i, Part template)
     {
-        List<NamedTask> nonRecurrentTasks = new();
+        List<NamedTask> nonRecurrentTasks = [];
         ScanObjectContentFor<NonRecurrentTask>(template,
             (t, i) => nonRecurrentTasks.Add(new(false, i.Name, t.Duration_day, t.Category)));
 
-        List<NamedTask> recurrentTasks = new();
+        List<NamedTask> recurrentTasks = [];
         ScanObjectContentFor<RecurrentTask>(template,
             (t, i) => recurrentTasks.Add(new(true, i.Name, t.Duration_day, t.Category)));
 

@@ -8,7 +8,7 @@ public class InstanceMass : IInstanceConceptProperty
 {
     public record NativeMassInfo(string name, Mass_kg value);
 
-    public List<NativeMassInfo> NativeMasses { get; init; } = new();
+    public List<NativeMassInfo> NativeMasses { get; init; } = [];
     public required Mass_kg Native { get; init; }
     public required Mass_kg Composed { get; init; }
     public Mass_kg Total => Native + Composed;
@@ -19,7 +19,7 @@ internal class MassConcept : IConcept<InstanceMass>
     public override InstanceMass? Make(Pinstance instance, Part template)
     {
         // Calculate total native mass
-        List<InstanceMass.NativeMassInfo> nativeMasses = new();
+        List<InstanceMass.NativeMassInfo> nativeMasses = [];
         ScanObjectContentFor<Mass_kg>(template,
             (c, i) => nativeMasses.Add(new(i.Name, c)),
             AutoContent.IgnoreNulls);

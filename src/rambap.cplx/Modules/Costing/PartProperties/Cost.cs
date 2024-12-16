@@ -1,4 +1,6 @@
-﻿namespace rambap.cplx.PartProperties;
+﻿#pragma warning disable IDE0130 // Namespace does not match folder structure
+namespace rambap.cplx.PartProperties;
+#pragma warning restore IDE0130 // Namespace does not match folder structure
 
 /// <summary>
 /// An amount of money that need to be spend to acquire or produce the part

@@ -9,7 +9,7 @@ public class InstanceCost : IInstanceConceptProperty
 {
     public record NativeCostInfo(string name, Cost value);
 
-    public List<NativeCostInfo> NativeCosts { get; init; } = new();
+    public List<NativeCostInfo> NativeCosts { get; init; } = [];
     public required decimal Native { get; init; }
     public required decimal Composed { get; init; }
     public decimal Total => Native + Composed;
@@ -20,13 +20,13 @@ internal class CostsConcept : IConcept<InstanceCost>
     public override InstanceCost? Make(Pinstance instance, Part template)
     {
         // Calculate total native cost
-        List<InstanceCost.NativeCostInfo> nativeCosts = new();
+        List<InstanceCost.NativeCostInfo> nativeCosts = [];
         ScanObjectContentFor<Cost>(template,
             (c, i) => nativeCosts.Add(new(i.Name, c)),
             AutoContent.IgnoreNulls);
 
         bool anyComponentHasACost = instance.Components.Where(c => c.Instance.Cost() != null).Any();
-        bool hasACost = anyComponentHasACost || nativeCosts.Any();
+        bool hasACost = anyComponentHasACost || nativeCosts.Count == 0;
         if (!hasACost) return null; // Do not add a cost property needlessly
 
         decimal totalnativeCost = nativeCosts.Sum(c => c.value.Price);

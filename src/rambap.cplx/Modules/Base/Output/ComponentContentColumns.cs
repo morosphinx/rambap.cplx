@@ -33,10 +33,10 @@ public static class ComponentContentColumns
         public string Title => "CN";
         public ColumnTypeHint TypeHint => ColumnTypeHint.String;
 
-        private List<bool> LevelDone { get; } = new List<bool>();
+        private List<bool> LevelDone { get; } = [];
         public string CellFor(ComponentContent item)
         {
-            if (LevelDone.Count() <= item.Location.Depth) LevelDone.Add(false);
+            if (LevelDone.Count <= item.Location.Depth) LevelDone.Add(false);
             LevelDone[item.Location.Depth] = false;
 
             string ver = " │ "; // That's an Alt+179, and not an Alt+124 '|', this latter is reserved for markdown 

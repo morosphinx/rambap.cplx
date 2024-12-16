@@ -36,7 +36,7 @@ public static class PartContentColumns
         new DelegateColumn<PartContent>("Count", ColumnTypeHint.Numeric,
             i =>
             {
-                return i.Items.Count().ToString();
+                return i.Items.Count.ToString();
             });
 }
 
