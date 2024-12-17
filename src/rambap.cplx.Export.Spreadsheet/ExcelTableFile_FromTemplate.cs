@@ -77,6 +77,10 @@ public class ExcelTableFile_FromTemplate : IInstruction
             ApplyTableWriteInstruction(worksheetPart, tableInstruction);
         }
 
+        // Force workbook to be recalculated on next load => required for good UX
+        workbookPart.Workbook.CalculationProperties!.ForceFullCalculation = true;
+        workbookPart.Workbook.CalculationProperties!.FullCalculationOnLoad = true;
+        // Save changes
         workbookPart.Workbook.Save();
         // Dispose the document.
         spreadsheetDocument.Dispose();

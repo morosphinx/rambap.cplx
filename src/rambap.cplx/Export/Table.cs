@@ -3,6 +3,7 @@ using rambap.cplx.Export.Iterators;
 
 namespace rambap.cplx.Export;
 
+using static rambap.cplx.Export.Generators;
 using Line = List<string>;
 
 public interface ITable
@@ -27,6 +28,12 @@ public record Table<T> : ITable
     /// <summary> Definition of the columns of the table </summary>
     public required List<IColumn<T>> Columns { get; init; }
 
+    /// <summary>
+    /// Enumerable transformation applied while running <see cref="MakeContentLines(Pinstance)"/> </br>
+    /// Can be used to add filterign to the table data.
+    /// </summary>
+    public Func<IEnumerable<T>, IEnumerable<T>>? ContentTransform { get; init; } = null;
+
     public IEnumerable<IColumn> IColumns => Columns;
 
     public Line MakeHeaderLine()
@@ -36,8 +43,17 @@ public record Table<T> : ITable
 
     public IEnumerable<Line> MakeContentLines(Pinstance rootComponent)
     {
-        foreach (var c in Iterator.MakeContent(rootComponent))
-            yield return MakeContentLine(c);
+        if(ContentTransform is null)
+        {
+            foreach (var c in Iterator.MakeContent(rootComponent))
+                yield return MakeContentLine(c);
+        } else
+        {
+            var content = Iterator.MakeContent(rootComponent);
+            content = ContentTransform(content);
+            foreach (var c in content)
+                yield return MakeContentLine(c);
+        }
     }
 
     public Line MakeTotalLine(Pinstance rootComponent)
