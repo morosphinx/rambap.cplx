@@ -26,7 +26,7 @@ internal class CostsConcept : IConcept<InstanceCost>
             AutoContent.IgnoreNulls);
 
         bool anyComponentHasACost = instance.Components.Where(c => c.Instance.Cost() != null).Any();
-        bool hasACost = anyComponentHasACost || nativeCosts.Count == 0;
+        bool hasACost = anyComponentHasACost || (nativeCosts.Count != 0);
         if (!hasACost) return null; // Do not add a cost property needlessly
 
         decimal totalnativeCost = nativeCosts.Sum(c => c.value.Price);
