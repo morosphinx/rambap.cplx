@@ -4,7 +4,7 @@
 // Its formatting is, on purpose, more compact than the coding standard
 
 class ServerAssembly : Part {
-    PartProperties.NonRecurrentTask ze = new(45.2, TaskCategory.Electronics);
+    NonRecurrentTask ze = (45.2, TaskCategory.Electronics);
 
     // Components
     ServerCabinet36U CAB ;

@@ -12,13 +12,23 @@ public class BreakoutBox1 : Part
     Cost Fil = 50;
 
     RecurrentTask Assembly = 0.5;
-    NonRecurrentTask Achats =new(2.0, TaskCategory.Delivery);
+    NonRecurrentTask Achats = (2.0, TaskCategory.Delivery);
     NonRecurrentTask PlanCablage = new(2,"Electronics");
     NonRecurrentTask Relecture = new(4,"Validation");
+
+    BreakoutPCB PCB01;
 
     ASticker Sticker;
 
     Part Sticket2;
+}
+
+class BreakoutPCB : Part
+{
+    Cost Components = 250;
+
+    NonRecurrentTask MCU_Selection = (3, TaskCategory.Software);
+    NonRecurrentTask MCU_Dev = (15, TaskCategory.Software);
 }
 
 class ASticker : Part

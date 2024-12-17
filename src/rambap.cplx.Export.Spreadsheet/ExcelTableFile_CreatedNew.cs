@@ -8,11 +8,17 @@ using static rambap.cplx.Export.Spreadsheet.Helpers;
 
 namespace rambap.cplx.Export.Spreadsheet;
 
-public class ExcelTableFile_CreatedNew : AbstractTableFile
+public class ExcelTableFile_CreatedNew : IInstruction
 {
-    public ExcelTableFile_CreatedNew(Pinstance content) : base(content){}
+    public required ITable Table { protected get; init; }
+    public Pinstance Content { get; init; }
 
-    public override void Do(string filepath)
+    public ExcelTableFile_CreatedNew(Pinstance content)
+    {
+        Content = content;
+    }
+
+    public void Do(string filepath)
     {
         // Create a spreadsheet document by supplying the filepath.
         // By default, AutoSave = true, Editable = true, and Type = xlsx.
@@ -46,7 +52,7 @@ public class ExcelTableFile_CreatedNew : AbstractTableFile
             currentRow++, firstColl);
         FillInTableContents(sheetData,
             Table.MakeContentLines(Content),
-            Table.ColumnTypeHints().ToList(),
+            Table.IColumns.Select(t=>t.TypeHint).ToList(),
             currentRow, firstColl);
 
         worksheetPart.Worksheet.Save();

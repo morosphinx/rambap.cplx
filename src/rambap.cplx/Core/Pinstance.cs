@@ -1,6 +1,4 @@
-﻿using System.Diagnostics;
-using System.Reflection;
-using rambap.cplx.Concepts;
+﻿using System.Reflection;
 using rambap.cplx.PartAttributes;
 using static rambap.cplx.Core.Support;
 
@@ -87,7 +85,7 @@ public class Pinstance
     public Pinstance(Part template, PartConfiguration conf)
     {
         PartType = template.GetType();
-        template.CplxImplicitInitialisation(); // is implicitly initialized
+        template.CplxImplicitInitialization(); // is implicitly initialized
 
         // Select part PN
         var PNAttribute = template.GetType().GetCustomAttribute(typeof(PNAttribute)) as PNAttribute;

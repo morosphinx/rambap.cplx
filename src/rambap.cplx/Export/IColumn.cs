@@ -12,7 +12,7 @@ public enum ColumnTypeHint
 /// <summary>
 /// Define the content, and construction, of a table Column
 /// </summary>
-public interface IColumn<T>
+public interface IColumn
 {
     /// <summary>
     /// Title of the column  in the CSV dile
@@ -20,11 +20,6 @@ public interface IColumn<T>
     string Title { get; }
 
     ColumnTypeHint TypeHint { get; }
-
-    /// <summary>
-    /// Return text to be written in each line's cell
-    /// </summary>
-    string CellFor(T item);
 
     /// <summary>
     /// Return text to be written in a line representing total
@@ -35,6 +30,17 @@ public interface IColumn<T>
     /// Reset internal column data that may be carried from a line to another
     /// </summary>
     void Reset();
+}
+
+/// <summary>
+/// Define the content, and construction, of a table Column
+/// </summary>
+public interface IColumn<T> : IColumn
+{
+    /// <summary>
+    /// Return text to be written in each line's cell
+    /// </summary>
+    string CellFor(T item);
 }
 
 /// <summary>

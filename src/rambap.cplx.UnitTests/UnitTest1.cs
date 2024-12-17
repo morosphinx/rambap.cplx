@@ -1,33 +1,13 @@
-using rambap.cplx.Core;
 using rambap.cplx.Export;
-using rambap.cplx.Export.Spreadsheet;
-using rambap.cplx.Export.TextFiles;
-using rambap.cplx.Export.Iterators;
-using System.Reflection.Emit;
 using static rambap.cplx.Export.Generators;
-using rambap.cplx.Export.Tables;
 using rambap.cplx.UnitTests.ExportValidity;
+using rambap.cplx.Modules.Costing.Outputs;
 
 namespace rambap.cplx.UnitTests
 {
     [TestClass]
     public class UnitTest1
     {
-        public class DemoGenerator : IGenerator
-        {
-            public override IInstruction PrepareInstruction(Pinstance i)
-            {
-                return new Folder(
-                [
-                    ("BillOfMaterial_tree.xlsx", new ExcelTableFile_FromTemplate(i) { Table = Costing.BillOfMaterial() }),
-                    ("BillOfMaterial_flat.xlsx", new ExcelTableFile_FromTemplate(i) { Table = Costing.BillOfMaterial() }),
-                    ("ComponentTree.xlsx", new ExcelTableFile_FromTemplate(i) { Table = SystemView.ComponentTree()}),
-                    ("CostBreakdown.xlsx", new ExcelTableFile_FromTemplate(i){ Table =  Costing.CostBreakdown()}),
-                    ("Tasks.xlsx", new ExcelTableFile_FromTemplate(i) { Table = Costing.BillOfTasks()}),
-                ]);
-            }
-        }
-
         public static IGenerator GetDemoGeneratorWithEverything(bool fileContentRecursion = false)
         {
             return Generators.ConfigureGenerator(

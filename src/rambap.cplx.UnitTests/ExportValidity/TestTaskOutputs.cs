@@ -1,4 +1,4 @@
-﻿using rambap.cplx.Export.Columns;
+﻿using rambap.cplx.Modules.Costing.Outputs;
 
 namespace rambap.cplx.UnitTests.ExportValidity;
 
@@ -14,7 +14,7 @@ public class TestTaskOutputs
         var i = new Pinstance(part);
         ColumnTester.TestComponentTreeColumn_Decimal(
             i,
-            Tasks.RecurentTaskDuration(),
+            TaskColumns.RecurentTaskDuration(),
             i => i.Tasks()?.RecurentTasks ?? [],
             DecimalPropertyPartExemple.ExpectedTotal_ExtensiveT);
     }
@@ -26,7 +26,7 @@ public class TestTaskOutputs
         var i = new Pinstance(part);
         ColumnTester.TestPartTreeColumn_Decimal(
             i,
-            Tasks.TaskTotalDuration(includeNonRecurent:false),
+            TaskColumns.TaskTotalDuration(includeNonRecurent:false),
             i => i.Tasks()?.RecurentTasks ?? [],
             DecimalPropertyPartExemple.ExpectedTotal_ExtensiveT);
     }
@@ -38,7 +38,7 @@ public class TestTaskOutputs
         var i = new Pinstance(part);
         ColumnTester.TestPartTreeColumn_Decimal(
             i,
-            Tasks.TaskTotalDuration(includeNonRecurent:true),
+            TaskColumns.TaskTotalDuration(includeNonRecurent:true),
             i => i.Tasks()?.NonRecurentTasks ?? [],
             DecimalPropertyPartExemple.ExpectedTotal_IntensiveT);
     }

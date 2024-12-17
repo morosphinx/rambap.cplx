@@ -1,5 +1,4 @@
 ﻿using rambap.cplx.Core;
-using rambap.cplx.Concepts;
 
 namespace rambap.cplx;
 
@@ -12,11 +11,11 @@ public static class Globals
     /// </summary>
     public static List<IConcept> EvaluatedConcepts =
         [
-            new DocumentationConcept(),
-            new CostsConcept(),
-            new TasksConcept(),
-            new ManufacturerConcept(),
-            new SlotConcept(),
-            new ConnectionConcept(),
+            new Modules.Documentation.DocumentationConcept(),
+            new Modules.Documentation.ManufacturerConcept(),
+            new Modules.Costing.CostsConcept(),
+            new Modules.Costing.TasksConcept(),
+            new Modules.Connectivity.SlotConcept(),
+            new Modules.Connectivity.ConnectionConcept(),
         ];
 }

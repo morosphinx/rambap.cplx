@@ -36,13 +36,13 @@ public partial class Part
         }
     }
 
-    internal void CplxImplicitInitialisation()
-        => CplxImplicitInitialisation(new InitialisationContext());
+    internal void CplxImplicitInitialization()
+        => CplxImplicitInitialization(new InitialisationContext());
 
     /// <summary>
     /// Initialise implicit constructs ommited in the cplx syntax
     /// </summary>
-    private void CplxImplicitInitialisation(InitialisationContext initContext)
+    private void CplxImplicitInitialization(InitialisationContext initContext)
     {
         if (!HasDoneCplxImplicitInitialisation)
         {
@@ -52,8 +52,14 @@ public partial class Part
             initContext.StartInitFor(this);
             // Create Part properties/fields if null
             ScanObjectContentFor<Part>(this,
-               (p, i) => { },
-               (t, i) => CreateAndInitialisePartFromType(t, initContext));
+               (p, i) => {
+                   p.CplxImplicitInitialization(initContext);
+               },
+               (t, i) => {
+                   var p = CreatePartFromType(t, initContext);
+                   p.CplxImplicitInitialization(initContext);
+                   return p;
+               });
             // Assign properties Owners
             ScanObjectContentFor<IPartProperty>(this,
                 (p, i) =>
@@ -73,15 +79,13 @@ public partial class Part
     // Is there a way to reuse parts (not including those created with new() non-default constructors) ?
     // When parts are referenced to etablish relation (eg : connection, slotting),
     // Object instance identity is used
-    private static Part CreateAndInitialisePartFromType(Type type, InitialisationContext context)
+    private static Part CreatePartFromType(Type type, InitialisationContext context)
     {
         if (!type.IsAssignableTo(typeof(Part)))
             throw new InvalidOperationException();
         var part = Activator.CreateInstance(type) as Part;
         if (part is null)
             throw new InvalidOperationException();
-        else
-            part.CplxImplicitInitialisation(context);
         return part;
     }
 }

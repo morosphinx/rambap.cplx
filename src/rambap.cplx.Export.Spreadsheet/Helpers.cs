@@ -1,4 +1,5 @@
 ﻿using DocumentFormat.OpenXml;
+using DocumentFormat.OpenXml.Office2016.Excel;
 using DocumentFormat.OpenXml.Spreadsheet;
 
 namespace rambap.cplx.Export.Spreadsheet;
@@ -39,41 +40,69 @@ internal static partial class Helpers
     /// <param name="columnTypeHints">Column type hints</param>
     /// <param name="rowStart">Starting Row. 1-indexed</param>
     /// <param name="colStart">Stating Column.  1-index</param>
-    public static void FillInTableContents(SheetData sheetData, IEnumerable<List<string>> contents, List<ColumnTypeHint> columnTypeHints, uint rowStart, int colStart = 1)
+    public static void FillInTableContents(SheetData sheetData, IEnumerable<List<string>> contents, List<ColumnTypeHint> columnTypeHints, uint rowStart, int colStart = 1, List<int>? columnStyleIndexes = null)
     {
         uint currentRow = rowStart;
         foreach (var line in contents)
         {
-            FillInLineContent(sheetData, line, columnTypeHints, currentRow, colStart);
+            FillInLineContent(sheetData, line, columnTypeHints, currentRow, colStart, columnStyleIndexes);
             currentRow++;
         }
     }
 
     /// <summary>
-    /// Write a Row of data to an OpenXML SheetData, startign at an arbitrary column
+    /// Write a Row of data to an OpenXML SheetData
     /// </summary>
     /// <param name="sheetData">Sheet to write it to</param>
-    /// <param name="line">Row to write</param>
+    /// <param name="line">Data to write</param>
     /// <param name="columnTypeHints">Column type hints</param>
     /// <param name="row">Row to write to. 1-indexed</param>
     /// <param name="colStart">Starting Column.  1-index</param>
-    public static void FillInLineContent(SheetData sheetData, List<string> line, List<ColumnTypeHint> columnTypeHints, uint row, int colStart = 1)
+    public static void FillInLineContent(SheetData sheetData, List<string> line, List<ColumnTypeHint> columnTypeHints, uint row, int colStart = 1, List<int>? columnStyleIndexes = null)
     {
         int currentCol = colStart;
         foreach (var c in line)
         {
-            var currentColName = GetExcelColumnName(currentCol);
-            var currentCell = sheetData.GetOrMakeCell(currentColName, row);
-            currentCell.CellValue = MakeValidCellValue(c);
-            currentCell.DataType = TypeHintToDataType(columnTypeHints[currentCol - 1]);
-            // Use column style, if one exist
-            //if (currentCell.StyleIndex == null)
-            //{
-            //    Column? col = sheetData.GetColumn(currentCol);
-            //    if (col != null)
-            //        currentCell.StyleIndex = col.Style.Value ; // :( 
-            //}
+            if(c != "")
+            {
+                var currentColName = GetExcelColumnName(currentCol);
+                var currentCell = sheetData.GetOrMakeCell(currentColName, row);
+                currentCell.CellValue = MakeValidCellValue(c);
+                currentCell.DataType = TypeHintToDataType(columnTypeHints[currentCol - 1]);
+
+                // Use column style, if one exist
+                if (columnStyleIndexes != null &&
+                    currentCell.StyleIndex == null)
+                {
+                    var targetStyle = columnStyleIndexes[currentCol - colStart];
+                    if (targetStyle > 0)
+                        currentCell.StyleIndex = (uint) targetStyle;
+                }
+            }
             currentCol++;
+        }
+    }
+
+    /// <summary>
+    /// Write a Column of data to an OpenXML SheetData
+    /// </summary>
+    /// <param name="sheetData">Sheet to write it to</param>
+    /// <param name="column">Data to write</param>
+    /// <param name="rowStart">Starting Row. 1-indexed</param>
+    /// <param name="col">Column to write to.  1-index</param>
+    public static void FillInColumnContent(SheetData sheetData, List<string> column, uint rowStart, int col)
+    {
+        uint currentRow = rowStart;
+        foreach (var c in column)
+        {
+            if (c != "")
+            {
+                var currentColName = GetExcelColumnName(col);
+                var currentCell = sheetData.GetOrMakeCell(currentColName, currentRow);
+                currentCell.CellValue = MakeValidCellValue(c);
+                currentCell.DataType = TypeHintToDataType(ColumnTypeHint.String);
+            }
+            currentRow++;
         }
     }
 
@@ -155,6 +184,19 @@ internal static partial class Helpers
         }
 
         return cells.FirstOrDefault();
+    }
+
+    public static void EnumerateSheetProperties(Sheet sheet)
+    {
+        foreach(var a in sheet.GetAttributes())
+        {
+            Console.WriteLine($"{a.LocalName} = {a.Value}");
+            // Typical result :
+
+            // name = Sheet1
+            // sheetId = 1
+            // id = rId1
+        }
     }
 }
 

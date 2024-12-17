@@ -1,8 +1,7 @@
 ﻿using rambap.cplx.Core;
 using rambap.cplx.Export.TextFiles;
 using rambap.cplx.Export.Iterators;
-using System;
-using rambap.cplx.Export.Tables;
+using rambap.cplx.Modules.Costing.Outputs;
 
 namespace rambap.cplx.Export;
 
@@ -11,18 +10,37 @@ public static class FileGroups
     public static IEnumerable<(string, IInstruction)> CostingFiles(Pinstance i, string filenamePattern)
     {
         return [
-                ($"BOMR_{filenamePattern}.csv", new MarkdownTableFile(i) { Table = Costing.BillOfMaterial() }),
-                ($"Costs_{filenamePattern}.csv", new MarkdownTableFile(i) { Table = Costing.CostBreakdown(), WriteTotalLine = true }),
-                ($"BOTR_{filenamePattern}.csv", new MarkdownTableFile(i) { Table = Costing.BillOfTasks()}),
-                ($"Tasks_{filenamePattern}.csv", new MarkdownTableFile(i) { Table = Costing.RecurentTaskBreakdown(), WriteTotalLine = true }),
+                ($"BOMR_{filenamePattern}.csv", new MarkdownTableFile(i)
+                {
+                    Table = CostTables.BillOfMaterial(),
+                    WriteTotalLine = true,
+                    TotalLineOnTop = true,
+                }),
+                ($"Costs_{filenamePattern}.csv", new MarkdownTableFile(i)
+                {
+                    Table = CostTables.CostBreakdown(),
+                    WriteTotalLine = true,
+                    TotalLineOnTop = true,
+                }),
+                ($"BOTR_{filenamePattern}.csv", new MarkdownTableFile(i)
+                {
+                    Table = TaskTables.BillOfTasks(),
+                    WriteTotalLine = true,
+                    TotalLineOnTop = true,
+                }),
+                ($"Tasks_{filenamePattern}.csv", new MarkdownTableFile(i) {
+                    Table = TaskTables.RecurentTaskBreakdown(),
+                    WriteTotalLine = true,
+                    TotalLineOnTop = true,
+                }),
                 ];
     }
 
     public static IEnumerable<(string, IInstruction)> SystemViewTables(Pinstance i, string filenamePattern)
     {
         return [
-                ($"Tree_{filenamePattern}.csv", new FixedWidthTableFile(i) { Table = SystemView.ComponentTree() }),
-                ($"Inventory_{filenamePattern}.csv", new MarkdownTableFile(i) { Table = SystemView.ComponentInventory() }),
+                ($"Tree_{filenamePattern}.csv", new FixedWidthTableFile(i) { Table = Modules.Documentation.Outputs.SystemViewTables.ComponentTree() }),
+                ($"Inventory_{filenamePattern}.csv", new MarkdownTableFile(i) { Table = Modules.Documentation.Outputs.SystemViewTables.ComponentInventory() }),
                 ];
     }
 }
