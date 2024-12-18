@@ -72,18 +72,18 @@ public class CplxExcelTemplateTests
         var CustomPartTable = CostTables.BillOfMaterial() with
         {
             Columns = [
-                    PartContentColumns.GroupPN(),
-                    PartContentColumns.EmptyColumn(), // Not filled by CPLX
+                    IDColumns.PartNumber(),
+                    CommonColumns.EmptyColumn(), // Not filled by CPLX
                     CostColumns.Group_CostName(),
                     CostColumns.Group_UnitCost(),
-                    PartContentColumns.GroupCount(),
+                    CommonColumns.GroupCount(),
                     CostColumns.GroupTotalCost(),
                 ]
         };
         var CustomTaskTable = TaskTables.BillOfTasks() with
         {
             Columns = [
-                    PartContentColumns.GroupPN(),
+                    IDColumns.PartNumber(),
                     TaskColumns.TaskName(),
                     TaskColumns.TaskCategory(),
                     TaskColumns.TaskDuration(),

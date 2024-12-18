@@ -11,9 +11,9 @@ public static class SystemViewTables
         {
             Iterator = new ComponentIterator(),
             Columns = [
-                ComponentContentColumns.ComponentPrettyTree(),
-                ComponentContentColumns.ComponentComment(),
-                ComponentContentColumns.PartNumber(),
+IDColumns.ComponentNumberPrettyTree(),
+                CommonColumns.ComponentComment(),
+IDColumns.PartNumber(),
                 DescriptionColumns.PartDescription(),
             ],
         };
@@ -23,11 +23,11 @@ public static class SystemViewTables
        {
            Iterator = new PartLocationIterator(),
            Columns = [
-                PartContentColumns.MainComponentInfo(ComponentContentColumns.ComponentPrettyTree()),
-                PartContentColumns.GroupCount(),
-                PartContentColumns.MainComponentInfo(ComponentContentColumns.ComponentComment()),
-                PartContentColumns.MainComponentInfo(ComponentContentColumns.PartNumber()),
-                PartContentColumns.MainComponentInfo(DescriptionColumns.PartDescription()),
+IDColumns.ComponentNumberPrettyTree(),
+                CommonColumns.GroupCount(),
+                CommonColumns.ComponentComment(),
+IDColumns.PartNumber(),
+                DescriptionColumns.PartDescription(),
            ],
        };
 
@@ -39,11 +39,11 @@ public static class SystemViewTables
                 WriteBranches = true,
             },
             Columns = [
-                PartContentColumns.GroupNumber(),
-                PartContentColumns.GroupPN(),
-                PartContentColumns.GroupCNs(),
+                CommonColumns.LineTypeNumber(),
+                IDColumns.PartNumber(),
+                IDColumns.GroupCIDs(),
                 DescriptionColumns.GroupDescription(),
-                PartContentColumns.GroupCount(),
+                CommonColumns.GroupCount(),
             ],
         };
 }

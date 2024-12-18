@@ -28,15 +28,15 @@ namespace rambap.cplx.Modules.Costing.Outputs
                 }
             },
             Columns = [
-                PartContentColumns.GroupNumber(),
-            PartContentColumns.GroupPN(),
-            DescriptionColumns.GroupDescription(),
-            TaskColumns.TaskName(),
-            TaskColumns.TaskCategory(),
-            TaskColumns.TaskDuration(),
-            TaskColumns.TaskRecurence(),
-            TaskColumns.TaskCount(),
-            TaskColumns.TaskTotalDuration(includeNonRecurent: true),
+                CommonColumns.LineTypeNumber(),
+                IDColumns.PartNumber(),
+                DescriptionColumns.GroupDescription(),
+                TaskColumns.TaskName(),
+                TaskColumns.TaskCategory(),
+                TaskColumns.TaskDuration(),
+                TaskColumns.TaskRecurence(),
+                TaskColumns.TaskCount(),
+                TaskColumns.TaskTotalDuration(includeNonRecurent: true),
             ],
 
         };
@@ -56,8 +56,8 @@ namespace rambap.cplx.Modules.Costing.Outputs
                     (i) => i.Tasks()?.RecurentTasks ?? [],
                 },
                 Columns = [
-                    ComponentContentColumns.ComponentID(),
-                ComponentContentColumns.PartNumber(),
+IDColumns.ComponentID(),
+IDColumns.PartNumber(),
                 TaskColumns.RecurentTaskName(),
                 TaskColumns.RecurentTaskCategory(),
                 TaskColumns.RecurentTaskDuration(),
