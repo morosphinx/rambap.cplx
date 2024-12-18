@@ -6,12 +6,17 @@ namespace rambap.cplx.Modules.Base.Output;
 
 public static class PartContentColumns
 {
+    public static IColumn<PartContent> MainComponentInfo(IColumn<ComponentContent> componentColumn)
+        => new DelegateColumn<PartContent>(componentColumn.Title, componentColumn.TypeHint,
+            i => componentColumn.CellFor(i.PrimaryItem));
+
     public static IColumn<PartContent> EmptyColumn(string title = "")
         => new DelegateColumn<PartContent>(title, ColumnTypeHint.String,
             i => "");
 
     public static IColumn<PartContent> LineNumber()
         => new LineNumberColumn<PartContent>();
+
     public static IColumn<PartContent> GroupNumber()
         => new LineNumberColumnWithContinuation<PartContent>()
         { ContinuationCondition = (i, j) => i == null || i.Items != j.Items };

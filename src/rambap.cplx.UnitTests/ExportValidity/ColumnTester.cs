@@ -5,27 +5,27 @@ namespace rambap.cplx.UnitTests.ExportValidity;
 
 internal static class ColumnTester
 {
-    public static IEnumerable<(string name, ComponentContentTree iterator)> AllComponentTrees(Func<Pinstance, IEnumerable<object>> propertyIterator)
+    public static IEnumerable<(string name, IIterator<ComponentContent> iterator)> AllComponentIterators(Func<Pinstance, IEnumerable<object>> propertyIterator)
     {
-        yield return ("Component Tree, Flat, No Branches", new ComponentContentTree()
+        yield return ("ComponentIterator, Flat, No Branches", new ComponentIterator()
         {
             RecursionCondition = (c, l) => false,
             WriteBranches = false,
             PropertyIterator = propertyIterator
         });
-        yield return ("Component Tree, Recursive, No Branches", new ComponentContentTree()
+        yield return ("ComponentIterator, Recursive, No Branches", new ComponentIterator()
         {
             RecursionCondition = (c, l) => true,
             WriteBranches = false,
             PropertyIterator = propertyIterator
         });
-        yield return ("Component Tree, Flat, With Branches", new ComponentContentTree()
+        yield return ("ComponentIterator, Flat, With Branches", new ComponentIterator()
         {
             RecursionCondition = (c, l) => false,
             WriteBranches = true,
             PropertyIterator = propertyIterator
         });
-        yield return ("Component Tree, Recursive, With Branches", new ComponentContentTree()
+        yield return ("ComponentIterator, Recursive, With Branches", new ComponentIterator()
         {
             RecursionCondition = (c, l) => true,
             WriteBranches = true,
@@ -33,33 +33,45 @@ internal static class ColumnTester
         });
     }
 
-    public static IEnumerable<(string name, PartContentList iterator)> AllPartTrees(Func<Pinstance, IEnumerable<object>> propertyIterator)
+    public static IEnumerable<(string name, IIterator<PartContent> iterator)> AllPartIterators(Func<Pinstance, IEnumerable<object>> propertyIterator)
     {
-        yield return ("Part list, Flat, No Branches", new PartContentList()
+        yield return ("Part list, Flat, No Branches", new PartTypesIterator()
         {
             RecursionCondition = (c, l) => false,
             WriteBranches = false,
             PropertyIterator = propertyIterator
         });
 
-        yield return ("Part list, Recursive, No Branches", new PartContentList()
+        yield return ("PartTypeIterator, Recursive, No Branches", new PartTypesIterator()
         {
             RecursionCondition = (c, l) => true,
             WriteBranches = false,
             PropertyIterator = propertyIterator
         });
 
-        yield return ("Part list, Flat, With Branches", new PartContentList()
+        yield return ("PartTypeIterator, Flat, With Branches", new PartTypesIterator()
         {
             RecursionCondition = (c, l) => false,
             WriteBranches = true,
             PropertyIterator = propertyIterator
         });
 
-        yield return ("Part list, Recursive, With Branches", new PartContentList()
+        yield return ("PartTypeIterator, Recursive, With Branches", new PartTypesIterator()
         {
             RecursionCondition = (c, l) => true,
             WriteBranches = true,
+            PropertyIterator = propertyIterator
+        });
+
+        yield return ("PartLocationIterator, Flat", new PartLocationIterator()
+        {
+            RecursionCondition = (c, l) => false,
+            PropertyIterator = propertyIterator
+        });
+
+        yield return ("PartLocationIterator, Recursive", new PartLocationIterator()
+        {
+            RecursionCondition = (c, l) => true,
             PropertyIterator = propertyIterator
         });
     }
@@ -70,7 +82,7 @@ internal static class ColumnTester
         Func<Pinstance, IEnumerable<object>> propertyIterator,
         decimal expectedTotal)
     {
-        foreach (var t in AllComponentTrees(propertyIterator))
+        foreach (var t in AllComponentIterators(propertyIterator))
         {
             var res = t.iterator.MakeContent(pinstance);
             var values = res.Select(column.CellFor);
@@ -85,7 +97,7 @@ internal static class ColumnTester
        Func<Pinstance, IEnumerable<object>> propertyIterator,
        decimal expectedTotal)
     {
-        foreach (var t in AllPartTrees(propertyIterator))
+        foreach (var t in AllPartIterators(propertyIterator))
         {
             var res = t.iterator.MakeContent(pinstance);
             var values = res.Select(column.CellFor);

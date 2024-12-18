@@ -13,7 +13,7 @@ namespace rambap.cplx.Modules.Costing.Outputs
         public static Table<PartContent> BillOfTasks()
         => new()
         {
-            Iterator = new PartContentList()
+            Iterator = new PartTypesIterator()
             {
                 WriteBranches = false,
                 PropertyIterator =
@@ -49,7 +49,7 @@ namespace rambap.cplx.Modules.Costing.Outputs
         public static Table<ComponentContent> RecurentTaskBreakdown()
             => new()
             {
-                Iterator = new ComponentContentTree()
+                Iterator = new ComponentIterator()
                 {
                     WriteBranches = false,
                     PropertyIterator =

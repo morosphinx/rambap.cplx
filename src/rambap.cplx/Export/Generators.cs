@@ -16,7 +16,7 @@ public static class FileGroups
                     WriteTotalLine = true,
                     TotalLineOnTop = true,
                 }),
-                ($"Costs_{filenamePattern}.csv", new MarkdownTableFile(i)
+                ($"Costs2_{filenamePattern}.csv", new MarkdownTableFile(i)
                 {
                     Table = CostTables.CostBreakdown(),
                     WriteTotalLine = true,
@@ -40,6 +40,7 @@ public static class FileGroups
     {
         return [
                 ($"Tree_{filenamePattern}.csv", new FixedWidthTableFile(i) { Table = Modules.Documentation.Outputs.SystemViewTables.ComponentTree() }),
+                ($"Tree_Stacked_{filenamePattern}.csv", new FixedWidthTableFile(i) { Table = Modules.Documentation.Outputs.SystemViewTables.ComponentTree_Stacked() }),
                 ($"Inventory_{filenamePattern}.csv", new MarkdownTableFile(i) { Table = Modules.Documentation.Outputs.SystemViewTables.ComponentInventory() }),
                 ];
     }
@@ -146,7 +147,7 @@ public class FlattenedDocumentationTreeGenerator : IGenerator
 
     public override IInstruction PrepareInstruction(Pinstance i)
     {
-        var partTree= new PartContentList()
+        var partTree= new PartTypesIterator()
         {
             RecursionCondition = (c, l) => this.SubComponentInclusionCondition?.Invoke(c) ?? false
         };

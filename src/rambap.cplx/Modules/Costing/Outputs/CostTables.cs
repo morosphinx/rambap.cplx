@@ -36,7 +36,7 @@ public static class CostTables
     public static Table<PartContent> BillOfMaterial(bool recurse = true)
         => new()
         {
-            Iterator = new PartContentList()
+            Iterator = new PartTypesIterator()
             {
                 WriteBranches = false,
                 RecursionCondition = recurse ? null : (c, l) => false, // null = always recurse
@@ -56,20 +56,22 @@ public static class CostTables
     /// <summary>
     /// Table detailing the amount and duration of each individual Cost of the instance.
     /// </summary>
-    public static Table<ComponentContent> CostBreakdown()
+    public static Table<PartContent> CostBreakdown()
         => new()
         {
-            Iterator = new ComponentContentTree()
+            Iterator = new PartLocationIterator()
             {
-                WriteBranches = false,
+                //WriteBranches = false,
                 PropertyIterator =
                 (i) => i.Cost()?.NativeCosts ?? new(),
             },
             Columns = [
-                ComponentContentColumns.ComponentID(),
-                ComponentContentColumns.PartNumber(),
-                CostColumns.CostBreakdown_Name(),
-                CostColumns.CostBreakdown_Value(),
+                PartContentColumns.MainComponentInfo(ComponentContentColumns.ComponentPrettyTree()),
+                PartContentColumns.GroupCount(),
+                PartContentColumns.MainComponentInfo(ComponentContentColumns.ComponentID()),
+                PartContentColumns.MainComponentInfo(ComponentContentColumns.PartNumber()),
+                CostColumns.Group_CostName(),
+                CostColumns.GroupTotalCost(),
             ],
         };
 }

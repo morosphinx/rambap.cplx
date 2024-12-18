@@ -9,7 +9,7 @@ public static class SystemViewTables
     public static Table<ComponentContent> ComponentTree()
         => new()
         {
-            Iterator = new ComponentContentTree(),
+            Iterator = new ComponentIterator(),
             Columns = [
                 ComponentContentColumns.ComponentPrettyTree(),
                 ComponentContentColumns.ComponentComment(),
@@ -18,10 +18,23 @@ public static class SystemViewTables
             ],
         };
 
+    public static Table<PartContent> ComponentTree_Stacked()
+       => new()
+       {
+           Iterator = new PartLocationIterator(),
+           Columns = [
+                PartContentColumns.MainComponentInfo(ComponentContentColumns.ComponentPrettyTree()),
+                PartContentColumns.GroupCount(),
+                PartContentColumns.MainComponentInfo(ComponentContentColumns.ComponentComment()),
+                PartContentColumns.MainComponentInfo(ComponentContentColumns.PartNumber()),
+                PartContentColumns.MainComponentInfo(DescriptionColumns.PartDescription()),
+           ],
+       };
+
     public static Table<PartContent> ComponentInventory()
         => new()
         {
-            Iterator = new PartContentList()
+            Iterator = new PartTypesIterator()
             {
                 WriteBranches = true,
             },
