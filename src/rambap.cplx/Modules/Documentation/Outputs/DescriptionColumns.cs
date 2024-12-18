@@ -13,9 +13,9 @@ public static class DescriptionColumns
         return string.Join(" ", descriptions);
     }
 
-    public static DelegateColumn<PartContent> GroupDescription() =>
-        new DelegateColumn<PartContent>("Description", ColumnTypeHint.String,
-            i => GetDescription(i.PrimaryItem.Component.Instance)
+    public static DelegateColumn<ComponentContent> GroupDescription() =>
+        new DelegateColumn<ComponentContent>("Description", ColumnTypeHint.String,
+            i => GetDescription(i.Component.Instance)
             );
 
     public static DelegateColumn<ComponentContent> PartDescription() =>

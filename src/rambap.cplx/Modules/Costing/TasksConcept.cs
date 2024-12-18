@@ -21,7 +21,7 @@ public class InstanceTasks : IInstanceConceptProperty
         var tree = new PartTypesIterator();
         foreach (var i in tree.MakeContent(instance))
         {
-            var tasks = i.PrimaryItem.Component.Instance.Tasks();
+            var tasks = i.Component.Instance.Tasks();
             if (tasks != null)
             {
                 total += tasks.NativeNonRecurentTaskDuration;

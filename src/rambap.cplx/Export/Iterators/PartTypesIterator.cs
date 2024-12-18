@@ -7,7 +7,7 @@ namespace rambap.cplx.Export.Iterators;
 /// Produce an IEnumerable iterating over parts used as subcomponents of an instance, and properties of those parts. <br/>
 /// Output is structured like a list of <see cref="PartContent"/>.
 /// </summary>
-public class PartTypesIterator : IIterator<PartContent>
+public class PartTypesIterator : IIterator<ComponentContent>
 {
 
     public bool WriteBranches { get; init; } = true;
@@ -33,7 +33,7 @@ public class PartTypesIterator : IIterator<PartContent>
     static (Type, string, Type) ComponentTemplateUnicityIdentifier(ComponentContent c)
         => (c.Component.Instance.PartType, c.Component.Instance.PN, c.GetType());
 
-    public IEnumerable<PartContent> MakeContent(Pinstance content)
+    public IEnumerable<ComponentContent> MakeContent(Pinstance content)
     {
         // Produce a tree table of All Components, stopping on recursing condition.
         var ComponentTable = new ComponentIterator()
@@ -52,6 +52,7 @@ public class PartTypesIterator : IIterator<PartContent>
         {
             // Groups have same PN, same PartType
             var itemList = group.ToList();
+            var componentGroup = itemList.SelectMany(c => c.AllComponents());
             var primaryItem = group.First();
             // Recursion on the ComponentTree may depend on part location.
             // So we may have a mix of BranchContent and LeafContent here
@@ -61,19 +62,19 @@ public class PartTypesIterator : IIterator<PartContent>
             {
                 // Group has some items that we want to enumerate into
                 if (WriteBranches)
-                    yield return new BranchPartContent { Items = itemList };
+                    yield return new BranchComponent(componentGroup);
                 if (IsAPropertyTable)
                 {
                     var properties = PropertyIterator!.Invoke(primaryItem.Component.Instance);
                     foreach (var prop in properties)
-                        yield return new LeafPropertyPartContent() { Items = itemList, Property = prop };
+                        yield return new LeafProperty(componentGroup) { Property = prop };
                 }
             }
             else
             {
                 // Group is solely made of LeafPartContant that blocked recursion
                 // => We did not want to see what's inside
-                yield return new LeafPartContent() { Items = itemList };
+                yield return new LeafComponent(componentGroup) { IsLeafBecause = LeafCause.RecursionBreak };
             }
         }
     }

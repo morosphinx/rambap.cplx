@@ -65,18 +65,18 @@ public static class TaskColumns
             });
 
 
-    public static DelegateColumn<PartContent> TaskName()
-        => new DelegateColumn<PartContent>("Task Name", ColumnTypeHint.String,
+    public static DelegateColumn<ComponentContent> TaskName()
+        => new DelegateColumn<ComponentContent>("Task Name", ColumnTypeHint.String,
             i =>
             {
-                if (i is LeafPropertyPartContent lpi)
+                if (i is LeafProperty lpi)
                 {
                     if (lpi.Property is InstanceTasks.NamedTask n)
                         return n.Name;
                     else
                         throw new NotImplementedException();
                 }
-                else if (i is LeafPartContent lc)
+                else if (i is LeafComponent lc)
                 {
                     return "unit";
                 }
@@ -84,18 +84,18 @@ public static class TaskColumns
             });
 
 
-    public static DelegateColumn<PartContent> TaskRecurence()
-        => new DelegateColumn<PartContent>("R", ColumnTypeHint.String,
+    public static DelegateColumn<ComponentContent> TaskRecurence()
+        => new DelegateColumn<ComponentContent>("R", ColumnTypeHint.String,
             i =>
             {
-                if (i is LeafPropertyPartContent lpi)
+                if (i is LeafProperty lpi)
                 {
                     if (lpi.Property is InstanceTasks.NamedTask n)
                         return n.IsRecurent ? "*" : "";
                     else
                         throw new NotImplementedException();
                 }
-                else if (i is LeafPartContent lc)
+                else if (i is LeafComponent lc)
                 {
                     // TODO : clarofy, it's not possible to represent both NonRecurent and Recurent duration in the same total unambigiously
                     throw new NotImplementedException();
@@ -103,11 +103,11 @@ public static class TaskColumns
                 return "";
             });
 
-    public static DelegateColumn<PartContent> TaskCategory()
-        => new DelegateColumn<PartContent>("Task Category", ColumnTypeHint.String,
+    public static DelegateColumn<ComponentContent> TaskCategory()
+        => new DelegateColumn<ComponentContent>("Task Category", ColumnTypeHint.String,
             i =>
             {
-                if (i is LeafPropertyPartContent lpi)
+                if (i is LeafProperty lpi)
                 {
                     if (lpi.Property is InstanceTasks.NamedTask n)
                         return n.Category;
@@ -117,11 +117,11 @@ public static class TaskColumns
                 return "";
             });
 
-    public static DelegateColumn<PartContent> TaskDuration()
-        => new DelegateColumn<PartContent>("Duration", ColumnTypeHint.Numeric,
+    public static DelegateColumn<ComponentContent> TaskDuration()
+        => new DelegateColumn<ComponentContent>("Duration", ColumnTypeHint.Numeric,
             i =>
             {
-                if (i is LeafPropertyPartContent lpi)
+                if (i is LeafProperty lpi)
                 {
                     if (lpi.Property is InstanceTasks.NamedTask n)
                         return n.Duration_day.ToString();
@@ -131,44 +131,44 @@ public static class TaskColumns
                 return "";
             });
 
-    public static DelegateColumn<PartContent> TaskCount()
-        => new DelegateColumn<PartContent>("Count", ColumnTypeHint.Numeric,
+    public static DelegateColumn<ComponentContent> TaskCount()
+        => new DelegateColumn<ComponentContent>("Count", ColumnTypeHint.Numeric,
             i =>
             {
-                if (i is LeafPropertyPartContent lpi)
+                if (i is LeafProperty lpi)
                 {
                     if (lpi.Property is InstanceTasks.NamedTask n)
-                        return n.IsRecurent ? i.Items.Count().ToString() : "";
+                        return n.IsRecurent ? i.ComponentCount.ToString() : "";
                     else
                         throw new NotImplementedException();
                 }
                 return "";
             });
 
-    public static DelegateColumn<PartContent> TaskTotalDuration(bool includeNonRecurent)
-        => new DelegateColumn<PartContent>("Task Total Duration", ColumnTypeHint.Numeric,
+    public static DelegateColumn<ComponentContent> TaskTotalDuration(bool includeNonRecurent)
+        => new DelegateColumn<ComponentContent>("Task Total Duration", ColumnTypeHint.Numeric,
             i =>
             {
-                if (i is LeafPropertyPartContent lpi)
+                if (i is LeafProperty lpi)
                 {
                     if (lpi.Property is InstanceTasks.NamedTask n)
                     {
-                        var total_duration = (n.IsRecurent ? lpi.Items.Count() : 1) * n.Duration_day;
+                        var total_duration = (n.IsRecurent ? lpi.ComponentCount : 1) * n.Duration_day;
                         return $"{total_duration}";
                     }
                     else
                         throw new NotImplementedException();
                 }
-                else if (i is LeafPartContent lc)
+                else if (i is LeafComponent lc)
                 {
                     // 
-                    var intance = lc.PrimaryItem.Component.Instance;
+                    var intance = lc.Component.Instance;
                     var primatryTaskData = intance.Tasks();
                     if (primatryTaskData == null) return "";
 
                     // RecurentData
                     var recurrentDurationPerCom = primatryTaskData.TotalRecurentTaskDuration;
-                    var recurrentDurationTotal = recurrentDurationPerCom * lc.Items.Count();
+                    var recurrentDurationTotal = recurrentDurationPerCom * lc.ComponentCount;
 
                     decimal totalDuration = recurrentDurationTotal;
                     if (includeNonRecurent)
@@ -180,7 +180,7 @@ public static class TaskColumns
                     }
                     return totalDuration.ToString();
                 }
-                else if (includeNonRecurent && i is BranchPartContent lb)
+                else if (includeNonRecurent && i is BranchComponent lb)
                 {
                     throw new NotSupportedException("This columns display a mix of intensive (NonRecurentTask) and extensive (RecurentTask) properties. Calculations have caveats, and are disabled.");
                 }

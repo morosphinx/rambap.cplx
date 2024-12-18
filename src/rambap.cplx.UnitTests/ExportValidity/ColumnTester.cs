@@ -33,7 +33,7 @@ internal static class ColumnTester
         });
     }
 
-    public static IEnumerable<(string name, IIterator<PartContent> iterator)> AllPartIterators(Func<Pinstance, IEnumerable<object>> propertyIterator)
+    public static IEnumerable<(string name, IIterator<ComponentContent> iterator)> AllPartTypeIterators(Func<Pinstance, IEnumerable<object>> propertyIterator)
     {
         yield return ("Part list, Flat, No Branches", new PartTypesIterator()
         {
@@ -62,8 +62,11 @@ internal static class ColumnTester
             WriteBranches = true,
             PropertyIterator = propertyIterator
         });
+    }
 
-        yield return ("PartLocationIterator, Flat", new PartLocationIterator()
+    public static IEnumerable<(string name, IIterator<ComponentContent> iterator)> AllPartLocationIterators(Func<Pinstance, IEnumerable<object>> propertyIterator)
+    {
+            yield return ("PartLocationIterator, Flat", new PartLocationIterator()
         {
             RecursionCondition = (c, l) => false,
             PropertyIterator = propertyIterator
@@ -76,7 +79,7 @@ internal static class ColumnTester
         });
     }
 
-    public static void TestComponentTreeColumn_Decimal(
+    public static void TestComponentIteratorColumn_Decimal(
         Pinstance pinstance,
         IColumn<ComponentContent> column,
         Func<Pinstance, IEnumerable<object>> propertyIterator,
@@ -91,13 +94,28 @@ internal static class ColumnTester
         }
     }
 
-    public static void TestPartTreeColumn_Decimal(
+    public static void TestPartTypeIteratorColumn_Decimal(
        Pinstance pinstance,
-       IColumn<PartContent> column,
+       IColumn<ComponentContent> column,
        Func<Pinstance, IEnumerable<object>> propertyIterator,
        decimal expectedTotal)
     {
-        foreach (var t in AllPartIterators(propertyIterator))
+        foreach (var t in AllPartTypeIterators(propertyIterator))
+        {
+            var res = t.iterator.MakeContent(pinstance);
+            var values = res.Select(column.CellFor);
+            var total = values.Select(s => (s != "") ? Convert.ToDecimal(s) : 0M).Sum();
+            Assert.AreEqual(expectedTotal, total, $"Incoherent column sum for {t.name}");
+        }
+    }
+
+    public static void TestPartTypeLocationColumn_Decimal(
+        Pinstance pinstance,
+        IColumn<ComponentContent> column,
+        Func<Pinstance, IEnumerable<object>> propertyIterator,
+        decimal expectedTotal)
+    {
+        foreach (var t in AllPartLocationIterators(propertyIterator))
         {
             var res = t.iterator.MakeContent(pinstance);
             var values = res.Select(column.CellFor);

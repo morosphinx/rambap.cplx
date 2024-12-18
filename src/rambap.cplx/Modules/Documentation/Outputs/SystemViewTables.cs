@@ -18,7 +18,7 @@ public static class SystemViewTables
             ],
         };
 
-    public static Table<PartContent> ComponentTree_Stacked()
+    public static Table<ComponentContent> ComponentTree_Stacked()
        => new()
        {
            Iterator = new PartLocationIterator(),
@@ -31,7 +31,7 @@ public static class SystemViewTables
            ],
        };
 
-    public static Table<PartContent> ComponentInventory()
+    public static Table<ComponentContent> ComponentInventory()
         => new()
         {
             Iterator = new PartTypesIterator()

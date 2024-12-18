@@ -10,7 +10,7 @@ namespace rambap.cplx.Modules.Costing.Outputs
         /// <summary>
         /// Table listing the amount and duration of all tasks kind in the instance
         /// </summary>
-        public static Table<PartContent> BillOfTasks()
+        public static Table<ComponentContent> BillOfTasks()
         => new()
         {
             Iterator = new PartTypesIterator()

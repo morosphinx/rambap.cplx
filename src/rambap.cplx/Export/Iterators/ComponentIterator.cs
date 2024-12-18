@@ -43,7 +43,7 @@ public class ComponentIterator : IIterator<ComponentContent>
             bool isLeafDueToRecursionBreak = ! mayRecursePastThis ;
             if (isLeafDueToRecursionBreak)
             {
-                yield return new LeafComponent() { Component = c, Location = location, IsLeafBecause = LeafCause.RecursionBreak};
+                yield return new LeafComponent(location, c) { IsLeafBecause = LeafCause.RecursionBreak};
                 yield break ; // Leaf component : stop iteration here, do not write subcomponent or properties
             }
 
@@ -53,18 +53,18 @@ public class ComponentIterator : IIterator<ComponentContent>
             bool isLeafDueToNoChild = ! willHaveAnyChildItem ;
             if (isLeafDueToNoChild)
             {
-                yield return new LeafComponent() { Component = c, Location = location, IsLeafBecause = LeafCause.NoChild };
+                yield return new LeafComponent(location, c) { IsLeafBecause = LeafCause.NoChild };
                 yield break;
             }
 
             if (WriteBranches)
             {
-                yield return new BranchComponent() { Component = c, Location = location };
+                yield return new BranchComponent(location, c);
             }
             if (WriteProperties)
             {
                 foreach (var prop in PropertyIterator!(c.Instance))
-                    yield return new LeafProperty() { Component = c, Location = location, Property = prop};
+                    yield return new LeafProperty(location, c) { Property = prop };
             }
             var componentIdx = 0;
             var componentCount = c.Instance.Components.Count();

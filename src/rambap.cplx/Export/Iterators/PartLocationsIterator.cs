@@ -5,7 +5,7 @@ using System.Reflection;
 namespace rambap.cplx.Export.Iterators;
 
 // currently a tweaked component Iterator, need some time to think about it
-public class PartLocationIterator : IIterator<PartContent>
+public class PartLocationIterator : IIterator<ComponentContent>
 {
     bool WriteProperties => PropertyIterator != null;
 
@@ -13,72 +13,48 @@ public class PartLocationIterator : IIterator<PartContent>
 
     public Func<Component, RecursionLocation, bool>? RecursionCondition { private get; init ; }
 
-    public IEnumerable<PartContent> MakeContent(Pinstance content)
+    public IEnumerable<ComponentContent> MakeContent(Pinstance content)
     {
-        IEnumerable<PartContent> Recurse(IEnumerable<Component> compos, RecursionLocation location)
+        IEnumerable<ComponentContent> Recurse(IEnumerable<Component> compos, RecursionLocation location)
         {
-            var c = compos.First();
-            var stopRecurseAttrib = c.Instance.PartType.GetCustomAttribute(typeof(CplxHideContentsAttribute));
+            var components = compos.Select(c => (location, c));
+            var mainComponent = compos.First();
+            var stopRecurseAttrib = mainComponent.Instance.PartType.GetCustomAttribute(typeof(CplxHideContentsAttribute));
             bool mayRecursePastThis =
                 stopRecurseAttrib == null &&
                 (
                     RecursionCondition == null
-                    || RecursionCondition(c, location)
+                    || RecursionCondition(mainComponent, location)
                     || location.Depth == 0 // Always recurse the first iteration (root node), no mater the recursion condition
                 ); 
             bool isLeafDueToRecursionBreak = ! mayRecursePastThis ;
             if (isLeafDueToRecursionBreak)
             {
-                yield return new LeafPartContent()
-                {
-                    Items =
-                    [.. compos.Select(c =>
-                        new LeafComponent() { Component = c, Location = location, IsLeafBecause = LeafCause.RecursionBreak})
-                    ]
-                };
+                yield return new LeafComponent(components) { IsLeafBecause = LeafCause.RecursionBreak};
                 yield break ; // Leaf component : stop iteration here, do not write subcomponent or properties
             }
 
             bool willHaveAnyChildItem =
-                c.Instance.Components.Any() ||
-                (WriteProperties && PropertyIterator!(c.Instance).Any());
+                mainComponent.Instance.Components.Any() ||
+                (WriteProperties && PropertyIterator!(mainComponent.Instance).Any());
             bool isLeafDueToNoChild = ! willHaveAnyChildItem ;
             if (isLeafDueToNoChild)
             {
-                yield return new LeafPartContent()
-                {
-                    Items =
-                    [.. compos.Select(c =>
-                        new LeafComponent() { Component = c, Location = location, IsLeafBecause = LeafCause.NoChild})
-                    ]
-                };
+                yield return new LeafComponent(components) { IsLeafBecause = LeafCause.NoChild };
                 yield break;
             }
 
             if (true) // Always write branch properties
             {
-                yield return new BranchPartContent()
-                {
-                    Items =
-                    [.. compos.Select(c =>
-                        new BranchComponent() { Component = c, Location = location })
-                    ]
-                };
+                yield return new BranchComponent(components);
             }
             if (WriteProperties)
             {
-                foreach (var prop in PropertyIterator!(c.Instance))
-                    yield return new LeafPropertyPartContent()
-                    {
-                        Items =
-                        [.. compos.Select(c =>
-                            new BranchComponent() { Component = c, Location = location })
-                        ],
-                        Property = prop
-                    };
+                foreach (var prop in PropertyIterator!(mainComponent.Instance))
+                    yield return new LeafProperty(components) { Property = prop };
 
             }
-            var subcomponents = c.Instance.Components;
+            var subcomponents = mainComponent.Instance.Components;
             var subcomponentsTypes = subcomponents.GroupBy(c => (c.Instance.PartType, c.Instance.PN));
 
             var groupIdx = 0;
@@ -87,7 +63,7 @@ public class PartLocationIterator : IIterator<PartContent>
             {
                 RecursionLocation subLocation = new()
                 {
-                    CIN = CID.Append(location.CIN, c.CN),
+                    CIN = CID.Append(location.CIN, mainComponent.CN),
                     Depth = location.Depth + 1,
                     ComponentIndex = groupIdx ++,
                     ComponentCount = groupCount,

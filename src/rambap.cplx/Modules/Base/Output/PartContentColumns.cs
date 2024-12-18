@@ -6,42 +6,42 @@ namespace rambap.cplx.Modules.Base.Output;
 
 public static class PartContentColumns
 {
-    public static IColumn<PartContent> MainComponentInfo(IColumn<ComponentContent> componentColumn)
-        => new DelegateColumn<PartContent>(componentColumn.Title, componentColumn.TypeHint,
-            i => componentColumn.CellFor(i.PrimaryItem));
+    public static IColumn<ComponentContent> MainComponentInfo(IColumn<ComponentContent> componentColumn)
+        => new DelegateColumn<ComponentContent>(componentColumn.Title, componentColumn.TypeHint,
+            componentColumn.CellFor);
 
-    public static IColumn<PartContent> EmptyColumn(string title = "")
-        => new DelegateColumn<PartContent>(title, ColumnTypeHint.String,
+    public static IColumn<ComponentContent> EmptyColumn(string title = "")
+        => new DelegateColumn<ComponentContent>(title, ColumnTypeHint.String,
             i => "");
 
-    public static IColumn<PartContent> LineNumber()
-        => new LineNumberColumn<PartContent>();
+    public static IColumn<ComponentContent> LineNumber()
+        => new LineNumberColumn<ComponentContent>();
 
-    public static IColumn<PartContent> GroupNumber()
-        => new LineNumberColumnWithContinuation<PartContent>()
-        { ContinuationCondition = (i, j) => i == null || i.Items != j.Items };
+    public static IColumn<ComponentContent> GroupNumber()
+        => new LineNumberColumnWithContinuation<ComponentContent>()
+        { ContinuationCondition = (i, j) => i == null || i.Component != j.Component };
 
-    public static DelegateColumn<PartContent> GroupPN() =>
-        new DelegateColumn<PartContent>("PN", ColumnTypeHint.String,
-            i => i.PrimaryItem.Component.Instance.PN,
+    public static DelegateColumn<ComponentContent> GroupPN() =>
+        new DelegateColumn<ComponentContent>("PN", ColumnTypeHint.String,
+            i => i.Component.Instance.PN,
             i => "TOTAL");
 
-    public static DelegateColumn<PartContent> GroupCNs() =>
-        new DelegateColumn<PartContent>("Component IDs", ColumnTypeHint.String,
+    public static DelegateColumn<ComponentContent> GroupCNs() =>
+        new DelegateColumn<ComponentContent>("Component IDs", ColumnTypeHint.String,
             i =>
             {
-                var componentCNs = i.Items
-                    .Select(c => CID.Append(c.Location.CIN, c.Component.CN))
+                var componentCNs = i.AllComponents()
+                    .Select(c => CID.Append(c.location.CIN, c.component.CN))
                     .Select(s => CID.RemoveImplicitRoot(s));
 
                 return string.Join(", ", componentCNs);
             });
 
-    public static DelegateColumn<PartContent> GroupCount() =>
-        new DelegateColumn<PartContent>("Count", ColumnTypeHint.Numeric,
+    public static DelegateColumn<ComponentContent> GroupCount() =>
+        new DelegateColumn<ComponentContent>("Count", ColumnTypeHint.Numeric,
             i =>
             {
-                return i.Items.Count.ToString();
+                return i.ComponentCount.ToString();
             });
 }
 

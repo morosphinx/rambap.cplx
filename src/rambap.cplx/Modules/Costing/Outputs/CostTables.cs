@@ -33,7 +33,7 @@ public static class CostTables
     /// </summary>
     /// <param name="recurse">If true, the entire component tree is returned. <br/>
     /// If false, only the immediate components are returned.</param>
-    public static Table<PartContent> BillOfMaterial(bool recurse = true)
+    public static Table<ComponentContent> BillOfMaterial(bool recurse = true)
         => new()
         {
             Iterator = new PartTypesIterator()
@@ -56,7 +56,7 @@ public static class CostTables
     /// <summary>
     /// Table detailing the amount and duration of each individual Cost of the instance.
     /// </summary>
-    public static Table<PartContent> CostBreakdown()
+    public static Table<ComponentContent> CostBreakdown()
         => new()
         {
             Iterator = new PartLocationIterator()

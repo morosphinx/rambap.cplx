@@ -43,15 +43,15 @@ public static class CostColumns
             i => i.Component.Instance.Cost()?.Total.ToString("0.00"),
             i => i.Cost()?.Total.ToString());
 
-    public static DelegateColumn<PartContent> GroupTotalCost() =>
-        new DelegateColumn<PartContent>("Total Cost", ColumnTypeHint.Numeric,
+    public static DelegateColumn<ComponentContent> GroupTotalCost() =>
+        new DelegateColumn<ComponentContent>("Total Cost", ColumnTypeHint.Numeric,
             i =>
             {
-                if (i is LeafPropertyPartContent lp)
+                if (i is LeafProperty lp)
                 {
                     if (lp.Property is InstanceCost.NativeCostInfo prop)
                     {
-                        return (prop.value.Price * lp.Items.Count).ToString("0.00");
+                        return (prop.value.Price * lp.ComponentCount).ToString("0.00");
                     }
                     else
                     {
@@ -59,9 +59,9 @@ public static class CostColumns
                     }
 
                 }
-                else if (i is LeafPartContent)
+                else if (i is LeafComponent)
                 {
-                    var prices = i.Items.Select(c => c.Component.Instance.Cost()?.Total ?? 0);
+                    var prices = i.AllComponents().Select(c => c.component.Instance.Cost()?.Total ?? 0);
                     return prices.Sum().ToString("0.00");
                 }
                 else
@@ -71,36 +71,36 @@ public static class CostColumns
             },
             i => i.Cost()?.Total.ToString("0.00"));
 
-    public static DelegateColumn<PartContent> Group_CostName()
-        => new DelegateColumn<PartContent>("Cost Name", ColumnTypeHint.String,
+    public static DelegateColumn<ComponentContent> Group_CostName()
+        => new DelegateColumn<ComponentContent>("Cost Name", ColumnTypeHint.String,
             i =>
             {
-                if (i is LeafPropertyPartContent lpi)
+                if (i is LeafProperty lpi)
                 {
                     if (lpi.Property is InstanceCost.NativeCostInfo n)
                         return n.name;
                 }
-                else if (i is LeafPartContent lp)
+                else if (i is LeafComponent lp)
                 {
                     return "unit";
                 }
                 return "";
             });
 
-    public static DelegateColumn<PartContent> Group_UnitCost()
-        => new DelegateColumn<PartContent>("Unit Cost", ColumnTypeHint.Numeric,
+    public static DelegateColumn<ComponentContent> Group_UnitCost()
+        => new DelegateColumn<ComponentContent>("Unit Cost", ColumnTypeHint.Numeric,
             i =>
             {
-                if (i is LeafPropertyPartContent lpi)
+                if (i is LeafProperty lpi)
                 {
                     if (lpi.Property is InstanceCost.NativeCostInfo n)
                         return n.value.Price.ToString("0.00");
                     else
                         throw new NotImplementedException();
                 }
-                else if (i is LeafPartContent lp)
+                else if (i is LeafComponent lp)
                 {
-                    var costs = lp.Items.Select(i => i.Component.Instance.Cost()?.Total).ToList();
+                    var costs = lp.AllComponents().Select(i => i.component.Instance.Cost()?.Total).ToList();
                     // Parts may be edited, without changing the PN => This would be a mistake, detect it
                     bool costAreCoherent = costs.Distinct().Count() <= 1;
                     if (costAreCoherent) return costs.First()?.ToString("0.00") ?? "";

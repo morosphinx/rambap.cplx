@@ -152,7 +152,7 @@ public class FlattenedDocumentationTreeGenerator : IGenerator
             RecursionCondition = (c, l) => this.SubComponentInclusionCondition?.Invoke(c) ?? false
         };
         var content = partTree.MakeContent(i);
-        var partFolders = content.Select(c => c.PrimaryItem.Component.Instance)
+        var partFolders = content.Select(c => c.Component.Instance)
                                  .Select(p => 
                                  (FileNamePatternFor(i),new Folder(
                                      [

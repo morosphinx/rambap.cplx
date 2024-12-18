@@ -3,6 +3,46 @@
 namespace rambap.cplx.Export.Iterators;
 
 /// <summary>
+/// Content of a Iterated table representing a component or group of component
+/// </summary>
+public abstract record ComponentContent
+{
+    public RecursionLocation Location { get; }
+    public Component Component { get; }
+
+    // This should be faster than calling AllComponents().Count(), witch iterate an enumerable
+    public int ComponentCount => 1 + GroupedComponents.Count;
+
+    // On construction, grouped component are assumed to be all instance of the same, value equal definition
+    // TODO : ensure this is true. How ? The issue can happens if someone edit an instance or part
+    // Without producing an unique PN for it
+    public List<(RecursionLocation,Component)> GroupedComponents { private get; init; } = [];
+    public IEnumerable<(RecursionLocation location, Component component)> AllComponents()
+    {
+        yield return (Location,Component);
+        foreach (var component in GroupedComponents)
+            yield return component;
+    }
+
+    public ComponentContent(RecursionLocation loc, Component comp)
+    {
+        Location = loc;
+        Component = comp;
+    }
+
+    public ComponentContent(IEnumerable<(RecursionLocation loc, Component comp)> allComponents)
+    {
+        if (!allComponents.Any())
+            throw new InvalidOperationException($"{nameof(ComponentContent)} must be created with at least one component");
+        var mainComponent = allComponents.First();
+        Location = mainComponent.loc;
+        Component = mainComponent.comp;
+        var otherComponents = allComponents.Skip(1);
+        GroupedComponents = [.. otherComponents];
+    }
+}
+
+/// <summary>
 /// What caused a Content to be a leaf
 /// </summary>
 public enum LeafCause
@@ -19,59 +59,50 @@ public enum LeafCause
 }
 
 /// <summary>
-/// Content of a table representing a single component
-/// </summary>
-public abstract record ComponentContent()
-{
-    public required RecursionLocation Location { get; init; }
-    public required Component Component { get; init; }
-}
-
-/// <summary>
 /// A content of a component Tree representing a component. Has no child content
 /// </summary>
 public record LeafComponent : ComponentContent
 {
+    public LeafComponent(RecursionLocation loc, Component comp)
+        : base(loc, comp)
+    { }
+
+    public LeafComponent(IEnumerable<(RecursionLocation loc, Component comp)> allComponents)
+        : base(allComponents)
+    { }
+
     public required LeafCause IsLeafBecause { get; init; }
 }
 
 /// <summary>
 /// A content of a component Tree representing a component. Has descendants, either <see cref="LeafComponent"/> or <see cref="LeafProperty"/>
 /// </summary>
-public record BranchComponent : ComponentContent { }
+public record BranchComponent : ComponentContent
+{
+    public BranchComponent(RecursionLocation loc, Component comp)
+    : base(loc, comp)
+    { }
+
+    public BranchComponent(IEnumerable<(RecursionLocation loc, Component comp)> allComponents)
+        : base(allComponents)
+    { }
+}
 
 /// <summary>
 /// A content of a component Tree representing a property of a component.
 /// </summary>
 public record LeafProperty : ComponentContent
 {
-    public object? Property { get; init; } = null;
-}
+    public LeafProperty(RecursionLocation loc, Component comp)
+        : base(loc, comp)
+    { }
 
-
-/// <summary>
-/// Content of a table representing a part <br/>
-/// Thechnicaly, a group of component sharing the same part definition
-/// </summary>
-public abstract record PartContent
-{
-    /// <summary>
-    /// Main component, that should be assumed to have value equal property to all other
-    /// </summary>
-    public ComponentContent PrimaryItem => Items.First();
+    public LeafProperty(IEnumerable<(RecursionLocation loc, Component comp)> allComponents)
+        : base(allComponents)
+    { }
 
     /// <summary>
-    /// All components of the group
+    /// Property value. Is owned by the Component
     /// </summary>
-    public required List<ComponentContent> Items { get; init; } = new();
-}
-
-/// <summary>
-/// Content of a part list represent a group of part that ALL have either no child, or the recursion was stopped on
-/// </summary>
-public record LeafPartContent : PartContent { }
-public record BranchPartContent : PartContent { }
-public record LeafPropertyPartContent : PartContent
-{
-    public object? Property { get; init; } = null;
+    public required object? Property { get; init; } = null;
 }

@@ -12,7 +12,7 @@ public class TestTaskOutputs
     {
         var part = new DecimalPropertyPartExemple<RecurrentTask>.Part_A();
         var i = new Pinstance(part);
-        ColumnTester.TestComponentTreeColumn_Decimal(
+        ColumnTester.TestComponentIteratorColumn_Decimal(
             i,
             TaskColumns.RecurentTaskDuration(),
             i => i.Tasks()?.RecurentTasks ?? [],
@@ -24,7 +24,7 @@ public class TestTaskOutputs
     {
         var part = new DecimalPropertyPartExemple<RecurrentTask>.Part_A();
         var i = new Pinstance(part);
-        ColumnTester.TestPartTreeColumn_Decimal(
+        ColumnTester.TestPartTypeIteratorColumn_Decimal(
             i,
             TaskColumns.TaskTotalDuration(includeNonRecurent:false),
             i => i.Tasks()?.RecurentTasks ?? [],
@@ -36,7 +36,7 @@ public class TestTaskOutputs
     {
         var part = new DecimalPropertyPartExemple<NonRecurrentTask>.Part_A();
         var i = new Pinstance(part);
-        ColumnTester.TestPartTreeColumn_Decimal(
+        ColumnTester.TestPartTypeIteratorColumn_Decimal(
             i,
             TaskColumns.TaskTotalDuration(includeNonRecurent:true),
             i => i.Tasks()?.NonRecurentTasks ?? [],
