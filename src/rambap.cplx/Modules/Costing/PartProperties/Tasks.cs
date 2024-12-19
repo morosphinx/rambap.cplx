@@ -32,7 +32,7 @@ public enum TaskCategory
     // Technical Domains
     Electrical,
     Electronics,
-    Mechancial,
+    Mechanical,
     Software,
 }
 
