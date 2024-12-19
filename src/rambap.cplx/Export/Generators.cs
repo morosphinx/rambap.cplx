@@ -16,7 +16,7 @@ public static class FileGroups
                     WriteTotalLine = true,
                     TotalLineOnTop = true,
                 }),
-                ($"Costs2_{filenamePattern}.csv", new MarkdownTableFile(i)
+                ($"RecurentCosts_{filenamePattern}.csv", new MarkdownTableFile(i)
                 {
                     Table = CostTables.CostBreakdown(),
                     WriteTotalLine = true,
@@ -28,7 +28,7 @@ public static class FileGroups
                     WriteTotalLine = true,
                     TotalLineOnTop = true,
                 }),
-                ($"Tasks_{filenamePattern}.csv", new MarkdownTableFile(i) {
+                ($"RecurentTasks_{filenamePattern}.csv", new MarkdownTableFile(i) {
                     Table = TaskTables.RecurentTaskBreakdown(),
                     WriteTotalLine = true,
                     TotalLineOnTop = true,
@@ -39,9 +39,18 @@ public static class FileGroups
     public static IEnumerable<(string, IInstruction)> SystemViewTables(Pinstance i, string filenamePattern)
     {
         return [
-                ($"Tree_{filenamePattern}.csv", new FixedWidthTableFile(i) { Table = Modules.Documentation.Outputs.SystemViewTables.ComponentTree() }),
-                ($"Tree_Stacked_{filenamePattern}.csv", new FixedWidthTableFile(i) { Table = Modules.Documentation.Outputs.SystemViewTables.ComponentTree_Stacked() }),
-                ($"Inventory_{filenamePattern}.csv", new MarkdownTableFile(i) { Table = Modules.Documentation.Outputs.SystemViewTables.ComponentInventory() }),
+                ($"Tree_Detailled_{filenamePattern}.csv", new FixedWidthTableFile(i)
+                {
+                    Table = Modules.Documentation.Outputs.SystemViewTables.ComponentTree_Detailled()
+                }),
+                ($"Tree_Stacked_{filenamePattern}.csv", new FixedWidthTableFile(i)
+                {
+                    Table = Modules.Documentation.Outputs.SystemViewTables.ComponentTree_Stacked()
+                }),
+                ($"Inventory_{filenamePattern}.csv", new MarkdownTableFile(i)
+                {
+                    Table = Modules.Documentation.Outputs.SystemViewTables.ComponentInventory()
+                }),
                 ];
     }
 }

@@ -51,7 +51,7 @@ public static class CostColumns
                 {
                     if (lp.Property is InstanceCost.NativeCostInfo prop)
                     {
-                        return (prop.value.Price * lp.ComponentCount).ToString("0.00");
+                        return (prop.value.Price * lp.ComponentTotalCount).ToString("0.00");
                     }
                     else
                     {

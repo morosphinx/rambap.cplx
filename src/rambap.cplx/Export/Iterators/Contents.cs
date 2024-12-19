@@ -11,12 +11,13 @@ public abstract record ComponentContent
     public Component Component { get; }
 
     // This should be faster than calling AllComponents().Count(), witch iterate an enumerable
-    public int ComponentCount => 1 + GroupedComponents.Count;
+    public int ComponentLocalCount => 1 + GroupedComponents.Count;
+    public int ComponentTotalCount => Location.Multiplicity * ComponentLocalCount;
 
     // On construction, grouped component are assumed to be all instance of the same, value equal definition
     // TODO : ensure this is true. How ? The issue can happens if someone edit an instance or part
     // Without producing an unique PN for it
-    public List<(RecursionLocation,Component)> GroupedComponents { private get; init; } = [];
+    private List<(RecursionLocation,Component)> GroupedComponents { get; init; } = [];
     public IEnumerable<(RecursionLocation location, Component component)> AllComponents()
     {
         yield return (Location,Component);

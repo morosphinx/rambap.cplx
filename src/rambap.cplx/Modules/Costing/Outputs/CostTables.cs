@@ -48,7 +48,7 @@ public static class CostTables
                 DescriptionColumns.GroupDescription(),
                 CostColumns.Group_CostName(),
                 CostColumns.Group_UnitCost(),
-                CommonColumns.GroupCount(),
+                CommonColumns.ComponentTotalCount(),
                 CostColumns.GroupTotalCost(),
             ],
         };
@@ -61,16 +61,16 @@ public static class CostTables
         {
             Iterator = new PartLocationIterator()
             {
-                //WriteBranches = false,
                 PropertyIterator =
                 (i) => i.Cost()?.NativeCosts ?? new(),
             },
             Columns = [
-IDColumns.ComponentNumberPrettyTree(),
-                CommonColumns.GroupCount(),
-IDColumns.ComponentID(),
-IDColumns.PartNumber(),
+                IDColumns.ComponentNumberPrettyTree(),
+                IDColumns.ComponentID(),
+                IDColumns.PartNumber(),
                 CostColumns.Group_CostName(),
+                CostColumns.Group_UnitCost(),
+                CommonColumns.ComponentTotalCount(),
                 CostColumns.GroupTotalCost(),
             ],
         };

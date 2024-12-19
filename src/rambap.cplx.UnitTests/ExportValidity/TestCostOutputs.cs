@@ -24,7 +24,7 @@ public class TestCostOutputs
         var i = new Pinstance(part);
         ColumnTester.TestPartTypeLocationColumn_Decimal(
             i,
-            CostColumns.CostBreakdown_Value(),
+            CostColumns.GroupTotalCost(),
             i => i.Cost()?.NativeCosts ?? [],
             DecimalPropertyPartExemple.ExpectedTotal_ExtensiveT);
     }

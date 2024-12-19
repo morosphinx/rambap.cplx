@@ -76,7 +76,7 @@ public class CplxExcelTemplateTests
                     CommonColumns.EmptyColumn(), // Not filled by CPLX
                     CostColumns.Group_CostName(),
                     CostColumns.Group_UnitCost(),
-                    CommonColumns.GroupCount(),
+                    CommonColumns.ComponentTotalCount(),
                     CostColumns.GroupTotalCost(),
                 ]
         };

@@ -6,14 +6,14 @@ namespace rambap.cplx.Modules.Documentation.Outputs;
 
 public static class SystemViewTables
 {
-    public static Table<ComponentContent> ComponentTree()
+    public static Table<ComponentContent> ComponentTree_Detailled()
         => new()
         {
             Iterator = new ComponentIterator(),
             Columns = [
-IDColumns.ComponentNumberPrettyTree(),
+                IDColumns.ComponentNumberPrettyTree(),
+                IDColumns.PartNumber(),
                 CommonColumns.ComponentComment(),
-IDColumns.PartNumber(),
                 DescriptionColumns.PartDescription(),
             ],
         };
@@ -23,10 +23,11 @@ IDColumns.PartNumber(),
        {
            Iterator = new PartLocationIterator(),
            Columns = [
-IDColumns.ComponentNumberPrettyTree(),
-                CommonColumns.GroupCount(),
+                IDColumns.ComponentNumberPrettyTree(),
+                CommonColumns.ComponentTotalCount(),
+                IDColumns.GroupCNs(),
+                IDColumns.PartNumber(),
                 CommonColumns.ComponentComment(),
-IDColumns.PartNumber(),
                 DescriptionColumns.PartDescription(),
            ],
        };
@@ -43,7 +44,7 @@ IDColumns.PartNumber(),
                 IDColumns.PartNumber(),
                 IDColumns.GroupCIDs(),
                 DescriptionColumns.GroupDescription(),
-                CommonColumns.GroupCount(),
+                CommonColumns.ComponentTotalCount(),
             ],
         };
 }

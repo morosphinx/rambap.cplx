@@ -73,8 +73,9 @@ public class ComponentIterator : IIterator<ComponentContent>
                 RecursionLocation subLocation = new()
                 {
                     CIN = CID.Append(location.CIN, c.CN),
+                    Multiplicity = location.Multiplicity * 1,
                     Depth = location.Depth + 1,
-                    ComponentIndex = componentIdx ++,
+                    ComponentIndex = componentIdx++,
                     ComponentCount = componentCount,
                 };
                 foreach(var l in Recurse(subcomponent, subLocation))
@@ -90,6 +91,7 @@ public class ComponentIterator : IIterator<ComponentContent>
         RecursionLocation rootLocation = new() 
         {
             CIN = $"",
+            Multiplicity = 1,
             Depth = 0,
             ComponentIndex = 0,
             ComponentCount = 1,

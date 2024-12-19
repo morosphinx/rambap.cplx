@@ -15,9 +15,18 @@ public static class IDColumns
         => new DelegateColumn<ComponentContent>("PN", ColumnTypeHint.String,
              i => i.Component.Instance.PN,
              i => "TOTAL");
+
     public static DelegateColumn<ComponentContent> ComponentNumber()
         => new DelegateColumn<ComponentContent>("CN", ColumnTypeHint.String,
             i => i.Component.CN);
+
+    public static DelegateColumn<ComponentContent> GroupCNs()
+       => new DelegateColumn<ComponentContent>("Component CNs", ColumnTypeHint.String,
+            i =>
+            {
+                var componentCNs = i.AllComponents().Select(c => c.component.CN);
+                return string.Join(", ", componentCNs);
+            });
 
     public static DelegateColumn<ComponentContent> ComponentID()
         => new DelegateColumn<ComponentContent>("CID", ColumnTypeHint.String,
@@ -30,7 +39,7 @@ public static class IDColumns
             );
 
     public static DelegateColumn<ComponentContent> GroupCIDs()
-        => new DelegateColumn<ComponentContent>("Component IDs", ColumnTypeHint.String,
+        => new DelegateColumn<ComponentContent>("Component CIDs", ColumnTypeHint.String,
             i =>
             {
                 var componentCIDs = i.AllComponents()
@@ -72,13 +81,24 @@ public static class IDColumns
             if (item.Location.Depth > 0)
                 LevelDone[item.Location.Depth - 1] = isEnd;
 
-            int ver_ctn = Math.Max(item.Location.Depth - 1, 0);
-            int end_cent = Math.Min(item.Location.Depth, 1);
+            bool isGrouping = item.ComponentLocalCount > 1;
+
+            bool isLeafProperty = item is LeafProperty;
+            var effectiveDepth = item.Location.Depth + (isLeafProperty ? 1 : 0);
+            // TODO : isEnd value is incorrect when adding a virtual level on isLeafProperty
+            // => Incorrectly show " ├─" even if no successor
+
+            int ver_ctn = Math.Max(effectiveDepth - 1, 0);
+            int end_cent = Math.Min(effectiveDepth, 1);
             List<string> strs = [
                 .. Enumerable.Range(0, ver_ctn).Select(i => LevelDone[i] ? "   " : ver ),
                 .. Enumerable.Range(0, end_cent).Select(i => end),
                 " ",
-                item.Component.CN,
+                isLeafProperty
+                    ? $"*" // This is a property
+                    : isGrouping
+                        ? $"{item.ComponentLocalCount}x: {item.Component.Instance.PN}"
+                        : $"{item.Component.CN}",
             ];
             return string.Concat(strs);
         }

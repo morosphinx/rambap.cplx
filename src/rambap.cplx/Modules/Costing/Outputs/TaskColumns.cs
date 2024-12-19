@@ -138,7 +138,7 @@ public static class TaskColumns
                 if (i is LeafProperty lpi)
                 {
                     if (lpi.Property is InstanceTasks.NamedTask n)
-                        return n.IsRecurent ? i.ComponentCount.ToString() : "";
+                        return n.IsRecurent ? i.ComponentTotalCount.ToString() : "";
                     else
                         throw new NotImplementedException();
                 }
@@ -153,7 +153,7 @@ public static class TaskColumns
                 {
                     if (lpi.Property is InstanceTasks.NamedTask n)
                     {
-                        var total_duration = (n.IsRecurent ? lpi.ComponentCount : 1) * n.Duration_day;
+                        var total_duration = (n.IsRecurent ? lpi.ComponentTotalCount : 1) * n.Duration_day;
                         return $"{total_duration}";
                     }
                     else
@@ -168,7 +168,7 @@ public static class TaskColumns
 
                     // RecurentData
                     var recurrentDurationPerCom = primatryTaskData.TotalRecurentTaskDuration;
-                    var recurrentDurationTotal = recurrentDurationPerCom * lc.ComponentCount;
+                    var recurrentDurationTotal = recurrentDurationPerCom * lc.ComponentTotalCount;
 
                     decimal totalDuration = recurrentDurationTotal;
                     if (includeNonRecurent)

@@ -21,11 +21,11 @@ public static class CommonColumns
         => new DelegateColumn<ComponentContent>("Depth", ColumnTypeHint.Numeric,
             i => i.Location.Depth.ToString());
 
-    public static DelegateColumn<ComponentContent> GroupCount()
+    public static DelegateColumn<ComponentContent> ComponentTotalCount()
         => new DelegateColumn<ComponentContent>("Count", ColumnTypeHint.Numeric,
             i =>
             {
-                return i.ComponentCount.ToString();
+                return i.ComponentTotalCount.ToString();
             });
 
     public static DelegateColumn<ComponentContent> ComponentComment() =>

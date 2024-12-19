@@ -49,15 +49,15 @@ namespace rambap.cplx.Modules.Costing.Outputs
         public static Table<ComponentContent> RecurentTaskBreakdown()
             => new()
             {
-                Iterator = new ComponentIterator()
+                Iterator = new PartLocationIterator()
                 {
-                    WriteBranches = false,
                     PropertyIterator =
                     (i) => i.Tasks()?.RecurentTasks ?? [],
                 },
                 Columns = [
-IDColumns.ComponentID(),
-IDColumns.PartNumber(),
+                IDColumns.ComponentNumberPrettyTree(),
+                IDColumns.ComponentID(),
+                IDColumns.PartNumber(),
                 TaskColumns.RecurentTaskName(),
                 TaskColumns.RecurentTaskCategory(),
                 TaskColumns.RecurentTaskDuration(),
