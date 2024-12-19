@@ -10,10 +10,10 @@ namespace rambap.cplx.Modules.Costing.Outputs
         /// <summary>
         /// Table listing the amount and duration of all tasks kind in the instance
         /// </summary>
-        public static Table<PartContent> BillOfTasks()
+        public static Table<ComponentContent> BillOfTasks()
         => new()
         {
-            Iterator = new PartContentList()
+            Iterator = new PartTypesIterator()
             {
                 WriteBranches = false,
                 PropertyIterator =
@@ -28,15 +28,15 @@ namespace rambap.cplx.Modules.Costing.Outputs
                 }
             },
             Columns = [
-                PartContentColumns.GroupNumber(),
-            PartContentColumns.GroupPN(),
-            DescriptionColumns.GroupDescription(),
-            TaskColumns.TaskName(),
-            TaskColumns.TaskCategory(),
-            TaskColumns.TaskDuration(),
-            TaskColumns.TaskRecurence(),
-            TaskColumns.TaskCount(),
-            TaskColumns.TaskTotalDuration(includeNonRecurent: true),
+                CommonColumns.LineTypeNumber(),
+                IDColumns.PartNumber(),
+                DescriptionColumns.GroupDescription(),
+                TaskColumns.TaskName(),
+                TaskColumns.TaskCategory(),
+                TaskColumns.TaskDuration(),
+                TaskColumns.TaskRecurence(),
+                TaskColumns.TaskCount(),
+                TaskColumns.TaskTotalDuration(includeNonRecurent: true),
             ],
 
         };
@@ -49,15 +49,15 @@ namespace rambap.cplx.Modules.Costing.Outputs
         public static Table<ComponentContent> RecurentTaskBreakdown()
             => new()
             {
-                Iterator = new ComponentContentTree()
+                Iterator = new PartLocationIterator()
                 {
-                    WriteBranches = false,
                     PropertyIterator =
                     (i) => i.Tasks()?.RecurentTasks ?? [],
                 },
                 Columns = [
-                    ComponentContentColumns.ComponentID(),
-                ComponentContentColumns.PartNumber(),
+                IDColumns.ComponentNumberPrettyTree(),
+                IDColumns.ComponentID(),
+                IDColumns.PartNumber(),
                 TaskColumns.RecurentTaskName(),
                 TaskColumns.RecurentTaskCategory(),
                 TaskColumns.RecurentTaskDuration(),

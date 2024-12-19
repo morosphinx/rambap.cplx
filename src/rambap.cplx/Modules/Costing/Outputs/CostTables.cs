@@ -33,22 +33,22 @@ public static class CostTables
     /// </summary>
     /// <param name="recurse">If true, the entire component tree is returned. <br/>
     /// If false, only the immediate components are returned.</param>
-    public static Table<PartContent> BillOfMaterial(bool recurse = true)
+    public static Table<ComponentContent> BillOfMaterial(bool recurse = true)
         => new()
         {
-            Iterator = new PartContentList()
+            Iterator = new PartTypesIterator()
             {
                 WriteBranches = false,
                 RecursionCondition = recurse ? null : (c, l) => false, // null = always recurse
                 PropertyIterator = ListCostOr0
             },
             Columns = [
-                PartContentColumns.GroupNumber(),
-                PartContentColumns.GroupPN(),
+                CommonColumns.LineTypeNumber(),
+                IDColumns.PartNumber(),
                 DescriptionColumns.GroupDescription(),
                 CostColumns.Group_CostName(),
                 CostColumns.Group_UnitCost(),
-                PartContentColumns.GroupCount(),
+                CommonColumns.ComponentTotalCount(),
                 CostColumns.GroupTotalCost(),
             ],
         };
@@ -59,17 +59,19 @@ public static class CostTables
     public static Table<ComponentContent> CostBreakdown()
         => new()
         {
-            Iterator = new ComponentContentTree()
+            Iterator = new PartLocationIterator()
             {
-                WriteBranches = false,
                 PropertyIterator =
                 (i) => i.Cost()?.NativeCosts ?? new(),
             },
             Columns = [
-                ComponentContentColumns.ComponentID(),
-                ComponentContentColumns.PartNumber(),
-                CostColumns.CostBreakdown_Name(),
-                CostColumns.CostBreakdown_Value(),
+                IDColumns.ComponentNumberPrettyTree(),
+                IDColumns.ComponentID(),
+                IDColumns.PartNumber(),
+                CostColumns.Group_CostName(),
+                CostColumns.Group_UnitCost(),
+                CommonColumns.ComponentTotalCount(),
+                CostColumns.GroupTotalCost(),
             ],
         };
 }

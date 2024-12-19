@@ -10,9 +10,21 @@ public class TestCostOutputs
     {
         var part = new DecimalPropertyPartExemple<Cost>.Part_A();
         var i = new Pinstance(part);
-        ColumnTester.TestComponentTreeColumn_Decimal(
+        ColumnTester.TestComponentIteratorColumn_Decimal(
             i,
             CostColumns.CostBreakdown_Value(),
+            i => i.Cost()?.NativeCosts ?? [],
+            DecimalPropertyPartExemple.ExpectedTotal_ExtensiveT);
+    }
+
+    [TestMethod]
+    public void TestColumn_CostBreakdown_Value_Ontypelocation()
+    {
+        var part = new DecimalPropertyPartExemple<Cost>.Part_A();
+        var i = new Pinstance(part);
+        ColumnTester.TestPartTypeLocationColumn_Decimal(
+            i,
+            CostColumns.GroupTotalCost(),
             i => i.Cost()?.NativeCosts ?? [],
             DecimalPropertyPartExemple.ExpectedTotal_ExtensiveT);
     }
@@ -22,7 +34,7 @@ public class TestCostOutputs
     {
         var part = new DecimalPropertyPartExemple<Cost>.Part_A();
         var i = new Pinstance(part);
-        ColumnTester.TestPartTreeColumn_Decimal(
+        ColumnTester.TestPartTypeIteratorColumn_Decimal(
             i,
             CostColumns.GroupTotalCost(),
             i => i.Cost()?.NativeCosts ?? [],

@@ -18,10 +18,10 @@ public class InstanceTasks : IInstanceConceptProperty
     public static decimal GetInheritedRecurentCosts(Pinstance instance)
     {
         decimal total = 0;
-        var tree = new PartContentList();
+        var tree = new PartTypesIterator();
         foreach (var i in tree.MakeContent(instance))
         {
-            var tasks = i.PrimaryItem.Component.Instance.Tasks();
+            var tasks = i.Component.Instance.Tasks();
             if (tasks != null)
             {
                 total += tasks.NativeNonRecurentTaskDuration;

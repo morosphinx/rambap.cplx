@@ -4,62 +4,11 @@ using System.Reflection;
 
 namespace rambap.cplx.Export.Iterators;
 
-public record RecursionLocation()
-{
-    public required string CIN { get; init; }
-    public required int Depth { get; init; }
-    public required int ComponentIndex { get; init; }
-    public required int ComponentCount { get; init; }
-}
-
-public abstract record ComponentContent()
-{
-    public required RecursionLocation Location { get; init; }
-    public required Component Component { get; init; }
-}
-
-/// <summary>
-/// Waht caused a Content to be a leaf
-/// </summary>
-public enum LeafCause
-{
-    /// <summary>
-    /// Recursion was here stopped on user-defined purpose
-    /// </summary>
-    RecursionBreak,
-
-    /// <summary>
-    /// Recursion was here stopped because there is no component or prperty to recurse to
-    /// </summary>
-    NoChild,
-}
-
-/// <summary>
-/// A content of a component Tree representing a component. Has no child content
-/// </summary>
-public record LeafComponent : ComponentContent
-{
-    public required LeafCause IsLeafBecause { get; init ; }
-}
-
-/// <summary>
-/// A content of a component Tree representing a component. Has descendants, either <see cref="LeafComponent"/> or <see cref="LeafProperty"/>
-/// </summary>
-public record BranchComponent : ComponentContent { }
-
-/// <summary>
-/// A content of a component Tree representing a property of a component.
-/// </summary>
-public record LeafProperty : ComponentContent
-{
-    public object? Property { get; init; } = null;
-}
-
 /// <summary>
 /// Produce an IEnumerable iterating over the component tree of an instance, and its properties <br/>
 /// Output is structured like a tree of <see cref="ComponentContent"/>. <br/>
 /// </summary>
-public class ComponentContentTree : IIterator<ComponentContent>
+public class ComponentIterator : IIterator<ComponentContent>
 {
     /// <summary> If true, return every component encountered when traversing the tree. Otherwise, return only the final leaf components and leaf properties. </summary>
     public bool WriteBranches { get; init; } = true;
@@ -94,7 +43,7 @@ public class ComponentContentTree : IIterator<ComponentContent>
             bool isLeafDueToRecursionBreak = ! mayRecursePastThis ;
             if (isLeafDueToRecursionBreak)
             {
-                yield return new LeafComponent() { Component = c, Location = location, IsLeafBecause = LeafCause.RecursionBreak};
+                yield return new LeafComponent(location, c) { IsLeafBecause = LeafCause.RecursionBreak};
                 yield break ; // Leaf component : stop iteration here, do not write subcomponent or properties
             }
 
@@ -104,18 +53,18 @@ public class ComponentContentTree : IIterator<ComponentContent>
             bool isLeafDueToNoChild = ! willHaveAnyChildItem ;
             if (isLeafDueToNoChild)
             {
-                yield return new LeafComponent() { Component = c, Location = location, IsLeafBecause = LeafCause.NoChild };
+                yield return new LeafComponent(location, c) { IsLeafBecause = LeafCause.NoChild };
                 yield break;
             }
 
             if (WriteBranches)
             {
-                yield return new BranchComponent() { Component = c, Location = location };
+                yield return new BranchComponent(location, c);
             }
             if (WriteProperties)
             {
                 foreach (var prop in PropertyIterator!(c.Instance))
-                    yield return new LeafProperty() { Component = c, Location = location, Property = prop};
+                    yield return new LeafProperty(location, c) { Property = prop };
             }
             var componentIdx = 0;
             var componentCount = c.Instance.Components.Count();
@@ -124,8 +73,9 @@ public class ComponentContentTree : IIterator<ComponentContent>
                 RecursionLocation subLocation = new()
                 {
                     CIN = CID.Append(location.CIN, c.CN),
+                    Multiplicity = location.Multiplicity * 1,
                     Depth = location.Depth + 1,
-                    ComponentIndex = componentIdx ++,
+                    ComponentIndex = componentIdx++,
                     ComponentCount = componentCount,
                 };
                 foreach(var l in Recurse(subcomponent, subLocation))
@@ -141,6 +91,7 @@ public class ComponentContentTree : IIterator<ComponentContent>
         RecursionLocation rootLocation = new() 
         {
             CIN = $"",
+            Multiplicity = 1,
             Depth = 0,
             ComponentIndex = 0,
             ComponentCount = 1,

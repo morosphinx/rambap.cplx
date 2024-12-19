@@ -6,31 +6,45 @@ namespace rambap.cplx.Modules.Documentation.Outputs;
 
 public static class SystemViewTables
 {
-    public static Table<ComponentContent> ComponentTree()
+    public static Table<ComponentContent> ComponentTree_Detailled()
         => new()
         {
-            Iterator = new ComponentContentTree(),
+            Iterator = new ComponentIterator(),
             Columns = [
-                ComponentContentColumns.ComponentPrettyTree(),
-                ComponentContentColumns.ComponentComment(),
-                ComponentContentColumns.PartNumber(),
+                IDColumns.ComponentNumberPrettyTree(),
+                IDColumns.PartNumber(),
+                CommonColumns.ComponentComment(),
                 DescriptionColumns.PartDescription(),
             ],
         };
 
-    public static Table<PartContent> ComponentInventory()
+    public static Table<ComponentContent> ComponentTree_Stacked()
+       => new()
+       {
+           Iterator = new PartLocationIterator(),
+           Columns = [
+                IDColumns.ComponentNumberPrettyTree(),
+                CommonColumns.ComponentTotalCount(),
+                IDColumns.GroupCNs(),
+                IDColumns.PartNumber(),
+                CommonColumns.ComponentComment(),
+                DescriptionColumns.PartDescription(),
+           ],
+       };
+
+    public static Table<ComponentContent> ComponentInventory()
         => new()
         {
-            Iterator = new PartContentList()
+            Iterator = new PartTypesIterator()
             {
                 WriteBranches = true,
             },
             Columns = [
-                PartContentColumns.GroupNumber(),
-                PartContentColumns.GroupPN(),
-                PartContentColumns.GroupCNs(),
+                CommonColumns.LineTypeNumber(),
+                IDColumns.PartNumber(),
+                IDColumns.GroupCIDs(),
                 DescriptionColumns.GroupDescription(),
-                PartContentColumns.GroupCount(),
+                CommonColumns.ComponentTotalCount(),
             ],
         };
 }
