@@ -21,20 +21,14 @@ public interface IPartConnectable
         {
             Context.AssertIsParentOf(source);
             Context.AssertIsOwnerOf(target);
-            if (target.HasBeenExposed)
-                throw new InvalidOperationException($"Connection {target} has already been exposed from part {Context}");
-            target.HasBeenExposed = true;
-
-            // TODO save exposition information
+            target.DefineAsAnExpositionOf(source);
         }
         public void ExposeAs(IEnumerable<Connector> sources, Connector target)
         {
             foreach(var c in sources)
                 Context.AssertIsParentOf(c);
             Context.AssertIsOwnerOf(target);
-            if (target.HasBeenExposed)
-                throw new InvalidOperationException($"Connection {target} has already been exposed from part {Context}");
-            target.HasBeenExposed = true;
+            target.DefineAsAnExpositionOf(sources);
         }
 
         public void Connect(Connector connectorA, Connector connectorB)

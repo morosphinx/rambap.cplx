@@ -57,7 +57,6 @@ public class ExcelTableFile_FromTemplate : IInstruction
             var sheet = workbookPart.Workbook.Sheets!.Descendants<Sheet>().First(
                 s =>
                 {
-                    EnumerateSheetProperties(s);
                     return s.GetAttributes().First(a => a.LocalName == "name").Value == sheetName;
                 });
             var sheetID = sheet.Id!.Value!;

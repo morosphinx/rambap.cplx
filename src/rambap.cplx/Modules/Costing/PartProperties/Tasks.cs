@@ -22,7 +22,6 @@ public enum TaskCategory
     // Quality
     Quality,
     Review,
-    Validation,
     
     // System Architecture
     SystemArchitecture,
@@ -34,6 +33,12 @@ public enum TaskCategory
     Electronics,
     Mechanical,
     Software,
+
+    // Integration
+    Assembly,
+    Cabling,
+    Packaging,
+    Validation,
 }
 
 /// <summary>

@@ -47,6 +47,7 @@ public static class FileGroups
                 {
                     Table = Modules.Documentation.Outputs.SystemViewTables.ComponentTree_Stacked()
                 }),
+                // TODO : Fix performance issue when generating this file on the 1000x parts exemple
                 ($"Inventory_{filenamePattern}.csv", new MarkdownTableFile(i)
                 {
                     Table = Modules.Documentation.Outputs.SystemViewTables.ComponentInventory()
