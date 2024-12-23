@@ -4,7 +4,7 @@ namespace rambap.cplx.Export.TextFiles;
 
 using Line = List<string>;
 
-public class MarkdownTableFile : AbstractTableFile
+public class MarkdownTableFormater : ITableFormater
 {
     public const string CellSeparator = "|";
     public char CellPadding { get; set; } = ' ';
@@ -13,18 +13,15 @@ public class MarkdownTableFile : AbstractTableFile
     public bool WriteTotalLine { get; set; } = false;
     public bool TotalLineOnTop { get; set; } = false;
 
+    private Line MakeSeparatorLine(ITable table) => Enumerable.Repeat("-", table.IColumns.Count()).ToList();
 
-    public MarkdownTableFile(Pinstance content) : base(content) { }
-
-    private Line MakeSeparatorLine => Enumerable.Repeat("-", Table.IColumns.Count()).ToList();
-
-    private void CompleteSeparatorLine(Line separatorLine, List<int> columnCharWidth)
+    private void CompleteSeparatorLine(ITable table, Line separatorLine, List<int> columnCharWidth)
     {
-        for (int i = 0; i < Table.IColumns.Count(); i++)
+        for (int i = 0; i < table.IColumns.Count(); i++)
         {
             if (columnCharWidth[i] == 0) separatorLine[i] = "";
             else if (columnCharWidth[i] == 1) separatorLine[i] = "-";
-            else if (Table.IColumns.ElementAt(i).TypeHint == ColumnTypeHint.Numeric)
+            else if (table.IColumns.ElementAt(i).TypeHint == ColumnTypeHint.Numeric)
             {
                 // Rigth-Align numeric values
                 separatorLine[i] = new string('-', Math.Max(1, columnCharWidth[i] - 1)) + ':';
@@ -37,45 +34,45 @@ public class MarkdownTableFile : AbstractTableFile
         }
     }
 
-    public override void Do(string path)
+    public IEnumerable<string> Format(ITable table, Pinstance content)
     {
-        var separatorLineContent = MakeSeparatorLine;
+        var separatorLineContent = MakeSeparatorLine(table);
         IEnumerable<Line> cellTexts;
         if (TotalLineOnTop)
         {
             cellTexts =
             [
-                Table.MakeHeaderLine(),
+                table.MakeHeaderLine(),
                 .. WriteTotalLine
                     ? new List<Line>(){
                         separatorLineContent,
-                        Table.MakeTotalLine(Content),}
+                        table.MakeTotalLine(content),}
                     :[],
                 separatorLineContent,
-                .. Table.MakeContentLines(Content),
+                .. table.MakeContentLines(content),
             ];
         } else // Total line should be writen on bottom
         {
             cellTexts =
             [
-                Table.MakeHeaderLine(),
+                table.MakeHeaderLine(),
                 separatorLineContent,
-                .. Table.MakeContentLines(Content),
+                .. table.MakeContentLines(content),
                 .. WriteTotalLine
                     ? new List<Line>(){
                         separatorLineContent,
-                        Table.MakeTotalLine(Content),}
+                        table.MakeTotalLine(content),}
                     :[],
             ];
         }
-        var columnWidths = CalculateColumnWidths(cellTexts);
+        var columnWidths = Support.CalculateColumnWidths(cellTexts);
         // Now that we know column size, update the separator line
-        CompleteSeparatorLine(separatorLineContent, columnWidths);
+        CompleteSeparatorLine(table, separatorLineContent, columnWidths);
 
-        var columnIndexesToLeftPad = Table.IColumns.Select(c => c.TypeHint == ColumnTypeHint.Numeric).ToList();
+        var columnIndexesToLeftPad = table.IColumns.Select(c => c.TypeHint == ColumnTypeHint.Numeric).ToList();
 
         var linesText = cellTexts.Select(l =>
-            CellSeparator + AggregateCells_FixedWidth(l, columnWidths, columnIndexesToLeftPad, CellSeparator, CellPadding) + CellSeparator);
-        File.WriteAllLines(path, linesText);
+            CellSeparator + Support.AggregateCells_FixedWidth(l, columnWidths, columnIndexesToLeftPad, CellSeparator, CellPadding) + CellSeparator);
+        return linesText;
     }
 }

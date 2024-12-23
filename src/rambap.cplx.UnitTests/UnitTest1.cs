@@ -13,6 +13,13 @@ namespace rambap.cplx.UnitTests
             return Generators.ConfigureGenerator(
                 [Content.Costing, Content.SystemView], HierarchyMode.Flat, c => fileContentRecursion);
         }
+        public static IGenerator GetCustomReadmeGenerator()
+        {
+            return Generators.ConfigureGenerator(
+                i => [("README.md",new MakeReadmeInstruction() { Content = i})],
+                HierarchyMode.Flat, c => false);
+        }
+
         public static IGenerator GetDemoGeneratorWithEverything_excel(bool fileContentRecursion = false)
         {
             return Generators.ConfigureGenerator(
@@ -55,6 +62,8 @@ namespace rambap.cplx.UnitTests
             var i = new Pinstance(p);
             var generator = GetDemoGeneratorWithEverything();
             generator.Do(i, "C:\\TestFolder\\Breakout9_txt");
+            var generator2 = GetCustomReadmeGenerator();
+            generator2.Do(i, "C:\\TestFolder\\Breakout9_txt");
         }
 
         [TestMethod]
@@ -71,6 +80,9 @@ namespace rambap.cplx.UnitTests
         {
             var p = new RackConnected1();
             var i = new Pinstance(p);
+
+            // IInstruction WiringDescription = new WiringDescriptionGenerator<RackConnected1>(
+            //     p, r => r.J11, r.J12);
             var generator = GetDemoGeneratorWithEverything();
             generator.Do(i, "C:\\TestFolder\\Exemple3");
         }

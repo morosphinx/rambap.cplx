@@ -19,6 +19,8 @@ public static class Extensions
         => instance.Properties.OfType<InstanceMass>().FirstOrDefault();
     public static InstanceMechanicalAssembly? MechanicalAssembly(this Pinstance instance)
         => instance.Properties.OfType<InstanceMechanicalAssembly>().FirstOrDefault();
+    public static InstanceConnectivity? Connectivity(this Pinstance instance)
+        => instance.Properties.OfType<InstanceConnectivity>().FirstOrDefault();
     public static InstanceTasks? Tasks(this Pinstance instance)
         => instance.Properties.OfType<InstanceTasks>().FirstOrDefault();
 }

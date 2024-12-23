@@ -10,28 +10,36 @@ public static class FileGroups
     public static IEnumerable<(string, IInstruction)> CostingFiles(Pinstance i, string filenamePattern)
     {
         return [
-                ($"BOMR_{filenamePattern}.csv", new MarkdownTableFile(i)
+                ($"BOMR_{filenamePattern}.csv", new TextTableFile(i)
                 {
                     Table = CostTables.BillOfMaterial(),
-                    WriteTotalLine = true,
-                    TotalLineOnTop = true,
+                    Formater = new MarkdownTableFormater(){
+                        WriteTotalLine = true,
+                        TotalLineOnTop = true,
+                    }
                 }),
-                ($"RecurentCosts_{filenamePattern}.csv", new MarkdownTableFile(i)
+                ($"RecurentCosts_{filenamePattern}.csv", new TextTableFile(i)
                 {
                     Table = CostTables.CostBreakdown(),
-                    WriteTotalLine = true,
-                    TotalLineOnTop = true,
+                    Formater = new MarkdownTableFormater(){
+                        WriteTotalLine = true,
+                        TotalLineOnTop = true,
+                    }
                 }),
-                ($"BOTR_{filenamePattern}.csv", new MarkdownTableFile(i)
+                ($"BOTR_{filenamePattern}.csv", new TextTableFile(i)
                 {
                     Table = TaskTables.BillOfTasks(),
-                    WriteTotalLine = true,
-                    TotalLineOnTop = true,
+                    Formater = new MarkdownTableFormater(){
+                        WriteTotalLine = true,
+                        TotalLineOnTop = true,
+                    }
                 }),
-                ($"RecurentTasks_{filenamePattern}.csv", new MarkdownTableFile(i) {
+                ($"RecurentTasks_{filenamePattern}.csv", new TextTableFile(i) {
                     Table = TaskTables.RecurentTaskBreakdown(),
-                    WriteTotalLine = true,
-                    TotalLineOnTop = true,
+                    Formater = new MarkdownTableFormater(){
+                        WriteTotalLine = true,
+                        TotalLineOnTop = true,
+                    }
                 }),
                 ];
     }
@@ -39,18 +47,21 @@ public static class FileGroups
     public static IEnumerable<(string, IInstruction)> SystemViewTables(Pinstance i, string filenamePattern)
     {
         return [
-                ($"Tree_Detailled_{filenamePattern}.csv", new FixedWidthTableFile(i)
+                ($"Tree_Detailled_{filenamePattern}.csv", new TextTableFile(i)
                 {
-                    Table = Modules.Documentation.Outputs.SystemViewTables.ComponentTree_Detailled()
+                    Table = Modules.Documentation.Outputs.SystemViewTables.ComponentTree_Detailled(),
+                    Formater = new FixedWidthTableFormater()
                 }),
-                ($"Tree_Stacked_{filenamePattern}.csv", new FixedWidthTableFile(i)
+                ($"Tree_Stacked_{filenamePattern}.csv", new TextTableFile(i)
                 {
-                    Table = Modules.Documentation.Outputs.SystemViewTables.ComponentTree_Stacked()
+                    Table = Modules.Documentation.Outputs.SystemViewTables.ComponentTree_Stacked(),
+                    Formater = new FixedWidthTableFormater()
                 }),
                 // TODO : Fix performance issue when generating this file on the 1000x parts exemple
-                ($"Inventory_{filenamePattern}.csv", new MarkdownTableFile(i)
+                ($"Inventory_{filenamePattern}.csv", new TextTableFile(i)
                 {
-                    Table = Modules.Documentation.Outputs.SystemViewTables.ComponentInventory()
+                    Table = Modules.Documentation.Outputs.SystemViewTables.ComponentInventory(),
+                    Formater = new MarkdownTableFormater()
                 }),
                 ];
     }
