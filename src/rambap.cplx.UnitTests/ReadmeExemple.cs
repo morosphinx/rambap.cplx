@@ -1,11 +1,5 @@
 ﻿namespace rambap.cplx.UnitTests;
-
-// This file is copied as an example inside of README.md at the repo root
-// Its formatting is, on purpose, more compact than the coding standard
-
 class ServerAssembly : Part {
-    NonRecurrentTask ze = (45.2, TaskCategory.Electronics);
-
     // Components
     ServerCabinet36U CAB ;
 

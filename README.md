@@ -1,10 +1,10 @@
-﻿# CPLX
+# CPLX
 ## About
 CPLX is a C# internal [domain specific language](https://en.wikipedia.org/wiki/Domain-specific_language) to define and document complex, hierarchical hardware systems.
 
 CPLX definitions are source-controlable. CPLX calculates aggregate properties of systems, and generates documentation.
 
-## An example
+## An exemple
 ### Inputs
 By writing the following definition :
 ``` Csharp
@@ -49,68 +49,60 @@ class RTX999 : Part {
 }
 ```
 
+
 ### Outputs
 CPLX generate files assisting multiples aspects of the design process :
-
-- Cost Breakdown
-
-|CID      |PN              |Detail  |Cost    |
-|---------|----------------|--------|-------:|
-|/*       |ServerAssembly  |Cables  |500.00  |
-|/*       |ServerAssembly  |Switches|1000.00 |
-|CAB      |ServerCabinet36U|Buy     |2000.00 |
-|R01      |RackTypeA       |Other   |4500.00 |
-|R01      |RackTypeA       |Assembly|400.00  |
-|R01/GPU01|RTX999          |Buy     |999.00  |
-|R01/GPU02|RTX999          |Buy     |999.00  |
-|R02      |RackTypeA       |Other   |4500.00 |
-|R02      |RackTypeA       |Assembly|400.00  |
-|R02/GPU01|RTX999          |Buy     |999.00  |
-|R02/GPU02|RTX999          |Buy     |999.00  |
-|R03      |RackTypeB       |Other   |3000.00 |
-|R03/GPU  |RTX999          |Buy     |999.00  |
-|---------|----------------|--------|-------:|
-|TOTAL    |                |        |21295.00|
 
 - Component Tree
 
 ```
-CN          	PN              	Description              
- *          	ServerAssembly  	                         
- ├─ CAB     	ServerCabinet36U	                         
- ├─ R01     	RackTypeA       	Main workload server     
- │  ├─ GPU01	RTX999          	                         
- │  └─ GPU02	RTX999          	                         
- ├─ R02     	RackTypeA       	Redundant workload server
- │  ├─ GPU01	RTX999          	                         
- │  └─ GPU02	RTX999          	                         
- └─ R03     	RackTypeB       	Monitoring server        
- │  └─ GPU  	RTX999          	                         
-
+CN          	PN               	Component description    	Part description       
+ *          	Server Assembly  	                         	                       
+ ├─ CAB     	Server Cabinet36U	                         	19' Rack cabinet 36U   
+ ├─ R01     	Rack Type A      	Main workload server     	                       
+ │  ├─ GPU01	RTX999           	                         	9nth Gen GPU ; 9Go DRAM
+ │  └─ GPU02	RTX999           	                         	9nth Gen GPU ; 9Go DRAM
+ ├─ R02     	Rack Type A      	Redundant workload server	                       
+ │  ├─ GPU01	RTX999           	                         	9nth Gen GPU ; 9Go DRAM
+ │  └─ GPU02	RTX999           	                         	9nth Gen GPU ; 9Go DRAM
+ └─ R03     	Rack Type B      	Monitoring server        	                       
+    └─ GPU  	RTX999           	                         	9nth Gen GPU ; 9Go DRAM
 ```
 
+- Bill of materials
 
-- Bill of materials, to a depth of 1
+|#|PN               |Description            |Cost Name|Unit Cost|Count|Total Cost|
+|-|-----------------|-----------------------|---------|--------:|----:|---------:|
+|1|Server Assembly  |                       |Cables   |   500.00|    1|    500.00|
+|1|Server Assembly  |                       |Switches |  1000.00|    1|   1000.00|
+|2|Server Cabinet36U|19' Rack cabinet 36U   |Buy      |  2000.00|    1|   2000.00|
+|3|Rack Type A      |                       |Other    |  4500.00|    2|   9000.00|
+|3|Rack Type A      |                       |Assembly |   400.00|    2|    800.00|
+|4|RTX999           |9nth Gen GPU ; 9Go DRAM|Buy      |   999.00|    5|   4995.00|
+|5|Rack Type B      |                       |Other    |  3000.00|    1|   3000.00|
+|-|-----------------|-----------------------|---------|--------:|----:|---------:|
+| |TOTAL            |                       |         |         |     |  21295.00|
 
-|#|PN              |Component IDs|Description         |Count|Detail  |Unit Cost|Total Cost|
-|-|----------------|-------------|--------------------|----:|--------|--------:|---------:|
-|1|ServerAssembly  |/*           |                    |1    |Cables  |500.00   |500.00    |
-|1|ServerAssembly  |/*           |                    |1    |Switches|1000.00  |1000.00   |
-|2|ServerCabinet36U|CAB          |19' Rack cabinet 36U|1    |unit    |2000.00  |2000.00   |
-|3|RackTypeA       |R01, R02     |                    |2    |unit    |6898.00  |13796.00  |
-|4|RackTypeB       |R03          |                    |1    |unit    |3999.00  |3999.00   |
+- Cost Breakdown
 
-- Bill of materials, fully recursive
-
-|#|PN              |Component IDs                                      |Description            |Count|Detail  |Unit Cost|Total Cost|
-|-|----------------|---------------------------------------------------|-----------------------|----:|--------|--------:|---------:|
-|1|ServerAssembly  |/*                                                 |                       |1    |Cables  |500.00   |500.00    |
-|1|ServerAssembly  |/*                                                 |                       |1    |Switches|1000.00  |1000.00   |
-|2|ServerCabinet36U|CAB                                                |19' Rack cabinet 36U   |1    |Buy     |2000.00  |2000.00   |
-|3|RackTypeA       |R01, R02                                           |                       |2    |Other   |4500.00  |9000.00   |
-|3|RackTypeA       |R01, R02                                           |                       |2    |Assembly|400.00   |800.00    |
-|4|RTX999          |R01/GPU01, R01/GPU02, R02/GPU01, R02/GPU02, R03/GPU|9nth Gen GPU ; 9Go DRAM|5    |Buy     |999.00   |4995.00   |
-|5|RackTypeB       |R03                                                |                       |1    |Other   |3000.00  |3000.00   |
+|CN                 |CID      |PN               |Cost Name     |Unit Cost|Count|Total Cost|
+|-------------------|---------|-----------------|--------------|--------:|----:|---------:|
+| *                 |/*       |Server Assembly  |total per unit| 21295.00|    1|          |
+| └─ *              |/*       |Server Assembly  |Cables        |   500.00|    1|    500.00|
+| └─ *              |/*       |Server Assembly  |Switches      |  1000.00|    1|   1000.00|
+| ├─ CAB            |CAB      |Server Cabinet36U|total per unit|  2000.00|    1|          |
+| │  ├─ *           |CAB      |Server Cabinet36U|Buy           |  2000.00|    1|   2000.00|
+| ├─ 2x: Rack Type A|R01      |Rack Type A      |total per unit|  6898.00|    2|          |
+| │  ├─ *           |R01      |Rack Type A      |Other         |  4500.00|    2|   9000.00|
+| │  ├─ *           |R01      |Rack Type A      |Assembly      |   400.00|    2|    800.00|
+| │  └─ 2x: RTX999  |R01/GPU01|RTX999           |total per unit|   999.00|    4|          |
+| │     └─ *        |R01/GPU01|RTX999           |Buy           |   999.00|    4|   3996.00|
+| └─ R03            |R03      |Rack Type B      |total per unit|  3999.00|    1|          |
+|    └─ *           |R03      |Rack Type B      |Other         |  3000.00|    1|   3000.00|
+|    └─ GPU         |R03/GPU  |RTX999           |total per unit|   999.00|    1|          |
+|       └─ *        |R03/GPU  |RTX999           |Buy           |   999.00|    1|    999.00|
+|-------------------|---------|-----------------|--------------|--------:|----:|---------:|
+|                   |TOTAL    |TOTAL            |              |         |     |  21295.00|
 
 Ouputs are fully configurable. 
 

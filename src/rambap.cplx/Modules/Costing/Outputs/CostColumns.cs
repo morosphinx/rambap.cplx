@@ -67,11 +67,12 @@ public static class CostColumns
                 else
                 {
                     return ""; // Do not display branch costs : subcosts are displayed in properties or component leafs
+                               // And we want to keep the column total cost (when summing the cells themselves) correct
                 }
             },
             i => i.Cost()?.Total.ToString("0.00"));
 
-    public static DelegateColumn<ComponentContent> Group_CostName()
+    public static DelegateColumn<ComponentContent> Group_CostName(bool include_branches = false)
         => new DelegateColumn<ComponentContent>("Cost Name", ColumnTypeHint.String,
             i =>
             {
@@ -79,15 +80,22 @@ public static class CostColumns
                 {
                     if (lpi.Property is InstanceCost.NativeCostInfo n)
                         return n.name;
+                    else
+                        throw new NotImplementedException();
                 }
                 else if (i is LeafComponent lp)
                 {
                     return "unit";
                 }
-                return "";
+                else if (i is BranchComponent bp)
+                {
+                    if (!include_branches) return "";
+                    return "total per unit";
+                }
+                else throw new NotImplementedException();
             });
 
-    public static DelegateColumn<ComponentContent> Group_UnitCost()
+    public static DelegateColumn<ComponentContent> Group_UnitCost(bool include_branches = false)
         => new DelegateColumn<ComponentContent>("Unit Cost", ColumnTypeHint.Numeric,
             i =>
             {
@@ -98,6 +106,9 @@ public static class CostColumns
                     else
                         throw new NotImplementedException();
                 }
+                // TODO : remove code duplication
+                // TODO : clarify wether taking care of an incoherent component group is the columns
+                // responsability or not
                 else if (i is LeafComponent lp)
                 {
                     var costs = lp.AllComponents().Select(i => i.component.Instance.Cost()?.Total).ToList();
@@ -106,7 +117,16 @@ public static class CostColumns
                     if (costAreCoherent) return costs.First()?.ToString("0.00") ?? "";
                     else return "error";
                 }
-                return "";
+                else if (i is BranchComponent bp)
+                {
+                    if (!include_branches) return "";
+                    var costs = bp.AllComponents().Select(i => i.component.Instance.Cost()?.Total).ToList();
+                    // Parts may be edited, without changing the PN => This would be a mistake, detect it
+                    bool costAreCoherent = costs.Distinct().Count() <= 1;
+                    if (costAreCoherent) return costs.First()?.ToString("0.00") ?? "";
+                    else return "error";
+                }
+                else throw new NotImplementedException();
             });
 
 }

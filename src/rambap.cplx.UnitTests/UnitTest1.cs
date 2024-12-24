@@ -13,12 +13,6 @@ namespace rambap.cplx.UnitTests
             return Generators.ConfigureGenerator(
                 [Content.Costing, Content.SystemView], HierarchyMode.Flat, c => fileContentRecursion);
         }
-        public static IGenerator GetCustomReadmeGenerator()
-        {
-            return Generators.ConfigureGenerator(
-                i => [("README.md",new MakeReadmeInstruction() { Content = i})],
-                HierarchyMode.Flat, c => false);
-        }
 
         public static IGenerator GetDemoGeneratorWithEverything_excel(bool fileContentRecursion = false)
         {
@@ -33,26 +27,8 @@ namespace rambap.cplx.UnitTests
         {
             var p = new ServerAssembly();
             var i = new Pinstance(p);
-            var generator = GetDemoGeneratorWithEverything(true);
-            generator.Do(i, "C:\\TestFolder\\ReadmeExemple");
-        }
-
-        [TestMethod]
-        public void TestGeneration_ReadmeExample2()
-        {
-            var p = new ServerAssembly();
-            var i = new Pinstance(p);
             var generator = GetDemoGeneratorWithEverything(true); ;
-            generator.Do(i, Path.Combine("C:\\TestFolder\\ReadmeExemple2"));
-        }
-
-        [TestMethod]
-        public void TestGeneration_MaBaieIndustrielle()
-        {
-            var p = new MaBaieIndustrielle();
-            var i = new Pinstance(p);
-            var generator = GetDemoGeneratorWithEverything();
-            generator.Do(i, "C:\\TestFolder\\MaBaieIndustrielle");
+            generator.Do(i, Path.Combine("C:\\TestFolder\\ReadmeExemple"));
         }
 
         [TestMethod]
@@ -62,8 +38,6 @@ namespace rambap.cplx.UnitTests
             var i = new Pinstance(p);
             var generator = GetDemoGeneratorWithEverything();
             generator.Do(i, "C:\\TestFolder\\Breakout9_txt");
-            var generator2 = GetCustomReadmeGenerator();
-            generator2.Do(i, "C:\\TestFolder\\Breakout9_txt");
         }
 
         [TestMethod]
