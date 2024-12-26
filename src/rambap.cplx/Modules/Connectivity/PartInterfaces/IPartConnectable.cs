@@ -9,12 +9,45 @@ public interface IPartConnectable
 
     public class ConnectionBuilder
     {
-        public record ConnectionInstruction(Connector connectorA, Connector connectorB)
+        public abstract record Cabling
         {
-
+            public abstract IEnumerable<Connection> Connections { get; }
         }
 
-        public List<ConnectionInstruction> Connections { get; } = new();
+        public record Connection: Cabling
+        {
+            public Connector ConnectorA { get; init; }
+            public Connector ConnectorB { get; init; }
+
+            public override IEnumerable<Connection> Connections
+                => [this];
+
+            internal Connection(Connector connectorA, Connector connectorB)
+            {
+                ConnectorA = connectorA;
+                ConnectorB = connectorB;
+            }
+        }
+        
+        public record Twisting : Cabling
+        {
+            public IEnumerable<Cabling> TwistedCablings { get; init; }
+            public override IEnumerable<Connection> Connections
+                => [.. TwistedCablings.SelectMany(c => c.Connections)];
+
+            internal Twisting(IEnumerable<Cabling> twistedCablings)
+            { 
+                TwistedCablings = twistedCablings.ToList();
+            }
+        }
+
+        public List<Cabling> Connections { get; } = new();
+
+        private void AssertOwnThisCabling(Cabling cabling)
+        {
+            if (!Connections.Contains(cabling))
+                throw new InvalidOperationException($"Cabling {cabling} is not owned by this");
+        }
 
         //public void Connect(Connector connector1, Connector connector2)
         public void ExposeAs(Connector source, Connector target)
@@ -31,13 +64,24 @@ public interface IPartConnectable
             target.DefineAsAnExpositionOf(sources);
         }
 
-        public void Connect(Connector connectorA, Connector connectorB)
+        public Cabling Connect(Connector connectorA, Connector connectorB)
         {
             Context.AssertIsParentOf(connectorA);
             Context.AssertIsParentOf(connectorB);
-            Connections.Add(new ConnectionInstruction(connectorA, connectorB));
+            var connection = new Connection(connectorA, connectorB);
+            Connections.Add(connection);
+            return connection;
+        }
 
-            // TODO save exposition information
+        public Cabling Twist(IEnumerable<Cabling> twistedCablings)
+        {
+            foreach (var c in twistedCablings)
+                AssertOwnThisCabling(c);
+            foreach (var c in twistedCablings)
+                Connections.Remove(c);
+            var twist = new Twisting(twistedCablings);
+            Connections.Add(twist);
+            return twist;
         }
 
         public void AssignTo(Signal signal, Connector connector)

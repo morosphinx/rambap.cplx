@@ -72,6 +72,32 @@ public class Connector : IPartProperty
     internal ConnectorDefinition? Definition { get; private set; }
     internal bool HasbeenDefined => Definition != null;
 
+    internal abstract class ConnectorDefinitionUsage
+    {
+        public abstract Connector User { get; }
+    }
+
+    internal class UsageExposedAs : ConnectorDefinitionUsage
+    {
+        public required Connector ExposedAs { get; init; }
+        public override Connector User => ExposedAs;
+    }
+
+    internal class UsageCombinedInto : ConnectorDefinitionUsage
+    {
+        public required Connector CombinedInto { get; init; }
+        public override Connector User => CombinedInto;
+    }
+
+    internal ConnectorDefinitionUsage? Usage { get; private set; }
+    internal bool HasBeenUseDefined => Usage != null;
+
+    internal Connector TopMostUser()
+    {
+        if (HasBeenUseDefined) return Usage!.User.TopMostUser();
+        else return this;
+    }
+
     internal void DefineAsHadHoc()
     {
         if (HasbeenDefined) throw new InvalidOperationException($"Connector has already been defined");
@@ -81,12 +107,17 @@ public class Connector : IPartProperty
     internal void DefineAsAnExpositionOf(Connector source)
     {
         if (HasbeenDefined) throw new InvalidOperationException($"Connector has already been defined");
+        if (source.HasBeenUseDefined) throw new InvalidOperationException($"Connector {source} has already been used in another definition ({source.Usage!.User})");
         Definition = new CopiedDefinition() { CopiedConnector = source };
     }
 
     internal void DefineAsAnExpositionOf(IEnumerable<Connector> sources)
     {
         if (HasbeenDefined) throw new InvalidOperationException($"Connector has already been defined");
+        foreach(var source in sources)
+        {
+            if (source.HasBeenUseDefined) throw new InvalidOperationException($"Connector {source} has already been used in another definition ({source.Usage!.User})");
+        }
         Definition = new CombinedDefinition() { CombinedConnectors = [.. sources] };
     }
 
