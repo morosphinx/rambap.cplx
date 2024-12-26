@@ -12,6 +12,11 @@ using TopmostConnectionGroup = (Connector LeftTopMost, Connector RigthTopMost, I
 
 public class InstanceConnectivity : IInstanceConceptProperty
 {
+    // TODO : set definition somewhere in the Part
+    public bool IsACable { get; init; } = true;
+
+    public required List<Connector> PublicConnectors { get; init; }
+
     public required List<Connector> Connectors { get; init; }
 
     public required List<Cabling> Connections { get; init; }
@@ -71,14 +76,17 @@ public class InstanceConnectivity : IInstanceConceptProperty
 
 internal class ConnectionConcept : IConcept<InstanceConnectivity>
 {
-    public override InstanceConnectivity? Make(Pinstance i, Part template)
+    public override InstanceConnectivity? Make(Pinstance instance, Part template)
     {
         var connectionBuilder = new ConnectionBuilder(template);
         var selfConnectors = new List<Connector>();
+        var selfPublicConnectors = new List<Connector>();
         ScanObjectContentFor<Connector>(template,
-            (p, s) => { selfConnectors.Add(p);
+            (p, s) => {
+                selfConnectors.Add(p);
+                if(s.IsPublicOrAssembly) selfPublicConnectors.Add(p);
             });
-        // At this point no connector in the seldConnectorList has a definition
+        // At this point no connector in the selfConnectorList has a definition
         if (template is IPartConnectable a)
         {
             // User defined connection and exposition are created from here
@@ -88,13 +96,35 @@ internal class ConnectionConcept : IConcept<InstanceConnectivity>
                 if (!c.HasbeenDefined)
                     c.DefineAsHadHoc();
             }
+
+            var selfDefinedConnection = connectionBuilder!.Connections;
+
+            // All Components that have a Connectivity definition are used as black boxes
+            foreach (var c in instance.Components)
+            {
+                var connectivity = c.Instance.Connectivity();
+                if(connectivity != null)
+                {
+                    if (connectivity.IsACable)
+                    {
+                        var cableConnectors = connectivity.PublicConnectors;
+                        AbstractConnectionDueToCable(selfDefinedConnection, cableConnectors);
+                    }
+                }
+            }
             
             return new InstanceConnectivity()
             {
+                PublicConnectors = selfPublicConnectors,
                 Connectors = selfConnectors,
-                Connections = connectionBuilder.Connections
+                Connections = selfDefinedConnection
             };
         }
         else return null;
+    }
+
+    private void AbstractConnectionDueToCable(List<Cabling> cablings, IEnumerable<Connector> cableConnectors)
+    {
+        // TODO : Remove all connections that use the cable connectors, and redefine them together
     }
 }
