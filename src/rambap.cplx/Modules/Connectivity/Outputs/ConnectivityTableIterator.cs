@@ -9,7 +9,7 @@ internal class ConnectivityTableIterator : IIterator<ConnectivityTableContent>
     {
         var Connectivity = content.Connectivity()!;
 
-        foreach(var group in Connectivity.GetConnectionGroups())
+        foreach(var group in Connectivity!.GetConnectionGroups())
         {
             var groupLeftConnector = group.LeftTopMost;
             var groupRightConnector = group.RigthTopMost;

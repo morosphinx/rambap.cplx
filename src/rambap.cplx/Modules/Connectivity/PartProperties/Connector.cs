@@ -98,6 +98,18 @@ public class Connector : IPartProperty
         else return this;
     }
 
+    public string FullDefinitionName()
+    {
+        var localName = $"{Name}";
+        if (!HasBeenUseDefined)
+            return localName;
+        else if(Usage is UsageExposedAs ue)
+            return $"{ue.User.FullDefinitionName()}({localName})";
+        else if (Usage is UsageCombinedInto uc)
+            return $"{uc.User.FullDefinitionName()}.{localName}";
+        else throw new NotImplementedException();
+    }
+
     internal void DefineAsHadHoc()
     {
         if (HasbeenDefined) throw new InvalidOperationException($"Connector has already been defined");

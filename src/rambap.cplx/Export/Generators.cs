@@ -65,6 +65,17 @@ public static class FileGroups
                 }),
                 ];
     }
+
+    public static IEnumerable<(string, IInstruction)> ConnectivityTables(Pinstance i, string filenamePattern)
+    {
+        return [
+                ($"Connections_{filenamePattern}.csv", new TextTableFile(i)
+                {
+                    Table = Modules.Connectivity.Outputs.ConnectivityTables.ConnectionTable(),
+                    Formater = new MarkdownTableFormater()
+                }),
+                ];
+    }
 }
 
 public static class Generators
@@ -76,6 +87,7 @@ public static class Generators
      
     public enum Content
     {
+        Connectivity,
         Costing,
         SystemView
     }
@@ -102,6 +114,7 @@ public static class Generators
         Func<Pinstance, IEnumerable<(string, IInstruction)>> makeInstanceFiles =
             (i) =>
             [
+                .. (contents.Contains(Content.Connectivity) ? FileGroups.ConnectivityTables(i, IGenerator.SimplefileNameFor(i)) : []),
                 .. (contents.Contains(Content.Costing) ? FileGroups.CostingFiles(i, IGenerator.SimplefileNameFor(i)) : []),
                 .. (contents.Contains(Content.SystemView) ? FileGroups.SystemViewTables(i, IGenerator.SimplefileNameFor(i)) : []),
             ];
