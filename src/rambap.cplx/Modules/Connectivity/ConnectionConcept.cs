@@ -3,6 +3,7 @@ using rambap.cplx.PartInterfaces;
 using rambap.cplx.PartProperties;
 using System.Diagnostics.CodeAnalysis;
 using static rambap.cplx.Core.Support;
+using static rambap.cplx.Modules.Connectivity.PartInterfaces.ConnectionModel;
 using static rambap.cplx.PartInterfaces.IPartConnectable;
 using static rambap.cplx.PartInterfaces.IPartConnectable.ConnectionBuilder;
 
@@ -19,29 +20,13 @@ public class InstanceConnectivity : IInstanceConceptProperty
 
     public required List<Connector> Connectors { get; init; }
 
-    public required List<Cabling> Connections { get; init; }
+    public required List<Connection> Connections { get; init; }
 
     public enum DisplaySide
     {
         Left,
         Rigth,
         Both,
-    }
-
-    public IEnumerable<Connector> UniqueConnecteds(DisplaySide displaySide = DisplaySide.Both)
-    {
-        var allConnections = Connections.SelectMany(c => c.Connections);
-        var allConnectors = allConnections.SelectMany<Connection,Connector>(con =>
-            displaySide switch {
-                DisplaySide.Left => [con.ConnectorA],
-                DisplaySide.Rigth => [con.ConnectorB],
-                DisplaySide.Both => [con.ConnectorA, con.ConnectorB],
-                _ => throw new NotImplementedException()
-            });
-        var allUniques = allConnectors.Distinct();
-        var allUniqueParents = allUniques.Select(con => con.TopMostUser());
-        var allUniqueTopmost = allUniqueParents.Distinct();
-        return allUniqueTopmost;
     }
 
     class LinkNondirectionalEqualityComparer : EqualityComparer<(Connector A, Connector B)>
@@ -123,8 +108,8 @@ internal class ConnectionConcept : IConcept<InstanceConnectivity>
         else return null;
     }
 
-    private void AbstractConnectionDueToCable(List<Cabling> cablings, IEnumerable<Connector> cableConnectors)
+    private void AbstractConnectionDueToCable(List<Connection> cablings, IEnumerable<Connector> cableConnectors)
     {
-        // TODO : Remove all connections that use the cable connectors, and redefine them together
+
     }
 }

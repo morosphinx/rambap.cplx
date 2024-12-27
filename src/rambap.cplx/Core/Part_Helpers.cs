@@ -3,28 +3,56 @@
 // Helper methods for Part Class
 public partial class Part
 {
-    public void AssertIsOwnerOf(IPartProperty property)
+    /// <summary>
+    /// Check that the property is owned by this part
+    /// </summary>
+    /// <param name="property">Property whose owner we want to assert</param>
+    /// <exception cref="InvalidOperationException">Throw if the assertion is false</exception>
+    public void AssertIsOwner(IPartProperty property)
     {
         if (!HasDoneCplxImplicitInitialisation)
             throw new InvalidOperationException("Part is not initialised. Create an Instance with this part first");
         if (this != property.Owner)
-            throw new InvalidOperationException("Property must be owned by this");
+            throw new InvalidOperationException("Property must be owned by this part");
     }
-    public void AssertIsParentOf(IPartProperty property)
+
+    /// <summary>
+    /// Check that the property is owned by this part or one of its subcomponents
+    /// </summary>
+    /// <param name="property">Property whose owner we want to assert</param>
+    /// <exception cref="InvalidOperationException">Throw if the assertion is false</exception>
+    public void AssertIsOwnerOrParent(IPartProperty property)
     {
         if (!HasDoneCplxImplicitInitialisation)
             throw new InvalidOperationException("Part is not initialised. Create an Instance with this part first");
-        AssertIsParentOf(property.Owner!);
+        AssertIsSelfOrSubComponent(property.Owner!,"Property must be owned by this part or one of its subcomponents");
     }
 
-    // TODO : assert that the auto init has been done
-    public void AssertIsParentOf(Part seekPart)
+
+    /// <summary>
+    /// Check that the property is owned by one of this part subcomponents
+    /// </summary>
+    /// <param name="property">Property whose owner we want to assert</param>
+    /// <exception cref="InvalidOperationException">Throw if the assertion is false</exception>
+    public void AssertIsOwnedBySubComponent(IPartProperty property)
+    {
+        if (!HasDoneCplxImplicitInitialisation)
+            throw new InvalidOperationException("Part is not initialised. Create an Instance with this part first");
+        if(property.Owner == this)
+            throw new InvalidOperationException("Property must be owned by a subcomponent");
+        AssertIsSelfOrSubComponent(property.Owner!);
+    }
+
+    private void AssertIsSelfOrSubComponent(Part seekPart, string? customMessage = null)
     {
         if (seekPart == this)
             return; // We are in self component tree, all is good
         else if (seekPart.Parent == null)
-            throw new InvalidOperationException("Part must be a component or subcomponent of this");
+        {
+            var message = customMessage ?? "Part must be a component or subcomponent of this";
+            throw new InvalidOperationException(message);
+        }
         else
-            AssertIsParentOf(seekPart.Parent);
+            AssertIsSelfOrSubComponent(seekPart.Parent);
     }
 }
