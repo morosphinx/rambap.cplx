@@ -1,4 +1,6 @@
-﻿using static rambap.cplx.PartInterfaces.IPartConnectable;
+﻿using rambap.cplx.Export.TextFiles;
+using rambap.cplx.Modules.Connectivity.Outputs;
+using static rambap.cplx.PartInterfaces.IPartConnectable;
 using static rambap.cplx.UnitTests.Connectivity.ConnectionAction;
 
 namespace rambap.cplx.UnitTests.Connectivity;
@@ -11,14 +13,14 @@ internal class Part_InternalCable(bool internalConnected) : Part, IPartConnectab
     public void Assembly_Connections(ConnectionBuilder Do)
     {
         if(internalConnected)
-            Do.Connect(LeftCableConnector, RigthCableConnector);
+            Do.Wire(LeftCableConnector, RigthCableConnector);
     }
 }
 
 enum ConnectionAction
 {
     Nothing,
-    Connect,
+    Mate,
     Expose,
 }
 
@@ -35,8 +37,8 @@ internal class Part_ContainerBox(ConnectionAction actionOnL, ConnectionAction ac
         {
             case (ConnectionAction.Nothing):
                 break;
-            case (ConnectionAction.Connect):
-                Do.Connect(A, B); // Connect the cable connector to the box connector in a nondescript way
+            case (ConnectionAction.Mate):
+                Do.Mate(A, B); // Connect the cable connector to the box connector in a nondescript way
                 break;
             case (ConnectionAction.Expose):
                 Do.ExposeAs(B, A); // Expose the cable connector on the box exterior
@@ -60,16 +62,26 @@ public class TestSimpleCableContainer
         ConnectionAction actionOnL, ConnectionAction actionOnR, bool internalConnected,
         int expectedBoxConnectionCount, bool expectedEndToEndLink)
     {
-        var B = new Part_ContainerBox(actionOnL, actionOnR, internalConnected);
-        var I = new Pinstance(B);
-        var connectivity = I.Connectivity();
-        Assert.AreEqual(expectedBoxConnectionCount, connectivity!.Connections.Count);
+        var part = new Part_ContainerBox(actionOnL, actionOnR, internalConnected);
+        var instance = new Pinstance(part);
+        // Write the output table for reference
+        var table = new TextTableFile(instance)
+        {
+            Table = Modules.Connectivity.Outputs.ConnectivityTables.ConnectionTable(),
+            Formater = new MarkdownTableFormater()
+        };
+        table.WriteToConsole();
+        // Test Connectivity property value
+        var connectivity = instance.Connectivity();
+        //Assert.AreEqual(expectedBoxConnectionCount, connectivity!.Connections.Count);
+        Assert.AreEqual(expectedBoxConnectionCount, ConnectivityTableIterator.GetAllConnection(instance).Count());
+        
         // TODO : Assert End To end Link
         // if internal connected, assert B.LeftBoxConnector and B.RigthBoxConnector are connected
     }
 
     //// ---- TESTS WITH CABLE MAKING A CONNECTION
-    // Does it make sens to sometime connect and expose on the same connector ?
+    // Does it make sens to sometime connect/mate and expose on the same connector ?
     // If we connect on a connector, it does not make sense to show it as a public part
     // Differentiate those use cases in the connector definition ?
 
@@ -80,8 +92,8 @@ public class TestSimpleCableContainer
     // Expected Connections (NCC) :
     // LeftCableConnector   --------(Cable)--------  RightCableConnector
     // RightCableConnector  -----------------------  RightBoxConnector
-    [TestMethod] public void TestNCC() => TestConnectionCount(Nothing, Connect, true, 2, false); 
-    [TestMethod] public void TestCNC() => TestConnectionCount(Connect, Nothing, true, 2, false);
+    [TestMethod] public void TestNMC() => TestConnectionCount(Nothing, Mate, true, 2, false); 
+    [TestMethod] public void TestMNC() => TestConnectionCount(Mate, Nothing, true, 2, false);
 
     // One side is exposed => No endToEnd connection, should document the intenrnal cable
     // Expected Connections (NEC) :
@@ -94,15 +106,15 @@ public class TestSimpleCableContainer
     // Expected Connections (CEC) :
     // LeftBoxConnector     -----------------------  LeftCableConnector
     // LeftCableConnector   --------(Cable)--------  RightBoxConnector(RightCableConnector)
-    [TestMethod] public void TestCEC() => TestConnectionCount(Connect, Expose, true, 2, true);
-    [TestMethod] public void TestECC() => TestConnectionCount(Expose, Connect, true, 2, true);
+    [TestMethod] public void TestMEC() => TestConnectionCount(Mate, Expose, true, 2, true);
+    [TestMethod] public void TestEMC() => TestConnectionCount(Expose, Mate, true, 2, true);
 
     // Both side connected internaly => Has endToEnd connection, ONE connection to document
     // Expected Connections (CCC) :
     // LeftBoxConnector     -----------------------  LeftCableConnector
     // LeftCableConnector   --------(Cable)--------  RigthCableConnector
     // RigthCableConnector  -----------------------  RigthBoxConnector
-    [TestMethod] public void TestCCC() => TestConnectionCount(Connect, Connect, true, 3, true);
+    [TestMethod] public void TestMMC() => TestConnectionCount(Mate, Mate, true, 3, true);
 
 
     // Both side exposed => Has endToEnd connection, 1 connection to document
@@ -121,16 +133,16 @@ public class TestSimpleCableContainer
 
     [TestMethod] public void TestNNN() => TestConnectionCount(Nothing, Nothing, false, 0, false);
 
-    [TestMethod] public void TestNCN() => TestConnectionCount(Nothing, Connect, false, 2, false);
-    [TestMethod] public void TestCNN() => TestConnectionCount(Connect, Nothing, false, 2, false);
+    [TestMethod] public void TestNMN() => TestConnectionCount(Nothing, Mate, false, 2, false);
+    [TestMethod] public void TestMNN() => TestConnectionCount(Mate, Nothing, false, 2, false);
 
     [TestMethod] public void TestNEN() => TestConnectionCount(Nothing, Expose, false, 1, false);
     [TestMethod] public void TestENN() => TestConnectionCount(Expose, Nothing, false, 1, false);
 
-    [TestMethod] public void TestCEN() => TestConnectionCount(Connect, Expose, false, 2, false);
-    [TestMethod] public void TestECN() => TestConnectionCount(Expose, Connect, false, 2, false);
+    [TestMethod] public void TestMEN() => TestConnectionCount(Mate, Expose, false, 2, false);
+    [TestMethod] public void TestEMN() => TestConnectionCount(Expose, Mate, false, 2, false);
 
-    [TestMethod] public void TestCCN() => TestConnectionCount(Connect, Connect, false, 3, false);
+    [TestMethod] public void TestMMN() => TestConnectionCount(Mate, Mate, false, 3, false);
 
     [TestMethod] public void TestEEN() => TestConnectionCount(Expose, Expose, false, 1, false);
 }

@@ -15,7 +15,7 @@ public static class Globals
             new Modules.Documentation.ManufacturerConcept(),
             new Modules.Costing.CostsConcept(),
             new Modules.Costing.TasksConcept(),
-            new Modules.Connectivity.SlotConcept(),
+            new Modules.Racking.SlotConcept(),
             new Modules.Connectivity.ConnectionConcept(),
         ];
 }

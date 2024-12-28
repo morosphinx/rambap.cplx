@@ -33,16 +33,16 @@ class InternalCable1 : Part, IPartConnectable
     public void Assembly_Connections(IPartConnectable.ConnectionBuilder Do)
     {
         // D38 to D38 connection
-        Do.Connect(C01.A, C02.B);
-        Do.Connect(C01.B, C02.A);
-        Do.Connect(C01.C, C02.C);
-        Do.Connect(C01.D, C02.D);
-        Do.Connect(C01.E, C02.E);
-        Do.Connect(C01.F, C02.F);
-        Do.Connect(C01.G, C02.G);
+        Do.Mate(C01.A, C02.B);
+        Do.Mate(C01.B, C02.A);
+        Do.Mate(C01.C, C02.C);
+        Do.Mate(C01.D, C02.D);
+        Do.Mate(C01.E, C02.E);
+        Do.Mate(C01.F, C02.F);
+        Do.Mate(C01.G, C02.G);
         // Power
-        Do.Connect(C01.J, C04.SolderPoint);
-        Do.Connect(C01.K, C05.SolderPoint);
+        Do.Mate(C01.J, C04.SolderPoint);
+        Do.Mate(C01.K, C05.SolderPoint);
         // Exposed connection
         Do.ExposeAs(C01.Face, J01);
         Do.ExposeAs(C02.Face, J02);

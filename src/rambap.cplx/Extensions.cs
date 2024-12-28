@@ -3,6 +3,7 @@ using rambap.cplx.Modules.Mass;
 using rambap.cplx.Modules.Documentation;
 using rambap.cplx.Modules.Costing;
 using rambap.cplx.Modules.Connectivity;
+using rambap.cplx.Modules.Racking;
 
 namespace rambap.cplx;
 

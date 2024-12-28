@@ -14,6 +14,7 @@ internal class ConnectivityTables
                     ConnectorFullName(ConnectorSide.Left),
                     ConnectorName(ConnectorSide.Left),
                     Dashes(),
+                    ConnectionKind(),
                     ConnectorName(ConnectorSide.Rigth),
                     ConnectorFullName(ConnectorSide.Rigth),
                 ]

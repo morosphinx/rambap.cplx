@@ -28,6 +28,13 @@ public class TextTableFile : IInstruction
         var lines = Formater.Format(Table, Content);
         File.WriteAllLines(path, lines);
     }
+
+    public void WriteToConsole()
+    {
+        var lines = Formater.Format(Table, Content);
+        foreach(var l in lines)
+            Console.WriteLine(l);
+    }
 }
 
 

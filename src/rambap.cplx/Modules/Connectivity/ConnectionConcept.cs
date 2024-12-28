@@ -1,15 +1,12 @@
 ﻿using rambap.cplx.Core;
+using System.Diagnostics.CodeAnalysis;
 using rambap.cplx.PartInterfaces;
 using rambap.cplx.PartProperties;
-using System.Diagnostics.CodeAnalysis;
 using static rambap.cplx.Core.Support;
-using static rambap.cplx.Modules.Connectivity.PartInterfaces.ConnectionModel;
+using rambap.cplx.Modules.Connectivity.Model;
 using static rambap.cplx.PartInterfaces.IPartConnectable;
-using static rambap.cplx.PartInterfaces.IPartConnectable.ConnectionBuilder;
 
 namespace rambap.cplx.Modules.Connectivity;
-
-using TopmostConnectionGroup = (Connector LeftTopMost, Connector RigthTopMost, IEnumerable<Connection> Connections);
 
 public class InstanceConnectivity : IInstanceConceptProperty
 {
@@ -27,30 +24,6 @@ public class InstanceConnectivity : IInstanceConceptProperty
         Left,
         Rigth,
         Both,
-    }
-
-    class LinkNondirectionalEqualityComparer : EqualityComparer<(Connector A, Connector B)>
-    {
-        public override bool Equals((Connector A, Connector B) x, (Connector A, Connector B) y)
-            => (x.A == y.A && x.B == y.B) || (x.A == y.B && x.B == y.A);
-
-        public override int GetHashCode([DisallowNull] (Connector A, Connector B) obj)
-            => obj.A.GetHashCode() ^ obj.B.GetHashCode();
-    }
-
-    public IEnumerable<TopmostConnectionGroup> GetConnectionGroups()
-    {
-        (Connector, Connector) GetTopMostConnectors(Connection con)
-            => (con.ConnectorA.TopMostUser(), con.ConnectorB.TopMostUser());
-        var linkComparer = new LinkNondirectionalEqualityComparer();
-
-        var allConnections = Connections.SelectMany(c => c.Connections);
-        var allPairDirectionDependant = allConnections.Select(GetTopMostConnectors).Distinct();
-        var allPairDirectionIndependant = allPairDirectionDependant.Distinct(linkComparer);
-
-        var groups = allConnections.GroupBy(GetTopMostConnectors, linkComparer);
-
-        return groups.Select(g => (g.Key.Item1, g.Key.Item2, (IEnumerable<Connection>) g));
     }
 
     internal InstanceConnectivity()
