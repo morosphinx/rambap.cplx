@@ -20,6 +20,14 @@ public abstract record Connection
         return (leftConnector, rigthConnector);
     }
 }
+public record Structural : Connection
+{
+    internal Structural(Connector connectorA, Connector connectorB)
+    {
+        ConnectorA = connectorA;
+        ConnectorB = connectorB;
+    }
+}
 
 public record Mate : Connection
 {
@@ -41,30 +49,36 @@ public record Wire : Wireable
     }
 }
 
-public record Twist : Wireable
+public abstract record WireableGrouping : Wireable
 {
-    public IEnumerable<Wireable> TwistedItems { get; init; }
+    public IEnumerable<Wireable> GroupedItems { get; init; }
     public override IEnumerable<Connection> Connections
-        => [.. TwistedItems.SelectMany(c => c.Connections)];
+        => [.. GroupedItems.SelectMany(c => c.Connections)];
 
-    internal Twist(IEnumerable<Wireable> twistedItems)
+    internal WireableGrouping(IEnumerable<Wireable> groupedItems)
     {
-        (ConnectorA, ConnectorB) = GetCommonPathOrThrow(twistedItems);
-        TwistedItems = twistedItems.ToList();
+        (ConnectorA, ConnectorB) = GetCommonPathOrThrow(groupedItems);
+        GroupedItems = groupedItems.ToList();
     }
 }
 
-public record Shield : Wireable
+public record Bundle : WireableGrouping
+{
+    internal Bundle(IEnumerable<Wireable> twistedItems)
+        : base(twistedItems) { }
+}
+
+public record Twist : WireableGrouping
+{
+    internal Twist(IEnumerable<Wireable> twistedItems)
+        : base(twistedItems) { }
+}
+
+public record Shield : WireableGrouping
 {
     public enum ShieldingSide { Left, Right, Both, Neither };
     public ShieldingSide Shielding { get; init; } = ShieldingSide.Both;
-    public IEnumerable<Wireable> ShieldedItems { get; init; }
-    public override IEnumerable<Connection> Connections
-        => [.. ShieldedItems.SelectMany(c => c.Connections)];
 
     internal Shield(IEnumerable<Wireable> shieldedItems)
-    {
-        (ConnectorA, ConnectorB) = GetCommonPathOrThrow(shieldedItems);
-        ShieldedItems = shieldedItems.ToList();
-    }
+        : base(shieldedItems) { }
 }

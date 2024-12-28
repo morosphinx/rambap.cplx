@@ -39,6 +39,7 @@ class ConnectivityTableContent
     {
         Mate,
         Wire,
+        Bundle,
         Twist,
         Shield,
     }
@@ -48,6 +49,7 @@ class ConnectivityTableContent
         {
             Mate m => ConnectionKind.Mate,
             Wire m => ConnectionKind.Wire,
+            Bundle m => ConnectionKind.Bundle,
             Twist m => ConnectionKind.Twist,
             Shield m => ConnectionKind.Shield,
             _ => throw new NotImplementedException(),

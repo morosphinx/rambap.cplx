@@ -1,4 +1,5 @@
 ﻿namespace rambap.cplx.UnitTests;
+using rambap.cplx.Modules.Connectivity.Model;
 
 class RackConnected1 : Part, IPartConnectable
 {
@@ -6,7 +7,7 @@ class RackConnected1 : Part, IPartConnectable
 
     public Connector J11, J12, J21, J22;
 
-    public void Assembly_Connections(IPartConnectable.ConnectionBuilder Do)
+    public void Assembly_Connections(ConnectionBuilder Do)
     {
         Do.ExposeAs(Cable1.J01, J11);
         Do.ExposeAs(Cable1.J01, J12);
@@ -30,7 +31,7 @@ class InternalCable1 : Part, IPartConnectable
     public Connector PWR_P;
     public Connector PWR_N;
 
-    public void Assembly_Connections(IPartConnectable.ConnectionBuilder Do)
+    public void Assembly_Connections(ConnectionBuilder Do)
     {
         // D38 to D38 connection
         Do.Mate(C01.A, C02.B);

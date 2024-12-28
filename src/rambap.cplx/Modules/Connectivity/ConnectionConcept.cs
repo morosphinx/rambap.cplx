@@ -1,10 +1,8 @@
 ﻿using rambap.cplx.Core;
-using System.Diagnostics.CodeAnalysis;
 using rambap.cplx.PartInterfaces;
 using rambap.cplx.PartProperties;
 using static rambap.cplx.Core.Support;
 using rambap.cplx.Modules.Connectivity.Model;
-using static rambap.cplx.PartInterfaces.IPartConnectable;
 
 namespace rambap.cplx.Modules.Connectivity;
 
@@ -56,33 +54,37 @@ internal class ConnectionConcept : IConcept<InstanceConnectivity>
             }
 
             var selfDefinedConnection = connectionBuilder!.Connections;
+            var groups = ConnectionHelpers.GroupConnectionsByTopmostEndpoints(selfDefinedConnection);
+            var wireGroupedConnections = groups.SelectMany(g =>
+                g.Connections.All(c => c is Wireable)
+                    ? [new Bundle(g.Connections.OfType<Wireable>())]
+                    : g.Connections);
 
             // All Components that have a Connectivity definition are used as black boxes
-            foreach (var c in instance.Components)
-            {
-                var connectivity = c.Instance.Connectivity();
-                if(connectivity != null)
-                {
-                    if (connectivity.IsACable)
-                    {
-                        var cableConnectors = connectivity.PublicConnectors;
-                        AbstractConnectionDueToCable(selfDefinedConnection, cableConnectors);
-                    }
-                }
-            }
-            
+            //void AbstractConnectionDueToCable(List<Connection> /cablings, /       IEnumerable<Connector> cableConnectors)
+            //{
+            //
+            //}
+            // foreach (var c in instance.Components)
+            // {
+            //     var connectivity = c.Instance.Connectivity();
+            //     if(connectivity != null)
+            //     {
+            //         if (connectivity.IsACable)
+            //         {
+            //             var cableConnectors = // connectivity.PublicConnectors;
+            //             AbstractConnectionDueToCable// (selfDefinedConnection, cableConnectors);
+            //         }
+            //     }
+            // }
+
             return new InstanceConnectivity()
             {
                 PublicConnectors = selfPublicConnectors,
                 Connectors = selfConnectors,
-                Connections = selfDefinedConnection
+                Connections = wireGroupedConnections.ToList()
             };
         }
         else return null;
-    }
-
-    private void AbstractConnectionDueToCable(List<Connection> cablings, IEnumerable<Connector> cableConnectors)
-    {
-
     }
 }

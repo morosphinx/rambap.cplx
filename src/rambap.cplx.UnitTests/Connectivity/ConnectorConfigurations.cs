@@ -1,6 +1,5 @@
 ﻿using rambap.cplx.Export.TextFiles;
 using rambap.cplx.Modules.Connectivity.Outputs;
-using static rambap.cplx.PartInterfaces.IPartConnectable;
 using static rambap.cplx.UnitTests.Connectivity.ConnectionAction;
 
 namespace rambap.cplx.UnitTests.Connectivity;
@@ -86,7 +85,7 @@ public class TestSimpleCableContainer
     // Differentiate those use cases in the connector definition ?
 
     // No connection in box, both side
-    [TestMethod] public void TestNNC() => TestConnectionCount(Nothing, Nothing, true, 0, false);
+    [TestMethod] public void TestNNC() => TestConnectionCount(Nothing, Nothing, true, 1, false);
 
     // One side is connected internaly => No endToEnd connection, one connection to document
     // Expected Connections (NCC) :
@@ -127,22 +126,22 @@ public class TestSimpleCableContainer
 
 
     //// ---- TESTS WITH CABLE NOT MAKING A CONNECTION
-    // Same number of connections has above, except never has endToEnd connection
+    // Same number = above - 1, except never has endToEnd connection
     // TODO : Confirm : While there is no internal signal connection in the cable, it should not change its internal representation in the
     // Parent connection diagram.
 
     [TestMethod] public void TestNNN() => TestConnectionCount(Nothing, Nothing, false, 0, false);
 
-    [TestMethod] public void TestNMN() => TestConnectionCount(Nothing, Mate, false, 2, false);
-    [TestMethod] public void TestMNN() => TestConnectionCount(Mate, Nothing, false, 2, false);
+    [TestMethod] public void TestNMN() => TestConnectionCount(Nothing, Mate, false, 1, false);
+    [TestMethod] public void TestMNN() => TestConnectionCount(Mate, Nothing, false, 1, false);
 
-    [TestMethod] public void TestNEN() => TestConnectionCount(Nothing, Expose, false, 1, false);
-    [TestMethod] public void TestENN() => TestConnectionCount(Expose, Nothing, false, 1, false);
+    [TestMethod] public void TestNEN() => TestConnectionCount(Nothing, Expose, false, 0, false);
+    [TestMethod] public void TestENN() => TestConnectionCount(Expose, Nothing, false, 0, false);
 
-    [TestMethod] public void TestMEN() => TestConnectionCount(Mate, Expose, false, 2, false);
-    [TestMethod] public void TestEMN() => TestConnectionCount(Expose, Mate, false, 2, false);
+    [TestMethod] public void TestMEN() => TestConnectionCount(Mate, Expose, false, 1, false);
+    [TestMethod] public void TestEMN() => TestConnectionCount(Expose, Mate, false, 1, false);
 
-    [TestMethod] public void TestMMN() => TestConnectionCount(Mate, Mate, false, 3, false);
+    [TestMethod] public void TestMMN() => TestConnectionCount(Mate, Mate, false, 2, false);
 
-    [TestMethod] public void TestEEN() => TestConnectionCount(Expose, Expose, false, 1, false);
+    [TestMethod] public void TestEEN() => TestConnectionCount(Expose, Expose, false, 0, false);
 }
