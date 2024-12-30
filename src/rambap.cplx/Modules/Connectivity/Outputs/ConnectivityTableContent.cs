@@ -14,12 +14,12 @@ class ConnectivityTableContent
     // TODO : why are those in their own property here, while they can also be deduced from the connection data ?
     // Group connection together on display, detect changs in left/right definition ?
     // This may also be inversed from the ocnnecton left / rigth definition
-    public required Connector LeftTopMostConnector { get; init; }
-    public required Connector RigthTopMostConnector { get; init; }
+    public required SignalPort LeftTopMostConnector { get; init; }
+    public required SignalPort RigthTopMostConnector { get; init; }
 
-    public required Connection Connection { get; init; }
+    public required ISignalingAction Connection { get; init; }
 
-    public Connector GetTopMostConnector(ConnectorSide side)
+    public SignalPort GetTopMostConnector(ConnectorSide side)
         => side switch
         {
             ConnectorSide.Left => LeftTopMostConnector,
@@ -27,16 +27,17 @@ class ConnectivityTableContent
             _ => throw new NotImplementedException(),
         };
 
-    public Connector GetImmediateConnector(ConnectorSide side)
+    public SignalPort GetImmediateConnector(ConnectorSide side)
         => side switch
         {
-            ConnectorSide.Left => Connection.ConnectorA,
-            ConnectorSide.Rigth => Connection.ConnectorB,
+            ConnectorSide.Left => Connection.LeftPort,
+            ConnectorSide.Rigth => Connection.RightPort,
             _ => throw new NotImplementedException(),
         };
 
     public enum ConnectionKind
     {
+        Structural,
         Mate,
         Wire,
         Bundle,
@@ -47,6 +48,7 @@ class ConnectivityTableContent
     public ConnectionKind GetConnectionKind
         => Connection switch
         {
+            StructuralConnection m => ConnectionKind.Structural,
             Mate m => ConnectionKind.Mate,
             Wire m => ConnectionKind.Wire,
             Bundle m => ConnectionKind.Bundle,

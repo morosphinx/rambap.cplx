@@ -5,7 +5,7 @@ class RackConnected1 : Part, IPartConnectable
 {
     InternalCable1 Cable1, Cable2;
 
-    public Connector J11, J12, J21, J22;
+    public ConnectablePort J11, J12, J21, J22;
 
     public void Assembly_Connections(ConnectionBuilder Do)
     {
@@ -26,24 +26,24 @@ class InternalCable1 : Part, IPartConnectable
     Test4mm C04;
     Test4mm C05;
 
-    public Connector J01;
-    public Connector J02;
-    public Connector PWR_P;
-    public Connector PWR_N;
+    public ConnectablePort J01;
+    public ConnectablePort J02;
+    public ConnectablePort PWR_P;
+    public ConnectablePort PWR_N;
 
     public void Assembly_Connections(ConnectionBuilder Do)
     {
         // D38 to D38 connection
-        Do.Mate(C01.A, C02.B);
-        Do.Mate(C01.B, C02.A);
-        Do.Mate(C01.C, C02.C);
-        Do.Mate(C01.D, C02.D);
-        Do.Mate(C01.E, C02.E);
-        Do.Mate(C01.F, C02.F);
-        Do.Mate(C01.G, C02.G);
+        Do.Wire(C01.A, C02.B);
+        Do.Wire(C01.B, C02.A);
+        Do.Wire(C01.C, C02.C);
+        Do.Wire(C01.D, C02.D);
+        Do.Wire(C01.E, C02.E);
+        Do.Wire(C01.F, C02.F);
+        Do.Wire(C01.G, C02.G);
         // Power
-        Do.Mate(C01.J, C04.SolderPoint);
-        Do.Mate(C01.K, C05.SolderPoint);
+        Do.Wire(C01.J, C04.SolderPoint);
+        Do.Wire(C01.K, C05.SolderPoint);
         // Exposed connection
         Do.ExposeAs(C01.Face, J01);
         Do.ExposeAs(C02.Face, J02);
@@ -57,17 +57,17 @@ class InternalCable1 : Part, IPartConnectable
 
 class D38999_1Connector : Part
 {
-    public Connector Face; // D38999 Face
+    public ConnectablePort Face; // D38999 Face
 
-    public Connector A, B, C, D, E, F, G, H, I, J, K;
+    public WireablePort A, B, C, D, E, F, G, H, I, J, K;
 
     Cost Buy = 200;
 }
 
 class Test4mm : Part
 {
-    public Connector SolderPoint;
-    public Connector TestPlug4mmMale;
+    public WireablePort SolderPoint;
+    public ConnectablePort TestPlug4mmMale;
 
     Cost Buy = 10;
 }

@@ -12,7 +12,7 @@ internal class ConnectivityTableIterator : IIterator<ConnectivityTableContent>
         var connections = GetAllConnection(content);
         // var connectionsFlattened = connections.SelectMany(c => c.Connections);
 
-        var connectionsGrouped = ConnectionHelpers.GroupConnectionsByTopmostEndpoints(connections);
+        var connectionsGrouped = ConnectionHelpers.GroupConnectionsByTopmostPort(connections);
 
         foreach (var group in connectionsGrouped)
         {
@@ -20,7 +20,7 @@ internal class ConnectivityTableIterator : IIterator<ConnectivityTableContent>
             var groupRightConnector = group.RigthTopMost;
             foreach (var connection in group.Connections)
             {
-                bool shouldReverse = connection.ConnectorA.TopMostUser() != groupLeftConnector;
+                bool shouldReverse = connection.LeftPort.TopMostUser() != groupLeftConnector;
                 if (shouldReverse)
                     yield return new ConnectivityTableContent()
                     {
@@ -40,7 +40,7 @@ internal class ConnectivityTableIterator : IIterator<ConnectivityTableContent>
         }
     }
 
-    public static IEnumerable<Connection> GetAllConnection(Pinstance instance)
+    public static IEnumerable<ConnectingAction> GetAllConnection(Pinstance instance)
     {
         // Return all connection, NOT flattening grouped ones (Twisting / Sielding)
         foreach (var c in instance.Connectivity()!.Connections)

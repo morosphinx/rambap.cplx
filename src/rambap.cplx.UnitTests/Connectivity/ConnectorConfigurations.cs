@@ -6,13 +6,13 @@ namespace rambap.cplx.UnitTests.Connectivity;
 
 internal class Part_InternalCable(bool internalConnected) : Part, IPartConnectable
 {
-    public Connector LeftCableConnector;
-    public Connector RigthCableConnector;
+    public ConnectablePort LeftCableConnector;
+    public ConnectablePort RigthCableConnector;
 
     public void Assembly_Connections(ConnectionBuilder Do)
     {
         if(internalConnected)
-            Do.Wire(LeftCableConnector, RigthCableConnector);
+            Do.Mate(LeftCableConnector, RigthCableConnector);
     }
 }
 
@@ -25,12 +25,12 @@ enum ConnectionAction
 
 internal class Part_ContainerBox(ConnectionAction actionOnL, ConnectionAction actionOnR, bool internalConnected) : Part, IPartConnectable
 {
-    public Connector LeftBoxConnector;
-    public Connector RigthBoxConnector;
+    public ConnectablePort LeftBoxConnector;
+    public ConnectablePort RigthBoxConnector;
 
     Part_InternalCable Cable = new Part_InternalCable(internalConnected);
 
-    private static void DoConnectionAction(ConnectionBuilder Do, ConnectionAction action, Connector A, Connector B)
+    private static void DoConnectionAction(ConnectionBuilder Do, ConnectionAction action, ConnectablePort A, ConnectablePort B)
     {
         switch (action)
         {

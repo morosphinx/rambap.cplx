@@ -11,11 +11,12 @@ public class InstanceConnectivity : IInstanceConceptProperty
     // TODO : set definition somewhere in the Part
     public bool IsACable { get; init; } = true;
 
-    public required List<Connector> PublicConnectors { get; init; }
+    public required List<ConnectablePort> PublicConnectors { get; init; }
 
-    public required List<Connector> Connectors { get; init; }
+    public required List<ConnectablePort> Connectors { get; init; }
 
-    public required List<Connection> Connections { get; init; }
+    public required List<ConnectingAction> Connections { get; init; }
+    public required List<WiringAction> Wirings { get; init; }
 
     public enum DisplaySide
     {
@@ -35,9 +36,9 @@ internal class ConnectionConcept : IConcept<InstanceConnectivity>
     public override InstanceConnectivity? Make(Pinstance instance, Part template)
     {
         var connectionBuilder = new ConnectionBuilder(template);
-        var selfConnectors = new List<Connector>();
-        var selfPublicConnectors = new List<Connector>();
-        ScanObjectContentFor<Connector>(template,
+        var selfConnectors = new List<ConnectablePort>();
+        var selfPublicConnectors = new List<ConnectablePort>();
+        ScanObjectContentFor<ConnectablePort>(template,
             (p, s) => {
                 selfConnectors.Add(p);
                 if(s.IsPublicOrAssembly) selfPublicConnectors.Add(p);
@@ -54,11 +55,13 @@ internal class ConnectionConcept : IConcept<InstanceConnectivity>
             }
 
             var selfDefinedConnection = connectionBuilder!.Connections;
-            var groups = ConnectionHelpers.GroupConnectionsByTopmostEndpoints(selfDefinedConnection);
-            var wireGroupedConnections = groups.SelectMany(g =>
-                g.Connections.All(c => c is Wireable)
-                    ? [new Bundle(g.Connections.OfType<Wireable>())]
-                    : g.Connections);
+            var selfDefinedWirings = connectionBuilder!.Wirings;
+            // 
+            // var groups = ConnectionHelpers.GroupConnectionsByTopmostPort(selfDefinedWirings);
+            // var wireGroupedConnections = groups.SelectMany(g =>
+            //     g.Connections.All(c => c is WiringAction)
+            //         ? [new Bundle(g.Connections.OfType<WiringAction>())]
+            //         : g.Connections);
 
             // All Components that have a Connectivity definition are used as black boxes
             //void AbstractConnectionDueToCable(List<Connection> /cablings, /       IEnumerable<Connector> cableConnectors)
@@ -82,7 +85,8 @@ internal class ConnectionConcept : IConcept<InstanceConnectivity>
             {
                 PublicConnectors = selfPublicConnectors,
                 Connectors = selfConnectors,
-                Connections = wireGroupedConnections.ToList()
+                Connections = selfDefinedConnection.ToList(),
+                Wirings = selfDefinedWirings.ToList(),
             };
         }
         else return null;

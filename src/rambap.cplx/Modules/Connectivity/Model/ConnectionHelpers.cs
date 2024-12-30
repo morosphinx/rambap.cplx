@@ -3,24 +3,24 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace rambap.cplx.Modules.Connectivity.Model;
 
-using TopmostConnectionGroup = (Connector LeftTopMost, Connector RigthTopMost, IEnumerable<Connection> Connections);
+using TopmostConnectionGroup = (SignalPort LeftTopMost, SignalPort RigthTopMost, IEnumerable<ISignalingAction> Connections);
 
 internal static class ConnectionHelpers
 {
-    class LinkNondirectionalEqualityComparer : EqualityComparer<(Connector A, Connector B)>
+    class LinkNondirectionalEqualityComparer : EqualityComparer<(SignalPort A, SignalPort B)>
     {
-        public override bool Equals((Connector A, Connector B) x, (Connector A, Connector B) y)
+        public override bool Equals((SignalPort A, SignalPort B) x, (SignalPort A, SignalPort B) y)
             => (x.A == y.A && x.B == y.B) || (x.A == y.B && x.B == y.A);
 
-        public override int GetHashCode([DisallowNull] (Connector A, Connector B) obj)
+        public override int GetHashCode([DisallowNull] (SignalPort A, SignalPort B) obj)
             => obj.A.GetHashCode() ^ obj.B.GetHashCode();
     }
 
-    public static IEnumerable<TopmostConnectionGroup> GroupConnectionsByTopmostEndpoints(
-        IEnumerable<Connection> connections)
+    public static IEnumerable<TopmostConnectionGroup> GroupConnectionsByTopmostPort(
+        IEnumerable<ISignalingAction> connections)
     {
-        (Connector, Connector) GetTopMostConnectors(Connection con)
-            => (con.ConnectorA.TopMostUser(), con.ConnectorB.TopMostUser());
+        (SignalPort, SignalPort) GetTopMostConnectors(ISignalingAction con)
+            => (con.LeftPort.TopMostUser(), con.RightPort.TopMostUser());
         var linkComparer = new LinkNondirectionalEqualityComparer();
 
         var allPairDirectionDependant = connections.Select(GetTopMostConnectors).Distinct();
@@ -28,6 +28,6 @@ internal static class ConnectionHelpers
 
         var groups = connections.GroupBy(GetTopMostConnectors, linkComparer);
 
-        return groups.Select(g => (g.Key.Item1, g.Key.Item2, (IEnumerable<Connection>)g));
+        return groups.Select(g => (g.Key.Item1, g.Key.Item2, (IEnumerable<ISignalingAction>)g));
     }
 }

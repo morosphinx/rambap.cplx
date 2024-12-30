@@ -2,83 +2,45 @@
 
 namespace rambap.cplx.Modules.Connectivity.Model;
 
-public abstract record Connection
+public interface ISignalingAction
 {
-    public Connector ConnectorA { get; protected init; }
-    public Connector ConnectorB { get; protected init; }
+    SignalPort LeftPort { get; }
+    SignalPort RightPort { get; }
+}
 
-    public virtual IEnumerable<Connection> Connections
+public record StructuralConnection : ISignalingAction
+{
+    public SignalPort ConnectedPort { get; protected init; }
+    public SignalPort WirringPort { get; protected init; }
+
+    internal StructuralConnection(ConnectablePort connector, WireablePort wireable)
+    {
+        ConnectedPort = connector;
+        WirringPort = wireable;
+    }
+    public SignalPort LeftPort => ConnectedPort;
+    public SignalPort RightPort => WirringPort;
+}
+
+
+public abstract record ConnectingAction : ISignalingAction
+{
+    public SignalPort LeftConnectedPort { get; protected init; }
+    public SignalPort RigthConnectedPort { get; protected init; }
+
+    public virtual IEnumerable<ConnectingAction> Connections
         => [this];
 
-    protected static (Connector, Connector) GetCommonPathOrThrow(IEnumerable<Connection> connections)
+    public SignalPort LeftPort => LeftConnectedPort;
+    public SignalPort RightPort => RigthConnectedPort;
+}
+
+
+public record Mate : ConnectingAction
+{
+    internal Mate(ConnectablePort connectorA, ConnectablePort connectorB)
     {
-        // Check that all items share the same path
-        var leftTopMosts = connections.Select(t => t.ConnectorA.TopMostUser());
-        var leftConnector = leftTopMosts.Distinct().Single();
-        var rigthTopMosts = connections.Select(t => t.ConnectorB.TopMostUser());
-        var rigthConnector = rigthTopMosts.Distinct().Single();
-        return (leftConnector, rigthConnector);
+        LeftConnectedPort = connectorA;
+        RigthConnectedPort = connectorB;
     }
-}
-public record Structural : Connection
-{
-    internal Structural(Connector connectorA, Connector connectorB)
-    {
-        ConnectorA = connectorA;
-        ConnectorB = connectorB;
-    }
-}
-
-public record Mate : Connection
-{
-    internal Mate(Connector connectorA, Connector connectorB)
-    {
-        ConnectorA = connectorA;
-        ConnectorB = connectorB;
-    }
-}
-
-public abstract record Wireable : Connection { }
-
-public record Wire : Wireable
-{
-    internal Wire(Connector connectorA, Connector connectorB)
-    {
-        ConnectorA = connectorA;
-        ConnectorB = connectorB;
-    }
-}
-
-public abstract record WireableGrouping : Wireable
-{
-    public IEnumerable<Wireable> GroupedItems { get; init; }
-    public override IEnumerable<Connection> Connections
-        => [.. GroupedItems.SelectMany(c => c.Connections)];
-
-    internal WireableGrouping(IEnumerable<Wireable> groupedItems)
-    {
-        (ConnectorA, ConnectorB) = GetCommonPathOrThrow(groupedItems);
-        GroupedItems = groupedItems.ToList();
-    }
-}
-
-public record Bundle : WireableGrouping
-{
-    internal Bundle(IEnumerable<Wireable> twistedItems)
-        : base(twistedItems) { }
-}
-
-public record Twist : WireableGrouping
-{
-    internal Twist(IEnumerable<Wireable> twistedItems)
-        : base(twistedItems) { }
-}
-
-public record Shield : WireableGrouping
-{
-    public enum ShieldingSide { Left, Right, Both, Neither };
-    public ShieldingSide Shielding { get; init; } = ShieldingSide.Both;
-
-    internal Shield(IEnumerable<Wireable> shieldedItems)
-        : base(shieldedItems) { }
 }
