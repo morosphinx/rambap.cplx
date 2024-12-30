@@ -1,6 +1,6 @@
 ﻿using rambap.cplx.Core;
 
-namespace rambap.cplx.Export.TextFiles;
+namespace rambap.cplx.Export.Tables;
 
 using Line = List<string>;
 
@@ -8,7 +8,7 @@ public class FixedWidthTableFormater : ITableFormater
 {
     public string CellSeparator { get; set; } = "\t";
     public char CellPadding { get; set; } = ' ';
-    public IEnumerable<string> Format(ITable table, Pinstance content)
+    public IEnumerable<string> Format(ITableProducer table, Pinstance content)
     {
         IEnumerable<Line> cellTexts =
             [

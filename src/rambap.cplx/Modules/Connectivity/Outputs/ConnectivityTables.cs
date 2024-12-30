@@ -1,13 +1,13 @@
-﻿using rambap.cplx.Export;
-using static rambap.cplx.Modules.Connectivity.Outputs.ConnectivityTableContent;
+﻿using static rambap.cplx.Modules.Connectivity.Outputs.ConnectivityTableContent;
 using static rambap.cplx.Modules.Connectivity.Outputs.ConnectivityColumns;
+using rambap.cplx.Export.Tables;
 
 namespace rambap.cplx.Modules.Connectivity.Outputs;
 
 internal class ConnectivityTables
 {
-    public static Table<ConnectivityTableContent> ConnectionTable()
-        => new Table<ConnectivityTableContent>()
+    public static TableProducer<ConnectivityTableContent> ConnectionTable()
+        => new TableProducer<ConnectivityTableContent>()
         {
             Iterator = new ConnectivityTableIterator(),
             Columns = [

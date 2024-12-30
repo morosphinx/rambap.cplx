@@ -1,4 +1,4 @@
-﻿using rambap.cplx.Export;
+﻿using rambap.cplx.Export.Tables;
 using static rambap.cplx.Modules.Connectivity.Outputs.ConnectivityTableContent;
 
 namespace rambap.cplx.Modules.Connectivity.Outputs;

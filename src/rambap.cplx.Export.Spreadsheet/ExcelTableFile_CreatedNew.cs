@@ -5,12 +5,13 @@ using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Spreadsheet;
 
 using static rambap.cplx.Export.Spreadsheet.Helpers;
+using rambap.cplx.Export.Tables;
 
 namespace rambap.cplx.Export.Spreadsheet;
 
 public class ExcelTableFile_CreatedNew : IInstruction
 {
-    public required ITable Table { protected get; init; }
+    public required ITableProducer Table { protected get; init; }
     public Pinstance Content { get; init; }
 
     public ExcelTableFile_CreatedNew(Pinstance content)

@@ -1,17 +1,13 @@
 ﻿using rambap.cplx.Core;
 
-namespace rambap.cplx.Export.TextFiles;
+namespace rambap.cplx.Export.Tables;
 
 using Line = List<string>;
-public interface ITableFormater
-{
-    IEnumerable<string> Format(ITable table, Pinstance content);
-}
 
 public class CSVTableFormater : ITableFormater
 {
     public string CellSeparator { get; init; } = "\t";
-    public IEnumerable<string> Format(ITable table, Pinstance content)
+    public IEnumerable<string> Format(ITableProducer table, Pinstance content)
     {
         IEnumerable<Line> cellTexts =
             [

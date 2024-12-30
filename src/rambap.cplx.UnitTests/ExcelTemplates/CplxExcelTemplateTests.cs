@@ -5,6 +5,7 @@ using static rambap.cplx.Export.Generators;
 using rambap.cplx.Modules.Base.Output;
 using rambap.cplx.Export.Iterators;
 using rambap.cplx.Modules.Costing;
+using rambap.cplx.Export.Tables;
 
 namespace rambap.cplx.UnitTests.ExcelTemplates;
 
@@ -95,7 +96,7 @@ public class CplxExcelTemplateTests
 
         bool IsDevTask(InstanceTasks.NamedTask task)
             => task.Category.ToLower().Contains("soft");
-        ITable CustomDevTaskTable = CustomTaskTable with
+        ITableProducer CustomDevTaskTable = CustomTaskTable with
         {
             ContentTransform = l => l.Where(c => c switch
             {
@@ -103,7 +104,7 @@ public class CplxExcelTemplateTests
                 _ => true,
             })
         };
-        ITable CustomDevNonTaskTable = CustomTaskTable with
+        ITableProducer CustomDevNonTaskTable = CustomTaskTable with
         {
             ContentTransform = l => l.Where(c => c switch
             {

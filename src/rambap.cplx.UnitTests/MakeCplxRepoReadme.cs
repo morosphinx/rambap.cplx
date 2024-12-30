@@ -1,8 +1,7 @@
 ﻿using rambap.cplx.Export;
-using rambap.cplx.Export.Formating;
+using rambap.cplx.Export.Tables;
 using rambap.cplx.Export.TextFiles;
 using System.Runtime.CompilerServices;
-using static rambap.cplx.Export.Generators;
 
 namespace rambap.cplx.UnitTests;
 

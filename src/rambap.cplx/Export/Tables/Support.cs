@@ -1,4 +1,4 @@
-﻿namespace rambap.cplx.Export.TextFiles;
+﻿namespace rambap.cplx.Export.Tables;
 
 using Line = List<string>;
 

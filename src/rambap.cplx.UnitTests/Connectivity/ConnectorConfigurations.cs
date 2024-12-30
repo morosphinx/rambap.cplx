@@ -67,7 +67,7 @@ public class TestSimpleCableContainer
         var table = new TextTableFile(instance)
         {
             Table = Modules.Connectivity.Outputs.ConnectivityTables.ConnectionTable(),
-            Formater = new MarkdownTableFormater()
+            Formater = new Export.Tables.MarkdownTableFormater()
         };
         table.WriteToConsole();
         // Test Connectivity property value

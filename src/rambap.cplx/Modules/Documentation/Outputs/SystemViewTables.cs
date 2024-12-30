@@ -1,12 +1,12 @@
 ﻿using rambap.cplx.Modules.Base.Output;
-using rambap.cplx.Export;
 using rambap.cplx.Export.Iterators;
+using rambap.cplx.Export.Tables;
 
 namespace rambap.cplx.Modules.Documentation.Outputs;
 
 public static class SystemViewTables
 {
-    public static Table<ComponentContent> ComponentTree_Detailled()
+    public static TableProducer<ComponentContent> ComponentTree_Detailled()
         => new()
         {
             Iterator = new ComponentIterator(),
@@ -18,7 +18,7 @@ public static class SystemViewTables
             ],
         };
 
-    public static Table<ComponentContent> ComponentTree_Stacked()
+    public static TableProducer<ComponentContent> ComponentTree_Stacked()
        => new()
        {
            Iterator = new PartLocationIterator(),
@@ -32,7 +32,7 @@ public static class SystemViewTables
            ],
        };
 
-    public static Table<ComponentContent> ComponentInventory()
+    public static TableProducer<ComponentContent> ComponentInventory()
         => new()
         {
             Iterator = new PartTypesIterator()

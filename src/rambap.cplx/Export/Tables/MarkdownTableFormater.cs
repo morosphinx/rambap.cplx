@@ -1,6 +1,6 @@
 ﻿using rambap.cplx.Core;
 
-namespace rambap.cplx.Export.TextFiles;
+namespace rambap.cplx.Export.Tables;
 
 using Line = List<string>;
 
@@ -8,14 +8,14 @@ public class MarkdownTableFormater : ITableFormater
 {
     public const string CellSeparator = "|";
     public char CellPadding { get; set; } = ' ';
-    
-    
+
+
     public bool WriteTotalLine { get; set; } = false;
     public bool TotalLineOnTop { get; set; } = false;
 
-    private Line MakeSeparatorLine(ITable table) => Enumerable.Repeat("-", table.IColumns.Count()).ToList();
+    private Line MakeSeparatorLine(ITableProducer table) => Enumerable.Repeat("-", table.IColumns.Count()).ToList();
 
-    private void CompleteSeparatorLine(ITable table, Line separatorLine, List<int> columnCharWidth)
+    private void CompleteSeparatorLine(ITableProducer table, Line separatorLine, List<int> columnCharWidth)
     {
         for (int i = 0; i < table.IColumns.Count(); i++)
         {
@@ -34,7 +34,7 @@ public class MarkdownTableFormater : ITableFormater
         }
     }
 
-    public IEnumerable<string> Format(ITable table, Pinstance content)
+    public IEnumerable<string> Format(ITableProducer table, Pinstance content)
     {
         var separatorLineContent = MakeSeparatorLine(table);
         IEnumerable<Line> cellTexts;
@@ -51,7 +51,8 @@ public class MarkdownTableFormater : ITableFormater
                 separatorLineContent,
                 .. table.MakeContentLines(content),
             ];
-        } else // Total line should be writen on bottom
+        }
+        else // Total line should be writen on bottom
         {
             cellTexts =
             [

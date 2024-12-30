@@ -1,4 +1,6 @@
 ﻿using rambap.cplx.Core;
+using rambap.cplx.Export.Tables;
+using rambap.cplx.Export.Tables;
 
 namespace rambap.cplx.Export.TextFiles;
 
@@ -7,7 +9,7 @@ using Line = List<string>;
 public class TextTableFile : IInstruction
 {
     /// <summary> Definition of the table written to the file </summary>
-    public required ITable Table { protected get; init; }
+    public required ITableProducer Table { protected get; init; }
 
     /// <summary> Definition of the table written to the file </summary>
     public required ITableFormater Formater { protected get; init; }
@@ -32,7 +34,7 @@ public class TextTableFile : IInstruction
     public void WriteToConsole()
     {
         var lines = Formater.Format(Table, Content);
-        foreach(var l in lines)
+        foreach (var l in lines)
             Console.WriteLine(l);
     }
 }

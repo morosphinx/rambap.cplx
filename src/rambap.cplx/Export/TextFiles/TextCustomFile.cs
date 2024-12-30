@@ -1,6 +1,4 @@
-﻿using rambap.cplx.Core;
-
-namespace rambap.cplx.Export.Formating;
+﻿namespace rambap.cplx.Export.TextFiles;
 
 public abstract class TextCustomFile : IInstruction
 {

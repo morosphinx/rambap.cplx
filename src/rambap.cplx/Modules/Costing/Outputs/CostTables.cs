@@ -1,7 +1,7 @@
 ﻿using rambap.cplx.Modules.Base.Output;
 using rambap.cplx.Modules.Documentation.Outputs;
-using rambap.cplx.Export;
 using rambap.cplx.Export.Iterators;
+using rambap.cplx.Export.Tables;
 
 namespace rambap.cplx.Modules.Costing.Outputs;
 
@@ -33,7 +33,7 @@ public static class CostTables
     /// </summary>
     /// <param name="recurse">If true, the entire component tree is returned. <br/>
     /// If false, only the immediate components are returned.</param>
-    public static Table<ComponentContent> BillOfMaterial(bool recurse = true)
+    public static TableProducer<ComponentContent> BillOfMaterial(bool recurse = true)
         => new()
         {
             Iterator = new PartTypesIterator()
@@ -56,7 +56,7 @@ public static class CostTables
     /// <summary>
     /// Table detailing the amount and duration of each individual Cost of the instance.
     /// </summary>
-    public static Table<ComponentContent> CostBreakdown()
+    public static TableProducer<ComponentContent> CostBreakdown()
         => new()
         {
             Iterator = new PartLocationIterator()
