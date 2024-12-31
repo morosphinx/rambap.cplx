@@ -1,6 +1,5 @@
 ﻿using rambap.cplx.Core;
 using rambap.cplx.Export.Tables;
-using rambap.cplx.Export.Tables;
 
 namespace rambap.cplx.Export.TextFiles;
 

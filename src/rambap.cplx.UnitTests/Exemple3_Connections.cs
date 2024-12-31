@@ -1,5 +1,6 @@
 ﻿namespace rambap.cplx.UnitTests;
 using rambap.cplx.Modules.Connectivity.Model;
+using rambap.cplx.Modules.Connectivity.Templates;
 
 class RackConnected1 : Part, IPartConnectable
 {
@@ -21,8 +22,8 @@ class RackConnected1 : Part, IPartConnectable
 
 class InternalCable1 : Part, IPartConnectable
 {
-    D38999_1Connector C01;
-    D38999_1Connector C02;
+    ComplexeConnectorDeclarationKind1 C01;
+    ComplexConnectorDeclarationKind2 C02;
     Test4mm C04;
     Test4mm C05;
 
@@ -34,19 +35,19 @@ class InternalCable1 : Part, IPartConnectable
     public void Assembly_Connections(ConnectionBuilder Do)
     {
         // D38 to D38 connection
-        Do.Wire(C01.A, C02.B);
-        Do.Wire(C01.B, C02.A);
-        Do.Wire(C01.C, C02.C);
-        Do.Wire(C01.D, C02.D);
-        Do.Wire(C01.E, C02.E);
-        Do.Wire(C01.F, C02.F);
-        Do.Wire(C01.G, C02.G);
+        Do.Wire(C01.A, C02.Pins[0]);
+        Do.Wire(C01.B, C02.Pins[1]);
+        Do.Wire(C01.C, C02.Pins[2]);
+        Do.Wire(C01.D, C02.Pins[3]);
+        Do.Wire(C01.E, C02.Pins[4]);
+        Do.Wire(C01.F, C02.Pins[5]);
+        Do.Wire(C01.G, C02.Pins[6]);
         // Power
         Do.Wire(C01.J, C04.SolderPoint);
         Do.Wire(C01.K, C05.SolderPoint);
         // Exposed connection
         Do.ExposeAs(C01.Face, J01);
-        Do.ExposeAs(C02.Face, J02);
+        Do.ExposeAs(C02.MateFace, J02);
         Do.ExposeAs(C04.TestPlug4mmMale, PWR_P);
         Do.ExposeAs(C05.TestPlug4mmMale, PWR_N);
     }
@@ -55,14 +56,75 @@ class InternalCable1 : Part, IPartConnectable
     Cost SmallParts = 200;
 }
 
-class D38999_1Connector : Part
+class ComplexeConnectorDeclarationKind1 : Part, IPartConnectable
 {
+    // Won't scale. But WireablePortscan be addigned by name
+
     public ConnectablePort Face; // D38999 Face
 
     public WireablePort A, B, C, D, E, F, G, H, I, J, K;
 
-    Cost Buy = 200;
+    Size24pin pA, pB, pC, pD, pE, pF, pG, pH, pI, pJ, pK;
+
+    public void Assembly_Connections(ConnectionBuilder Do)
+    {
+        // Expose mating face
+        Do.ExposeAs(
+        [
+            pA.Contact,
+            pB.Contact,
+            pC.Contact,
+            pD.Contact,
+            pE.Contact,
+            pF.Contact,
+            pG.Contact,
+            pH.Contact,
+            pI.Contact,
+            pJ.Contact,
+            pK.Contact,
+        ],Face);
+        // Expose wireable pins
+        Do.ExposeAs(pA.Receptacle, A);
+        Do.ExposeAs(pB.Receptacle, B);
+        Do.ExposeAs(pC.Receptacle, C);
+        Do.ExposeAs(pD.Receptacle, D);
+        Do.ExposeAs(pE.Receptacle, E);
+        Do.ExposeAs(pF.Receptacle, F);
+        Do.ExposeAs(pG.Receptacle, G);
+        Do.ExposeAs(pH.Receptacle, H);
+        Do.ExposeAs(pI.Receptacle, I);
+        Do.ExposeAs(pJ.Receptacle, J);
+        Do.ExposeAs(pK.Receptacle, K);
+    }
 }
+
+class ComplexConnectorDeclarationKind2 : Connector<Size24pin>
+{
+    // Simple, but the pins must be accesed by index (0-indexed) in the parent
+    public ComplexConnectorDeclarationKind2() : base(11)
+    { }
+}
+
+class ComplexConnectorDeclarationKind3 : Connector<Size24pin>
+{
+    // Same as kind2, but add explicit pin naming
+
+    public WireablePort A => Pins[0];
+    public WireablePort B => Pins[1];
+    public WireablePort C => Pins[2];
+    public WireablePort D => Pins[3];
+    public WireablePort E => Pins[4];
+    public WireablePort F => Pins[5];
+    public WireablePort G => Pins[6];
+    public WireablePort H => Pins[7];
+    public WireablePort I => Pins[8];
+    public WireablePort J => Pins[9];
+    public WireablePort K => Pins[10];
+    public ComplexConnectorDeclarationKind3() : base(11)
+    { }
+}
+
+class Size24pin : Pin {}
 
 class Test4mm : Part
 {

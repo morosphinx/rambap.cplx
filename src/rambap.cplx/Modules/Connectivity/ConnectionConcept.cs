@@ -15,7 +15,7 @@ public class InstanceConnectivity : IInstanceConceptProperty
 
     public required List<ConnectablePort> Connectors { get; init; }
 
-    public required List<ConnectingAction> Connections { get; init; }
+    public required List<Mate> Connections { get; init; }
     public required List<WiringAction> Wirings { get; init; }
 
     public enum DisplaySide
@@ -54,7 +54,7 @@ internal class ConnectionConcept : IConcept<InstanceConnectivity>
                     c.DefineAsHadHoc();
             }
 
-            var selfDefinedConnection = connectionBuilder!.Connections;
+            var selfDefinedConnection = connectionBuilder!.Mates;
             var selfDefinedWirings = connectionBuilder!.Wirings;
             // 
             // var groups = ConnectionHelpers.GroupConnectionsByTopmostPort(selfDefinedWirings);

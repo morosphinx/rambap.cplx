@@ -43,8 +43,8 @@ public abstract class SignalPort : IPartProperty
             (CombinedDefinition a, AdHocDefinition b) => false,
             // Two Combined : Valid when same size, compatible subconnectors in order
             (CombinedDefinition a, CombinedDefinition b) =>
-                a.CombinedConnectors.Count() == b.CombinedConnectors.Count() &&
-                Enumerable.Range(0, a.CombinedConnectors.Count())
+                a.CombinedConnectors.Count == b.CombinedConnectors.Count &&
+                Enumerable.Range(0, a.CombinedConnectors.Count)
                           .All(i => AreCompatible(a.CombinedConnectors[i].Definition!, b.CombinedConnectors[i].Definition!)),
             // 3 x 3 = 9 total cases, all covered
             _ => throw new NotImplementedException(),
@@ -113,6 +113,7 @@ public abstract class SignalPort : IPartProperty
         if (HasbeenDefined) throw new InvalidOperationException($"Connector has already been defined");
         if (source.HasBeenUseDefined) throw new InvalidOperationException($"Connector {source} has already been used in another definition ({source.Usage!.User})");
         Definition = new CopiedDefinition() { CopiedConnector = source };
+        source.Usage = new UsageExposedAs() { ExposedAs = this };
     }
 
     internal void DefineAsAnExpositionOf(IEnumerable<ConnectablePort> sources)
@@ -123,5 +124,9 @@ public abstract class SignalPort : IPartProperty
             if (source.HasBeenUseDefined) throw new InvalidOperationException($"Connector {source} has already been used in another definition ({source.Usage!.User})");
         }
         Definition = new CombinedDefinition() { CombinedConnectors = [.. sources] };
+        foreach (var source in sources)
+        {
+            source.Usage = new UsageCombinedInto() { CombinedInto = this };
+        }
     }
 }

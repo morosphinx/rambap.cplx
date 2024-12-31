@@ -40,7 +40,7 @@ internal class ConnectivityTableIterator : IIterator<ConnectivityTableContent>
         }
     }
 
-    public static IEnumerable<ConnectingAction> GetAllConnection(Pinstance instance)
+    public static IEnumerable<Mate> GetAllConnection(Pinstance instance)
     {
         // Return all connection, NOT flattening grouped ones (Twisting / Sielding)
         foreach (var c in instance.Connectivity()!.Connections)

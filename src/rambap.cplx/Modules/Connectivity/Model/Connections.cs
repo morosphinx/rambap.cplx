@@ -23,24 +23,20 @@ public record StructuralConnection : ISignalingAction
 }
 
 
-public abstract record ConnectingAction : ISignalingAction
+public record Mate : ISignalingAction
 {
+    public Mate(SignalPort leftConnectedPort, SignalPort rigthConnectedPort)
+    {
+        LeftConnectedPort = leftConnectedPort;
+        RigthConnectedPort = rigthConnectedPort;
+    }
+
     public SignalPort LeftConnectedPort { get; protected init; }
     public SignalPort RigthConnectedPort { get; protected init; }
 
-    public virtual IEnumerable<ConnectingAction> Connections
+    public virtual IEnumerable<Mate> Connections
         => [this];
 
     public SignalPort LeftPort => LeftConnectedPort;
     public SignalPort RightPort => RigthConnectedPort;
-}
-
-
-public record Mate : ConnectingAction
-{
-    internal Mate(ConnectablePort connectorA, ConnectablePort connectorB)
-    {
-        LeftConnectedPort = connectorA;
-        RigthConnectedPort = connectorB;
-    }
 }

@@ -2,7 +2,10 @@
 using rambap.cplx.PartProperties;
 using rambap.cplx.Modules.Connectivity.Model;
 
+#pragma warning disable IDE0130 // Namespace does not match folder structure
 namespace rambap.cplx.PartInterfaces;
+#pragma warning restore IDE0130 // Namespace does not match folder structure
+
 
 /// <summary>
 /// Contains functions to define a part connectivity <br/>
@@ -10,13 +13,14 @@ namespace rambap.cplx.PartInterfaces;
 /// </summary>
 public class ConnectionBuilder
 {
-    internal List<ConnectingAction> Connections { get; } = new();
-    internal List<WiringAction> Wirings { get; } = new();
+    internal List<StructuralConnection> StructuralConnections { get; } = [];
+    internal List<Mate> Mates { get; } = [];
+    internal List<WiringAction> Wirings { get; } = [];
 
 
-    private void AssertOwnThisCabling(ConnectingAction cabling)
+    private void AssertOwnThisCabling(Mate cabling)
     {
-        if (!Connections.Contains(cabling))
+        if (!Mates.Contains(cabling))
             throw new InvalidOperationException($"Cabling {cabling} is not owned by this");
     }
     private void AssertOwnThisWiring(WiringAction wiring)
@@ -59,6 +63,16 @@ public class ConnectionBuilder
         target.DefineAsAnExpositionOf(sources);
     }
 
+    public StructuralConnection StructuralConnection(ConnectablePort source, WireablePort target)
+    {
+        source.DefineAsHadHoc(); // Force the source to be a simple connecable, throw otherwise
+        Context.AssertIsOwnerOrParent(source);
+        Context.AssertIsOwnerOrParent(target);
+        var connection = new StructuralConnection(source, target);
+        StructuralConnections.Add(connection);
+        return connection;
+    }
+
     /// <summary>
     /// Mate connectorA and connectorB, or represent an implicit signal connection betweenconnectors.<br/>
     /// ConnectorA and ConnectorB are physicaly distinct connection points. <br/>
@@ -72,7 +86,7 @@ public class ConnectionBuilder
         Context.AssertIsOwnerOrParent(connectorB);
         // TODO : Test here that both connector are compatible
         var connection = new Mate(connectorA, connectorB);
-        Connections.Add(connection);
+        Mates.Add(connection);
         return connection;
     }
 
