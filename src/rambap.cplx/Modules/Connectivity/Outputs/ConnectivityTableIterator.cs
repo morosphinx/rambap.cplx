@@ -6,10 +6,10 @@ namespace rambap.cplx.Modules.Connectivity.Outputs;
 
 internal class ConnectivityTableIterator : IIterator<ConnectivityTableContent>
 {
-    public IEnumerable<ConnectivityTableContent> MakeContent(Pinstance content)
+    public IEnumerable<ConnectivityTableContent> MakeContent(Pinstance instance)
     {
-        var connectivity = content.Connectivity()!; // Throw if no connectivity definition
-        var connections = GetAllConnection(content);
+        var connectivity = instance.Connectivity()!; // Throw if no connectivity definition
+        var connections = GetAllConnection(instance);
         // var connectionsFlattened = connections.SelectMany(c => c.Connections);
 
         var connectionsGrouped = ConnectionHelpers.GroupConnectionsByTopmostPort(connections);
@@ -43,7 +43,7 @@ internal class ConnectivityTableIterator : IIterator<ConnectivityTableContent>
     public static IEnumerable<Mate> GetAllConnection(Pinstance instance)
     {
         // Return all connection, NOT flattening grouped ones (Twisting / Sielding)
-        foreach (var c in instance.Connectivity()!.Connections)
+        foreach (var c in instance.Connectivity()?.Connections ?? [])
             yield return c;
         foreach(var subcomp in instance.Components)
         {

@@ -66,7 +66,7 @@ public class TestSimpleCableContainer
         // Write the output table for reference
         var table = new TextTableFile(instance)
         {
-            Table = Modules.Connectivity.Outputs.ConnectivityTables.ConnectionTable(),
+            Table = ConnectivityTables.ConnectionTable(),
             Formater = new Export.Tables.MarkdownTableFormater()
         };
         table.WriteToConsole();

@@ -13,7 +13,7 @@ public class PartLocationIterator : IIterator<ComponentContent>
 
     public Func<Component, RecursionLocation, bool>? RecursionCondition { private get; init ; }
 
-    public IEnumerable<ComponentContent> MakeContent(Pinstance content)
+    public IEnumerable<ComponentContent> MakeContent(Pinstance instance)
     {
         IEnumerable<ComponentContent> Recurse(IEnumerable<Component> compos, RecursionLocation location)
         {
@@ -77,7 +77,8 @@ public class PartLocationIterator : IIterator<ComponentContent>
         Component rootComponent = new()
         {
             CN = $"*",
-            Instance = content
+            Instance = instance,
+            IsPublic = true,
         }; 
         RecursionLocation rootLocation = new() 
         {

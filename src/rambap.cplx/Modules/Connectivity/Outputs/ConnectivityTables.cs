@@ -1,6 +1,7 @@
 ﻿using static rambap.cplx.Modules.Connectivity.Outputs.ConnectivityTableContent;
 using static rambap.cplx.Modules.Connectivity.Outputs.ConnectivityColumns;
 using rambap.cplx.Export.Tables;
+using rambap.cplx.Export.Iterators;
 
 namespace rambap.cplx.Modules.Connectivity.Outputs;
 
@@ -17,6 +18,15 @@ internal class ConnectivityTables
                     ConnectionKind(),
                     ConnectorName(ConnectorSide.Rigth),
                     ConnectorFullName(ConnectorSide.Rigth),
+                ]
+        };
+
+    public static TableProducer<ComponentContent> InterfaceControlDocumentTable()
+        => new TableProducer<ComponentContent>()
+        {
+            Iterator = new ICDTableIterator(),
+            Columns = [
+                    ICDColumns.TopMostConnectorName(),
                 ]
         };
 }

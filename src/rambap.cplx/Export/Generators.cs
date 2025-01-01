@@ -75,6 +75,11 @@ public static class FileGroups
                     Table = Modules.Connectivity.Outputs.ConnectivityTables.ConnectionTable(),
                     Formater = new MarkdownTableFormater()
                 }),
+                ($"ICD_{filenamePattern}.csv", new TextTableFile(i)
+                {
+                    Table = Modules.Connectivity.Outputs.ConnectivityTables.InterfaceControlDocumentTable(),
+                    Formater = new MarkdownTableFormater()
+                }),
                 ];
     }
 }

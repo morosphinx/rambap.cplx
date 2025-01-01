@@ -11,10 +11,7 @@ public class InstanceConnectivity : IInstanceConceptProperty
     // TODO : set definition somewhere in the Part
     public bool IsACable { get; init; } = true;
 
-    public required List<ConnectablePort> PublicConnectors { get; init; }
-
     public required List<ConnectablePort> Connectors { get; init; }
-
     public required List<Mate> Connections { get; init; }
     public required List<WiringAction> Wirings { get; init; }
 
@@ -83,7 +80,6 @@ internal class ConnectionConcept : IConcept<InstanceConnectivity>
 
             return new InstanceConnectivity()
             {
-                PublicConnectors = selfPublicConnectors,
                 Connectors = selfConnectors,
                 Connections = selfDefinedConnection.ToList(),
                 Wirings = selfDefinedWirings.ToList(),

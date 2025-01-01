@@ -5,5 +5,6 @@ public abstract class IPartProperty
 {
     public string? Name { get; internal set; }
     public Part? Owner { get; internal set; }
+    public bool IsPublic { get; internal set; }
 }
 

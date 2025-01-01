@@ -19,8 +19,8 @@ public abstract class Connector<T> : Part, IPartConnectable
         PinCount = pinCount;
         var pinParts = Enumerable.Range(1, PinCount).Select(i => new T());
         PinParts = pinParts.ToList();
-        MateFace = new();
-        Pins = pinParts.Select(p => new WireablePort()).ToList().AsReadOnly();
+        MateFace = new() { IsPublic = true };
+        Pins = pinParts.Select(p => new WireablePort() { IsPublic = true }).ToList().AsReadOnly();
     }
 
     public void Assembly_Connections(ConnectionBuilder Do)

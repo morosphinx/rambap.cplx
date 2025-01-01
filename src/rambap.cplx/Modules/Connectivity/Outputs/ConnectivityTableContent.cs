@@ -48,12 +48,12 @@ class ConnectivityTableContent
     public ConnectionKind GetConnectionKind
         => Connection switch
         {
-            StructuralConnection m => ConnectionKind.Structural,
-            Mate m => ConnectionKind.Mate,
-            Wire m => ConnectionKind.Wire,
-            Bundle m => ConnectionKind.Bundle,
-            Twist m => ConnectionKind.Twist,
-            Shield m => ConnectionKind.Shield,
+            StructuralConnection => ConnectionKind.Structural,
+            Mate => ConnectionKind.Mate,
+            Wire => ConnectionKind.Wire,
+            Bundle => ConnectionKind.Bundle,
+            Twist => ConnectionKind.Twist,
+            Shield => ConnectionKind.Shield,
             _ => throw new NotImplementedException(),
         };
 }

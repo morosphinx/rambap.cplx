@@ -27,6 +27,12 @@ public class Component
     /// Comment relative to this component - eg : his purpose or usage in its owner
     /// </summary>
     public string Comment { get; init; } = "";
+
+    /// <summary>
+    /// True if this component is public or internal from this part : eg, it is visible from outside the containing Part,
+    /// and therefore may be condidered to be part or the public interface of the Part.
+    /// </summary>
+    public required bool IsPublic { get; init; } 
 }
 
 /// <summary>
@@ -135,7 +141,8 @@ public class Pinstance
                 {
                     Instance = new Pinstance(p, conf),
                     CN = p.CNOverride ?? i.Name,
-                    Comment = MakeCommment(i.Comments)
+                    Comment = MakeCommment(i.Comments),
+                    IsPublic = i.IsPublicOrAssembly,
                 }
                 ));
 
@@ -149,7 +156,8 @@ public class Pinstance
                 {
                     Instance = new Pinstance(p, conf),
                     CN = p.CNOverride ?? $"{cn_prefix}_{i++:00}",
-                    Comment = MakeCommment(info.Comments)
+                    Comment = MakeCommment(info.Comments),
+                    IsPublic = info.IsPublicOrAssembly,
                 });
         }
         ScanObjectContentFor<IEnumerable<Part>>(template,
@@ -169,7 +177,8 @@ public class Pinstance
                     {
                         Instance = new Pinstance(selectedPart, conf),
                         CN = selectedPart.CNOverride ?? i.Name,
-                        Comment = MakeCommment(i.Comments)
+                        Comment = MakeCommment(i.Comments),
+                        IsPublic=i.IsPublicOrAssembly,
                     }
                     );
             });
@@ -187,7 +196,8 @@ public class Pinstance
                     {
                         Instance = new Pinstance(selectedPart, conf),
                         CN = selectedPart.CNOverride ?? $"{cn_prefix}_{i++:00}",
-                        Comment = MakeCommment(info.Comments)
+                        Comment = MakeCommment(info.Comments),
+                        IsPublic = info.IsPublicOrAssembly,
                     };
                 });
         }
