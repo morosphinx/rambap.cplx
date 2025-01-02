@@ -4,45 +4,6 @@ using rambap.cplx.Export.Tables;
 namespace rambap.cplx.Modules.Costing.Outputs;
 public static class CostColumns
 {
-    public static DelegateColumn<ComponentContent> CostBreakdown_Name()
-    => new DelegateColumn<ComponentContent>("Cost Name", ColumnTypeHint.String,
-        i =>
-        {
-            if (i is LeafProperty lp)
-            {
-                if (lp.Property is InstanceCost.NativeCostInfo n)
-                    return n.name;
-            }
-            else if (i is LeafComponent lc)
-            {
-                if (lc.IsLeafBecause == LeafCause.RecursionBreak)
-                    return "unit";
-                else
-                    return "";
-            }
-            return "";
-        });
-
-    public static DelegateColumn<ComponentContent> CostBreakdown_Value()
-        => new DelegateColumn<ComponentContent>("Cost", ColumnTypeHint.Numeric,
-            i =>
-            {
-                if (i is LeafProperty lp)
-                {
-                    if (lp.Property is InstanceCost.NativeCostInfo n)
-                        return n.value.Price.ToString("0.00");
-                }
-                else if (i is LeafComponent lc)
-                    return lc.Component?.Instance.Cost()?.Total.ToString("0.00") ?? "";
-                return "";
-            },
-            i => i.Cost()?.Total.ToString("0.00"));
-
-    public static DelegateColumn<ComponentContent> TotalCost() =>
-        new DelegateColumn<ComponentContent>("Cost", ColumnTypeHint.Numeric,
-            i => i.Component.Instance.Cost()?.Total.ToString("0.00"),
-            i => i.Cost()?.Total.ToString());
-
     public static DelegateColumn<ComponentContent> GroupTotalCost() =>
         new DelegateColumn<ComponentContent>("Total Cost", ColumnTypeHint.Numeric,
             i =>
