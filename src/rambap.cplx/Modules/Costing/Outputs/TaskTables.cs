@@ -60,7 +60,9 @@ namespace rambap.cplx.Modules.Costing.Outputs
                 IDColumns.PartNumber(),
                 TaskColumns.RecurentTaskName(),
                 TaskColumns.RecurentTaskCategory(),
-                TaskColumns.RecurentTaskDuration(),
+                TaskColumns.RecurentTaskUnitDuration(),
+                TaskColumns.TaskCount(),
+                TaskColumns.TaskTotalDuration(includeNonRecurent: false),
                 ],
             };
     }

@@ -4,7 +4,7 @@ using rambap.cplx.Export.Tables;
 namespace rambap.cplx.Modules.Costing.Outputs;
 public static class CostColumns
 {
-    public static DelegateColumn<ComponentContent> GroupTotalCost() =>
+    public static DelegateColumn<ComponentContent> TotalCost() =>
         new DelegateColumn<ComponentContent>("Total Cost", ColumnTypeHint.Numeric,
             i =>
             {
@@ -33,7 +33,7 @@ public static class CostColumns
             },
             i => i.Cost()?.Total.ToString("0.00"));
 
-    public static DelegateColumn<ComponentContent> Group_CostName(bool include_branches = false)
+    public static DelegateColumn<ComponentContent> CostName(bool include_branches = false)
         => new DelegateColumn<ComponentContent>("Cost Name", ColumnTypeHint.String,
             i =>
             {
@@ -56,7 +56,7 @@ public static class CostColumns
                 else throw new NotImplementedException();
             });
 
-    public static DelegateColumn<ComponentContent> Group_UnitCost(bool include_branches = false)
+    public static DelegateColumn<ComponentContent> UnitCost(bool include_branches = false)
         => new DelegateColumn<ComponentContent>("Unit Cost", ColumnTypeHint.Numeric,
             i =>
             {

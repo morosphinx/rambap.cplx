@@ -46,10 +46,10 @@ public static class CostTables
                 CommonColumns.LineTypeNumber(),
                 IDColumns.PartNumber(),
                 DescriptionColumns.GroupDescription(),
-                CostColumns.Group_CostName(),
-                CostColumns.Group_UnitCost(),
+                CostColumns.CostName(),
+                CostColumns.UnitCost(),
                 CommonColumns.ComponentTotalCount(),
-                CostColumns.GroupTotalCost(),
+                CostColumns.TotalCost(),
             ],
         };
 
@@ -68,10 +68,10 @@ public static class CostTables
                 IDColumns.ComponentNumberPrettyTree(),
                 IDColumns.ComponentID(),
                 IDColumns.PartNumber(),
-                CostColumns.Group_CostName(include_branches : true),
-                CostColumns.Group_UnitCost(include_branches : true),
+                CostColumns.CostName(include_branches : true),
+                CostColumns.UnitCost(include_branches : true),
                 CommonColumns.ComponentTotalCount(),
-                CostColumns.GroupTotalCost(),
+                CostColumns.TotalCost(),
             ],
         };
 }

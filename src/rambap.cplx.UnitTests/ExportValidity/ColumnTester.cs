@@ -51,17 +51,30 @@ internal static class ColumnTester
     };
 
 
-    public static ComponentIterator PartLocationIterator_Flat() => new ComponentIterator()
+    public static ComponentIterator PartLocationIterator_Flat_NoBranches() => new ComponentIterator()
     {
         RecursionCondition = (c, l) => false,
         GroupPNsAtSameLocation = true,
         WriteBranches = false,
     };
-    public static ComponentIterator PartLocationIterator_Recursive() => new ComponentIterator()
+    public static ComponentIterator PartLocationIterator_Recursive_NoBranches() => new ComponentIterator()
     {
         RecursionCondition = (c, l) => true,
         GroupPNsAtSameLocation = true,
-        WriteBranches = false, // TODO : case write branch is false ?
+        WriteBranches = false, // TODO : case write branch is true
+    };
+
+    public static ComponentIterator PartLocationIterator_Flat_WithBranches() => new ComponentIterator()
+    {
+        RecursionCondition = (c, l) => false,
+        GroupPNsAtSameLocation = true,
+        WriteBranches = true,
+    };
+    public static ComponentIterator PartLocationIterator_Recursive_WithBranches() => new ComponentIterator()
+    {
+        RecursionCondition = (c, l) => true,
+        GroupPNsAtSameLocation = true,
+        WriteBranches = true,
     };
 
 
@@ -98,6 +111,30 @@ internal static class ColumnTester
         debugTable.WriteToConsole();
         
         Assert.AreEqual(expectedTotal, total, $"Incoherent column sum");
+    }
+
+    public static void TestDecimalColumn_SelfTotal(
+        Pinstance pinstance,
+        decimal expectedTotal,
+        IColumn<ComponentContent> testedColumn)
+    {
+        var columnTotal = Convert.ToDecimal(testedColumn.TotalFor(pinstance));
+        Assert.AreEqual(expectedTotal, columnTotal, $"Incoherent column autocalculated sum");
+    }
+
+    public static void SetPropertyIterator(IIterator<ComponentContent> iterator,
+        Func<Pinstance, IEnumerable<object>>? propertyIterator)
+    {
+        switch(iterator)
+        {
+            case ComponentIterator ci:
+                ci.PropertyIterator = propertyIterator;
+                break;
+            case PartTypesIterator pi:
+                pi.PropertyIterator = propertyIterator;
+                break;
+            default: throw new NotImplementedException();
+        };
     }
 }
 

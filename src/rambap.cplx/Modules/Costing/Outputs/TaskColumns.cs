@@ -42,8 +42,8 @@ public static class TaskColumns
             else return "";
         });
 
-    public static DelegateColumn<ComponentContent> RecurentTaskDuration()
-        => new DelegateColumn<ComponentContent>("Recurent Duration", ColumnTypeHint.Numeric,
+    public static DelegateColumn<ComponentContent> RecurentTaskUnitDuration()
+        => new DelegateColumn<ComponentContent>("Recurent Unit Duration", ColumnTypeHint.Numeric,
             i =>
             {
                 if (i is LeafProperty lp)
@@ -58,10 +58,6 @@ public static class TaskColumns
                     return lc.Component.Instance.Tasks()?.TotalRecurentTaskDuration.ToString() ?? "";
                 }
                 return "";
-            },
-            i =>
-            {
-                return i.Tasks()?.TotalRecurentTaskDuration.ToString() ?? "";
             });
 
 
@@ -185,6 +181,15 @@ public static class TaskColumns
                     throw new NotSupportedException("This columns display a mix of intensive (NonRecurentTask) and extensive (RecurentTask) properties. Calculations have caveats, and are disabled.");
                 }
                 return "";
-            });
+            },
+            i =>
+            {
+                // Return sum only when displaying sum of recurent task.
+                // Ambiguity when mixing recurent and non recurrent tasks togethers
+                if (!includeNonRecurent)
+                    return i.Tasks()?.TotalRecurentTaskDuration.ToString() ?? "";
+                else return "";
+            }
+            );
 }
 

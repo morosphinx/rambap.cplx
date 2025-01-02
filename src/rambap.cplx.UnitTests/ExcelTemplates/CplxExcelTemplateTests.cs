@@ -75,10 +75,10 @@ public class CplxExcelTemplateTests
             Columns = [
                     IDColumns.PartNumber(),
                     CommonColumns.EmptyColumn(), // Not filled by CPLX
-                    CostColumns.Group_CostName(),
-                    CostColumns.Group_UnitCost(),
+                    CostColumns.CostName(),
+                    CostColumns.UnitCost(),
                     CommonColumns.ComponentTotalCount(),
-                    CostColumns.GroupTotalCost(),
+                    CostColumns.TotalCost(),
                 ]
         };
         var CustomTaskTable = TaskTables.BillOfTasks() with
