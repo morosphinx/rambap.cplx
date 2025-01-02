@@ -22,7 +22,7 @@ public class PartTypesIterator : IIterator<ComponentContent>
     /// Define a final level of iteration on of parts that return properties
     /// Leave this empty to return no properties items
     /// </summary>
-    public Func<Pinstance, IEnumerable<object>>? PropertyIterator { private get; init; }
+    public Func<Pinstance, IEnumerable<object>>? PropertyIterator { private get; set; }
     private bool IsAPropertyTable => PropertyIterator != null;
 
     /// <summary>

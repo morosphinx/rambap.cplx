@@ -49,10 +49,10 @@ namespace rambap.cplx.Modules.Costing.Outputs
         public static TableProducer<ComponentContent> RecurentTaskBreakdown()
             => new()
             {
-                Iterator = new PartLocationIterator()
+                Iterator = new ComponentIterator()
                 {
-                    PropertyIterator =
-                    (i) => i.Tasks()?.RecurentTasks ?? [],
+                    PropertyIterator = (i) => i.Tasks()?.RecurentTasks ?? [],
+                    GroupPNsAtSameLocation = true,
                 },
                 Columns = [
                 IDColumns.ComponentNumberPrettyTree(),

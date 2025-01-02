@@ -21,7 +21,10 @@ public static class SystemViewTables
     public static TableProducer<ComponentContent> ComponentTree_Stacked()
        => new()
        {
-           Iterator = new PartLocationIterator(),
+           Iterator = new ComponentIterator()
+           {
+               GroupPNsAtSameLocation = true,
+           },
            Columns = [
                 IDColumns.ComponentNumberPrettyTree(),
                 CommonColumns.ComponentTotalCount(),

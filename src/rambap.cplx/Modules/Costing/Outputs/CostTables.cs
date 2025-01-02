@@ -59,10 +59,10 @@ public static class CostTables
     public static TableProducer<ComponentContent> CostBreakdown()
         => new()
         {
-            Iterator = new PartLocationIterator()
+            Iterator = new ComponentIterator()
             {
-                PropertyIterator =
-                (i) => i.Cost()?.NativeCosts ?? new(),
+                PropertyIterator = (i) => i.Cost()?.NativeCosts ?? new(),
+                GroupPNsAtSameLocation = true,
             },
             Columns = [
                 IDColumns.ComponentNumberPrettyTree(),

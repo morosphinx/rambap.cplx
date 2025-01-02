@@ -36,10 +36,10 @@ internal abstract class DecimalPropertyPartExemple<T>
         // Expected total : 2483
         T Cost_A1 = Make(1000);
         T Cost_A2 = Make(1000);
-        Part_B B1, B2;
-        Part_C C1, C2;
-        Part_D D1;
-        Part_N N1;
+        Part_B aB1, aB2;
+        Part_C aC1, aC2;
+        Part_D aD1;
+        Part_N aN1;
     }
 
     class Part_B : Part
@@ -47,8 +47,8 @@ internal abstract class DecimalPropertyPartExemple<T>
         // Expected total : 220
         T Cost_B1 = Make(100);
         T Cost_B2 = Make(100);
-        Part_C C1;
-        Part_N N1;
+        Part_C bC1;
+        Part_N bN1;
         
     }
 
