@@ -1,7 +1,7 @@
 ﻿using static rambap.cplx.Modules.Connectivity.Outputs.ConnectivityTableContent;
 using static rambap.cplx.Modules.Connectivity.Outputs.ConnectivityColumns;
 using rambap.cplx.Export.Tables;
-using rambap.cplx.Export.Iterators;
+using rambap.cplx.Modules.Base.Output;
 
 namespace rambap.cplx.Modules.Connectivity.Outputs;
 

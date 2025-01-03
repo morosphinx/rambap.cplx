@@ -1,8 +1,9 @@
 ﻿using rambap.cplx.Core;
+using rambap.cplx.Export.Tables;
 using rambap.cplx.PartAttributes;
 using System.Reflection;
 
-namespace rambap.cplx.Export.Iterators;
+namespace rambap.cplx.Modules.Base.Output;
 
 /// <summary>
 /// Produce an IEnumerable iterating over the component tree of an instance, and its properties <br/>
@@ -32,7 +33,7 @@ public class ComponentIterator : IIterator<ComponentContent>
     /// Define when to recurse on components (will return properties items and subcomponents items) and when not to (will only return the component item)
     /// If null, always recurse
     /// </summary>
-    public Func<Component, RecursionLocation, bool>? RecursionCondition { private get; init ; }
+    public Func<Component, RecursionLocation, bool>? RecursionCondition { private get; init; }
 
     public IEnumerable<ComponentContent> MakeContent(Pinstance instance)
     {
@@ -51,19 +52,19 @@ public class ComponentIterator : IIterator<ComponentContent>
                     RecursionCondition == null
                     || RecursionCondition(mainComponent, location)
                     || location.Depth == 0 // Always recurse the first iteration (root node), no mater the recursion condition
-                ); 
-            bool isLeafDueToRecursionBreak = ! mayRecursePastThis ;
+                );
+            bool isLeafDueToRecursionBreak = !mayRecursePastThis;
             if (isLeafDueToRecursionBreak)
             {
-                yield return new LeafComponent(componentsAndLocation) { IsLeafBecause = LeafCause.RecursionBreak};
-                yield break ; // Leaf component : stop iteration here, do not write subcomponent or properties
+                yield return new LeafComponent(componentsAndLocation) { IsLeafBecause = LeafCause.RecursionBreak };
+                yield break; // Leaf component : stop iteration here, do not write subcomponent or properties
             }
 
             // Test wether this component will have any child content
             bool willHaveAnyChildItem =
                 mainComponent.Instance.Components.Any() ||
-                (WriteProperties && PropertyIterator!(mainComponent.Instance).Any());
-            bool isLeafDueToNoChild = ! willHaveAnyChildItem ;
+                WriteProperties && PropertyIterator!(mainComponent.Instance).Any();
+            bool isLeafDueToNoChild = !willHaveAnyChildItem;
             if (isLeafDueToNoChild)
             {
                 yield return new LeafComponent(componentsAndLocation) { IsLeafBecause = LeafCause.NoChild };
@@ -86,8 +87,8 @@ public class ComponentIterator : IIterator<ComponentContent>
             var subcomponents = mainComponent.Instance.Components;
             var subcomponentContents = GroupPNsAtSameLocation switch
             {
-                false => subcomponents.Select<Component,IEnumerable<Component>>(c => [c]),
-                true => subcomponents.GroupBy(c => (c.Instance.PartType, c.Instance.PN)).Select(g => g.Select(c =>c)),
+                false => subcomponents.Select<Component, IEnumerable<Component>>(c => [c]),
+                true => subcomponents.GroupBy(c => (c.Instance.PartType, c.Instance.PN)).Select(g => g.Select(c => c)),
             };
             var subcontentIdx = 0;
             var subcontentCount = subcomponentContents.Count();
@@ -101,7 +102,7 @@ public class ComponentIterator : IIterator<ComponentContent>
                     ComponentIndex = subcontentIdx++,
                     ComponentCount = subcontentCount,
                 };
-                foreach(var l in Recurse(subcontent, subLocation))
+                foreach (var l in Recurse(subcontent, subLocation))
                     yield return l;
             }
         }
@@ -111,8 +112,8 @@ public class ComponentIterator : IIterator<ComponentContent>
             CN = $"*",
             Instance = instance,
             IsPublic = true,
-        }; 
-        RecursionLocation rootLocation = new() 
+        };
+        RecursionLocation rootLocation = new()
         {
             CIN = $"",
             Multiplicity = 1,

@@ -1,5 +1,5 @@
 ﻿using rambap.cplx.Core;
-using rambap.cplx.Export.Iterators;
+using rambap.cplx.Export.Tables;
 using rambap.cplx.Modules.Connectivity.Model;
 
 namespace rambap.cplx.Modules.Connectivity.Outputs;

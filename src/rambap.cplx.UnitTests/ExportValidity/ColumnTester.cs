@@ -1,5 +1,4 @@
-﻿using rambap.cplx.Export.Iterators;
-using rambap.cplx.Export.Tables;
+﻿using rambap.cplx.Export.Tables;
 using rambap.cplx.Export.TextFiles;
 using rambap.cplx.Modules.Base.Output;
 

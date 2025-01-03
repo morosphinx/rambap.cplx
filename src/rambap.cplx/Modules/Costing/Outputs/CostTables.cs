@@ -1,6 +1,5 @@
 ﻿using rambap.cplx.Modules.Base.Output;
 using rambap.cplx.Modules.Documentation.Outputs;
-using rambap.cplx.Export.Iterators;
 using rambap.cplx.Export.Tables;
 
 namespace rambap.cplx.Modules.Costing.Outputs;
@@ -19,7 +18,7 @@ public static class CostTables
         if (i.Cost() != null)
         {
             var nativeCosts = i.Cost()!.NativeCosts;
-            if (nativeCosts.Count() == 0)
+            if (nativeCosts.Count == 0)
                 return [new InstanceCost.NativeCostInfo("", 0)];
             else
                 return nativeCosts;

@@ -1,6 +1,4 @@
-﻿using rambap.cplx.Core;
-using rambap.cplx.Export.Iterators;
-using rambap.cplx.Export.Tables;
+﻿using rambap.cplx.Export.Tables;
 
 namespace rambap.cplx.Modules.Base.Output;
 

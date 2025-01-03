@@ -1,6 +1,19 @@
 ﻿using rambap.cplx.Core;
 
-namespace rambap.cplx.Export.Iterators;
+namespace rambap.cplx.Modules.Base.Output;
+
+/// <summary>
+/// Information about the location in the component tree where a <see cref="ComponentContent"/> was created
+/// </summary>
+public record RecursionLocation()
+{
+    public required string CIN { get; init; }
+    public required int Multiplicity { get; init; }
+    public required int Depth { get; init; }
+    public required int ComponentIndex { get; init; }
+    public required int ComponentCount { get; init; }
+}
+
 
 /// <summary>
 /// Content of a Iterated table representing a component or group of component
@@ -17,10 +30,10 @@ public abstract record ComponentContent
     // On construction, grouped component are assumed to be all instance of the same, value equal definition
     // TODO : ensure this is true. How ? The issue can happens if someone edit an instance or part
     // Without producing an unique PN for it
-    private List<(RecursionLocation,Component)> GroupedComponents { get; init; } = [];
+    private List<(RecursionLocation, Component)> GroupedComponents { get; init; } = [];
     public IEnumerable<(RecursionLocation location, Component component)> AllComponents()
     {
-        yield return (Location,Component);
+        yield return (Location, Component);
         foreach (var component in GroupedComponents)
             yield return component;
     }
