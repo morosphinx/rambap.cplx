@@ -1,4 +1,5 @@
 ﻿using rambap.cplx.Core;
+using rambap.cplx.Modules.Connectivity.Model;
 
 #pragma warning disable IDE0130 // Namespace does not match folder structure
 namespace rambap.cplx.PartProperties;
@@ -24,7 +25,7 @@ public abstract class SignalPort : IPartProperty
     }
 
     public static bool AreCompatible(SignalPort A, SignalPort B)
-     => A.GetType() == B.GetType() && 
+     => A.GetType() == B.GetType() &&
         AreCompatible(A.Definition!, B.Definition!);
     internal static bool AreCompatible(ConnectorDefinition A, ConnectorDefinition B)
     {
@@ -51,6 +52,64 @@ public abstract class SignalPort : IPartProperty
         };
     }
 
+    private ISignalPortConnection? ExclusiveConnection { get; set; }
+    private List<ISignalPortConnection> NonExclusiveConnections { get; } = new();
+
+    public void AddConnection(ISignalPortConnection connection)
+    {
+        if (connection.IsExclusive)
+        {
+            if (CanAddExclusiveConnection)
+                ExclusiveConnection = connection;
+            else 
+                throw new InvalidOperationException("This connectable port is already connected");
+        } else
+        {
+            NonExclusiveConnections.Add(connection);
+        }
+    }
+
+    internal IEnumerable<ISignalPortConnection> Connections
+        => ExclusiveConnection != null
+            ? [ExclusiveConnection, .. NonExclusiveConnections]
+            : NonExclusiveConnections;
+
+    internal bool CanAddExclusiveConnection =>
+        !IsThisExclusivelyConnected &&
+        !IsAnyChildsExclusivelyConnected() &&
+        !IsAnyParentExclusivelyConnected();
+
+    internal bool IsThisExclusivelyConnected => ExclusiveConnection != null;
+    internal bool IsAnyChildsExclusivelyConnected()
+    {
+        var subdef = Definition switch
+        {
+            AdHocDefinition d => [],
+            CopiedDefinition d => [d.CopiedConnector],
+            CombinedDefinition d => d.CombinedConnectors,
+            null => [],
+            _ => throw new NotImplementedException(),
+        };
+        return subdef.Any(d => d.IsThisExclusivelyConnected || d.IsAnyChildsExclusivelyConnected());
+    }
+    internal bool IsAnyParentExclusivelyConnected()
+    {
+        var parent = Usage switch
+        {
+            UsageExposedAs u => u.ExposedAs,
+            UsageCombinedInto u => u.CombinedInto,
+            null => null,
+            _ => throw new NotImplementedException(),
+        };
+        if (parent != null)
+            return parent.IsThisExclusivelyConnected || parent.IsAnyParentExclusivelyConnected();
+        else return false;
+    }
+
+
+
+    // what define this connector
+
     internal abstract class ConnectorDefinition{}
     internal class AdHocDefinition : ConnectorDefinition{}// Single pin / signal
     internal class CopiedDefinition : ConnectorDefinition // Exposed connector
@@ -65,6 +124,7 @@ public abstract class SignalPort : IPartProperty
     internal bool HasbeenDefined => Definition != null;
 
 
+    // Wether this used as part of another definition
 
     internal abstract class ConnectorDefinitionUsage
     {
@@ -80,9 +140,11 @@ public abstract class SignalPort : IPartProperty
         public required SignalPort CombinedInto { get; init; }
         public override SignalPort User => CombinedInto;
     }
-
     internal ConnectorDefinitionUsage? Usage { get; private set; }
     internal bool HasBeenUseDefined => Usage != null;
+
+
+
 
     internal SignalPort TopMostUser()
     {

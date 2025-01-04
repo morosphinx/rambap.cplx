@@ -93,7 +93,7 @@ public static class TaskColumns
                 }
                 else if (i is LeafComponent lc)
                 {
-                    // TODO : clarofy, it's not possible to represent both NonRecurent and Recurent duration in the same total unambigiously
+                    // TODO : clarify, it's not possible to represent both NonRecurent and Recurent duration in the same total unambigiously
                     throw new NotImplementedException();
                 }
                 return "";

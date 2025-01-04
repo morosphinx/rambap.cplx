@@ -17,7 +17,7 @@ class ConnectivityTableContent
     public required SignalPort LeftTopMostConnector { get; init; }
     public required SignalPort RigthTopMostConnector { get; init; }
 
-    public required ISignalingAction Connection { get; init; }
+    public required ISignalPortConnection Connection { get; init; }
 
     public SignalPort GetTopMostConnector(ConnectorSide side)
         => side switch

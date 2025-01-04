@@ -3,7 +3,7 @@
 namespace rambap.cplx.Modules.Connectivity.Model;
 
 
-public abstract record WiringAction : ISignalingAction
+public abstract record WiringAction : ISignalPortConnection
 {
     public WireablePort LeftWiredPort { get; protected init; }
     public WireablePort RigthWiredPort { get; protected init; }
@@ -22,6 +22,8 @@ public abstract record WiringAction : ISignalingAction
     }
     public SignalPort LeftPort => LeftWiredPort;
     public SignalPort RightPort => RigthWiredPort;
+
+    public bool IsExclusive => false;
 }
 
 public record Wire : WiringAction
@@ -30,6 +32,8 @@ public record Wire : WiringAction
     {
         LeftWiredPort = wireableA;
         RigthWiredPort = wireableB;
+        wireableA.AddConnection(this);
+        wireableB.AddConnection(this);
     }
 }
 
@@ -43,8 +47,10 @@ public abstract record WireableGrouping : WiringAction
     {
         var commonPath = GetCommonPathOrThrow(groupedItems);
         LeftWiredPort = (WireablePort) commonPath.Item1;
-        RigthWiredPort = (WireablePort)commonPath.Item2;
+        RigthWiredPort = (WireablePort) commonPath.Item2;
         GroupedItems = groupedItems.ToList();
+        LeftWiredPort.AddConnection(this);
+        RigthWiredPort.AddConnection(this);
     }
 }
 

@@ -3,7 +3,7 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace rambap.cplx.Modules.Connectivity.Model;
 
-using TopmostConnectionGroup = (SignalPort LeftTopMost, SignalPort RigthTopMost, IEnumerable<ISignalingAction> Connections);
+using TopmostConnectionGroup = (SignalPort LeftTopMost, SignalPort RigthTopMost, IEnumerable<ISignalPortConnection> Connections);
 
 internal static class ConnectionHelpers
 {
@@ -17,9 +17,9 @@ internal static class ConnectionHelpers
     }
 
     public static IEnumerable<TopmostConnectionGroup> GroupConnectionsByTopmostPort(
-        IEnumerable<ISignalingAction> connections)
+        IEnumerable<ISignalPortConnection> connections)
     {
-        (SignalPort, SignalPort) GetTopMostConnectors(ISignalingAction con)
+        (SignalPort, SignalPort) GetTopMostConnectors(ISignalPortConnection con)
             => (con.LeftPort.TopMostUser(), con.RightPort.TopMostUser());
         var linkComparer = new LinkNondirectionalEqualityComparer();
 
@@ -28,6 +28,6 @@ internal static class ConnectionHelpers
 
         var groups = connections.GroupBy(GetTopMostConnectors, linkComparer);
 
-        return groups.Select(g => (g.Key.Item1, g.Key.Item2, (IEnumerable<ISignalingAction>)g));
+        return groups.Select(g => (g.Key.Item1, g.Key.Item2, (IEnumerable<ISignalPortConnection>)g));
     }
 }
