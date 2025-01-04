@@ -15,7 +15,7 @@ public class ICDTableIterator : IIterator<ComponentContent>
 
     public IEnumerable<ComponentContent> MakeContent(Pinstance instance)
     {
-        IEnumerable<object> SelectConnector(Pinstance instance)
+        IEnumerable<object> SelectPublicConnectors(Pinstance instance)
         {
 
             var connectivity = instance.Connectivity();
@@ -31,9 +31,9 @@ public class ICDTableIterator : IIterator<ComponentContent>
 
         var componentIterator = new ComponentIterator()
         {
-            PropertyIterator = SelectConnector,
+            PropertyIterator = SelectPublicConnectors,
             RecursionCondition = (c, l) => c.IsPublic,
-            WriteBranches = false
+            WriteBranches = true
         };
 
         var contents = componentIterator.MakeContent(instance);
@@ -51,6 +51,7 @@ public class ICDTableIterator : IIterator<ComponentContent>
 
         foreach (var c in topmostConnectorContents)
         {
+            var icdTableProp = (ICDTableContentProperty)c.Property!;
             yield return c;
         }
     }

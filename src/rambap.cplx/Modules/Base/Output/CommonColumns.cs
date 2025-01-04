@@ -13,7 +13,7 @@ public static class CommonColumns
 
     public static IColumn<ComponentContent> LineTypeNumber()
         => new LineNumberColumnWithContinuation<ComponentContent>()
-        { ContinuationCondition = (i, j) => i == null || i.Component != j.Component };
+            { ContinuationCondition = (i, j) => i == null || i.Component != j.Component };
 
     public static DelegateColumn<ComponentContent> ComponentDepth()
         => new DelegateColumn<ComponentContent>("Depth", ColumnTypeHint.Numeric,

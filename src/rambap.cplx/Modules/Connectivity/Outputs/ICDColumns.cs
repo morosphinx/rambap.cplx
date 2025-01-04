@@ -11,5 +11,10 @@ public static class ICDColumns
         => new DelegateColumn<ComponentContent>(
             "TopMostConnector",
             ColumnTypeHint.String,
-            i => ((i as LeafProperty)?.Property as ICDTableContentProperty)!.Port.Name);
+            i => i switch
+            {
+                BranchComponent b => b.Component.CN,
+                LeafProperty { Property : ICDTableContentProperty prop} p => prop.Port.Name,
+                _ => throw new NotImplementedException(),
+            });
 }

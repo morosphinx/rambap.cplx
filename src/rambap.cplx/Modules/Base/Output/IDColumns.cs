@@ -56,10 +56,11 @@ public static class IDColumns
             i =>
             {
                 var componentCNs = i.AllComponents().Select(c => c.component.CN);
-                if (maxColumnWidth > 0)
-                    return JoinWithMaxLength(", ", componentCNs, maxColumnWidth);
-                else
-                    return string.Join(", ", componentCNs);
+                return maxColumnWidth switch
+                {
+                    > 0 => JoinWithMaxLength(", ", componentCNs, maxColumnWidth),
+                    _ => string.Join(", ", componentCNs),
+                };
             });
 
     public static DelegateColumn<ComponentContent> ComponentID()
@@ -79,11 +80,11 @@ public static class IDColumns
                 var componentCIDs = i.AllComponents()
                     .Select(c => CID.Append(c.location.CIN, c.component.CN))
                     .Select(s => CID.RemoveImplicitRoot(s));
-
-                if(maxColumnWidth > 0)
-                    return JoinWithMaxLength(", ", componentCIDs, maxColumnWidth);
-                else
-                    return string.Join(", ", componentCIDs);
+                return maxColumnWidth switch
+                {
+                    > 0 => JoinWithMaxLength(", ", componentCIDs, maxColumnWidth),
+                    _ => string.Join(", ", componentCIDs),
+                };
             });
 
     public static DelegateColumn<ComponentContent> ComponentID_And_Property(string propname) =>
@@ -92,13 +93,11 @@ public static class IDColumns
             {
                 var CID = Core.CID.Append(i.Location.CIN, i.Component.CN);
                 CID = Core.CID.RemoveImplicitRoot(CID);
-                if (i is LeafProperty prop)
+                return i switch
                 {
-                    var propSuffix = "/::" + propname;
-                    return CID + propSuffix;
-                }
-                else
-                    return CID;
+                    LeafProperty p => CID + "/::" + propname,
+                    _ => CID
+                };
             });
 
     private class ComponentNumberPrettyTreeColumn : IColumn<ComponentContent>
