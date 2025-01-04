@@ -43,6 +43,15 @@ public partial class Part
         AssertIsSelfOrSubComponent(property.Owner!);
     }
 
+    public void AssertIsASubComponent(Part part)
+    {
+        if (!HasDoneCplxImplicitInitialisation)
+            throw new InvalidOperationException("Part is not initialised. Create an Instance with this part first");
+        if (part == this)
+            throw new InvalidOperationException("Part must be a subcomponent");
+        AssertIsSelfOrSubComponent(part);
+    }
+
     private void AssertIsSelfOrSubComponent(Part seekPart, string? customMessage = null)
     {
         if (seekPart == this)

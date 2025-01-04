@@ -8,7 +8,7 @@ public static class DescriptionColumns
 {
     private static string GetDescription(Pinstance instance)
     {
-        var descriptions = instance.Descriptions()?.Descriptions.Select(d => d.Text)
+        var descriptions = instance.Documentation()?.Descriptions.Select(d => d.Text)
                     ?? new List<string>();
         return string.Join(" ", descriptions);
     }

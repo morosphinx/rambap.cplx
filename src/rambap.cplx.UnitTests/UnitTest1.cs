@@ -11,7 +11,8 @@ namespace rambap.cplx.UnitTests
         public static IGenerator GetDemoGeneratorWithEverything(bool fileContentRecursion = false)
         {
             return Generators.ConfigureGenerator(
-                [Content.Connectivity, Content.Costing, Content.SystemView], HierarchyMode.Flat, c => fileContentRecursion);
+                [Content.Connectivity, Content.Costing, Content.SystemView, Content.DocumentationAdditionalFiles]
+                , HierarchyMode.Flat, c => fileContentRecursion);
         }
 
         public static IGenerator GetDemoGeneratorWithEverything_excel(bool fileContentRecursion = false)
@@ -52,7 +53,7 @@ namespace rambap.cplx.UnitTests
         [TestMethod]
         public void TestGeneration_Exemple3()
         {
-            var p = new InternalCable1();
+            var p = new RackConnected1();
             var i = new Pinstance(p);
 
             // IInstruction WiringDescription = new WiringDescriptionGenerator<RackConnected1>(

@@ -32,7 +32,6 @@ internal class ConnectionConcept : IConcept<InstanceConnectivity>
 {
     public override InstanceConnectivity? Make(Pinstance instance, Part template)
     {
-        var connectionBuilder = new ConnectionBuilder(template);
         var selfConnectors = new List<ConnectablePort>();
         var selfPublicConnectors = new List<ConnectablePort>();
         ScanObjectContentFor<ConnectablePort>(template,
@@ -43,6 +42,7 @@ internal class ConnectionConcept : IConcept<InstanceConnectivity>
         // At this point no connector in the selfConnectorList has a definition
         if (template is IPartConnectable a)
         {
+            var connectionBuilder = new ConnectionBuilder(instance, template);
             // User defined connection and exposition are created from here
             a.Assembly_Connections(connectionBuilder);
             foreach(var c in selfConnectors)

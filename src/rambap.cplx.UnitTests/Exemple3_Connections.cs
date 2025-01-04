@@ -1,8 +1,10 @@
 ﻿namespace rambap.cplx.UnitTests;
+
+using rambap.cplx.Export.TextFiles;
 using rambap.cplx.Modules.Connectivity.Model;
 using rambap.cplx.Modules.Connectivity.Templates;
 
-class RackConnected1 : Part, IPartConnectable
+class RackConnected1 : Part, IPartConnectable, IPartAdditionalDocuments
 {
     InternalCable1 Cable1, Cable2;
 
@@ -11,13 +13,26 @@ class RackConnected1 : Part, IPartConnectable
     public void Assembly_Connections(ConnectionBuilder Do)
     {
         Do.ExposeAs(Cable1.J01, J11);
-        Do.ExposeAs(Cable1.J01, J12);
+        Do.ExposeAs(Cable1.J02, J12);
         Do.ExposeAs(Cable2.J01, J21);
-        Do.ExposeAs(Cable2.J01, J22);
+        Do.ExposeAs(Cable2.J02, J22);
+    }
+
+    public void Additional_Documentation(DocumentationBuilder Do)
+    {
+        Do.AdditionalInstructions.Add(("CustomFile.txt", new CustomDoc()));
     }
 
     Cost Rack = 500;
     Cost Visserie = 50;
+}
+
+class CustomDoc : TextCustomFile
+{
+    public override string GetText()
+    {
+        return "Test of a custom documentation content defined in the part itself";
+    }
 }
 
 class InternalCable1 : Part, IPartConnectable

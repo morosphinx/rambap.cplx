@@ -82,6 +82,18 @@ public static class FileGroups
                 }),
                 ];
     }
+
+    public static IEnumerable<(string, IInstruction)> DocumentationAdditionalInstructions(Pinstance i)
+    {
+        var documentation = i.Documentation();
+        if (documentation?.MakeAdditionalDocuments != null)
+        {
+            foreach(var d in documentation.MakeAdditionalDocuments(i))
+            {
+                yield return (d.Item1, d.Item2);
+            }
+        }
+    }
 }
 
 public static class Generators
@@ -95,7 +107,8 @@ public static class Generators
     {
         Connectivity,
         Costing,
-        SystemView
+        SystemView,
+        DocumentationAdditionalFiles,
     }
 
     public enum HierarchyMode
@@ -123,6 +136,8 @@ public static class Generators
                 .. (contents.Contains(Content.Connectivity) ? FileGroups.ConnectivityTables(i, IGenerator.SimplefileNameFor(i)) : []),
                 .. (contents.Contains(Content.Costing) ? FileGroups.CostingFiles(i, IGenerator.SimplefileNameFor(i)) : []),
                 .. (contents.Contains(Content.SystemView) ? FileGroups.SystemViewTables(i, IGenerator.SimplefileNameFor(i)) : []),
+                .. (contents.Contains(Content.DocumentationAdditionalFiles)
+                    ? FileGroups.DocumentationAdditionalInstructions(i) : []),
             ];
         return ConfigureGenerator(makeInstanceFiles, hierarchyMode, subComponentInclusionCondition);
     }
@@ -153,9 +168,6 @@ public class HierarchicalDocumentationTreeGenerator : IGenerator
 {
     public Func<Component, bool>? SubComponentInclusionCondition { private get; init; }
     public required Func<Pinstance, IEnumerable<(string, IInstruction)>> MakeInstanceFiles { private get; init; }
-
-    public virtual IEnumerable<(string, IInstruction)> MakeFilesForInstance(Pinstance i)
-        => FileGroups.CostingFiles(i, FileNamePatternFor(i));
 
     public virtual IEnumerable<(string, IInstruction)> MakeFolderForComponent(Component c)
         => [ (FileNamePatternFor(c.Instance), MakeRecursiveContentForInstance(c.Instance))];

@@ -10,7 +10,7 @@ namespace rambap.cplx.PartInterfaces;
 /// Define first a number of <see cref="ConnectablePort"/> on the Part and its component, <br/>
 /// and define connection between those in the <see cref="Assembly_Connections"/> method
 /// </summary>
-public partial interface IPartConnectable
+public interface IPartConnectable
 {
     /// <summary>
     /// Define the connection and exposition of <see cref="ConnectablePort"/>s of the Part

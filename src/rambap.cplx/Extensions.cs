@@ -10,7 +10,7 @@ namespace rambap.cplx;
 /// <summary> Extension methods used to manipulate <see cref="Pinstance"/>s</summary>
 public static class Extensions
 {
-    public static InstanceDocumentation? Descriptions(this Pinstance instance)
+    public static InstanceDocumentation? Documentation(this Pinstance instance)
         => instance.Properties.OfType<InstanceDocumentation>().FirstOrDefault();
     public static InstanceCost? Cost(this Pinstance instance)
         => instance.Properties.OfType<InstanceCost>().FirstOrDefault();
