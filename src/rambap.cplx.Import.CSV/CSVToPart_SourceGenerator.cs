@@ -1,5 +1,6 @@
 ﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
+using Microsoft.CodeAnalysis.Text;
 using System;
 using System.Linq;
 
@@ -55,3 +56,4 @@ namespace rambap.cplx.Examples
 // https://github.com/dotnet/roslyn/blob/main/docs/features/source-generators.cookbook.md
 // https://devblogs.microsoft.com/dotnet/new-c-source-generator-samples/
 // https://github.com/dotnet/roslyn-sdk/blob/main/samples/CSharp/SourceGenerators/SourceGeneratorSamples/CsvGenerator.cs
+// https://github.com/dotnet/roslyn-sdk/blob/main/samples/CSharp/SourceGenerators/SourceGeneratorSamples/MustacheGenerator.cs

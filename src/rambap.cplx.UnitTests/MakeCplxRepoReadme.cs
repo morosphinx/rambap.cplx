@@ -5,7 +5,7 @@ using System.Runtime.CompilerServices;
 
 namespace rambap.cplx.UnitTests;
 
-internal class MakeCplxRepoReadmeInstruction : TextCustomFile
+ internal class MakeCplxRepoReadmeInstruction : TextCustomFile
 {
     /// <summary>
     /// File to be included used as exemple.
