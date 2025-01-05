@@ -28,7 +28,9 @@ internal class ConnectivityTables
             Columns = [
                     IDColumns.ComponentNumberPrettyTree(),
                     ICDColumns.TopMostPortName(),
-                    ICDColumns.PortName(),
+                    ICDColumns.MostRelevantPortName(),
+                    ICDColumns.MostRelevantPortName_Regard(),
+                    ICDColumns.SelfPortName(),
                 ]
         };
 }

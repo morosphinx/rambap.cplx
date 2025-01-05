@@ -21,6 +21,9 @@ public abstract class Connector<T> : Part, IPartConnectable
         PinParts = pinParts.ToList();
         MateFace = new() { IsPublic = true };
         Pins = pinParts.Select(p => new WireablePort() { IsPublic = true }).ToList().AsReadOnly();
+        int idx = 1;
+        foreach (var pin in Pins)
+            pin.Name = $"{idx++}";
     }
 
     public void Assembly_Connections(ConnectionBuilder Do)

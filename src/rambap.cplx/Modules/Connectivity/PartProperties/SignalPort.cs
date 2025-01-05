@@ -32,11 +32,11 @@ public abstract class SignalPort : IPartProperty
         return (A, B) switch
         {
             // Copied connectors : Test one level deeper
-            (CopiedDefinition a, CopiedDefinition b) => AreCompatible(a.CopiedPort.Definition!, b.CopiedPort.Definition!),
-            (CopiedDefinition a, AdHocDefinition b) => AreCompatible(a.CopiedPort.Definition!, b),
-            (CopiedDefinition a, CombinedDefinition b) => AreCompatible(a.CopiedPort.Definition!, b),
-            (AdHocDefinition a, CopiedDefinition b) => AreCompatible(a, b.CopiedPort.Definition!),
-            (CombinedDefinition a, CopiedDefinition b) => AreCompatible(a, b.CopiedPort.Definition!),
+            (ExposedDefinition a, ExposedDefinition b) => AreCompatible(a.ExposedPort.Definition!, b.ExposedPort.Definition!),
+            (ExposedDefinition a, AdHocDefinition b) => AreCompatible(a.ExposedPort.Definition!, b),
+            (ExposedDefinition a, CombinedDefinition b) => AreCompatible(a.ExposedPort.Definition!, b),
+            (AdHocDefinition a, ExposedDefinition b) => AreCompatible(a, b.ExposedPort.Definition!),
+            (CombinedDefinition a, ExposedDefinition b) => AreCompatible(a, b.ExposedPort.Definition!),
             // Add Hoc : Always compatible with itself
             (AdHocDefinition a, AdHocDefinition b) => true,
             // Add Hoc and combined are never compatible : Even whith a single pin, a combined connector imply an additional containing level
@@ -85,7 +85,7 @@ public abstract class SignalPort : IPartProperty
         var subdef = Definition switch
         {
             AdHocDefinition d => [],
-            CopiedDefinition d => [d.CopiedPort],
+            ExposedDefinition d => [d.ExposedPort],
             CombinedDefinition d => d.CombinedPorts,
             null => [],
             _ => throw new NotImplementedException(),
@@ -118,10 +118,10 @@ public abstract class SignalPort : IPartProperty
     {
         public override IEnumerable<SignalPort> SubPorts => [];
     }
-    internal class CopiedDefinition : PortDefinition // Exposed connector
+    internal class ExposedDefinition : PortDefinition // Exposed connector
     {
-        public override IEnumerable<SignalPort> SubPorts => CopiedPort.Definition!.SubPorts;
-        public required SignalPort CopiedPort { get; init; }
+        public override IEnumerable<SignalPort> SubPorts => ExposedPort.Definition!.SubPorts;
+        public required SignalPort ExposedPort { get; init; }
     }
     internal class CombinedDefinition : PortDefinition // Exposed / grouped connector
     {
@@ -151,13 +151,51 @@ public abstract class SignalPort : IPartProperty
     internal PortDefinitionUsage? Usage { get; private set; }
     internal bool HasBeenUseDefined => Usage != null;
 
+    internal IEnumerable<SignalPort> GetExpositionColumn()
+    {
+        return
+            [
+                .. GetExpositionParents(),
+                this,
+                .. GetExpositionChilds(),
+            ];
+    }
+    private IEnumerable<SignalPort> GetExpositionParents()
+        => Usage is UsageExposedAs use ? use.ExposedAs.GetExpositionParents() : [];
+    private IEnumerable<SignalPort> GetExpositionChilds()
+        => Definition is ExposedDefinition def ? def.ExposedPort.GetExpositionChilds() : [];
 
+    public string GetStructuralName()
+    {
+        var structuralEquivalences = Connections
+            .OfType<StructuralConnection>()
+            .Select(c => ((ISignalPortConnection)c).GetOtherSide(this));
+        var structuralEquivalenceTopMost = structuralEquivalences.Select(c => c.TopMostUser());
+        var structuralEquivalenceNames = structuralEquivalenceTopMost.Select(c => c.Name);
+        return $"{Name}({string.Join(",", structuralEquivalenceNames)})";
+    }
 
+    public string GetExpositionColumnName()
+        => string.Join(".", GetExpositionColumn().Select(port => port.GetStructuralName()));
 
     internal SignalPort TopMostUser()
     {
-        if (HasBeenUseDefined) return Usage!.User.TopMostUser();
-        else return this;
+        return Usage switch
+        {
+            PortDefinitionUsage usage => usage.User.TopMostUser(),
+            null => this,
+        };
+    }
+    internal SignalPort TopMostRelevant()
+    {
+        // = return GetExpositionColumn().First();
+        return Usage switch
+        {
+            UsageExposedAs usage => usage.User.TopMostRelevant(),
+            UsageCombinedInto usage => this,
+            null => this,
+            _ => throw new NotImplementedException(),
+        };
     }
 
     public string FullDefinitionName()
@@ -182,7 +220,7 @@ public abstract class SignalPort : IPartProperty
     {
         if (HasbeenDefined) throw new InvalidOperationException($"Connector has already been defined");
         if (source.HasBeenUseDefined) throw new InvalidOperationException($"Connector {source} has already been used in another definition ({source.Usage!.User})");
-        Definition = new CopiedDefinition() { CopiedPort = source };
+        Definition = new ExposedDefinition() { ExposedPort = source };
         source.Usage = new UsageExposedAs() { ExposedAs = this };
     }
 

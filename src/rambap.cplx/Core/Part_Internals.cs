@@ -72,6 +72,8 @@ public partial class Part
                 {
                     p.Owner = this;
                     p.Name = i.Name;
+                    if (p.Name is null || p.Name == "")
+                        p.Name = i.Name;
                     p.IsPublic = i.IsPublicOrAssembly;
                 },
                 AutoContent.ConstructIfNulls);
@@ -81,7 +83,8 @@ public partial class Part
                     foreach (var prop in p)
                     {
                         prop.Owner = this;
-                        prop.Name = i.Name;
+                        if (prop.Name is null || prop.Name == "")
+                            prop.Name = i.Name;
                         prop.IsPublic = i.IsPublicOrAssembly;
                     }
                 },
