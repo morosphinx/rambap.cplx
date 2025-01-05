@@ -88,19 +88,19 @@ CN          	PN               	Component description    	Part description
 |CN                 |CID      |PN               |Cost Name     |Unit Cost|Count|Total Cost|
 |-------------------|---------|-----------------|--------------|--------:|----:|---------:|
 | *                 |/*       |Server Assembly  |total per unit| 21295.00|    1|          |
-| └─ *              |/*       |Server Assembly  |Cables        |   500.00|    1|    500.00|
-| └─ *              |/*       |Server Assembly  |Switches      |  1000.00|    1|   1000.00|
+| ├─ /              |/*       |Server Assembly  |Cables        |   500.00|    1|    500.00|
+| ├─ /              |/*       |Server Assembly  |Switches      |  1000.00|    1|   1000.00|
 | ├─ CAB            |CAB      |Server Cabinet36U|total per unit|  2000.00|    1|          |
-| │  ├─ *           |CAB      |Server Cabinet36U|Buy           |  2000.00|    1|   2000.00|
+| │  └─ /           |CAB      |Server Cabinet36U|Buy           |  2000.00|    1|   2000.00|
 | ├─ 2x: Rack Type A|R01      |Rack Type A      |total per unit|  6898.00|    2|          |
-| │  ├─ *           |R01      |Rack Type A      |Other         |  4500.00|    2|   9000.00|
-| │  ├─ *           |R01      |Rack Type A      |Assembly      |   400.00|    2|    800.00|
+| │  ├─ /           |R01      |Rack Type A      |Other         |  4500.00|    2|   9000.00|
+| │  ├─ /           |R01      |Rack Type A      |Assembly      |   400.00|    2|    800.00|
 | │  └─ 2x: RTX999  |R01/GPU01|RTX999           |total per unit|   999.00|    4|          |
-| │     └─ *        |R01/GPU01|RTX999           |Buy           |   999.00|    4|   3996.00|
+| │     └─ /        |R01/GPU01|RTX999           |Buy           |   999.00|    4|   3996.00|
 | └─ R03            |R03      |Rack Type B      |total per unit|  3999.00|    1|          |
-|    └─ *           |R03      |Rack Type B      |Other         |  3000.00|    1|   3000.00|
+|    ├─ /           |R03      |Rack Type B      |Other         |  3000.00|    1|   3000.00|
 |    └─ GPU         |R03/GPU  |RTX999           |total per unit|   999.00|    1|          |
-|       └─ *        |R03/GPU  |RTX999           |Buy           |   999.00|    1|    999.00|
+|       └─ /        |R03/GPU  |RTX999           |Buy           |   999.00|    1|    999.00|
 |-------------------|---------|-----------------|--------------|--------:|----:|---------:|
 |                   |TOTAL    |TOTAL            |              |         |     |  21295.00|
 

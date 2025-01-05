@@ -108,11 +108,11 @@ public static class IDColumns
         private List<bool> LevelDone { get; } = [];
         public string CellFor(ComponentContent item)
         {
-            if (LevelDone.Count <= item.Location.Depth) LevelDone.Add(false);
+            while (LevelDone.Count <= item.Location.Depth) LevelDone.Add(false);
             LevelDone[item.Location.Depth] = false;
 
             string ver = " │ "; // That's an Alt+179, and not an Alt+124 '|', this latter is reserved for markdown 
-            bool isEnd = item.Location.ComponentIndex == item.Location.ComponentCount - 1;
+            bool isEnd = item.Location.LocalItemIndex == item.Location.LocalItemCount - 1;
             string end = isEnd ? " └─" : " ├─";
             if (item.Location.Depth > 0)
                 LevelDone[item.Location.Depth - 1] = isEnd;
@@ -120,18 +120,16 @@ public static class IDColumns
             bool isGrouping = item.ComponentLocalCount > 1;
 
             bool isLeafProperty = item is LeafProperty;
-            var effectiveDepth = item.Location.Depth + (isLeafProperty ? 1 : 0);
-            // TODO : isEnd value is incorrect when adding a virtual level on isLeafProperty
-            // => Incorrectly show " ├─" even if no successor
+            var depth = item.Location.Depth ;
 
-            int ver_ctn = Math.Max(effectiveDepth - 1, 0);
-            int end_cent = Math.Min(effectiveDepth, 1);
+            int ver_ctn = Math.Max(depth - 1, 0);
+            int end_cent = Math.Min(depth, 1);
             List<string> strs = [
                 .. Enumerable.Range(0, ver_ctn).Select(i => LevelDone[i] ? "   " : ver ),
                 .. Enumerable.Range(0, end_cent).Select(i => end),
                 " ",
                 isLeafProperty
-                    ? $"*" // This is a property
+                    ? $"/" // This is a property
                     : isGrouping
                         ? $"{item.ComponentLocalCount}x: {item.Component.Instance.PN}"
                         : $"{item.Component.CN}",
@@ -144,4 +142,12 @@ public static class IDColumns
     }
     public static IColumn<ComponentContent> ComponentNumberPrettyTree()
         => new ComponentNumberPrettyTreeColumn();
+
+    public static DelegateColumn<ComponentContent> ContentLocation()
+        => new DelegateColumn<ComponentContent>("Location", ColumnTypeHint.String,
+            i =>
+            {
+                var loc = i.Location;
+                return $"dep{loc.Depth} - {loc.LocalItemIndex+1} of {loc.LocalItemCount}";
+            });
 }

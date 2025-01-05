@@ -77,21 +77,35 @@ public class ComponentIterator : IIterator<ComponentContent>
             {
                 yield return new BranchComponent(componentsAndLocation);
             }
-            // Output the properties content, if configured :
-            if (WriteProperties)
-            {
-                foreach (var prop in PropertyIterator!(mainComponent.Instance))
-                    yield return new LeafProperty(componentsAndLocation) { Property = prop };
-            }
-            // Output subcontents. Group them by same PartType & PN if configured :
+
+            // prepare subcomponents contents. Group them by same PartType & PN if configured :
             var subcomponents = mainComponent.Instance.Components;
             var subcomponentContents = GroupPNsAtSameLocation switch
             {
                 false => subcomponents.Select<Component, IEnumerable<Component>>(c => [c]),
                 true => subcomponents.GroupBy(c => (c.Instance.PartType, c.Instance.PN)).Select(g => g.Select(c => c)),
             };
-            var subcontentIdx = 0;
-            var subcontentCount = subcomponentContents.Count();
+            // Counter of subcontents, to etablish location information
+            var currentSubitemIndex = 0;
+            var subItemTotalCount = subcomponentContents.Count();
+            // Output the properties content, if configured :
+            if (WriteProperties)
+            {
+                var propertiesContents = PropertyIterator!(mainComponent.Instance);
+                subItemTotalCount += propertiesContents.Count();
+                foreach (var prop in propertiesContents)
+                {
+                    var propLocation = location with
+                    {
+                        Depth = location.Depth + 1,
+                        LocalItemIndex = currentSubitemIndex ++,
+                        LocalItemCount = subItemTotalCount,
+                    };
+                    var componentsWithPropLocation = componentsAndLocation.Select(t => (propLocation, t.c));
+                    yield return new LeafProperty(componentsWithPropLocation) { Property = prop };
+                }
+            }
+            // Output the subcomponents contents
             foreach (var subcontent in subcomponentContents)
             {
                 RecursionLocation subLocation = new()
@@ -99,8 +113,8 @@ public class ComponentIterator : IIterator<ComponentContent>
                     CIN = CID.Append(location.CIN, mainComponent.CN),
                     Multiplicity = location.Multiplicity * localMultiplicity,
                     Depth = location.Depth + 1,
-                    ComponentIndex = subcontentIdx++,
-                    ComponentCount = subcontentCount,
+                    LocalItemIndex = currentSubitemIndex++,
+                    LocalItemCount = subItemTotalCount,
                 };
                 foreach (var l in Recurse(subcontent, subLocation))
                     yield return l;
@@ -118,8 +132,8 @@ public class ComponentIterator : IIterator<ComponentContent>
             CIN = $"",
             Multiplicity = 1,
             Depth = 0,
-            ComponentIndex = 0,
-            ComponentCount = 1,
+            LocalItemIndex = 0,
+            LocalItemCount = 1,
         };
         return Recurse([rootComponent], rootLocation);
     }

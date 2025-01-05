@@ -88,8 +88,8 @@ internal abstract class DecimalPropertyPartExemple<T>
 
     class Part_N : Part
     {
-        T Cost_C1 = Make(0);
-        T Cost_C2 = Make(0);
+        T Cost_N1 = Make(0);
+        T Cost_N2 = Make(0);
     }
 }
 

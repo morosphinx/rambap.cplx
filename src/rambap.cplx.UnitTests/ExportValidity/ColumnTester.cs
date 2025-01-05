@@ -96,6 +96,7 @@ internal static class ColumnTester
                 Columns =
                 [
                     CommonColumns.LineNumber(),
+                    IDColumns.ContentLocation(),
                     IDColumns.ComponentNumberPrettyTree(),
                     IDColumns.PartNumber(),
                     IDColumns.GroupCNs(),
