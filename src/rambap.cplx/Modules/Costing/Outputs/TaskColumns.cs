@@ -8,179 +8,113 @@ namespace rambap.cplx.Modules.Costing.Outputs;
 public static class TaskColumns
 {
     public static DelegateColumn<ComponentContent> RecurentTaskName()
-    => new DelegateColumn<ComponentContent>("Task Name", ColumnTypeHint.String,
-        i =>
-        {
-            if (i is LeafProperty lp)
+        => new DelegateColumn<ComponentContent>("Task Name", ColumnTypeHint.String,
+            i => i switch
             {
-                if (lp.Property is InstanceTasks.NamedTask n)
-                    return n.Name;
-                else
-                    throw new NotImplementedException();
-            }
-            else if (i is LeafComponent lc)
-            {
-                if (lc.IsLeafBecause == LeafCause.RecursionBreak)
-                    return "unit";
-                else
-                    return "";
-            }
-            return "";
-        });
+                LeafProperty { Property : InstanceTasks.NamedTask  prop} lp => prop.Name,
+                LeafComponent lc when lc.IsLeafBecause == LeafCause.RecursionBreak => "unit",
+                LeafComponent lc when lc.IsLeafBecause != LeafCause.RecursionBreak => "",
+                BranchComponent bc => "",
+                _ => throw new NotImplementedException()
+            });
 
     public static DelegateColumn<ComponentContent> RecurentTaskCategory()
-    => new DelegateColumn<ComponentContent>("Task Category", ColumnTypeHint.String,
-        i =>
-        {
-            if (i is LeafProperty lp)
+        => new DelegateColumn<ComponentContent>("Task Category", ColumnTypeHint.String,
+            i => i switch 
             {
-                if (lp.Property is InstanceTasks.NamedTask n)
-                    return n.Category;
-                else
-                    throw new NotImplementedException();
-            }
-            else return "";
-        });
+                LeafProperty { Property: InstanceTasks.NamedTask prop } lp => prop.Category,
+                LeafComponent lc => "",
+                BranchComponent bc => "",
+                _ => throw new NotImplementedException()
+            });
 
     public static DelegateColumn<ComponentContent> RecurentTaskUnitDuration()
         => new DelegateColumn<ComponentContent>("Recurent Unit Duration", ColumnTypeHint.Numeric,
-            i =>
+            i => i switch
             {
-                if (i is LeafProperty lp)
-                {
-                    if (lp.Property is InstanceTasks.NamedTask n)
-                        return n.Duration_day.ToString();
-                    else
-                        throw new NotImplementedException();
-                }
-                else if (i is LeafComponent lc)
-                {
-                    return lc.Component.Instance.Tasks()?.TotalRecurentTaskDuration.ToString() ?? "";
-                }
-                return "";
+                LeafProperty { Property: InstanceTasks.NamedTask prop } lp => prop.Duration_day.ToString(),
+                LeafComponent lc => lc.Component.Instance.Tasks()?.TotalRecurentTaskDuration.ToString() ?? "",
+                BranchComponent bc => "",
+                _ => throw new NotImplementedException()
             });
 
 
     public static DelegateColumn<ComponentContent> TaskName()
         => new DelegateColumn<ComponentContent>("Task Name", ColumnTypeHint.String,
-            i =>
+            i => i switch
             {
-                if (i is LeafProperty lpi)
-                {
-                    if (lpi.Property is InstanceTasks.NamedTask n)
-                        return n.Name;
-                    else
-                        throw new NotImplementedException();
-                }
-                else if (i is LeafComponent lc)
-                {
-                    return "unit";
-                }
-                return "";
+                LeafProperty { Property: InstanceTasks.NamedTask prop } => prop.Name,
+                LeafComponent lc => "unit",
+                BranchComponent bc => "",
+                _ => throw new NotImplementedException()
             });
 
 
     public static DelegateColumn<ComponentContent> TaskRecurence()
         => new DelegateColumn<ComponentContent>("R", ColumnTypeHint.String,
-            i =>
+            i => i switch
             {
-                if (i is LeafProperty lpi)
-                {
-                    if (lpi.Property is InstanceTasks.NamedTask n)
-                        return n.IsRecurent ? "*" : "";
-                    else
-                        throw new NotImplementedException();
-                }
-                else if (i is LeafComponent lc)
-                {
-                    // TODO : clarify, it's not possible to represent both NonRecurent and Recurent duration in the same total unambigiously
-                    throw new NotImplementedException();
-                }
-                return "";
+                LeafProperty { Property: InstanceTasks.NamedTask prop } => prop.IsRecurent ? "*" : "",
+                LeafComponent lc => throw new NotImplementedException(),
+                    // TODO : clarify LeafComponentBehavior, it's not possible to represent both NonRecurent and Recurent duration in the same total unambigiously
+                BranchComponent bc => "",
+                _ => throw new NotImplementedException()
             });
 
     public static DelegateColumn<ComponentContent> TaskCategory()
         => new DelegateColumn<ComponentContent>("Task Category", ColumnTypeHint.String,
-            i =>
+            i => i switch
             {
-                if (i is LeafProperty lpi)
-                {
-                    if (lpi.Property is InstanceTasks.NamedTask n)
-                        return n.Category;
-                    else
-                        throw new NotImplementedException();
-                }
-                return "";
+                LeafProperty { Property: InstanceTasks.NamedTask prop } => prop.Category,
+                LeafComponent lc => "",
+                BranchComponent bc => "",
+                _ => throw new NotImplementedException()
             });
 
     public static DelegateColumn<ComponentContent> TaskDuration()
         => new DelegateColumn<ComponentContent>("Duration", ColumnTypeHint.Numeric,
-            i =>
+            i => i switch
             {
-                if (i is LeafProperty lpi)
-                {
-                    if (lpi.Property is InstanceTasks.NamedTask n)
-                        return n.Duration_day.ToString();
-                    else
-                        throw new NotImplementedException();
-                }
-                return "";
+                LeafProperty { Property: InstanceTasks.NamedTask prop } => prop.Duration_day.ToString(),
+                LeafComponent lc => "",
+                BranchComponent bc => "",
+                _ => throw new NotImplementedException()
             });
 
     public static DelegateColumn<ComponentContent> TaskCount()
         => new DelegateColumn<ComponentContent>("Count", ColumnTypeHint.Numeric,
-            i =>
+            i => i switch
             {
-                if (i is LeafProperty lpi)
-                {
-                    if (lpi.Property is InstanceTasks.NamedTask n)
-                        return n.IsRecurent ? i.ComponentTotalCount.ToString() : "";
-                    else
-                        throw new NotImplementedException();
-                }
-                return "";
+                LeafProperty { Property: InstanceTasks.NamedTask prop } =>
+                    prop.IsRecurent ? i.ComponentTotalCount.ToString() : "",
+                LeafComponent lc => "",
+                BranchComponent bc => "",
+                _ => throw new NotImplementedException()
             });
 
     public static DelegateColumn<ComponentContent> TaskTotalDuration(bool includeNonRecurent)
         => new DelegateColumn<ComponentContent>("Task Total Duration", ColumnTypeHint.Numeric,
-            i =>
+            i => i switch
             {
-                if (i is LeafProperty lpi)
-                {
-                    if (lpi.Property is InstanceTasks.NamedTask n)
+                LeafProperty { Property: InstanceTasks.NamedTask prop } lp when prop.IsRecurent =>
+                    (lp.ComponentTotalCount * prop.Duration_day).ToString(),
+                LeafProperty { Property: InstanceTasks.NamedTask prop } lp when ! prop.IsRecurent =>
+                    prop.Duration_day.ToString(),
+                LeafComponent lc =>
+                    lc.AllMatchOrNull<decimal>(c =>
                     {
-                        var total_duration = (n.IsRecurent ? lpi.ComponentTotalCount : 1) * n.Duration_day;
-                        return $"{total_duration}";
-                    }
-                    else
-                        throw new NotImplementedException();
-                }
-                else if (i is LeafComponent lc)
-                {
-                    // 
-                    var intance = lc.Component.Instance;
-                    var primatryTaskData = intance.Tasks();
-                    if (primatryTaskData == null) return "";
-
-                    // RecurentData
-                    var recurrentDurationPerCom = primatryTaskData.TotalRecurentTaskDuration;
-                    var recurrentDurationTotal = recurrentDurationPerCom * lc.ComponentTotalCount;
-
-                    decimal totalDuration = recurrentDurationTotal;
-                    if (includeNonRecurent)
-                    {
-                        // Non RecurentData
-                        var nonRecurentTotal = primatryTaskData.NativeNonRecurentTaskDuration + InstanceTasks.GetInheritedRecurentCosts(intance);
-
-                        totalDuration += nonRecurentTotal;
-                    }
-                    return totalDuration.ToString();
-                }
-                else if (includeNonRecurent && i is BranchComponent lb)
-                {
-                    throw new NotSupportedException("This columns display a mix of intensive (NonRecurentTask) and extensive (RecurentTask) properties. Calculations have caveats, and are disabled.");
-                }
-                return "";
+                        var instanceTasks = c.Instance.Tasks();
+                        if (instanceTasks  == null) return 0M;
+                        var totalRecurentDuration = instanceTasks.TotalRecurentTaskDuration * lc.ComponentTotalCount;
+                        var totalNonRecurentDuration = instanceTasks.NativeRecurentTaskDuration + InstanceTasks.GetInheritedRecurentCosts(c.Instance);
+                        return includeNonRecurent
+                            ? totalRecurentDuration + totalNonRecurentDuration
+                            : totalRecurentDuration;
+                    }).ToString(), // TODO : on mismatch ,return 0, not the 
+                BranchComponent bc when includeNonRecurent=>
+                    throw new NotSupportedException("This columns display a mix of intensive (NonRecurentTask) and extensive (RecurentTask) properties. Calculations have caveats, and are disabled."),
+                BranchComponent bc when ! includeNonRecurent => "",
+                _ => throw new NotImplementedException()
             },
             i =>
             {
@@ -189,7 +123,6 @@ public static class TaskColumns
                 if (!includeNonRecurent)
                     return i.Tasks()?.TotalRecurentTaskDuration.ToString() ?? "";
                 else return "";
-            }
-            );
+            });
 }
 
