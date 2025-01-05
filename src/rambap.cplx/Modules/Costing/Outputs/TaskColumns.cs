@@ -101,7 +101,7 @@ public static class TaskColumns
                 LeafProperty { Property: InstanceTasks.NamedTask prop } lp when ! prop.IsRecurent =>
                     prop.Duration_day.ToString(),
                 LeafComponent lc =>
-                    lc.AllMatchOrNull<decimal>(c =>
+                    lc.AllComponentsMatch(c =>
                     {
                         var instanceTasks = c.Instance.Tasks();
                         if (instanceTasks  == null) return 0M;
@@ -110,7 +110,9 @@ public static class TaskColumns
                         return includeNonRecurent
                             ? totalRecurentDuration + totalNonRecurentDuration
                             : totalRecurentDuration;
-                    }).ToString(), // TODO : on mismatch ,return 0, not the 
+                    }, out var value)
+                        ? value.ToString()
+                        : "error",
                 BranchComponent bc when includeNonRecurent=>
                     throw new NotSupportedException("This columns display a mix of intensive (NonRecurentTask) and extensive (RecurentTask) properties. Calculations have caveats, and are disabled."),
                 BranchComponent bc when ! includeNonRecurent => "",

@@ -34,8 +34,15 @@ public static class CostColumns
             i => i switch
             {
                 LeafProperty { Property: InstanceCost.NativeCostInfo prop } lp => prop.value.Price.CostToString(),
-                LeafComponent lc => lc.AllMatchOrNull(c => c.Instance.Cost()?.Total)?.CostToString() ?? "error",
-                BranchComponent bc => bc.AllMatchOrNull(c => c.Instance.Cost()?.Total)?.CostToString() ?? "error",
+                LeafComponent lc =>
+                    lc.AllComponentsMatch(c => c.Instance.Cost()?.Total, out var value)
+                        ? (value?.CostToString() ?? "")
+                        : "error",
+                BranchComponent bc when include_branches =>
+                    bc.AllComponentsMatch(c => c.Instance.Cost()?.Total, out var value)
+                        ? (value?.CostToString() ?? "")
+                        : "error",
+                BranchComponent bc when !include_branches => "",
                 _ => throw new NotImplementedException(),
             });
 

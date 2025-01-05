@@ -1,4 +1,5 @@
 ﻿using rambap.cplx.Core;
+using System;
 
 namespace rambap.cplx.Modules.Base.Output;
 
@@ -38,19 +39,21 @@ public abstract record ComponentContent
             yield return component;
     }
 
-    public T? AllMatchOrNull<T>(Func<Component,T> getter)
+    public bool AllComponentsMatch<T>(Func<Component, T> getter)
+    {
+        return AllComponentsMatch<T>(getter, out T coherentValue);
+    }
+    public bool AllComponentsMatch<T>(Func<Component, T> getter, out T coherentValue)
     {
         // Parts may be edited, without changing the PN => This would be a mistake, detect it
         var values = AllComponents().Select(c => getter(c.component));
         var disctinctCount = values.Distinct().Count();
         var valuesAreCoherent = disctinctCount <= 1;
-        if (valuesAreCoherent)
-            return values.First();
-        else
-            return default;
+        coherentValue = values.First();
+        return valuesAreCoherent;
     }
 
-    public ComponentContent(RecursionLocation loc, Component comp)
+public ComponentContent(RecursionLocation loc, Component comp)
     {
         Location = loc;
         Component = comp;
