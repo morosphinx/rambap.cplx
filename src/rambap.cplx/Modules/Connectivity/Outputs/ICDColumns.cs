@@ -7,14 +7,25 @@ namespace rambap.cplx.Modules.Connectivity.Outputs;
 
 public static class ICDColumns
 {
-    public static DelegateColumn<ComponentContent> TopMostConnectorName()
+    public static DelegateColumn<ComponentContent> PortName()
         => new DelegateColumn<ComponentContent>(
-            "TopMostConnector",
+            "Port",
             ColumnTypeHint.String,
             i => i switch
             {
                 BranchComponent b => b.Component.CN,
-                LeafProperty { Property : ICDTableContentProperty prop} p => prop.Port.Name,
+                LeafProperty { Property: ICDTableContentProperty prop } p => prop.Port.Name,
+                _ => throw new NotImplementedException(),
+            });
+
+    public static DelegateColumn<ComponentContent> TopMostPortName()
+        => new DelegateColumn<ComponentContent>(
+            "TopMostPort",
+            ColumnTypeHint.String,
+            i => i switch
+            {
+                BranchComponent b => b.Component.CN,
+                LeafProperty { Property : ICDTableContentProperty prop} p => prop.Port.TopMostUser().Name,
                 _ => throw new NotImplementedException(),
             });
 }

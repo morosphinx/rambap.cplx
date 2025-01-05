@@ -21,7 +21,7 @@ public record RecursionLocation()
 /// </summary>
 public abstract record ComponentContent
 {
-    public RecursionLocation Location { get; }
+    public RecursionLocation Location { get; init; }
     public Component Component { get; }
 
     // This should be faster than calling AllComponents().Count(), witch iterate an enumerable

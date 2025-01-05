@@ -85,6 +85,15 @@ internal class ConnectionConcept : IConcept<InstanceConnectivity>
                 Wirings = selfDefinedWirings.ToList(),
             };
         }
-        else return null;
+        else
+        {
+            // Force definition on every connector, even if the part is not an IPartConnectable
+            foreach (var c in selfConnectors)
+            {
+                if (!c.HasbeenDefined)
+                    c.DefineAsHadHoc();
+            }
+            return null;
+        };
     }
 }

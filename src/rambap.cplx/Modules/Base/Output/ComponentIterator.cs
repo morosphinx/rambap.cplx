@@ -137,6 +137,55 @@ public class ComponentIterator : IIterator<ComponentContent>
         };
         return Recurse([rootComponent], rootLocation);
     }
+
+    public static IEnumerable<ComponentContent> SubIterate(
+        IEnumerable<ComponentContent> contents,
+        Func<ComponentContent,IEnumerable<ComponentContent>> additionalComponents)
+    {
+        foreach (var content in contents)
+        {
+            var newContents = additionalComponents(content);
+            IEnumerable<ComponentContent> allContents = [content, .. newContents];
+            foreach(var c in allContents)
+                yield return c;
+        }
+    }
+
+    public static IEnumerable<ComponentContent> SubIterateProperties<T>(
+        IEnumerable<ComponentContent> contents,
+        Func<T, IEnumerable<T>> additionalProperties,
+        bool applyRecursively = true)
+    {
+        IEnumerable<ComponentContent> MakeAditionalContents(LeafProperty leafProperty)
+        {
+            var location = leafProperty.Location;
+            T property = (T)leafProperty.Property!;
+            var newProperties = additionalProperties(property);
+
+            var currentSubitemIndex = 0;
+            var subItemTotalCount = newProperties.Count();
+
+            foreach (var p in newProperties)
+            {
+                var propLocation = location with
+                {
+                    Depth = location.Depth + 1,
+                    LocalItemIndex = currentSubitemIndex++,
+                    LocalItemCount = subItemTotalCount,
+                };
+                yield return leafProperty with { Property = p, Location = propLocation };
+            }
+
+        }
+        return ComponentIterator.SubIterate(contents,
+            c => c switch
+            {
+                LeafProperty { Property: T prop } lp => MakeAditionalContents(lp),
+                LeafComponent lc => [],
+                BranchComponent bc => [],
+                _ => throw new NotImplementedException(),
+            });
+    }
 }
 
 

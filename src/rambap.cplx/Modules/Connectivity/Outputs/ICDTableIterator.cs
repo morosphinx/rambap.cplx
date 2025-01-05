@@ -49,10 +49,24 @@ public class ICDTableIterator : IIterator<ComponentContent>
         var topmostConnectorContents = contents.OfType<LeafProperty>().Where(c =>
             ! IsSubOfTopMostConnectors((c.Property as ICDTableContentProperty)!.Port));
 
-        foreach (var c in topmostConnectorContents)
+        var topmostConnectorsR = ComponentIterator.SubIterateProperties<ICDTableContentProperty>(topmostConnectorContents,
+            p => p.Port.Definition!.SubPorts.Select(p => new ICDTableContentProperty() { Port = p }));
+
+        foreach (var c in topmostConnectorsR)
         {
-            var icdTableProp = (ICDTableContentProperty)c.Property!;
             yield return c;
         }
+    }
+
+    public IEnumerable<ComponentContent> ExplicitConnectors(IEnumerable<ComponentContent> contents)
+    {
+        return ComponentIterator.SubIterate(contents,
+            c => c switch
+            {
+                LeafProperty { Property : ICDTableContentProperty prop} lp => [], 
+                LeafComponent lc => [c],
+                BranchComponent bc => [c],
+                _ => throw new NotImplementedException(),
+            });
     }
 }

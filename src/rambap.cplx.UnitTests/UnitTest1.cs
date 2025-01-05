@@ -53,8 +53,8 @@ namespace rambap.cplx.UnitTests
         [TestMethod]
         public void TestGeneration_Exemple3()
         {
-            var p = new RackConnected1();
-            //var p = new InternalCable1();
+            //var p = new RackConnected1();
+            var p = new InternalCable1();
             var i = new Pinstance(p);
 
             // IInstruction WiringDescription = new WiringDescriptionGenerator<RackConnected1>(

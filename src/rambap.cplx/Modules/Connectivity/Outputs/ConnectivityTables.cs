@@ -26,7 +26,9 @@ internal class ConnectivityTables
         {
             Iterator = new ICDTableIterator(),
             Columns = [
-                    ICDColumns.TopMostConnectorName(),
+                    IDColumns.ComponentNumberPrettyTree(),
+                    ICDColumns.TopMostPortName(),
+                    ICDColumns.PortName(),
                 ]
         };
 }

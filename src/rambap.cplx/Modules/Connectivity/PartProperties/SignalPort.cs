@@ -27,16 +27,16 @@ public abstract class SignalPort : IPartProperty
     public static bool AreCompatible(SignalPort A, SignalPort B)
      => A.GetType() == B.GetType() &&
         AreCompatible(A.Definition!, B.Definition!);
-    internal static bool AreCompatible(ConnectorDefinition A, ConnectorDefinition B)
+    internal static bool AreCompatible(PortDefinition A, PortDefinition B)
     {
         return (A, B) switch
         {
             // Copied connectors : Test one level deeper
-            (CopiedDefinition a, CopiedDefinition b) => AreCompatible(a.CopiedConnector.Definition!, b.CopiedConnector.Definition!),
-            (CopiedDefinition a, AdHocDefinition b) => AreCompatible(a.CopiedConnector.Definition!, b),
-            (CopiedDefinition a, CombinedDefinition b) => AreCompatible(a.CopiedConnector.Definition!, b),
-            (AdHocDefinition a, CopiedDefinition b) => AreCompatible(a, b.CopiedConnector.Definition!),
-            (CombinedDefinition a, CopiedDefinition b) => AreCompatible(a, b.CopiedConnector.Definition!),
+            (CopiedDefinition a, CopiedDefinition b) => AreCompatible(a.CopiedPort.Definition!, b.CopiedPort.Definition!),
+            (CopiedDefinition a, AdHocDefinition b) => AreCompatible(a.CopiedPort.Definition!, b),
+            (CopiedDefinition a, CombinedDefinition b) => AreCompatible(a.CopiedPort.Definition!, b),
+            (AdHocDefinition a, CopiedDefinition b) => AreCompatible(a, b.CopiedPort.Definition!),
+            (CombinedDefinition a, CopiedDefinition b) => AreCompatible(a, b.CopiedPort.Definition!),
             // Add Hoc : Always compatible with itself
             (AdHocDefinition a, AdHocDefinition b) => true,
             // Add Hoc and combined are never compatible : Even whith a single pin, a combined connector imply an additional containing level
@@ -44,9 +44,9 @@ public abstract class SignalPort : IPartProperty
             (CombinedDefinition a, AdHocDefinition b) => false,
             // Two Combined : Valid when same size, compatible subconnectors in order
             (CombinedDefinition a, CombinedDefinition b) =>
-                a.CombinedConnectors.Count == b.CombinedConnectors.Count &&
-                Enumerable.Range(0, a.CombinedConnectors.Count)
-                          .All(i => AreCompatible(a.CombinedConnectors[i].Definition!, b.CombinedConnectors[i].Definition!)),
+                a.CombinedPorts.Count == b.CombinedPorts.Count &&
+                Enumerable.Range(0, a.CombinedPorts.Count)
+                          .All(i => AreCompatible(a.CombinedPorts[i].Definition!, b.CombinedPorts[i].Definition!)),
             // 3 x 3 = 9 total cases, all covered
             _ => throw new NotImplementedException(),
         };
@@ -85,8 +85,8 @@ public abstract class SignalPort : IPartProperty
         var subdef = Definition switch
         {
             AdHocDefinition d => [],
-            CopiedDefinition d => [d.CopiedConnector],
-            CombinedDefinition d => d.CombinedConnectors,
+            CopiedDefinition d => [d.CopiedPort],
+            CombinedDefinition d => d.CombinedPorts,
             null => [],
             _ => throw new NotImplementedException(),
         };
@@ -110,37 +110,45 @@ public abstract class SignalPort : IPartProperty
 
     // what define this connector
 
-    internal abstract class ConnectorDefinition{}
-    internal class AdHocDefinition : ConnectorDefinition{}// Single pin / signal
-    internal class CopiedDefinition : ConnectorDefinition // Exposed connector
+    internal abstract class PortDefinition
     {
-        public required SignalPort CopiedConnector { get; init; }
+        public abstract IEnumerable<SignalPort> SubPorts { get; }
     }
-    internal class CombinedDefinition : ConnectorDefinition // Exposed / grouped connector
+    internal class AdHocDefinition : PortDefinition // Single pin / signal
     {
-        public required List<SignalPort> CombinedConnectors { get; init; } // Connector in order, their names is used as the label
+        public override IEnumerable<SignalPort> SubPorts => [];
     }
-    internal ConnectorDefinition? Definition { get; private set; }
+    internal class CopiedDefinition : PortDefinition // Exposed connector
+    {
+        public override IEnumerable<SignalPort> SubPorts => CopiedPort.Definition!.SubPorts;
+        public required SignalPort CopiedPort { get; init; }
+    }
+    internal class CombinedDefinition : PortDefinition // Exposed / grouped connector
+    {
+        public override IEnumerable<SignalPort> SubPorts => CombinedPorts ;
+        public required List<SignalPort> CombinedPorts { get; init; } // Connector in order, their names is used as the label
+    }
+    internal PortDefinition? Definition { get; private set; }
     internal bool HasbeenDefined => Definition != null;
 
 
     // Wether this used as part of another definition
 
-    internal abstract class ConnectorDefinitionUsage
+    internal abstract class PortDefinitionUsage
     {
         public abstract SignalPort User { get; }
     }
-    internal class UsageExposedAs : ConnectorDefinitionUsage
+    internal class UsageExposedAs : PortDefinitionUsage
     {
         public required SignalPort ExposedAs { get; init; }
         public override SignalPort User => ExposedAs;
     }
-    internal class UsageCombinedInto : ConnectorDefinitionUsage
+    internal class UsageCombinedInto : PortDefinitionUsage
     {
         public required SignalPort CombinedInto { get; init; }
         public override SignalPort User => CombinedInto;
     }
-    internal ConnectorDefinitionUsage? Usage { get; private set; }
+    internal PortDefinitionUsage? Usage { get; private set; }
     internal bool HasBeenUseDefined => Usage != null;
 
 
@@ -174,7 +182,7 @@ public abstract class SignalPort : IPartProperty
     {
         if (HasbeenDefined) throw new InvalidOperationException($"Connector has already been defined");
         if (source.HasBeenUseDefined) throw new InvalidOperationException($"Connector {source} has already been used in another definition ({source.Usage!.User})");
-        Definition = new CopiedDefinition() { CopiedConnector = source };
+        Definition = new CopiedDefinition() { CopiedPort = source };
         source.Usage = new UsageExposedAs() { ExposedAs = this };
     }
 
@@ -185,7 +193,7 @@ public abstract class SignalPort : IPartProperty
         {
             if (source.HasBeenUseDefined) throw new InvalidOperationException($"Connector {source} has already been used in another definition ({source.Usage!.User})");
         }
-        Definition = new CombinedDefinition() { CombinedConnectors = [.. sources] };
+        Definition = new CombinedDefinition() { CombinedPorts = [.. sources] };
         foreach (var source in sources)
         {
             source.Usage = new UsageCombinedInto() { CombinedInto = this };
