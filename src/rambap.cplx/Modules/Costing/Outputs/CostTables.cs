@@ -65,10 +65,11 @@ public static class CostTables
             },
             Columns = [
                 IDColumns.ComponentNumberPrettyTree(),
+                CostColumns.LocalSumCost(),
                 IDColumns.ComponentID(),
                 IDColumns.PartNumber(),
-                CostColumns.CostName(include_branches : true),
-                CostColumns.UnitCost(include_branches : true),
+                CostColumns.CostName(include_branches : false),
+                CostColumns.UnitCost(include_branches : false),
                 CommonColumns.ComponentTotalCount(),
                 CostColumns.TotalCost(),
             ],

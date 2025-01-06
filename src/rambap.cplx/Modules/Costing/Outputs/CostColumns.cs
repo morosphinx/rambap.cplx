@@ -1,5 +1,6 @@
 ﻿using rambap.cplx.Export.Tables;
 using rambap.cplx.Modules.Base.Output;
+using rambap.cplx.PartProperties;
 
 namespace rambap.cplx.Modules.Costing.Outputs;
 public static class CostColumns
@@ -45,5 +46,21 @@ public static class CostColumns
                 BranchComponent bc when !include_branches => "",
                 _ => throw new NotImplementedException(),
             });
+
+    public static IColumn<ComponentContent> LocalSumCost()
+        => new CommonColumns.ComponentPrettyTreeColumn()
+        {
+            Title = "SumCost",
+            GetLocationText = i => i switch
+            {
+                LeafProperty { Property: InstanceCost.NativeCostInfo cost } =>
+                        cost.value.Price.CostToString(), // Do not display multiplicity for properties : this is a local cost representation
+                (LeafComponent or BranchComponent) when i.Component.Instance.Cost() is not null =>
+                    i.IsGrouping
+                        ? $"{i.ComponentLocalCount}x: {i.Component.Instance.Cost()!.Total.CostToString()}"
+                        : i.Component.Instance.Cost()!.Total.CostToString(),
+                _ => "",
+            }
+        };
 
 }

@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static rambap.cplx.Modules.Base.Output.CommonColumns;
 
 namespace rambap.cplx.Modules.Base.Output;
 
@@ -100,48 +101,18 @@ public static class IDColumns
                 };
             });
 
-    private class ComponentNumberPrettyTreeColumn : IColumn<ComponentContent>
-    {
-        public string Title => "CN";
-        public ColumnTypeHint TypeHint => ColumnTypeHint.String;
-
-        private List<bool> LevelDone { get; } = [];
-        public string CellFor(ComponentContent item)
-        {
-            while (LevelDone.Count <= item.Location.Depth) LevelDone.Add(false);
-            LevelDone[item.Location.Depth] = false;
-
-            string ver = " │ "; // That's an Alt+179, and not an Alt+124 '|', this latter is reserved for markdown 
-            bool isEnd = item.Location.LocalItemIndex == item.Location.LocalItemCount - 1;
-            string end = isEnd ? " └─" : " ├─";
-            if (item.Location.Depth > 0)
-                LevelDone[item.Location.Depth - 1] = isEnd;
-
-            bool isGrouping = item.ComponentLocalCount > 1;
-
-            bool isLeafProperty = item is LeafProperty;
-            var depth = item.Location.Depth ;
-
-            int ver_ctn = Math.Max(depth - 1, 0);
-            int end_cent = Math.Min(depth, 1);
-            List<string> strs = [
-                .. Enumerable.Range(0, ver_ctn).Select(i => LevelDone[i] ? "   " : ver ),
-                .. Enumerable.Range(0, end_cent).Select(i => end),
-                " ",
-                isLeafProperty
-                    ? $"/" // This is a property
-                    : isGrouping
-                        ? $"{item.ComponentLocalCount}x: {item.Component.Instance.PN}"
-                        : $"{item.Component.CN}",
-            ];
-            return string.Concat(strs);
-        }
-
-        public void Reset() => LevelDone.Clear();
-        public string TotalFor(Pinstance root) => "";
-    }
+    
     public static IColumn<ComponentContent> ComponentNumberPrettyTree()
-        => new ComponentNumberPrettyTreeColumn();
+        => new ComponentPrettyTreeColumn()
+        {
+            Title = "CN",
+            GetLocationText = i =>
+                i is LeafProperty
+                    ? $"/" // This is a property
+                    : i.IsGrouping
+                        ? $"{i.ComponentLocalCount}x: {i.Component.Instance.PN}" // Group present the "n x PN"
+                        : $"{i.Component.CN}" // Single components present the CN
+        };
 
     public static DelegateColumn<ComponentContent> ContentLocation()
         => new DelegateColumn<ComponentContent>("Location", ColumnTypeHint.String,

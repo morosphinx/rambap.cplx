@@ -25,6 +25,7 @@ public abstract record ComponentContent
     public Component Component { get; }
 
     // This should be faster than calling AllComponents().Count(), witch iterate an enumerable
+    public bool IsGrouping => GroupedComponents.Count > 0;
     public int ComponentLocalCount => 1 + GroupedComponents.Count;
     public int ComponentTotalCount => Location.Multiplicity * ComponentLocalCount;
 
