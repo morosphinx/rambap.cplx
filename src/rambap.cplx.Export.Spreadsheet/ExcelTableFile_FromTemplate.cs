@@ -5,6 +5,7 @@ using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Spreadsheet;
 
 using static rambap.cplx.Export.Spreadsheet.Helpers;
+using rambap.cplx.Export.Tables;
 
 namespace rambap.cplx.Export.Spreadsheet;
 
@@ -25,7 +26,7 @@ public record InstanceContentInstruction : SpreadsheetFillInstruction
 public record TableWriteInstruction : SpreadsheetFillInstruction
 {
     public bool WriteHeader { get; init; } = false;
-    public required ITable Table { get; init; }
+    public required ITableProducer Table { get; init; }
 }
 
 public class ExcelTableFile_FromTemplate : IInstruction
@@ -57,7 +58,6 @@ public class ExcelTableFile_FromTemplate : IInstruction
             var sheet = workbookPart.Workbook.Sheets!.Descendants<Sheet>().First(
                 s =>
                 {
-                    EnumerateSheetProperties(s);
                     return s.GetAttributes().First(a => a.LocalName == "name").Value == sheetName;
                 });
             var sheetID = sheet.Id!.Value!;

@@ -2,36 +2,98 @@
 using rambap.cplx.PartInterfaces;
 using rambap.cplx.PartProperties;
 using static rambap.cplx.Core.Support;
-using static rambap.cplx.PartInterfaces.IPartConnectable;
-using static rambap.cplx.PartInterfaces.IPartConnectable.ConnectionBuilder;
+using rambap.cplx.Modules.Connectivity.Model;
 
 namespace rambap.cplx.Modules.Connectivity;
 
 public class InstanceConnectivity : IInstanceConceptProperty
 {
-    public List<ConnectionInstruction> Connections { get; } = new();
+    // TODO : set definition somewhere in the Part
+    public bool IsACable { get; init; } = true;
 
-    internal InstanceConnectivity(ConnectionBuilder buildInfo)
+    public required List<ConnectablePort> Connectors { get; init; }
+    public required List<Mate> Connections { get; init; }
+    public required List<WiringAction> Wirings { get; init; }
+
+    public enum DisplaySide
     {
-        Connections.AddRange(buildInfo.Connections);
+        Left,
+        Rigth,
+        Both,
+    }
+
+    internal InstanceConnectivity()
+    {
+
     }
 }
 
 internal class ConnectionConcept : IConcept<InstanceConnectivity>
 {
-    public override InstanceConnectivity? Make(Pinstance i, Part template)
+    public override InstanceConnectivity? Make(Pinstance instance, Part template)
     {
-        var connectionBuilder = new ConnectionBuilder(template);
-
-        // Construct non declared Constructors
-        ScanObjectContentFor<Connector>(template,
-            (p, s) => { });
-
+        var selfConnectors = new List<ConnectablePort>();
+        var selfPublicConnectors = new List<ConnectablePort>();
+        ScanObjectContentFor<ConnectablePort>(template,
+            (p, s) => {
+                selfConnectors.Add(p);
+                if(s.IsPublicOrAssembly) selfPublicConnectors.Add(p);
+            });
+        // At this point no connector in the selfConnectorList has a definition
         if (template is IPartConnectable a)
         {
+            var connectionBuilder = new ConnectionBuilder(instance, template);
+            // User defined connection and exposition are created from here
             a.Assembly_Connections(connectionBuilder);
-            return new InstanceConnectivity(connectionBuilder);
+            foreach(var c in selfConnectors)
+            {
+                if (!c.HasbeenDefined)
+                    c.DefineAsHadHoc();
+            }
+
+            var selfDefinedConnection = connectionBuilder!.Mates;
+            var selfDefinedWirings = connectionBuilder!.Wirings;
+            // 
+            // var groups = ConnectionHelpers.GroupConnectionsByTopmostPort(selfDefinedWirings);
+            // var wireGroupedConnections = groups.SelectMany(g =>
+            //     g.Connections.All(c => c is WiringAction)
+            //         ? [new Bundle(g.Connections.OfType<WiringAction>())]
+            //         : g.Connections);
+
+            // All Components that have a Connectivity definition are used as black boxes
+            //void AbstractConnectionDueToCable(List<Connection> /cablings, /       IEnumerable<Connector> cableConnectors)
+            //{
+            //
+            //}
+            // foreach (var c in instance.Components)
+            // {
+            //     var connectivity = c.Instance.Connectivity();
+            //     if(connectivity != null)
+            //     {
+            //         if (connectivity.IsACable)
+            //         {
+            //             var cableConnectors = // connectivity.PublicConnectors;
+            //             AbstractConnectionDueToCable// (selfDefinedConnection, cableConnectors);
+            //         }
+            //     }
+            // }
+
+            return new InstanceConnectivity()
+            {
+                Connectors = selfConnectors,
+                Connections = selfDefinedConnection.ToList(),
+                Wirings = selfDefinedWirings.ToList(),
+            };
         }
-        else return null;
+        else
+        {
+            // Force definition on every connector, even if the part is not an IPartConnectable
+            foreach (var c in selfConnectors)
+            {
+                if (!c.HasbeenDefined)
+                    c.DefineAsHadHoc();
+            }
+            return null;
+        };
     }
 }

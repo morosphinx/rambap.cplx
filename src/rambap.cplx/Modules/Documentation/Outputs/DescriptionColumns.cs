@@ -1,6 +1,6 @@
 ﻿using rambap.cplx.Core;
-using rambap.cplx.Export;
-using rambap.cplx.Export.Iterators;
+using rambap.cplx.Export.Tables;
+using rambap.cplx.Modules.Base.Output;
 
 namespace rambap.cplx.Modules.Documentation.Outputs;
 
@@ -8,7 +8,7 @@ public static class DescriptionColumns
 {
     private static string GetDescription(Pinstance instance)
     {
-        var descriptions = instance.Descriptions()?.Descriptions.Select(d => d.Text)
+        var descriptions = instance.Documentation()?.Descriptions.Select(d => d.Text)
                     ?? new List<string>();
         return string.Join(" ", descriptions);
     }

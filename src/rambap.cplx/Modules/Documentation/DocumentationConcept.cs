@@ -4,6 +4,8 @@ using rambap.cplx.PartProperties;
 using System.Reflection;
 using static rambap.cplx.Modules.Documentation.InstanceDocumentation;
 using static rambap.cplx.Core.Support;
+using rambap.cplx.PartInterfaces;
+using rambap.cplx.Export;
 
 namespace rambap.cplx.Modules.Documentation;
 
@@ -17,11 +19,13 @@ public class InstanceDocumentation : IInstanceConceptProperty
 
     public List<NamedText> Descriptions { get; init; } = new();
     public List<NamedText> Links { get; init; } = new();
+
+    public Func<Pinstance, IEnumerable<(string, IInstruction)>>? MakeAdditionalDocuments { get; init; }
 }
 
 internal class DocumentationConcept : IConcept<InstanceDocumentation>
 {
-    public override InstanceDocumentation? Make(Pinstance i, Part template)
+    public override InstanceDocumentation? Make(Pinstance instance, Part template)
     {
         List<NamedText> descriptions = new();
         // Add description defined in attributes
@@ -42,10 +46,26 @@ internal class DocumentationConcept : IConcept<InstanceDocumentation>
         ScanObjectContentFor<Link>(template,
             (d, i) => links.Add(new NamedText(i.Name, d.Hyperlink)));
 
-        bool hasDocumentation = descriptions.Count > 0 || links.Count > 0;
+        Func<Pinstance, IEnumerable<(string, IInstruction)>>? makeAdditionDocuments = null;
+        if(template is IPartAdditionalDocuments a)
+        {
+            var documentationBuilder = new DocumentationBuilder(instance, template);
+            a.Additional_Documentation(documentationBuilder);
+            // TODO : this keep the DocumentationBuilder in memory. Is it ok ? 
+            makeAdditionDocuments =
+                documentationBuilder.MakeAllAdditionInstructions;
+        }
+
+        bool hasAdditionalDocuments = makeAdditionDocuments != null;
+        bool hasDocumentation = hasAdditionalDocuments || descriptions.Count > 0 || links.Count > 0;
 
         if (hasDocumentation)
-            return new InstanceDocumentation() { Descriptions = descriptions, Links = links };
+            return new InstanceDocumentation()
+            {
+                Descriptions = descriptions,
+                Links = links,
+                MakeAdditionalDocuments = makeAdditionDocuments,
+            };
         else
             return null;
     }

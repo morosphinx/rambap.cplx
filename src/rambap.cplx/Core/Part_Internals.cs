@@ -60,12 +60,33 @@ public partial class Part
                    p.CplxImplicitInitialization(initContext);
                    return p;
                });
+            ScanObjectContentFor<IEnumerable<Part>>(this,
+                (p, i) =>
+                {
+                    foreach (var part in p)
+                        part.CplxImplicitInitialization(initContext);
+                });
             // Assign properties Owners
             ScanObjectContentFor<IPartProperty>(this,
                 (p, i) =>
                 {
                     p.Owner = this;
                     p.Name = i.Name;
+                    if (p.Name is null || p.Name == "")
+                        p.Name = i.Name;
+                    p.IsPublic = i.IsPublicOrAssembly;
+                },
+                AutoContent.ConstructIfNulls);
+            ScanObjectContentFor<IEnumerable<IPartProperty>>(this,
+                (p, i) =>
+                {
+                    foreach (var prop in p)
+                    {
+                        prop.Owner = this;
+                        if (prop.Name is null || prop.Name == "")
+                            prop.Name = i.Name;
+                        prop.IsPublic = i.IsPublicOrAssembly;
+                    }
                 },
                 AutoContent.ConstructIfNulls);
             // Initialisation done, no need to do it again

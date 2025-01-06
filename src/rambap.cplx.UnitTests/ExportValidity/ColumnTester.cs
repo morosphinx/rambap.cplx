@@ -1,127 +1,140 @@
-﻿using rambap.cplx.Export;
-using rambap.cplx.Export.Iterators;
+﻿using rambap.cplx.Export.Tables;
+using rambap.cplx.Export.TextFiles;
+using rambap.cplx.Modules.Base.Output;
 
 namespace rambap.cplx.UnitTests.ExportValidity;
 
 internal static class ColumnTester
 {
-    public static IEnumerable<(string name, IIterator<ComponentContent> iterator)> AllComponentIterators(Func<Pinstance, IEnumerable<object>> propertyIterator)
+    public static ComponentIterator ComponentIterator_Flat_NoBranches() => new ComponentIterator()
     {
-        yield return ("ComponentIterator, Flat, No Branches", new ComponentIterator()
-        {
-            RecursionCondition = (c, l) => false,
-            WriteBranches = false,
-            PropertyIterator = propertyIterator
-        });
-        yield return ("ComponentIterator, Recursive, No Branches", new ComponentIterator()
-        {
-            RecursionCondition = (c, l) => true,
-            WriteBranches = false,
-            PropertyIterator = propertyIterator
-        });
-        yield return ("ComponentIterator, Flat, With Branches", new ComponentIterator()
-        {
-            RecursionCondition = (c, l) => false,
-            WriteBranches = true,
-            PropertyIterator = propertyIterator
-        });
-        yield return ("ComponentIterator, Recursive, With Branches", new ComponentIterator()
-        {
-            RecursionCondition = (c, l) => true,
-            WriteBranches = true,
-            PropertyIterator = propertyIterator
-        });
-    }
-
-    public static IEnumerable<(string name, IIterator<ComponentContent> iterator)> AllPartTypeIterators(Func<Pinstance, IEnumerable<object>> propertyIterator)
+        RecursionCondition = (c, l) => false,
+        WriteBranches = false,
+    };
+    public static ComponentIterator ComponentIterator_Recursive_NoBranches() => new ComponentIterator()
     {
-        yield return ("Part list, Flat, No Branches", new PartTypesIterator()
-        {
-            RecursionCondition = (c, l) => false,
-            WriteBranches = false,
-            PropertyIterator = propertyIterator
-        });
-
-        yield return ("PartTypeIterator, Recursive, No Branches", new PartTypesIterator()
-        {
-            RecursionCondition = (c, l) => true,
-            WriteBranches = false,
-            PropertyIterator = propertyIterator
-        });
-
-        yield return ("PartTypeIterator, Flat, With Branches", new PartTypesIterator()
-        {
-            RecursionCondition = (c, l) => false,
-            WriteBranches = true,
-            PropertyIterator = propertyIterator
-        });
-
-        yield return ("PartTypeIterator, Recursive, With Branches", new PartTypesIterator()
-        {
-            RecursionCondition = (c, l) => true,
-            WriteBranches = true,
-            PropertyIterator = propertyIterator
-        });
-    }
-
-    public static IEnumerable<(string name, IIterator<ComponentContent> iterator)> AllPartLocationIterators(Func<Pinstance, IEnumerable<object>> propertyIterator)
+        RecursionCondition = (c, l) => true,
+        WriteBranches = false,
+    };
+    public static ComponentIterator ComponentIterator_Flat_WithBranches() => new ComponentIterator()
     {
-            yield return ("PartLocationIterator, Flat", new PartLocationIterator()
-        {
-            RecursionCondition = (c, l) => false,
-            PropertyIterator = propertyIterator
-        });
+        RecursionCondition = (c, l) => false,
+        WriteBranches = true,
+    };
+    public static ComponentIterator ComponentIterator_Recursive_With_Branches() => new ComponentIterator()
+    {
+        RecursionCondition = (c, l) => true,
+        WriteBranches = true,
+    };
 
-        yield return ("PartLocationIterator, Recursive", new PartLocationIterator()
-        {
-            RecursionCondition = (c, l) => true,
-            PropertyIterator = propertyIterator
-        });
-    }
 
-    public static void TestComponentIteratorColumn_Decimal(
+    public static PartTypesIterator PartTypeIterator_Flat_NoBranches() => new PartTypesIterator()
+    {
+        RecursionCondition = (c, l) => false,
+        WriteBranches = false,
+    };
+    public static PartTypesIterator PartTypeIterator_Recursive_NoBranches() => new PartTypesIterator()
+    {
+        RecursionCondition = (c, l) => true,
+        WriteBranches = false,
+    };
+    public static PartTypesIterator PartTypeIterator_Flat_WithBranches() => new PartTypesIterator()
+    {
+        RecursionCondition = (c, l) => false,
+        WriteBranches = true,
+    };
+    public static PartTypesIterator PartTypeIterator_Recursive_WithBranches() => new PartTypesIterator()
+    {
+        RecursionCondition = (c, l) => true,
+        WriteBranches = true,
+    };
+
+
+    public static ComponentIterator PartLocationIterator_Flat_NoBranches() => new ComponentIterator()
+    {
+        RecursionCondition = (c, l) => false,
+        GroupPNsAtSameLocation = true,
+        WriteBranches = false,
+    };
+    public static ComponentIterator PartLocationIterator_Recursive_NoBranches() => new ComponentIterator()
+    {
+        RecursionCondition = (c, l) => true,
+        GroupPNsAtSameLocation = true,
+        WriteBranches = false, // TODO : case write branch is true
+    };
+
+    public static ComponentIterator PartLocationIterator_Flat_WithBranches() => new ComponentIterator()
+    {
+        RecursionCondition = (c, l) => false,
+        GroupPNsAtSameLocation = true,
+        WriteBranches = true,
+    };
+    public static ComponentIterator PartLocationIterator_Recursive_WithBranches() => new ComponentIterator()
+    {
+        RecursionCondition = (c, l) => true,
+        GroupPNsAtSameLocation = true,
+        WriteBranches = true,
+    };
+
+
+    public static void TestDecimalColumn_SumCoherence(
         Pinstance pinstance,
-        IColumn<ComponentContent> column,
-        Func<Pinstance, IEnumerable<object>> propertyIterator,
-        decimal expectedTotal)
+        IIterator<ComponentContent> iterator,
+        decimal expectedTotal,
+        IColumn<ComponentContent> testedColumn,
+        IEnumerable<IColumn<ComponentContent>> debugDataColumns)
     {
-        foreach (var t in AllComponentIterators(propertyIterator))
+        var res = iterator.MakeContent(pinstance);
+        var values = res.Select(testedColumn.CellFor);
+        var total = values.Select(s => (s != "") ? Convert.ToDecimal(s) : 0M).Sum();
+
+        // Write table in console for debug
+        var debugTable = new TextTableFile(pinstance)
         {
-            var res = t.iterator.MakeContent(pinstance);
-            var values = res.Select(column.CellFor);
-            var total = values.Select(s => (s != "") ? Convert.ToDecimal(s) : 0M).Sum();
-            Assert.AreEqual(expectedTotal, total, $"Incoherent column sum for {t.name}");
-        }
+            Table = new TableProducer<ComponentContent>()
+            {
+                Columns =
+                [
+                    CommonColumns.LineNumber(),
+                    IDColumns.ContentLocation(),
+                    IDColumns.ComponentNumberPrettyTree(),
+                    IDColumns.PartNumber(),
+                    IDColumns.GroupCNs(),
+                    CommonColumns.ComponentTotalCount(),
+                    .. debugDataColumns,
+                    testedColumn,
+                ],
+                Iterator = iterator,
+            },
+            Formater = new FixedWidthTableFormater(),
+        };
+        debugTable.WriteToConsole();
+        
+        Assert.AreEqual(expectedTotal, total, $"Incoherent column sum");
     }
 
-    public static void TestPartTypeIteratorColumn_Decimal(
-       Pinstance pinstance,
-       IColumn<ComponentContent> column,
-       Func<Pinstance, IEnumerable<object>> propertyIterator,
-       decimal expectedTotal)
-    {
-        foreach (var t in AllPartTypeIterators(propertyIterator))
-        {
-            var res = t.iterator.MakeContent(pinstance);
-            var values = res.Select(column.CellFor);
-            var total = values.Select(s => (s != "") ? Convert.ToDecimal(s) : 0M).Sum();
-            Assert.AreEqual(expectedTotal, total, $"Incoherent column sum for {t.name}");
-        }
-    }
-
-    public static void TestPartTypeLocationColumn_Decimal(
+    public static void TestDecimalColumn_SelfTotal(
         Pinstance pinstance,
-        IColumn<ComponentContent> column,
-        Func<Pinstance, IEnumerable<object>> propertyIterator,
-        decimal expectedTotal)
+        decimal expectedTotal,
+        IColumn<ComponentContent> testedColumn)
     {
-        foreach (var t in AllPartLocationIterators(propertyIterator))
+        var columnTotal = Convert.ToDecimal(testedColumn.TotalFor(pinstance));
+        Assert.AreEqual(expectedTotal, columnTotal, $"Incoherent column autocalculated sum");
+    }
+
+    public static void SetPropertyIterator(IIterator<ComponentContent> iterator,
+        Func<Pinstance, IEnumerable<object>>? propertyIterator)
+    {
+        switch(iterator)
         {
-            var res = t.iterator.MakeContent(pinstance);
-            var values = res.Select(column.CellFor);
-            var total = values.Select(s => (s != "") ? Convert.ToDecimal(s) : 0M).Sum();
-            Assert.AreEqual(expectedTotal, total, $"Incoherent column sum for {t.name}");
-        }
+            case ComponentIterator ci:
+                ci.PropertyIterator = propertyIterator;
+                break;
+            case PartTypesIterator pi:
+                pi.PropertyIterator = propertyIterator;
+                break;
+            default: throw new NotImplementedException();
+        };
     }
 }
 

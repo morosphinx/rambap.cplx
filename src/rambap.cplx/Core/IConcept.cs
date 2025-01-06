@@ -32,5 +32,5 @@ public abstract class IConcept<T> : IConcept
     public IInstanceConceptProperty? MakeBase(Pinstance instance, Part template) => Make(instance, template);
 
     /// <summary>Typed implementation of <see cref="IConcept.MakeBase(Pinstance)"/></summary>
-    public abstract T? Make(Pinstance i, Part template);
+    public abstract T? Make(Pinstance instance, Part template);
 }

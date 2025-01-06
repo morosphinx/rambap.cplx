@@ -4,7 +4,7 @@ using rambap.cplx.PartProperties;
 using static rambap.cplx.Core.Support;
 using static rambap.cplx.PartInterfaces.IPartMechanical;
 
-namespace rambap.cplx.Modules.Connectivity;
+namespace rambap.cplx.Modules.Racking;
 
 public class InstanceMechanicalAssembly : IInstanceConceptProperty
 {

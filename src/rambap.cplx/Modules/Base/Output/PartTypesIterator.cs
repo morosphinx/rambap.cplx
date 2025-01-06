@@ -1,6 +1,7 @@
 ﻿using rambap.cplx.Core;
+using rambap.cplx.Export.Tables;
 
-namespace rambap.cplx.Export.Iterators;
+namespace rambap.cplx.Modules.Base.Output;
 
 
 /// <summary>
@@ -22,7 +23,7 @@ public class PartTypesIterator : IIterator<ComponentContent>
     /// Define a final level of iteration on of parts that return properties
     /// Leave this empty to return no properties items
     /// </summary>
-    public Func<Pinstance, IEnumerable<object>>? PropertyIterator { private get; init; }
+    public Func<Pinstance, IEnumerable<object>>? PropertyIterator { private get; set; }
     private bool IsAPropertyTable => PropertyIterator != null;
 
     /// <summary>
@@ -33,7 +34,7 @@ public class PartTypesIterator : IIterator<ComponentContent>
     static (Type, string, Type) ComponentTemplateUnicityIdentifier(ComponentContent c)
         => (c.Component.Instance.PartType, c.Component.Instance.PN, c.GetType());
 
-    public IEnumerable<ComponentContent> MakeContent(Pinstance content)
+    public IEnumerable<ComponentContent> MakeContent(Pinstance instance)
     {
         // Produce a tree table of All Components, stopping on recursing condition.
         var ComponentTable = new ComponentIterator()
@@ -43,7 +44,7 @@ public class PartTypesIterator : IIterator<ComponentContent>
             PropertyIterator = null, // No property iteration when iterating the component tree
                                      // => Will return only LeafComponent or BranchComponent
         };
-        var componentsItems = ComponentTable.MakeContent(content);
+        var componentsItems = ComponentTable.MakeContent(instance);
         // All returned items of the tree table represent components (eg : No LeafProperty)
         // Group the components by Identity (PN & Type & content kind)
         var grouping_by_pn = componentsItems.GroupBy(c => ComponentTemplateUnicityIdentifier(c));

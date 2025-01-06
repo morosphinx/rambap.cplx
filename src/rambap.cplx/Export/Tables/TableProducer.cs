@@ -1,26 +1,15 @@
 ﻿using rambap.cplx.Core;
-using rambap.cplx.Export.Iterators;
 
-namespace rambap.cplx.Export;
+namespace rambap.cplx.Export.Tables;
 
-using static rambap.cplx.Export.Generators;
 using Line = List<string>;
-
-public interface ITable
-{
-    public IEnumerable<IColumn> IColumns { get; }
-
-    Line MakeHeaderLine();
-    IEnumerable<Line> MakeContentLines(Pinstance rootComponent);
-    Line MakeTotalLine(Pinstance rootComponent);
-}
 
 /// <summary>
 /// Definition of a Table to be displayed in a file
 /// Output 2D string array
 /// </summary>
 /// <typeparam name="T">The type of all line of the table. This may be abstract</typeparam>
-public record Table<T> : ITable
+public record TableProducer<T> : ITableProducer
 {
     /// <summary> Iterator that select that lines content </summary>
     public required IIterator<T> Iterator { get; init; }
@@ -44,12 +33,12 @@ public record Table<T> : ITable
         string result = string.Empty;
         bool previousLower = false;
         // <!> Upper and lower case are not complementary, for exemple, '-' is neither upper or lower
-        foreach(var c in camelCaseString)
+        foreach (var c in camelCaseString)
         {
             var currentUpper = char.IsUpper(c);
             if (previousLower && currentUpper)
                 result += " " + c;
-            else 
+            else
                 result += c;
             previousLower = char.IsLower(c);
         }
@@ -67,7 +56,8 @@ public record Table<T> : ITable
 
     public Line MakeHeaderLine()
         => IColumns.Select(col => col.Title).ToList();
-    private Line MakeContentLine(T item) {
+    private Line MakeContentLine(T item)
+    {
         if (RemoveCamelCase)
         {
             return Columns.Select(col =>
@@ -85,11 +75,12 @@ public record Table<T> : ITable
 
     public IEnumerable<Line> MakeContentLines(Pinstance rootComponent)
     {
-        if(ContentTransform is null)
+        if (ContentTransform is null)
         {
             foreach (var c in Iterator.MakeContent(rootComponent))
                 yield return MakeContentLine(c);
-        } else
+        }
+        else
         {
             var content = Iterator.MakeContent(rootComponent);
             content = ContentTransform(content);

@@ -1,6 +1,7 @@
 ﻿using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Office2016.Excel;
 using DocumentFormat.OpenXml.Spreadsheet;
+using rambap.cplx.Export.Tables;
 
 namespace rambap.cplx.Export.Spreadsheet;
 

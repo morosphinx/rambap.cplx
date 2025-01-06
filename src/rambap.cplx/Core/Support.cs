@@ -27,6 +27,9 @@ internal static class Support
     {
         public required string Name { get; init; }
         public required IEnumerable<ComponentDescriptionAttribute> Comments { get; init; }
+
+        // see https://learn.microsoft.com/en-us/dotnet/api/system.reflection.methodbase.isassembly
+        public required bool IsPublicOrAssembly { get; init; }
     }
 
     /// <summary>
@@ -58,6 +61,8 @@ internal static class Support
         where T : class
         => ScanObjectContentFor(obj, onData, AutoContent.ConstructIfNulls, constructor);
 
+    // Accept public/internal felds and properties with a get()
+
     private static void ScanObjectContentFor<T>(
         object obj,
         Action<T, PropertyOrFieldInfo> onData,
@@ -71,11 +76,13 @@ internal static class Support
         // Search type and parent for all properties assignable to T that does not have the CplxIgnore Attribute
         var properties = GetPropertiesRecursive<T>(objectType);
         var validProperties = properties.Where(p =>
+            p.GetMethod != null && 
             p.GetCustomAttribute<CplxIgnoreAttribute>() == null &&
             p.GetCustomAttribute<CompilerGeneratedAttribute>() == null); // Avoid matching backing auto-generated fields
         foreach (var p in validProperties)
         {
-            PropertyOrFieldInfo info = new() { Name = p.Name, Comments = p.GetCustomAttributes<ComponentDescriptionAttribute>() };
+            bool isPublicOrAssembly = p.GetMethod!.IsPublic || p.GetMethod!.IsAssembly;
+            PropertyOrFieldInfo info = new() { Name = p.Name, Comments = p.GetCustomAttributes<ComponentDescriptionAttribute>(), IsPublicOrAssembly = isPublicOrAssembly };
             var val = p.GetValue(obj) as T;
             if (val is null && ConstructNulls)
             {
@@ -92,7 +99,8 @@ internal static class Support
             f.GetCustomAttribute<CompilerGeneratedAttribute>() == null); // Avoid matching backing auto-generated fields
         foreach (var f in validFields)
         {
-            PropertyOrFieldInfo info = new() { Name = f.Name, Comments = f.GetCustomAttributes<ComponentDescriptionAttribute>() };
+            bool isPublicOrAssembly = f.IsPublic || f.IsAssembly;
+            PropertyOrFieldInfo info = new() { Name = f.Name, Comments = f.GetCustomAttributes<ComponentDescriptionAttribute>(), IsPublicOrAssembly = isPublicOrAssembly };
             var val = f.GetValue(obj) as T;
             if (val is null && ConstructNulls)
             {
