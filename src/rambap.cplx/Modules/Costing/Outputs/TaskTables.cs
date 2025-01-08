@@ -52,16 +52,17 @@ namespace rambap.cplx.Modules.Costing.Outputs
                 {
                     PropertyIterator = (i) => i.Tasks()?.RecurentTasks ?? [],
                     GroupPNsAtSameLocation = true,
+                    StackPropertiesSingleChildBranches = true,
                 },
                 Columns = [
-                IDColumns.ComponentNumberPrettyTree(),
-                IDColumns.ComponentID(),
-                IDColumns.PartNumber(),
-                TaskColumns.RecurentTaskName(),
-                TaskColumns.RecurentTaskCategory(),
-                TaskColumns.RecurentTaskUnitDuration(),
-                TaskColumns.TaskCount(),
-                TaskColumns.TaskTotalDuration(includeNonRecurent: false),
+                    IDColumns.ComponentNumberPrettyTree(pc => (pc.Property is InstanceTasks.NamedTask task) ? task.Name : "!"),
+                    IDColumns.ComponentID(),
+                    IDColumns.PartNumber(),
+                    TaskColumns.RecurentTaskName(),
+                    TaskColumns.RecurentTaskCategory(),
+                    TaskColumns.RecurentTaskUnitDuration(),
+                    TaskColumns.TaskCount(),
+                    TaskColumns.TaskTotalDuration(includeNonRecurent: false),
                 ],
             };
     }

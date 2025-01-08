@@ -62,9 +62,10 @@ public static class CostTables
             {
                 PropertyIterator = (i) => i.Cost()?.NativeCosts ?? new(),
                 GroupPNsAtSameLocation = true,
+                StackPropertiesSingleChildBranches = true,
             },
             Columns = [
-                IDColumns.ComponentNumberPrettyTree(),
+                IDColumns.ComponentNumberPrettyTree(pc => (pc.Property is InstanceCost.NativeCostInfo cost) ? cost.name : "!"),
                 CostColumns.LocalSumCost(),
                 IDColumns.ComponentID(),
                 IDColumns.PartNumber(),

@@ -96,22 +96,33 @@ public static class IDColumns
                 CID = Core.CID.RemoveImplicitRoot(CID);
                 return i switch
                 {
-                    IPropertyContent p => CID + "/::" + propname,
+                    IPropertyContent p => CID + "/" + propname,
                     _ => CID
                 };
             });
 
     
-    public static IColumn<IComponentContent> ComponentNumberPrettyTree()
+    public static IColumn<IComponentContent> ComponentNumberPrettyTree(Func<IPropertyContent, string>? propertyNaming = null)
         => new ComponentPrettyTreeColumn()
         {
             Title = "CN",
             GetLocationText = i =>
-                i is IPropertyContent
-                    ? $"/" // This is a property
-                    : i.IsGrouping
+            {
+                var componentOrPartGroupName = i.IsGrouping
                         ? $"{i.ComponentLocalCount}x: {i.Component.Instance.PN}" // Group present the "n x PN"
-                        : $"{i.Component.CN}" // Single components present the CN
+                        : $"{i.Component.CN}";// Single components present the CN
+                if(i is IPropertyContent pc)
+                {
+                    var propName = propertyNaming?.Invoke(pc) ?? "?";
+                    var shouldStillDisplayPN = pc.IsLeafBecause == LeafCause.SingleStackedPropertyChild;
+                    return shouldStillDisplayPN
+                        ? $"{componentOrPartGroupName} / {propName}"
+                        : $"/ {propName}";
+                }
+                else
+                    return componentOrPartGroupName;
+                
+            }
         };
 
     public static DelegateColumn<IComponentContent> ContentLocation()

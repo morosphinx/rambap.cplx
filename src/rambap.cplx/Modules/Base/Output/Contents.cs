@@ -98,6 +98,11 @@ public enum LeafCause
     /// Recursion was here stopped because there is no component or prperty to recurse to
     /// </summary>
     NoChild,
+
+    /// <summary>
+    /// Recursion would have yielded only a signel property child, it was integrated into this
+    /// </summary>
+    SingleStackedPropertyChild
 }
 
 /// <summary>
@@ -152,4 +157,6 @@ public interface IPropertyContent : IComponentContent
     /// Property value. Is owned by the Component
     /// </summary>
     object? Property { get; init; }
+
+    LeafCause IsLeafBecause { get; }
 }

@@ -8,8 +8,8 @@ public class BreakoutBox1 : Part
 
     Fiche4mmNoir J11, J12, J13, J14, J15, J16, J17, J18, J19;
 
-    Gaine10mm Gaine;
-    Cost Fil = 50;
+    BraidedCableSleeve10mm CableSleeve;
+    Cost Wire = 50;
 
     RecurrentTask Assembly = 0.5;
     NonRecurrentTask Achats = (2.0, TaskCategory.Delivery);
@@ -39,7 +39,7 @@ class ASticker : Part
 
 [PN("408-209")]
 [PartDescription("Gaine Tressée 10mm RS PRO, Noir en PET, 5m")]
-class Gaine10mm : Part
+class BraidedCableSleeve10mm : Part
 {
     Link rs = "https://fr.rs-online.com/web/p/gaines-electriques/0408209?gb=s";
 

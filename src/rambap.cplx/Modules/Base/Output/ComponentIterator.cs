@@ -29,6 +29,8 @@ public class ComponentIterator : IIterator<IComponentContent>
     /// </summary>
     public Func<Pinstance, IEnumerable<object>>? PropertyIterator { private get; set; }
 
+    public bool StackPropertiesSingleChildBranches { private get; init; } = true;
+
     /// <summary>
     /// Define when to recurse on components (will return properties items and subcomponents items) and when not to (will only return the component item)
     /// If null, always recurse
@@ -71,13 +73,6 @@ public class ComponentIterator : IIterator<IComponentContent>
                 yield break;
             }
 
-            // If we reached this point, the component is assured to have child content
-            // Wether we output the component itself is configurable :
-            if (WriteBranches)
-            {
-                yield return new BranchComponent(componentsAndLocation);
-            }
-
             // prepare subcomponents contents. Group them by same PartType & PN if configured :
             var subcomponents = mainComponent.Instance.Components;
             var subcomponentContents = GroupPNsAtSameLocation switch
@@ -85,6 +80,25 @@ public class ComponentIterator : IIterator<IComponentContent>
                 false => subcomponents.Select<Component, IEnumerable<Component>>(c => [c]),
                 true => subcomponents.GroupBy(c => (c.Instance.PartType, c.Instance.PN)).Select(g => g.Select(c => c)),
             };
+
+            // If there is only a single property child content, return a Leaf with it instead of a Branch+Leaf
+            // This behavior is toggleable. It makes  prettiers trees
+            var onlyHasASingleProperty = subcomponentContents.Count() == 0 && WriteProperties && PropertyIterator!(mainComponent.Instance).Count() == 1;
+            if(onlyHasASingleProperty && StackPropertiesSingleChildBranches)
+            {
+                var property = PropertyIterator!(mainComponent.Instance).Single();
+                var propLocation = location; // Same location, we replace the branch
+                yield return new LeafComponentWithProperty(componentsAndLocation) { Property = property, IsLeafBecause = LeafCause.SingleStackedPropertyChild };
+                yield break;
+            }
+
+            // If we reached this point, the component is assured to have child content
+            // Wether we output the component itself is configurable :
+            if (WriteBranches)
+            {
+                yield return new BranchComponent(componentsAndLocation);
+            }
+
             // Counter of subcontents, to etablish location information
             var currentSubitemIndex = 0;
             var subItemTotalCount = subcomponentContents.Count();
