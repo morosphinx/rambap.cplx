@@ -15,11 +15,23 @@ public record RecursionLocation()
     public required int LocalItemCount { get; init; }
 }
 
+public interface IComponentContent
+{
+    RecursionLocation Location { get; }
+    Component Component { get; }
+
+    bool IsGrouping { get; }
+    int ComponentLocalCount { get; }
+    int ComponentTotalCount { get; }
+
+    IEnumerable<(RecursionLocation location, Component component)> AllComponents();
+}
+
 
 /// <summary>
 /// Content of a Iterated table representing a component or group of component
 /// </summary>
-public abstract record ComponentContent
+public abstract record ComponentContent : IComponentContent
 {
     public RecursionLocation Location { get; init; }
     public Component Component { get; }
@@ -105,7 +117,7 @@ public record LeafComponent : ComponentContent
 }
 
 /// <summary>
-/// A content of a component Tree representing a component. Has descendants, either <see cref="LeafComponent"/> or <see cref="LeafProperty"/>
+/// A content of a component Tree representing a component. Has descendants, either <see cref="LeafComponent"/> or <see cref="IPropertyContent"/>
 /// </summary>
 public record BranchComponent : ComponentContent
 {
@@ -118,21 +130,26 @@ public record BranchComponent : ComponentContent
     { }
 }
 
-/// <summary>
-/// A content of a component Tree representing a property of a component.
-/// </summary>
-public record LeafProperty : ComponentContent
+public record LeafComponentWithProperty : LeafComponent, IPropertyContent
 {
-    public LeafProperty(RecursionLocation loc, Component comp)
+    public LeafComponentWithProperty(RecursionLocation loc, Component comp)
         : base(loc, comp)
     { }
 
-    public LeafProperty(IEnumerable<(RecursionLocation loc, Component comp)> allComponents)
+    public LeafComponentWithProperty(IEnumerable<(RecursionLocation loc, Component comp)> allComponents)
         : base(allComponents)
     { }
 
+    public required object? Property { get; init; } = null;
+}
+
+/// <summary>
+/// A content of a component Tree representing a property of a component.
+/// </summary>
+public interface IPropertyContent : IComponentContent
+{
     /// <summary>
     /// Property value. Is owned by the Component
     /// </summary>
-    public required object? Property { get; init; } = null;
+    object? Property { get; init; }
 }

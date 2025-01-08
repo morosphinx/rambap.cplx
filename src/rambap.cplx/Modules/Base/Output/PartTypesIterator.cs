@@ -8,7 +8,7 @@ namespace rambap.cplx.Modules.Base.Output;
 /// Produce an IEnumerable iterating over parts used as subcomponents of an instance, and properties of those parts. <br/>
 /// Output is structured like a list of <see cref="PartContent"/>.
 /// </summary>
-public class PartTypesIterator : IIterator<ComponentContent>
+public class PartTypesIterator : IIterator<IComponentContent>
 {
 
     public bool WriteBranches { get; init; } = true;
@@ -31,10 +31,10 @@ public class PartTypesIterator : IIterator<ComponentContent>
     /// to have the same template part <br/>
     /// We test the the Type of <see cref="ComponentContent"/> to avoid mixing leaf and branch contents.
     /// </summary>
-    static (Type, string, Type) ComponentTemplateUnicityIdentifier(ComponentContent c)
+    static (Type, string, Type) ComponentTemplateUnicityIdentifier(IComponentContent c)
         => (c.Component.Instance.PartType, c.Component.Instance.PN, c.GetType());
 
-    public IEnumerable<ComponentContent> MakeContent(Pinstance instance)
+    public IEnumerable<IComponentContent> MakeContent(Pinstance instance)
     {
         // Produce a tree table of All Components, stopping on recursing condition.
         var ComponentTable = new ComponentIterator()
@@ -57,9 +57,14 @@ public class PartTypesIterator : IIterator<ComponentContent>
             var primaryItem = group.First();
             // Recursion on the ComponentTree may depend on part location.
             // So we may have a mix of BranchContent and LeafContent here
-            var shouldShowThisGroupContent = itemList.OfType<BranchComponent>().Any()
-                || itemList.OfType<LeafComponent>().Where(c => c.IsLeafBecause == LeafCause.NoChild).Any();
-            if (shouldShowThisGroupContent)
+            var shouldHideThisGroupContent = itemList.All(c => (c as LeafComponent)?.IsLeafBecause == LeafCause.RecursionBreak) ;
+            if (shouldHideThisGroupContent)
+            {
+                // Group is solely made of LeafComponent that blocked recursion
+                // => We did not want to see what's inside
+                yield return new LeafComponent(componentGroup) { IsLeafBecause = LeafCause.RecursionBreak };
+            }
+            else
             {
                 // Group has some items that we want to enumerate into
                 if (WriteBranches)
@@ -68,14 +73,8 @@ public class PartTypesIterator : IIterator<ComponentContent>
                 {
                     var properties = PropertyIterator!.Invoke(primaryItem.Component.Instance);
                     foreach (var prop in properties)
-                        yield return new LeafProperty(componentGroup) { Property = prop };
+                        yield return new LeafComponentWithProperty(componentGroup) { Property = prop, IsLeafBecause = LeafCause.NoChild };
                 }
-            }
-            else
-            {
-                // Group is solely made of LeafPartContant that blocked recursion
-                // => We did not want to see what's inside
-                yield return new LeafComponent(componentGroup) { IsLeafBecause = LeafCause.RecursionBreak };
             }
         }
     }

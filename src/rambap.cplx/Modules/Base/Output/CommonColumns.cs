@@ -5,40 +5,40 @@ namespace rambap.cplx.Modules.Base.Output;
 
 public static class CommonColumns
 {
-    public static IColumn<ComponentContent> EmptyColumn(string title = "")
-        => new DelegateColumn<ComponentContent>(title, ColumnTypeHint.String,
+    public static IColumn<IComponentContent> EmptyColumn(string title = "")
+        => new DelegateColumn<IComponentContent>(title, ColumnTypeHint.String,
             i => "");
 
-    public static IColumn<ComponentContent> LineNumber()
-        => new LineNumberColumn<ComponentContent>();
+    public static IColumn<IComponentContent> LineNumber()
+        => new LineNumberColumn<IComponentContent>();
 
-    public static IColumn<ComponentContent> LineTypeNumber()
-        => new LineNumberColumnWithContinuation<ComponentContent>()
+    public static IColumn<IComponentContent> LineTypeNumber()
+        => new LineNumberColumnWithContinuation<IComponentContent>()
             { ContinuationCondition = (i, j) => i == null || i.Component != j.Component };
 
-    public static DelegateColumn<ComponentContent> ComponentDepth()
-        => new DelegateColumn<ComponentContent>("Depth", ColumnTypeHint.Numeric,
+    public static DelegateColumn<IComponentContent> ComponentDepth()
+        => new DelegateColumn<IComponentContent>("Depth", ColumnTypeHint.Numeric,
             i => i.Location.Depth.ToString());
 
-    public static DelegateColumn<ComponentContent> ComponentTotalCount(bool includeBranches = false)
-        => new DelegateColumn<ComponentContent>("Count", ColumnTypeHint.Numeric,
+    public static DelegateColumn<IComponentContent> ComponentTotalCount(bool includeBranches = false)
+        => new DelegateColumn<IComponentContent>("Count", ColumnTypeHint.Numeric,
             i => i switch
             {
                 BranchComponent bc when !includeBranches => "",
                 _ => i.ComponentTotalCount.ToString(),
             });
 
-    public static DelegateColumn<ComponentContent> ComponentComment() =>
-        new DelegateColumn<ComponentContent>("Component description", ColumnTypeHint.String,
+    public static DelegateColumn<IComponentContent> ComponentComment() =>
+        new DelegateColumn<IComponentContent>("Component description", ColumnTypeHint.String,
             i => i.Component.Comment);
 
-    public class ComponentPrettyTreeColumn : IColumn<ComponentContent>
+    public class ComponentPrettyTreeColumn : IColumn<IComponentContent>
     {
         public required string Title { get; init; }
         public ColumnTypeHint TypeHint => ColumnTypeHint.String;
 
         private List<bool> LevelDone { get; } = [];
-        public string CellFor(ComponentContent item)
+        public string CellFor(IComponentContent item)
         {
             while (LevelDone.Count <= item.Location.Depth) LevelDone.Add(false);
             LevelDone[item.Location.Depth] = false;
@@ -64,7 +64,7 @@ public static class CommonColumns
         public void Reset() => LevelDone.Clear();
         public string TotalFor(Pinstance root) => "";
 
-        public required Func<ComponentContent, string> GetLocationText { get; init; }
+        public required Func<IComponentContent, string> GetLocationText { get; init; }
     }
 }
 

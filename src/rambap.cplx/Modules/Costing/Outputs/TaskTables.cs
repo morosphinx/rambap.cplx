@@ -9,7 +9,7 @@ namespace rambap.cplx.Modules.Costing.Outputs
         /// <summary>
         /// Table listing the amount and duration of all tasks kind in the instance
         /// </summary>
-        public static TableProducer<ComponentContent> BillOfTasks()
+        public static TableProducer<IComponentContent> BillOfTasks()
         => new()
         {
             Iterator = new PartTypesIterator()
@@ -45,7 +45,7 @@ namespace rambap.cplx.Modules.Costing.Outputs
         /// Table detailing the amount and duration of each individual Recurent Task. <br/>
         /// This does NOT list NonRecurent Task, due to NonRecurent Task begin an intensive property.
         /// </summary>
-        public static TableProducer<ComponentContent> RecurentTaskBreakdown()
+        public static TableProducer<IComponentContent> RecurentTaskBreakdown()
             => new()
             {
                 Iterator = new ComponentIterator()

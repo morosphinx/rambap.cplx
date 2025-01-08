@@ -79,10 +79,10 @@ internal static class ColumnTester
 
     public static void TestDecimalColumn_SumCoherence(
         Pinstance pinstance,
-        IIterator<ComponentContent> iterator,
+        IIterator<IComponentContent> iterator,
         decimal expectedTotal,
-        IColumn<ComponentContent> testedColumn,
-        IEnumerable<IColumn<ComponentContent>> debugDataColumns)
+        IColumn<IComponentContent> testedColumn,
+        IEnumerable<IColumn<IComponentContent>> debugDataColumns)
     {
         var res = iterator.MakeContent(pinstance);
         var values = res.Select(testedColumn.CellFor);
@@ -91,7 +91,7 @@ internal static class ColumnTester
         // Write table in console for debug
         var debugTable = new TextTableFile(pinstance)
         {
-            Table = new TableProducer<ComponentContent>()
+            Table = new TableProducer<IComponentContent>()
             {
                 Columns =
                 [
@@ -116,13 +116,13 @@ internal static class ColumnTester
     public static void TestDecimalColumn_SelfTotal(
         Pinstance pinstance,
         decimal expectedTotal,
-        IColumn<ComponentContent> testedColumn)
+        IColumn<IComponentContent> testedColumn)
     {
         var columnTotal = Convert.ToDecimal(testedColumn.TotalFor(pinstance));
         Assert.AreEqual(expectedTotal, columnTotal, $"Incoherent column autocalculated sum");
     }
 
-    public static void SetPropertyIterator(IIterator<ComponentContent> iterator,
+    public static void SetPropertyIterator(IIterator<IComponentContent> iterator,
         Func<Pinstance, IEnumerable<object>>? propertyIterator)
     {
         switch(iterator)

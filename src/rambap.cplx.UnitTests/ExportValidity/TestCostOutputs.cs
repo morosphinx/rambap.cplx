@@ -8,7 +8,7 @@ namespace rambap.cplx.UnitTests.ExportValidity;
 [TestClass]
 public class TestCostOutputs
 {
-    private void TestTotalCost_SumCoherence(IIterator<ComponentContent> iterator)
+    private void TestTotalCost_SumCoherence(IIterator<IComponentContent> iterator)
     {
         SetPropertyIterator(iterator, i => i.Cost()?.NativeCosts ?? []);
         var part = new DecimalPropertyPartExemple<Cost>.Part_A();

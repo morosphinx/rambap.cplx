@@ -9,7 +9,7 @@ namespace rambap.cplx.UnitTests.ExportValidity;
 [TestClass]
 public class TestTaskOutputs
 {
-    private void TestRecurentTask_SumCoherence(IIterator<ComponentContent> iterator)
+    private void TestRecurentTask_SumCoherence(IIterator<IComponentContent> iterator)
     {
         SetPropertyIterator(iterator, i => i.Tasks()?.RecurentTasks ?? []);
         var part = new DecimalPropertyPartExemple<RecurrentTask>.Part_A();

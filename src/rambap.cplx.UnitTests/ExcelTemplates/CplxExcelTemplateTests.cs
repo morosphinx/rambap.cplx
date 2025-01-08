@@ -99,7 +99,7 @@ public class CplxExcelTemplateTests
         {
             ContentTransform = l => l.Where(c => c switch
             {
-                LeafProperty p when p.Property is InstanceTasks.NamedTask t => IsDevTask(t),
+                IPropertyContent p when p.Property is InstanceTasks.NamedTask t => IsDevTask(t),
                 _ => true,
             })
         };
@@ -107,7 +107,7 @@ public class CplxExcelTemplateTests
         {
             ContentTransform = l => l.Where(c => c switch
             {
-                LeafProperty p when p.Property is InstanceTasks.NamedTask t => !IsDevTask(t),
+                IPropertyContent p when p.Property is InstanceTasks.NamedTask t => !IsDevTask(t),
                 _ => true,
             })
         };

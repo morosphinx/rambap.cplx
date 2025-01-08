@@ -21,8 +21,8 @@ internal class ConnectivityTables
                 ]
         };
 
-    public static TableProducer<ComponentContent> InterfaceControlDocumentTable()
-        => new TableProducer<ComponentContent>()
+    public static TableProducer<IComponentContent> InterfaceControlDocumentTable()
+        => new TableProducer<IComponentContent>()
         {
             Iterator = new ICDTableIterator(),
             Columns = [
