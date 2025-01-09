@@ -36,7 +36,7 @@ public static class FileGroups
                     }
                 }),
                 ($"RecurentTasks_{filenamePattern}.csv", new TextTableFile(i) {
-                    Table = TaskTables.RecurentTaskBreakdown(),
+                    Table = TaskTables.TaskBreakdown(),
                     Formater = new MarkdownTableFormater(){
                         WriteTotalLine = true,
                         TotalLineOnTop = true,

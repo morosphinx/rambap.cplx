@@ -20,8 +20,8 @@ public class TestTaskOutputs
             DecimalPropertyPartExemple.ExpectedTotal_ExtensiveT,
             TaskColumns.TaskTotalDuration(false),
             [
-                TaskColumns.RecurentTaskName(),
-                TaskColumns.RecurentTaskCategory(),
+                TaskColumns.TaskName(),
+                TaskColumns.TaskCategory(),
             ]);
     }
 
