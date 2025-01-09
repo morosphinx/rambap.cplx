@@ -9,7 +9,7 @@ namespace rambap.cplx.Modules.Costing.Outputs
         /// <summary>
         /// Table listing the amount and duration of all tasks kind in the instance
         /// </summary>
-        public static TableProducer<ComponentContent> BillOfTasks()
+        public static TableProducer<IComponentContent> BillOfTasks()
         => new()
         {
             Iterator = new PartTypesIterator()
@@ -43,25 +43,27 @@ namespace rambap.cplx.Modules.Costing.Outputs
 
         /// <summary>
         /// Table detailing the amount and duration of each individual Recurent Task. <br/>
-        /// This does NOT list NonRecurent Task, due to NonRecurent Task begin an intensive property.
         /// </summary>
-        public static TableProducer<ComponentContent> RecurentTaskBreakdown()
+        public static TableProducer<IComponentContent> TaskBreakdown()
             => new()
             {
                 Iterator = new ComponentIterator()
                 {
-                    PropertyIterator = (i) => i.Tasks()?.RecurentTasks ?? [],
+                    PropertyIterator = (i) => i.Tasks()!= null ? [.. i.Tasks()!.RecurentTasks,.. i.Tasks()!.NonRecurentTasks] : [],
                     GroupPNsAtSameLocation = true,
+                    StackPropertiesSingleChildBranches = true,
                 },
                 Columns = [
-                IDColumns.ComponentNumberPrettyTree(),
-                IDColumns.ComponentID(),
-                IDColumns.PartNumber(),
-                TaskColumns.RecurentTaskName(),
-                TaskColumns.RecurentTaskCategory(),
-                TaskColumns.RecurentTaskUnitDuration(),
-                TaskColumns.TaskCount(),
-                TaskColumns.TaskTotalDuration(includeNonRecurent: false),
+                    IDColumns.ComponentNumberPrettyTree(pc => (pc.Property is InstanceTasks.NamedTask task) ? task.Name : "!"),
+                    TaskColumns.LocalRecurentSum(),
+                    TaskColumns.LocalNonRecurentTotal(),
+                    IDColumns.ComponentID(),
+                    IDColumns.PartNumber(),
+                    TaskColumns.TaskName(),
+                    TaskColumns.TaskCategory(),
+                    TaskColumns.TaskRecurence(),
+                    TaskColumns.TaskDuration(),
+                    TaskColumns.TaskCount(),
                 ],
             };
     }

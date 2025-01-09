@@ -15,7 +15,7 @@ public class InstanceTasks : IInstanceConceptProperty
 
     public decimal NativeNonRecurentTaskDuration => nonRecurentTasks.Select(t => t.Duration_day).Sum();
 
-    public static decimal GetInheritedRecurentCosts(Pinstance instance)
+    public static decimal GetTotalNonRecurentTaskDurations(Pinstance instance)
     {
         decimal total = 0;
         var tree = new PartTypesIterator();

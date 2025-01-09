@@ -7,11 +7,11 @@ public static class CostColumns
 {
     private static string CostToString(this decimal cost) => cost.ToString("0.00");
 
-    public static DelegateColumn<ComponentContent> TotalCost() =>
-        new DelegateColumn<ComponentContent>("Total Cost", ColumnTypeHint.Numeric,
+    public static DelegateColumn<IComponentContent> TotalCost() =>
+        new DelegateColumn<IComponentContent>("Total Cost", ColumnTypeHint.Numeric,
             i => i switch
             {
-                LeafProperty {Property : InstanceCost.NativeCostInfo prop } lp => (prop.value.Price * lp.ComponentTotalCount).CostToString(),
+                IPropertyContent {Property : InstanceCost.NativeCostInfo prop } lp => (prop.value.Price * lp.ComponentTotalCount).CostToString(),
                 LeafComponent lc => i.AllComponents().Select(c => c.component.Instance.Cost()?.Total ?? 0).Sum().CostToString(),
                 BranchComponent bc => "", // Do not display branch costs : subcosts are displayed in properties or component leafs
                                           // And we want to keep the column total cost (when summing the cells themselves) correct
@@ -19,22 +19,22 @@ public static class CostColumns
             },
             i => i.Cost()?.Total.ToString("0.00"));
 
-    public static DelegateColumn<ComponentContent> CostName(bool include_branches = false)
-        => new DelegateColumn<ComponentContent>("Cost Name", ColumnTypeHint.String,
+    public static DelegateColumn<IComponentContent> CostName(bool include_branches = false)
+        => new DelegateColumn<IComponentContent>("Cost Name", ColumnTypeHint.String,
             i => i switch
             {
-                LeafProperty {Property : InstanceCost.NativeCostInfo prop} lp => prop.name,
+                IPropertyContent {Property : InstanceCost.NativeCostInfo prop} lp => prop.name,
                 LeafComponent lc => "unit",
                 BranchComponent bc when include_branches => "total per unit",
                 BranchComponent bc when !include_branches => "",
                 _ => throw new NotImplementedException(),
             });
 
-    public static DelegateColumn<ComponentContent> UnitCost(bool include_branches = false)
-        => new DelegateColumn<ComponentContent>("Unit Cost", ColumnTypeHint.Numeric,
+    public static DelegateColumn<IComponentContent> UnitCost(bool include_branches = false)
+        => new DelegateColumn<IComponentContent>("Unit Cost", ColumnTypeHint.Numeric,
             i => i switch
             {
-                LeafProperty { Property: InstanceCost.NativeCostInfo prop } lp => prop.value.Price.CostToString(),
+                IPropertyContent { Property: InstanceCost.NativeCostInfo prop } lp => prop.value.Price.CostToString(),
                 LeafComponent lc =>
                     lc.AllComponentsMatch(c => c.Instance.Cost()?.Total, out var value)
                         ? (value?.CostToString() ?? "")
@@ -47,13 +47,13 @@ public static class CostColumns
                 _ => throw new NotImplementedException(),
             });
 
-    public static IColumn<ComponentContent> LocalSumCost()
+    public static IColumn<IComponentContent> LocalSumCost()
         => new CommonColumns.ComponentPrettyTreeColumn()
         {
             Title = "SumCost",
             GetLocationText = i => i switch
             {
-                LeafProperty { Property: InstanceCost.NativeCostInfo cost } =>
+                IPropertyContent { Property: InstanceCost.NativeCostInfo cost } =>
                         cost.value.Price.CostToString(), // Do not display multiplicity for properties : this is a local cost representation
                 (LeafComponent or BranchComponent) when i.Component.Instance.Cost() is not null =>
                     i.IsGrouping

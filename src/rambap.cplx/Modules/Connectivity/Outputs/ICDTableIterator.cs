@@ -6,14 +6,14 @@ using System.Security.Cryptography.X509Certificates;
 
 namespace rambap.cplx.Modules.Connectivity.Outputs;
 
-public class ICDTableIterator : IIterator<ComponentContent>
+public class ICDTableIterator : IIterator<IComponentContent>
 {
     public class ICDTableContentProperty
     {
         public required SignalPort Port { get; init; }
     }
 
-    public IEnumerable<ComponentContent> MakeContent(Pinstance instance)
+    public IEnumerable<IComponentContent> MakeContent(Pinstance instance)
     {
         IEnumerable<object> SelectPublicConnectors(Pinstance instance)
         {
@@ -39,14 +39,14 @@ public class ICDTableIterator : IIterator<ComponentContent>
         var contents = componentIterator.MakeContent(instance);
         var connectorContents = contents.Where(c => c is not LeafComponent);
 
-        var topMostConnectors = connectorContents.OfType<LeafProperty>().Select(c => (c.Property as ICDTableContentProperty)!.Port.TopMostUser()).ToList();
+        var topMostConnectors = connectorContents.OfType<IPropertyContent>().Select(c => (c.Property as ICDTableContentProperty)!.Port.TopMostUser()).ToList();
         bool IsSubOfTopMostConnectors(SignalPort port)
         {
             bool isATopMostConnector = topMostConnectors.Contains(port);
             bool isSubOfATopMost = topMostConnectors.Contains(port.TopMostUser());
             return !isATopMostConnector && isSubOfATopMost;
         }
-        var topmostConnectorContents = contents.OfType<LeafProperty>().Where(c =>
+        var topmostConnectorContents = contents.OfType<IPropertyContent>().Where(c =>
             ! IsSubOfTopMostConnectors((c.Property as ICDTableContentProperty)!.Port));
 
         var topmostConnectorsR = ComponentIterator.SubIterateProperties<ICDTableContentProperty>(topmostConnectorContents,
@@ -58,12 +58,12 @@ public class ICDTableIterator : IIterator<ComponentContent>
         }
     }
 
-    public IEnumerable<ComponentContent> ExplicitConnectors(IEnumerable<ComponentContent> contents)
+    public IEnumerable<IComponentContent> ExplicitConnectors(IEnumerable<ComponentContent> contents)
     {
         return ComponentIterator.SubIterate(contents,
             c => c switch
             {
-                LeafProperty { Property : ICDTableContentProperty prop} lp => [], 
+                IPropertyContent { Property : ICDTableContentProperty prop} lp => [], 
                 LeafComponent lc => [c],
                 BranchComponent bc => [c],
                 _ => throw new NotImplementedException(),

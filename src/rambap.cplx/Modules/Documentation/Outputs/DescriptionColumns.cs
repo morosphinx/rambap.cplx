@@ -13,13 +13,13 @@ public static class DescriptionColumns
         return string.Join(" ", descriptions);
     }
 
-    public static DelegateColumn<ComponentContent> GroupDescription() =>
-        new DelegateColumn<ComponentContent>("Description", ColumnTypeHint.String,
+    public static DelegateColumn<IComponentContent> GroupDescription() =>
+        new DelegateColumn<IComponentContent>("Description", ColumnTypeHint.String,
             i => GetDescription(i.Component.Instance)
             );
 
-    public static DelegateColumn<ComponentContent> PartDescription() =>
-        new DelegateColumn<ComponentContent>("Part description", ColumnTypeHint.String,
+    public static DelegateColumn<IComponentContent> PartDescription() =>
+        new DelegateColumn<IComponentContent>("Part description", ColumnTypeHint.String,
             i => GetDescription(i.Component.Instance));
 }
 

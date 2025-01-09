@@ -22,9 +22,9 @@ public class ExcelGenerators
                 { 
                     Table = TaskTables.BillOfTasks()
                 }),
-                ($"RecurentTasks_{filenamePattern}.xlsx", new ExcelTableFile_CreatedNew(i)
+                ($"Tasks_{filenamePattern}.xlsx", new ExcelTableFile_CreatedNew(i)
                 {
-                    Table = TaskTables.RecurentTaskBreakdown()
+                    Table = TaskTables.TaskBreakdown()
                 }),
                 ];
     }

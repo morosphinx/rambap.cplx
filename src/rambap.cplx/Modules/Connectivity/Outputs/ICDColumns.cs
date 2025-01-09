@@ -6,47 +6,47 @@ namespace rambap.cplx.Modules.Connectivity.Outputs;
 
 public static class ICDColumns
 {
-    public static DelegateColumn<ComponentContent> TopMostPortName()
-        => new DelegateColumn<ComponentContent>(
+    public static DelegateColumn<IComponentContent> TopMostPortName()
+        => new DelegateColumn<IComponentContent>(
             "TopMostPort",
             ColumnTypeHint.String,
             i => i switch
             {
                 BranchComponent b => b.Component.CN,
-                LeafProperty { Property : ICDTableContentProperty prop} p => prop.Port.TopMostUser().Name,
+                IPropertyContent { Property : ICDTableContentProperty prop} p => prop.Port.TopMostUser().Name,
                 _ => throw new NotImplementedException(),
             });
 
-    public static DelegateColumn<ComponentContent> MostRelevantPortName()
-    => new DelegateColumn<ComponentContent>(
+    public static DelegateColumn<IComponentContent> MostRelevantPortName()
+    => new DelegateColumn<IComponentContent>(
         "PortEXP",
         ColumnTypeHint.String,
         i => i switch
         {
             BranchComponent b => b.Component.CN,
-            LeafProperty { Property: ICDTableContentProperty prop } p => prop.Port.TopMostRelevant().Name,
+            IPropertyContent { Property: ICDTableContentProperty prop } p => prop.Port.TopMostRelevant().Name,
             _ => throw new NotImplementedException(),
         });
 
-    public static DelegateColumn<ComponentContent> MostRelevantPortName_Regard()
-    => new DelegateColumn<ComponentContent>(
+    public static DelegateColumn<IComponentContent> MostRelevantPortName_Regard()
+    => new DelegateColumn<IComponentContent>(
         "ColEXP",
         ColumnTypeHint.String,
         i => i switch
         {
             BranchComponent b => b.Component.CN,
-            LeafProperty { Property: ICDTableContentProperty prop } p => prop.Port.GetExpositionColumnName(),
+            IPropertyContent { Property: ICDTableContentProperty prop } p => prop.Port.GetExpositionColumnName(),
             _ => throw new NotImplementedException(),
         });
 
-    public static DelegateColumn<ComponentContent> SelfPortName()
-        => new DelegateColumn<ComponentContent>(
+    public static DelegateColumn<IComponentContent> SelfPortName()
+        => new DelegateColumn<IComponentContent>(
             "PortSelf",
             ColumnTypeHint.String,
             i => i switch
             {
                 BranchComponent b => b.Component.CN,
-                LeafProperty { Property: ICDTableContentProperty prop } p => prop.Port.Name,
+                IPropertyContent { Property: ICDTableContentProperty prop } p => prop.Port.Name,
                 _ => throw new NotImplementedException(),
             });
 }
