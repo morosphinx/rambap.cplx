@@ -16,6 +16,12 @@ internal static class ConnectivityColumns
     //        );
     //}
 
+    public enum ConnectorIdentity
+    {
+        Immediate,
+        Topmost
+    }
+
     public static DelegateColumn<ConnectivityTableContent> ConnectorName(ConnectorSide side)
         => new DelegateColumn<ConnectivityTableContent>(
             "Connector",
@@ -24,7 +30,7 @@ internal static class ConnectivityColumns
 
     public static DelegateColumn<ConnectivityTableContent> ConnectorFullName(ConnectorSide side)
         => new DelegateColumn<ConnectivityTableContent>(
-            "ConnectorFullName",
+            "Connector",
             ColumnTypeHint.String,
             i => i.GetImmediateConnector(side).FullDefinitionName());
 
@@ -34,11 +40,29 @@ internal static class ConnectivityColumns
             ColumnTypeHint.String,
             i => i.GetTopMostConnector(side).Name);
 
-    public static DelegateColumn<ConnectivityTableContent> Dashes()
+    public static DelegateColumn<ConnectivityTableContent> ConnectorPartPN(ConnectorSide side)
         => new DelegateColumn<ConnectivityTableContent>(
-            "-- Connect to --",
+            "Part",
             ColumnTypeHint.String,
-            i => "----------------");
+            i => i.GetTopMostConnector(side).Owner!.ImplementingInstance.PN);
+
+    public static DelegateColumn<ConnectivityTableContent> ConnectorPartCN(ConnectorSide side)
+        => new DelegateColumn<ConnectivityTableContent>(
+            "CN",
+            ColumnTypeHint.String,
+            i => i.GetTopMostConnector(side).Owner!.ImplementingInstance.CN);
+
+    public static DelegateColumn<ConnectivityTableContent> ConnectorPartCID(ConnectorSide side)
+        => new DelegateColumn<ConnectivityTableContent>(
+            "CID",
+            ColumnTypeHint.String,
+            i => i.GetTopMostConnector(side).Owner!.ImplementingInstance.CID());
+
+    public static DelegateColumn<ConnectivityTableContent> Dashes(string title = "-- Connect to --")
+        => new DelegateColumn<ConnectivityTableContent>(
+            title,
+            ColumnTypeHint.String,
+            i => new string('-',title.Length));
 
     public static DelegateColumn<ConnectivityTableContent> ConnectionKind()
         => new DelegateColumn<ConnectivityTableContent>(

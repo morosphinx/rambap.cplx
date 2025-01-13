@@ -45,7 +45,7 @@ internal class ConnectionConcept : IConcept<InstanceConnectivity>
             var connectionBuilder = new ConnectionBuilder(instance, template);
             // User defined connection and exposition are created from here
             a.Assembly_Connections(connectionBuilder);
-            foreach(var c in selfConnectors)
+            foreach (var c in selfConnectors)
             {
                 if (!c.HasbeenDefined)
                     c.DefineAsHadHoc();
@@ -85,7 +85,7 @@ internal class ConnectionConcept : IConcept<InstanceConnectivity>
                 Wirings = selfDefinedWirings.ToList(),
             };
         }
-        else
+        else if (selfConnectors.Any())
         {
             // Force definition on every connector, even if the part is not an IPartConnectable
             foreach (var c in selfConnectors)
@@ -93,7 +93,13 @@ internal class ConnectionConcept : IConcept<InstanceConnectivity>
                 if (!c.HasbeenDefined)
                     c.DefineAsHadHoc();
             }
-            return null;
-        };
+            return new InstanceConnectivity()
+            {
+                Connectors = selfConnectors,
+                Connections = [],
+                Wirings = [],
+            };
+        }
+        else return null;
     }
 }

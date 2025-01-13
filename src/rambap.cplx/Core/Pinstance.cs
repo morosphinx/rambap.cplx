@@ -9,6 +9,11 @@ namespace rambap.cplx.Core;
 /// </summary>
 public class Component
 {
+    internal Component(Pinstance parent)
+    {
+        Parent = parent;
+    }
+
     /// <summary>
     /// Definition if this component 
     /// </summary>
@@ -16,7 +21,17 @@ public class Component
     /// as unique instances of the Part class, even when reused identicaly in diferent contexts.
     /// This is wastefull, and could one day be optimised to allow components to share Pinstance class instances.
     /// Therefore a Component IS NOT a Pinstance itself, but point to one.
-    public required Pinstance Instance { get; init; }
+    public required Pinstance Instance
+    {
+        get => instance!;
+        set
+        {
+            value.Parent = this;
+            instance = value;
+        }
+    }
+    Pinstance? instance;
+    internal Pinstance? Parent;
 
     /// <summary>
     /// Component Number : Identifier of this component in its owner
@@ -82,6 +97,22 @@ public class Pinstance
     public Pinstance(Part template) : this(template, new PartConfiguration()) { }
 
 
+    /// <summary>
+    /// Parent Pinstance, where this instane is a component
+    /// </summary>
+    /// TODO : Using this imply Pinstance instance are unique, and cannot be reused
+    internal Component? Parent { get; set; }
+    internal string CN => Parent?.CN ?? "*";
+    internal string CID()
+    {
+        if (Parent == null)
+            return CN;
+        if (Parent!.Parent == null)
+            return Parent.CN;
+        else
+            return Parent!.Parent.CID() + Core.CID.Separator + CN;
+    }
+
     private static string MakeCommment(IEnumerable<ComponentDescriptionAttribute> commentAttributes)
         => string.Join("", commentAttributes.Select(c => c.Text));
 
@@ -92,6 +123,7 @@ public class Pinstance
     {
         PartType = template.GetType();
         template.CplxImplicitInitialization(); // is implicitly initialized
+        template.ImplementingInstance = this; // Temporary, some concepts need to know instance from the part
 
         // Select part PN
         var PNAttribute = template.GetType().GetCustomAttribute(typeof(PNAttribute)) as PNAttribute;
@@ -137,7 +169,7 @@ public class Pinstance
         // Create components from Parts properties/fields
         ScanObjectContentFor<Part>(template,
             (p, i) => components.Add(
-                new Component()
+                new Component(this)
                 {
                     Instance = new Pinstance(p, conf),
                     CN = p.CNOverride ?? i.Name,
@@ -152,7 +184,7 @@ public class Pinstance
             string cn_prefix = info.Name;
             int i = 1;
             return parts.Select(
-                p => new Component()
+                p => new Component(this)
                 {
                     Instance = new Pinstance(p, conf),
                     CN = p.CNOverride ?? $"{cn_prefix}_{i++:00}",
@@ -173,7 +205,7 @@ public class Pinstance
             {
                 var selectedPart = conf.Decide(a)!;
                 components.Add(
-                    new Component()
+                    new Component(this)
                     {
                         Instance = new Pinstance(selectedPart, conf),
                         CN = selectedPart.CNOverride ?? i.Name,
@@ -192,7 +224,7 @@ public class Pinstance
                 a =>
                 {
                     var selectedPart = conf.Decide(a)!;
-                    return new Component()
+                    return new Component(this)
                     {
                         Instance = new Pinstance(selectedPart, conf),
                         CN = selectedPart.CNOverride ?? $"{cn_prefix}_{i++:00}",

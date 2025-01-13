@@ -135,7 +135,7 @@ public class ComponentIterator : IIterator<IComponentContent>
             }
         }
         // Create a dummy component to start recuring
-        Component rootComponent = new()
+        Component rootComponent = new(null)
         {
             CN = $"*",
             Instance = instance,

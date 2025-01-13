@@ -12,12 +12,18 @@ internal class ConnectivityTables
         {
             Iterator = new ConnectivityTableIterator(),
             Columns = [
+                    ConnectorPartCID(ConnectorSide.Left),
+                    ConnectorPartCN(ConnectorSide.Left),
+                    ConnectorPartPN(ConnectorSide.Left),
                     ConnectorFullName(ConnectorSide.Left),
                     ConnectorName(ConnectorSide.Left),
                     Dashes(),
                     ConnectionKind(),
                     ConnectorName(ConnectorSide.Rigth),
                     ConnectorFullName(ConnectorSide.Rigth),
+                    ConnectorPartPN(ConnectorSide.Rigth),
+                    ConnectorPartCN(ConnectorSide.Rigth),
+                    ConnectorPartCID(ConnectorSide.Rigth),
                 ]
         };
 
