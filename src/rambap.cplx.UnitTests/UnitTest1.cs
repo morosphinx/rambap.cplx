@@ -2,6 +2,7 @@ using rambap.cplx.Export;
 using static rambap.cplx.Export.Generators;
 using rambap.cplx.UnitTests.ExportValidity;
 using rambap.cplx.Modules.Costing.Outputs;
+using rambap.cplx.UnitTests.Connectivity;
 
 namespace rambap.cplx.UnitTests
 {
@@ -79,6 +80,15 @@ namespace rambap.cplx.UnitTests
             var i = new Pinstance(p);
             var generator = GetDemoGeneratorWithEverything();
             generator.Do(i, "C:\\TestFolder\\Exemple6");
+        }
+
+        [TestMethod]
+        public void TestGeneration_Bench4()
+        {
+            var p = new Bench4();
+            var i = new Pinstance(p);
+            var generator = GetDemoGeneratorWithEverything();
+            generator.Do(i, "C:\\TestFolder\\Bench4");
         }
     }
 }

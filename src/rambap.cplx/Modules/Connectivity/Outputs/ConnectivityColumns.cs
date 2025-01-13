@@ -1,5 +1,6 @@
 ﻿using rambap.cplx.Core;
 using rambap.cplx.Export.Tables;
+using rambap.cplx.Modules.Connectivity.Model;
 using static rambap.cplx.Modules.Connectivity.Outputs.ConnectivityTableContent;
 
 namespace rambap.cplx.Modules.Connectivity.Outputs;
@@ -35,6 +36,16 @@ internal static class ConnectivityColumns
                 ConnectorIdentity.Topmost   => i.GetTopMostConnector(side).Owner!.ImplementingInstance,
                 _ => throw new NotImplementedException(),
             }));
+
+    public static DelegateColumn<ConnectivityTableContent> CablePart(string title, Func<Pinstance, string> getter)
+        => new DelegateColumn<ConnectivityTableContent>(
+            title,
+            ColumnTypeHint.String,
+            i => i.Connection switch
+            {
+                Cable c => getter.Invoke(c.CablePart.ImplementingInstance) ,
+                _ => "",
+            });
 
     public static DelegateColumn<ConnectivityTableContent> Dashes(string title = "-- Connect to --")
         => new DelegateColumn<ConnectivityTableContent>(

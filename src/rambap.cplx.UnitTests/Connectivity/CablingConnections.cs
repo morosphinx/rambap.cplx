@@ -1,5 +1,6 @@
 ﻿using rambap.cplx.Export.TextFiles;
 using rambap.cplx.Modules.Connectivity.Outputs;
+using rambap.cplx.UnitTests.Connectivity;
 using static rambap.cplx.Modules.Connectivity.Outputs.ConnectivityColumns;
 
 namespace rambap.cplx.UnitTests.Connectivity;
@@ -125,5 +126,21 @@ public class CablingConnectionsTests
         var i = new Pinstance(p);
         var benchInstance = i.Components.First().Instance;
         WriteConnection(ConnectorIdentity.Topmost, benchInstance);
+    }
+}
+
+class Bench4 : Bench3, IPartAdditionalDocuments
+{
+    public void Additional_Documentation(DocumentationBuilder Do)
+    {
+        Do.AddInstruction(i =>
+        {
+            var textFile = new TextTableFile(i)
+            {
+                Table = ConnectivityTables.ConnectionTable(ConnectorIdentity.Immediate),
+                Formater = new Export.Tables.MarkdownTableFormater()
+            };
+            return ("TestFilename", textFile);
+        });
     }
 }

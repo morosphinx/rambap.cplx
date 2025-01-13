@@ -67,8 +67,11 @@ public record Cable : IAssemblingConnection
     public Mate LeftMate { get; }
     public Mate RigthMate { get; }
 
+    public Part CablePart { get; }
+
     internal Cable(Part cablePart, Mate leftMate, Mate rigthMate)
     {
+        CablePart = cablePart;
         LeftMate = leftMate;
         RigthMate = rigthMate;
     }
