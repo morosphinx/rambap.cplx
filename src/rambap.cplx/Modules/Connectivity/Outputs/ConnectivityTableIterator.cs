@@ -9,7 +9,7 @@ internal class ConnectivityTableIterator : IIterator<ConnectivityTableContent>
     public IEnumerable<ConnectivityTableContent> MakeContent(Pinstance instance)
     {
         var connectivity = instance.Connectivity()!; // Throw if no connectivity definition
-        var connections = GetAllConnection(instance);
+        var connections = GetAllAssemblingConnection(instance);
         // var connectionsFlattened = connections.SelectMany(c => c.Connections);
 
         var connectionsGrouped = ConnectionHelpers.GroupConnectionsByTopmostPort(connections);
@@ -40,7 +40,7 @@ internal class ConnectivityTableIterator : IIterator<ConnectivityTableContent>
         }
     }
 
-    public static IEnumerable<Mate> GetAllConnection(Pinstance instance)
+    public static IEnumerable<IAssemblingConnection> GetAllAssemblingConnection(Pinstance instance)
     {
         // Return all connection, NOT flattening grouped ones (Twisting / Sielding)
         foreach (var c in instance.Connectivity()?.Connections ?? [])
@@ -48,7 +48,7 @@ internal class ConnectivityTableIterator : IIterator<ConnectivityTableContent>
         foreach(var subcomp in instance.Components)
         {
             if(instance.Connectivity != null) // TBD : include even non conectivity defining components ?
-                foreach(var c in GetAllConnection(subcomp.Instance))
+                foreach(var c in GetAllAssemblingConnection(subcomp.Instance))
                     yield return c;
         }
     }

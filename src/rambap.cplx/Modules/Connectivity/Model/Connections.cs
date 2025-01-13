@@ -1,5 +1,7 @@
-﻿using rambap.cplx.Modules.Connectivity.Templates;
+﻿using rambap.cplx.Core;
+using rambap.cplx.Modules.Connectivity.Templates;
 using rambap.cplx.PartProperties;
+using System.Runtime.CompilerServices;
 
 namespace rambap.cplx.Modules.Connectivity.Model;
 
@@ -34,8 +36,9 @@ public record StructuralConnection : ISignalPortConnection
     public bool IsExclusive => false;
 }
 
+public interface IAssemblingConnection : ISignalPortConnection { }
 
-public record Mate : ISignalPortConnection
+public record Mate : IAssemblingConnection
 {
     internal Mate(SignalPort leftConnectedPort, SignalPort rigthConnectedPort)
     {
@@ -53,5 +56,22 @@ public record Mate : ISignalPortConnection
 
     public SignalPort LeftPort => LeftConnectedPort;
     public SignalPort RightPort => RigthConnectedPort;
+    public bool IsExclusive => true;
+}
+
+public record Cable : IAssemblingConnection
+{
+    public SignalPort LeftPort => LeftMate.LeftPort;
+    public SignalPort RightPort => RigthMate.RightPort;
+
+    public Mate LeftMate { get; }
+    public Mate RigthMate { get; }
+
+    internal Cable(Part cablePart, Mate leftMate, Mate rigthMate)
+    {
+        LeftMate = leftMate;
+        RigthMate = rigthMate;
+    }
+
     public bool IsExclusive => true;
 }

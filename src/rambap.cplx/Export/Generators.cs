@@ -3,6 +3,7 @@ using rambap.cplx.Export.TextFiles;
 using rambap.cplx.Export.Tables;
 using rambap.cplx.Modules.Base.Output;
 using rambap.cplx.Modules.Costing.Outputs;
+using static rambap.cplx.Modules.Connectivity.Outputs.ConnectivityColumns;
 
 namespace rambap.cplx.Export;
 
@@ -72,7 +73,7 @@ public static class FileGroups
         return [
                 ($"Connections_{filenamePattern}.csv", new TextTableFile(i)
                 {
-                    Table = Modules.Connectivity.Outputs.ConnectivityTables.ConnectionTable(),
+                    Table = Modules.Connectivity.Outputs.ConnectivityTables.ConnectionTable(ConnectorIdentity.Immediate),
                     Formater = new MarkdownTableFormater()
                 }),
                 ($"ICD_{filenamePattern}.csv", new TextTableFile(i)

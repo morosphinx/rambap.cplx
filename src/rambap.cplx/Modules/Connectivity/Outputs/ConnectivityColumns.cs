@@ -1,62 +1,40 @@
-﻿using rambap.cplx.Export.Tables;
+﻿using rambap.cplx.Core;
+using rambap.cplx.Export.Tables;
 using static rambap.cplx.Modules.Connectivity.Outputs.ConnectivityTableContent;
 
 namespace rambap.cplx.Modules.Connectivity.Outputs;
 
 internal static class ConnectivityColumns
 {
-
-    //public static DelegateColumn<ConnectivityTableContent> //LeftPart(ConnectorSide side, IColumn<ComponentContent> //componentColumn, string? title)
-    //{
-    //    return new DelegateColumn<ConnectivityTableContent>(
-    //        title ?? componentColumn.Title,
-    //        componentColumn.TypeHint,
-    //        i => componentColumn.CellFor(i.GetConnector//(side).TopMostUser().Owner
-    //            )
-    //        );
-    //}
-
     public enum ConnectorIdentity
     {
-        Immediate,
-        Topmost
+        Immediate, // Will display the immediate connector
+        Topmost, // Will traverse the connector hierarchy and return informatio nrelative to the uppermost Expose() call
     }
 
-    public static DelegateColumn<ConnectivityTableContent> ConnectorName(ConnectorSide side)
+    public static DelegateColumn<ConnectivityTableContent> ConnectorName(ConnectorSide side, ConnectorIdentity identity, bool fullName = false)
         => new DelegateColumn<ConnectivityTableContent>(
             "Connector",
             ColumnTypeHint.String,
-            i => i.GetImmediateConnector(side).Name);
+            i => identity switch
+            {
+                ConnectorIdentity.Immediate when fullName   => i.GetImmediateConnector(side).Name,
+                ConnectorIdentity.Immediate when !fullName  => i.GetImmediateConnector(side).FullDefinitionName(),
+                ConnectorIdentity.Topmost when fullName     => i.GetTopMostConnector(side).Name,
+                ConnectorIdentity.Topmost when !fullName    => i.GetTopMostConnector(side).FullDefinitionName(),
+                _ => throw new NotImplementedException(),
+            });
 
-    public static DelegateColumn<ConnectivityTableContent> ConnectorFullName(ConnectorSide side)
+    public static DelegateColumn<ConnectivityTableContent> ConnectorPart(ConnectorSide side, ConnectorIdentity identity, string title, Func<Pinstance,string> getter)
         => new DelegateColumn<ConnectivityTableContent>(
-            "Connector",
+            title,
             ColumnTypeHint.String,
-            i => i.GetImmediateConnector(side).FullDefinitionName());
-
-    public static DelegateColumn<ConnectivityTableContent> TopMostConnectorName(ConnectorSide side)
-        => new DelegateColumn<ConnectivityTableContent>(
-            "TopMostConnector",
-            ColumnTypeHint.String,
-            i => i.GetTopMostConnector(side).Name);
-
-    public static DelegateColumn<ConnectivityTableContent> ConnectorPartPN(ConnectorSide side)
-        => new DelegateColumn<ConnectivityTableContent>(
-            "Part",
-            ColumnTypeHint.String,
-            i => i.GetTopMostConnector(side).Owner!.ImplementingInstance.PN);
-
-    public static DelegateColumn<ConnectivityTableContent> ConnectorPartCN(ConnectorSide side)
-        => new DelegateColumn<ConnectivityTableContent>(
-            "CN",
-            ColumnTypeHint.String,
-            i => i.GetTopMostConnector(side).Owner!.ImplementingInstance.CN);
-
-    public static DelegateColumn<ConnectivityTableContent> ConnectorPartCID(ConnectorSide side)
-        => new DelegateColumn<ConnectivityTableContent>(
-            "CID",
-            ColumnTypeHint.String,
-            i => i.GetTopMostConnector(side).Owner!.ImplementingInstance.CID());
+            i => getter.Invoke(identity switch
+            {
+                ConnectorIdentity.Immediate => i.GetImmediateConnector(side).Owner!.ImplementingInstance,
+                ConnectorIdentity.Topmost   => i.GetTopMostConnector(side).Owner!.ImplementingInstance,
+                _ => throw new NotImplementedException(),
+            }));
 
     public static DelegateColumn<ConnectivityTableContent> Dashes(string title = "-- Connect to --")
         => new DelegateColumn<ConnectivityTableContent>(

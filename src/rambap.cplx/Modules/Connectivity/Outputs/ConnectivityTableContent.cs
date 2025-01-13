@@ -39,6 +39,7 @@ class ConnectivityTableContent
     {
         Structural,
         Mate,
+        Cable,
         Wire,
         Bundle,
         Twist,
@@ -50,6 +51,7 @@ class ConnectivityTableContent
         {
             StructuralConnection => ConnectionKind.Structural,
             Mate => ConnectionKind.Mate,
+            Cable => ConnectionKind.Cable,
             Wire => ConnectionKind.Wire,
             Bundle => ConnectionKind.Bundle,
             Twist => ConnectionKind.Twist,

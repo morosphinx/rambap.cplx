@@ -14,13 +14,13 @@ namespace rambap.cplx.PartInterfaces;
 public class ConnectionBuilder
 {
     internal List<StructuralConnection> StructuralConnections { get; } = [];
-    internal List<Mate> Mates { get; } = [];
+    internal List<IAssemblingConnection> Connections { get; } = [];
     internal List<WiringAction> Wirings { get; } = [];
 
 
     private void AssertOwnThisCabling(Mate cabling)
     {
-        if (!Mates.Contains(cabling))
+        if (!Connections.Contains(cabling))
             throw new InvalidOperationException($"Cabling {cabling} is not owned by this");
     }
     private void AssertOwnThisWiring(WiringAction wiring)
@@ -86,7 +86,7 @@ public class ConnectionBuilder
         ContextPart.AssertIsOwnerOrParent(connectorB);
         // TODO : Test here that both connector are compatible
         var connection = new Mate(connectorA, connectorB);
-        Mates.Add(connection);
+        Connections.Add(connection);
         return connection;
     }
 
@@ -97,7 +97,7 @@ public class ConnectionBuilder
     /// <param name="connectorA"></param>
     /// <param name="connectorB"></param>
     /// <returns></returns>
-    public (Mate LeftMate, Mate RigthMate) ConnectWith(Part cablePart, ConnectablePort connectorA, ConnectablePort connectorB)
+    public Cable CableWith(Part cablePart, ConnectablePort connectorA, ConnectablePort connectorB)
     {
         // 1 - Assert with contextInstance that cablePart is a component or subcomponent of this.
         ContextPart.AssertIsASubComponent(cablePart);
@@ -126,9 +126,11 @@ public class ConnectionBuilder
         // Etablish // with format of wire (WirePort A, WirePort B, Wire Definition) : we are doing something similar
         var leftMate = Mate(connectorA, cons[0]);
         var rigthMate = Mate(cons[1],connectorB);
-        Mates.Add(leftMate);
-        Mates.Add(rigthMate);
-        return (leftMate, rigthMate);
+        Connections.Remove(leftMate);
+        Connections.Remove(rigthMate);
+        var cable = new Cable(cablePart, leftMate, rigthMate);
+        Connections.Add(cable);
+        return cable;
     }
 
     /// <summary>

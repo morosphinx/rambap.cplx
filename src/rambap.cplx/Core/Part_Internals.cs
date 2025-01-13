@@ -36,7 +36,6 @@ public partial class Part
         }
     }
 
-    internal Pinstance ImplementingInstance { get; set; }
 
     internal void CplxImplicitInitialization()
         => CplxImplicitInitialization(new InitialisationContext());

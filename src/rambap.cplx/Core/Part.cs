@@ -100,6 +100,7 @@ public partial class Part
     internal bool RequirePNOverride
         => AdditionalComponents.Count() > 0;
 
+
     /// <summary>
     /// TODO : Usage ?
     /// TBD : Parent of this part in the part tree.
@@ -108,6 +109,12 @@ public partial class Part
     [CplxIgnore]
     internal Part? Parent  = null;
 
+    /// <summary>
+    /// TODO : Usage ?
+    /// TBD : Instance implementing this Part
+    /// </summary>
+    [CplxIgnore]
+    internal Pinstance ImplementingInstance { get; set; }
 
     /// <summary>
     /// You can override the Part() constructor to implement some custom logic. <br/>

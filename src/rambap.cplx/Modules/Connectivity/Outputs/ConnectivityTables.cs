@@ -7,23 +7,21 @@ namespace rambap.cplx.Modules.Connectivity.Outputs;
 
 internal class ConnectivityTables
 {
-    public static TableProducer<ConnectivityTableContent> ConnectionTable()
+    public static TableProducer<ConnectivityTableContent> ConnectionTable(ConnectorIdentity identity)
         => new TableProducer<ConnectivityTableContent>()
         {
             Iterator = new ConnectivityTableIterator(),
             Columns = [
-                    ConnectorPartCID(ConnectorSide.Left),
-                    ConnectorPartCN(ConnectorSide.Left),
-                    ConnectorPartPN(ConnectorSide.Left),
-                    ConnectorFullName(ConnectorSide.Left),
-                    ConnectorName(ConnectorSide.Left),
+                    ConnectorPart(ConnectorSide.Left,identity,"CID", i => i.CID()),
+                    ConnectorPart(ConnectorSide.Left,identity,"CN", i => i.CN),
+                    ConnectorPart(ConnectorSide.Left,identity,"PN", i => i.PN),
+                    ConnectorName(ConnectorSide.Left,identity),
                     Dashes(),
                     ConnectionKind(),
-                    ConnectorName(ConnectorSide.Rigth),
-                    ConnectorFullName(ConnectorSide.Rigth),
-                    ConnectorPartPN(ConnectorSide.Rigth),
-                    ConnectorPartCN(ConnectorSide.Rigth),
-                    ConnectorPartCID(ConnectorSide.Rigth),
+                    ConnectorName(ConnectorSide.Rigth,identity),
+                    ConnectorPart(ConnectorSide.Rigth,identity,"PN", i => i.PN),
+                    ConnectorPart(ConnectorSide.Rigth,identity,"CN", i => i.CN),
+                    ConnectorPart(ConnectorSide.Rigth,identity,"CID", i => i.CID()),
                 ]
         };
 

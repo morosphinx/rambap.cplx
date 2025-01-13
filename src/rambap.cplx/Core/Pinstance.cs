@@ -98,12 +98,12 @@ public class Pinstance
 
 
     /// <summary>
-    /// Parent Pinstance, where this instane is a component
+    /// Component, if any, where this instance is used
     /// </summary>
-    /// TODO : Using this imply Pinstance instance are unique, and cannot be reused
-    internal Component? Parent { get; set; }
-    internal string CN => Parent?.CN ?? "*";
-    internal string CID()
+    /// TODO : Using this imply Pinstance instance are unique,
+    public Component? Parent { get; set; }
+    public string CN => Parent?.CN ?? "*";
+    public string CID()
     {
         if (Parent == null)
             return CN;
@@ -122,8 +122,10 @@ public class Pinstance
     public Pinstance(Part template, PartConfiguration conf)
     {
         PartType = template.GetType();
-        template.CplxImplicitInitialization(); // is implicitly initialized
+        if (template.ImplementingInstance != null)
+            throw new InvalidOperationException("A Pinstance has already been created with this part");
         template.ImplementingInstance = this; // Temporary, some concepts need to know instance from the part
+        template.CplxImplicitInitialization(); // run the implicit init on this part and all subparts
 
         // Select part PN
         var PNAttribute = template.GetType().GetCustomAttribute(typeof(PNAttribute)) as PNAttribute;
