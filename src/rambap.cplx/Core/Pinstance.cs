@@ -150,11 +150,15 @@ public class Pinstance
         var CommonNameAttribute = template.GetType().GetCustomAttribute(typeof(CommonNameAttribute)) as CommonNameAttribute;
         if (CommonNameAttribute != null)
         {
-            CommonName = CommonNameAttribute.CommonName; // Revision attribute value is used
+            CommonName = CommonNameAttribute.CommonName; // Common Name attribute value is used
+        }
+        else if(! string.IsNullOrEmpty(template.CommonName))
+        {
+            CommonName = template.CommonName; // Template Common Name value is used if not empty
         }
         else
         {
-            CommonName = template.CommonName; // Template Revision value is used
+            CommonName = PN; // Otherwise the Common Name is the PN
         }
 
         // Select part Revision

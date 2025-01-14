@@ -82,7 +82,11 @@ internal static class Support
         foreach (var p in validProperties)
         {
             bool isPublicOrAssembly = p.GetMethod!.IsPublic || p.GetMethod!.IsAssembly;
-            PropertyOrFieldInfo info = new() { Name = p.Name, Comments = p.GetCustomAttributes<ComponentDescriptionAttribute>(), IsPublicOrAssembly = isPublicOrAssembly };
+            var rename = p.GetCustomAttribute<RenameAttribute>()?.Name;
+            PropertyOrFieldInfo info = new() {
+                Name = rename ?? p.Name,
+                Comments = p.GetCustomAttributes<ComponentDescriptionAttribute>(), 
+                IsPublicOrAssembly = isPublicOrAssembly };
             var val = p.GetValue(obj) as T;
             if (val is null && ConstructNulls)
             {
@@ -100,7 +104,12 @@ internal static class Support
         foreach (var f in validFields)
         {
             bool isPublicOrAssembly = f.IsPublic || f.IsAssembly;
-            PropertyOrFieldInfo info = new() { Name = f.Name, Comments = f.GetCustomAttributes<ComponentDescriptionAttribute>(), IsPublicOrAssembly = isPublicOrAssembly };
+            var rename = f.GetCustomAttribute<RenameAttribute>()?.Name;
+            PropertyOrFieldInfo info = new(){
+                Name = rename ?? f.Name,
+                Comments = f.GetCustomAttributes<ComponentDescriptionAttribute>(),
+                IsPublicOrAssembly = isPublicOrAssembly
+            };
             var val = f.GetValue(obj) as T;
             if (val is null && ConstructNulls)
             {

@@ -83,7 +83,8 @@ public partial class Part
 
 
     /// <summary>
-    /// Overide of the default CN of this part when used as a component
+    /// Overide of the default CN of this part when used as a component <br/>
+    /// This take priority over <see cref="RenameAttribute"/>
     /// </summary>
     public string? CN { init => CNOverride = value; }
     internal string? CNOverride { get; private set; } = null;
