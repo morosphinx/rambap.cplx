@@ -29,7 +29,7 @@ namespace rambap.cplx.Modules.Costing.Outputs
             Columns = [
                 CommonColumns.LineTypeNumber(),
                 IDColumns.PartNumber(),
-                DescriptionColumns.GroupDescription(),
+                DescriptionColumns.PartDescription(),
                 TaskColumns.TaskName(),
                 TaskColumns.TaskCategory(),
                 TaskColumns.TaskDuration(),

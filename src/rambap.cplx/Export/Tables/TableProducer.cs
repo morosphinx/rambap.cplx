@@ -47,7 +47,8 @@ public record TableProducer<T> : ITableProducer
     private static bool CamelCasePossible(ColumnTypeHint typeHint)
         => typeHint switch
         {
-            ColumnTypeHint.String => true,
+            ColumnTypeHint.StringExact => false,
+            ColumnTypeHint.StringFormatable => true,
             ColumnTypeHint.Numeric => false,
             _ => throw new NotImplementedException()
         };

@@ -45,7 +45,7 @@ public static class SystemViewTables
                 CommonColumns.LineTypeNumber(),
                 IDColumns.PartNumber(),
                 IDColumns.GroupCIDs(),
-                DescriptionColumns.GroupDescription(),
+                DescriptionColumns.PartDescription(),
                 CommonColumns.ComponentTotalCount(),
             ],
         };

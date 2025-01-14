@@ -16,7 +16,7 @@ internal static class ConnectivityColumns
     public static DelegateColumn<ConnectivityTableContent> ConnectorName(ConnectorSide side, ConnectorIdentity identity, bool fullName = false)
         => new DelegateColumn<ConnectivityTableContent>(
             "Connector",
-            ColumnTypeHint.String,
+            ColumnTypeHint.StringExact,
             i => identity switch
             {
                 ConnectorIdentity.Immediate when fullName   => i.GetImmediateConnector(side).Name,
@@ -26,10 +26,15 @@ internal static class ConnectivityColumns
                 _ => throw new NotImplementedException(),
             });
 
-    public static DelegateColumn<ConnectivityTableContent> ConnectorPart(ConnectorSide side, ConnectorIdentity identity, string title, Func<Pinstance,string> getter)
+    public static DelegateColumn<ConnectivityTableContent> ConnectorPart(
+            ConnectorSide side,
+            ConnectorIdentity identity,
+            string title,
+            Func<Pinstance,string> getter,
+            bool format = false)
         => new DelegateColumn<ConnectivityTableContent>(
             title,
-            ColumnTypeHint.String,
+            format ? ColumnTypeHint.StringFormatable : ColumnTypeHint.StringExact,
             i => getter.Invoke(identity switch
             {
                 ConnectorIdentity.Immediate => i.GetImmediateConnector(side).Owner!.ImplementingInstance,
@@ -37,10 +42,13 @@ internal static class ConnectivityColumns
                 _ => throw new NotImplementedException(),
             }));
 
-    public static DelegateColumn<ConnectivityTableContent> CablePart(string title, Func<Pinstance, string> getter)
+    public static DelegateColumn<ConnectivityTableContent> CablePart(
+            string title, Func<Pinstance,
+            string> getter,
+            bool format = false)
         => new DelegateColumn<ConnectivityTableContent>(
             title,
-            ColumnTypeHint.String,
+            format ? ColumnTypeHint.StringFormatable : ColumnTypeHint.StringExact,
             i => i.Connection switch
             {
                 Cable c => getter.Invoke(c.CablePart.ImplementingInstance) ,
@@ -50,12 +58,12 @@ internal static class ConnectivityColumns
     public static DelegateColumn<ConnectivityTableContent> Dashes(string title = "-- Connect to --")
         => new DelegateColumn<ConnectivityTableContent>(
             title,
-            ColumnTypeHint.String,
+            ColumnTypeHint.StringExact,
             i => new string('-',title.Length));
 
     public static DelegateColumn<ConnectivityTableContent> ConnectionKind()
         => new DelegateColumn<ConnectivityTableContent>(
             "Kind",
-            ColumnTypeHint.String,
+            ColumnTypeHint.StringFormatable,
             i => i.GetConnectionKind.ToString());
 }

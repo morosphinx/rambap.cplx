@@ -44,7 +44,7 @@ public static class CostTables
             Columns = [
                 CommonColumns.LineTypeNumber(),
                 IDColumns.PartNumber(),
-                DescriptionColumns.GroupDescription(),
+                DescriptionColumns.PartDescription(),
                 CostColumns.CostName(),
                 CostColumns.UnitCost(),
                 CommonColumns.ComponentTotalCount(),

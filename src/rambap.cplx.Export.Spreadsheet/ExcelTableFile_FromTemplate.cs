@@ -116,7 +116,7 @@ public class ExcelTableFile_FromTemplate : IInstruction
         switch (instruction.Direction)
         {
             case InstanceContentInstruction.WriteDirection.Line:
-                var typeHints = Lines.Select(c => ColumnTypeHint.String).ToList();
+                var typeHints = Lines.Select(c => ColumnTypeHint.StringFormatable).ToList();
                 FillInLineContent(sheetData, Lines, typeHints, instruction.RowStart, instruction.ColStart);
                 break;
             case InstanceContentInstruction.WriteDirection.Column:
@@ -137,9 +137,10 @@ public class ExcelTableFile_FromTemplate : IInstruction
         uint currentRow = instruction.RowStart;
         if (instruction.WriteHeader)
         {
+            var headerLine = instruction.Table.MakeHeaderLine();
             FillInLineContent(sheetData,
-                instruction.Table.MakeHeaderLine(),
-                instruction.Table.MakeHeaderLine().Select(c => ColumnTypeHint.String).ToList(),
+                headerLine,
+                Enumerable.Range(0, headerLine.Count).Select(c => ColumnTypeHint.StringFormatable).ToList(),
                 currentRow++, firstColl);
         }
         FillInTableContents(sheetData,

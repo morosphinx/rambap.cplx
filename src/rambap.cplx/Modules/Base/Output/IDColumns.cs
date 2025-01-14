@@ -43,17 +43,21 @@ public static class IDColumns
         return string.Join(delimiter, displayedStrings);
     }
 
+    // PN is displayed as exact
+
     public static DelegateColumn<IComponentContent> PartNumber()
-        => new DelegateColumn<IComponentContent>("PN", ColumnTypeHint.String,
+        => new DelegateColumn<IComponentContent>("PN", ColumnTypeHint.StringExact,
              i => i.Component.Instance.PN,
              i => "TOTAL");
 
+    // CN are used as pretty / common name, they are formated
+
     public static DelegateColumn<IComponentContent> ComponentNumber()
-        => new DelegateColumn<IComponentContent>("CN", ColumnTypeHint.String,
+        => new DelegateColumn<IComponentContent>("CN", ColumnTypeHint.StringFormatable,
             i => i.Component.CN);
 
     public static DelegateColumn<IComponentContent> GroupCNs(int maxColumnWidth = 50)
-       => new DelegateColumn<IComponentContent>("Component CNs", ColumnTypeHint.String,
+       => new DelegateColumn<IComponentContent>("Component CNs", ColumnTypeHint.StringFormatable,
             i =>
             {
                 var componentCNs = i.AllComponents().Select(c => c.component.CN);
@@ -64,8 +68,10 @@ public static class IDColumns
                 };
             });
 
+    // CID as displayed as non formatable in order to prevent adding spaces in a path like string
+
     public static DelegateColumn<IComponentContent> ComponentID()
-        => new DelegateColumn<IComponentContent>("CID", ColumnTypeHint.String,
+        => new DelegateColumn<IComponentContent>("CID", ColumnTypeHint.StringExact,
             i =>
             {
                 var CID = Core.CID.Append(i.Location.CIN, i.Component.CN);
@@ -75,7 +81,7 @@ public static class IDColumns
             );
 
     public static DelegateColumn<IComponentContent> GroupCIDs(int maxColumnWidth = 50)
-        => new DelegateColumn<IComponentContent>("Component CIDs", ColumnTypeHint.String,
+        => new DelegateColumn<IComponentContent>("Component CIDs", ColumnTypeHint.StringExact,
             i =>
             {
                 var componentCIDs = i.AllComponents()
@@ -89,7 +95,7 @@ public static class IDColumns
             });
 
     public static DelegateColumn<IComponentContent> ComponentID_And_Property(string propname) =>
-        new DelegateColumn<IComponentContent>("CID", ColumnTypeHint.String,
+        new DelegateColumn<IComponentContent>("CID", ColumnTypeHint.StringExact,
             i =>
             {
                 var CID = Core.CID.Append(i.Location.CIN, i.Component.CN);
@@ -126,7 +132,7 @@ public static class IDColumns
         };
 
     public static DelegateColumn<IComponentContent> ContentLocation()
-        => new DelegateColumn<IComponentContent>("Location", ColumnTypeHint.String,
+        => new DelegateColumn<IComponentContent>("Location", ColumnTypeHint.StringFormatable,
             i =>
             {
                 var loc = i.Location;

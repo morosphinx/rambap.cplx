@@ -20,7 +20,7 @@ public static class CostColumns
             i => i.Cost()?.Total.ToString("0.00"));
 
     public static DelegateColumn<IComponentContent> CostName(bool include_branches = false)
-        => new DelegateColumn<IComponentContent>("Cost Name", ColumnTypeHint.String,
+        => new DelegateColumn<IComponentContent>("Cost Name", ColumnTypeHint.StringFormatable,
             i => i switch
             {
                 IPropertyContent {Property : InstanceCost.NativeCostInfo prop} lp => prop.name,

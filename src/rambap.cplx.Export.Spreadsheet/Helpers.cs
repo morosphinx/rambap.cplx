@@ -22,15 +22,13 @@ internal static partial class Helpers
 
     public static EnumValue<CellValues> TypeHintToDataType(ColumnTypeHint columnTypeHint)
     {
-        switch (columnTypeHint)
+        return columnTypeHint switch
         {
-            case ColumnTypeHint.String:
-                return new EnumValue<CellValues>(CellValues.String);
-            case ColumnTypeHint.Numeric:
-                return new EnumValue<CellValues>(CellValues.Number);
-            default:
-                throw new NotImplementedException();
-        }
+            ColumnTypeHint.StringExact => new EnumValue<CellValues>(CellValues.String),
+            ColumnTypeHint.StringFormatable => new EnumValue<CellValues>(CellValues.String),
+            ColumnTypeHint.Numeric => new EnumValue<CellValues>(CellValues.Number),
+            _ => throw new NotImplementedException(),
+        };
     }
 
     /// <summary>
@@ -101,7 +99,7 @@ internal static partial class Helpers
                 var currentColName = GetExcelColumnName(col);
                 var currentCell = sheetData.GetOrMakeCell(currentColName, currentRow);
                 currentCell.CellValue = MakeValidCellValue(c);
-                currentCell.DataType = TypeHintToDataType(ColumnTypeHint.String);
+                currentCell.DataType = TypeHintToDataType(ColumnTypeHint.StringFormatable);
             }
             currentRow++;
         }

@@ -13,17 +13,11 @@ internal class ConnectivityTables
             Iterator = new ConnectivityTableIterator(),
             Columns = [
                     ConnectorPart(ConnectorSide.Left,identity,"CID", i => i.CID()),
-                    ConnectorPart(ConnectorSide.Left,identity,"CN", i => i.CN),
-                    ConnectorPart(ConnectorSide.Left,identity,"PN", i => i.PN),
                     ConnectorName(ConnectorSide.Left,identity),
-                    Dashes(),
-                    ConnectionKind(),
-                    CablePart("Cable PN",c => c.CN),
-                    CablePart("Cable CN",c => c.CN),
-                    Dashes(),
+                    Dashes("--"),
+                    CablePart("Cable",c => c.CN),
+                    Dashes("--"),
                     ConnectorName(ConnectorSide.Rigth,identity),
-                    ConnectorPart(ConnectorSide.Rigth,identity,"PN", i => i.PN),
-                    ConnectorPart(ConnectorSide.Rigth,identity,"CN", i => i.CN),
                     ConnectorPart(ConnectorSide.Rigth,identity,"CID", i => i.CID()),
                 ]
         };
