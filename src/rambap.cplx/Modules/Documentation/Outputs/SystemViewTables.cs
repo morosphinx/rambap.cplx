@@ -42,10 +42,12 @@ public static class SystemViewTables
             },
             Columns = [
                 CommonColumns.LineTypeNumber(),
+                DescriptionColumns.PartCommonName(hideIfEqualPN : true),
                 IDColumns.PartNumber(),
-                IDColumns.GroupCIDs(),
                 DescriptionColumns.PartDescription(),
                 CommonColumns.ComponentTotalCount(),
+                IDColumns.GroupCIDs(),
+                DescriptionColumns.PartLink(),
             ],
         };
 }

@@ -17,8 +17,18 @@ public static class DescriptionColumns
         new DelegateColumn<IComponentContent>("Part Description", ColumnTypeHint.StringFormatable,
             i => GetDescription(i.Component.Instance));
 
-    public static DelegateColumn<IComponentContent> PartCommonName() =>
+    public static DelegateColumn<IComponentContent> PartCommonName(bool hideIfEqualPN =false) =>
         new DelegateColumn<IComponentContent>("Part Common Name", ColumnTypeHint.StringFormatable,
-            i => i.Component.Instance.CommonName);
+            i =>
+            {
+                var instance = i.Component.Instance;
+                if(hideIfEqualPN)
+                    return instance.CommonName == instance.PN ? "" : instance.CommonName;
+                else return instance.CommonName;
+            });
+
+    public static DelegateColumn<IComponentContent> PartLink() =>
+        new DelegateColumn<IComponentContent>("Link", ColumnTypeHint.StringExact,
+            i => i.Component.Instance.Documentation()?.Links.FirstOrDefault()?.Text ?? "");
 }
 
