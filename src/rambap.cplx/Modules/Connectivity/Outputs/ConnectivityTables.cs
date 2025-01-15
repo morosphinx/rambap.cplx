@@ -2,6 +2,7 @@
 using static rambap.cplx.Modules.Connectivity.Outputs.ConnectivityColumns;
 using rambap.cplx.Export.Tables;
 using rambap.cplx.Modules.Base.Output;
+using static rambap.cplx.Modules.Connectivity.Outputs.ICDTableIterator;
 
 namespace rambap.cplx.Modules.Connectivity.Outputs;
 
@@ -27,7 +28,9 @@ internal class ConnectivityTables
         {
             Iterator = new ICDTableIterator(),
             Columns = [
-                    IDColumns.ComponentNumberPrettyTree(),
+                    IDColumns.ComponentNumberPrettyTree(
+                        i => i.Property is ICDTableContentProperty prop ? prop.Port.TopMostRelevant().Name ?? "e" : "f"),
+                    ICDColumns.TopMostPortPart(),
                     ICDColumns.TopMostPortName(),
                     ICDColumns.MostRelevantPortName(),
                     ICDColumns.MostRelevantPortName_Regard(),

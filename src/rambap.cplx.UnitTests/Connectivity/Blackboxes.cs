@@ -13,7 +13,7 @@ interface IBlackboxes
 class BlackBox_Pin : Pin { }
 class BlackBox_Connector : Connector<BlackBox_Pin>
 {
-    const int p = 50;
+    const int p = 15;
     public BlackBox_Connector() : base(p)
     {
         this.PN = $"BlackBoxConnector_{p}";
@@ -67,6 +67,27 @@ class BlackBox_Type7 : Part, IBlackboxes, IPartConnectable
     }
 }
 
+class BlackBox_Type8 : Part
+{
+    public ConnectablePort AbstractPort;
+
+    public BlackBox_Type7 SubBox;
+
+    Part AbstractPrivatePart;
+    public Part AbstractPublicPart;
+    public HierPart part;
+}
+class HierPart : Part
+{
+    public ConnectedPart C01;
+    ConnectedPart C02_private;
+}
+class ConnectedPart : Part
+{
+    public ConnectablePort APort;
+}
+
+
 [TestClass]
 public class TestBlackBoxesICDs
 {
@@ -90,4 +111,5 @@ public class TestBlackBoxesICDs
     [TestMethod] public void BB6() => TestBlackBoxICD(new BlackBox_Type6());
 #endif
     [TestMethod] public void BB7() => TestBlackBoxICD(new BlackBox_Type7());
+    [TestMethod] public void BB8() => TestBlackBoxICD(new BlackBox_Type8());
 }

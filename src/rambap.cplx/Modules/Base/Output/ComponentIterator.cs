@@ -27,7 +27,7 @@ public class ComponentIterator : IIterator<IComponentContent>
     /// Define a final level of iteration on of components
     /// Leave this empty to return no properties items
     /// </summary>
-    public Func<Pinstance, IEnumerable<object>>? PropertyIterator { private get; set; }
+    public Func<Component, IEnumerable<object>>? PropertyIterator { private get; set; }
 
     public bool StackPropertiesSingleChildBranches { private get; init; } = true;
 
@@ -65,7 +65,7 @@ public class ComponentIterator : IIterator<IComponentContent>
             // Test wether this component will have any child content
             bool willHaveAnyChildItem =
                 mainComponent.Instance.Components.Any() ||
-                WriteProperties && PropertyIterator!(mainComponent.Instance).Any();
+                WriteProperties && PropertyIterator!(mainComponent).Any();
             bool isLeafDueToNoChild = !willHaveAnyChildItem;
             if (isLeafDueToNoChild)
             {
@@ -83,10 +83,10 @@ public class ComponentIterator : IIterator<IComponentContent>
 
             // If there is only a single property child content, return a Leaf with it instead of a Branch+Leaf
             // This behavior is toggleable. It makes  prettiers trees
-            var onlyHasASingleProperty = subcomponentContents.Count() == 0 && WriteProperties && PropertyIterator!(mainComponent.Instance).Count() == 1;
+            var onlyHasASingleProperty = subcomponentContents.Count() == 0 && WriteProperties && PropertyIterator!(mainComponent).Count() == 1;
             if(onlyHasASingleProperty && StackPropertiesSingleChildBranches)
             {
-                var property = PropertyIterator!(mainComponent.Instance).Single();
+                var property = PropertyIterator!(mainComponent).Single();
                 var propLocation = location; // Same location, we replace the branch
                 yield return new LeafComponentWithProperty(componentsAndLocation) { Property = property, IsLeafBecause = LeafCause.SingleStackedPropertyChild };
                 yield break;
@@ -105,7 +105,7 @@ public class ComponentIterator : IIterator<IComponentContent>
             // Output the properties content, if configured :
             if (WriteProperties)
             {
-                var propertiesContents = PropertyIterator!(mainComponent.Instance);
+                var propertiesContents = PropertyIterator!(mainComponent);
                 subItemTotalCount += propertiesContents.Count();
                 foreach (var prop in propertiesContents)
                 {

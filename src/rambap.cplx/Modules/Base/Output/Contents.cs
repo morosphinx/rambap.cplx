@@ -66,7 +66,7 @@ public abstract record ComponentContent : IComponentContent
         return valuesAreCoherent;
     }
 
-public ComponentContent(RecursionLocation loc, Component comp)
+    public ComponentContent(RecursionLocation loc, Component comp)
     {
         Location = loc;
         Component = comp;

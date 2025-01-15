@@ -23,7 +23,7 @@ public class PartTypesIterator : IIterator<IComponentContent>
     /// Define a final level of iteration on of parts that return properties
     /// Leave this empty to return no properties items
     /// </summary>
-    public Func<Pinstance, IEnumerable<object>>? PropertyIterator { private get; set; }
+    public Func<Component, IEnumerable<object>>? PropertyIterator { private get; set; }
     private bool IsAPropertyTable => PropertyIterator != null;
 
     /// <summary>
@@ -71,7 +71,7 @@ public class PartTypesIterator : IIterator<IComponentContent>
                     yield return new BranchComponent(componentGroup);
                 if (IsAPropertyTable)
                 {
-                    var properties = PropertyIterator!.Invoke(primaryItem.Component.Instance);
+                    var properties = PropertyIterator!.Invoke(primaryItem.Component);
                     foreach (var prop in properties)
                         yield return new LeafComponentWithProperty(componentGroup) { Property = prop, IsLeafBecause = LeafCause.NoChild };
                 }

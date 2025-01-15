@@ -18,7 +18,7 @@ namespace rambap.cplx.Modules.Costing.Outputs
                 PropertyIterator =
                 (i) =>
                 {
-                    var tasks = i.Tasks();
+                    var tasks = i.Instance.Tasks();
                     if (tasks != null)
                     {
                         return [.. tasks.RecurentTasks, .. tasks.NonRecurentTasks];
@@ -49,7 +49,7 @@ namespace rambap.cplx.Modules.Costing.Outputs
             {
                 Iterator = new ComponentIterator()
                 {
-                    PropertyIterator = (i) => i.Tasks()!= null ? [.. i.Tasks()!.RecurentTasks,.. i.Tasks()!.NonRecurentTasks] : [],
+                    PropertyIterator = (c) => c.Instance.Tasks() is not null and var t ? [.. t.RecurentTasks,.. t.NonRecurentTasks] : [],
                     GroupPNsAtSameLocation = true,
                     StackPropertiesSingleChildBranches = true,
                 },

@@ -15,10 +15,9 @@ public class ICDTableIterator : IIterator<IComponentContent>
 
     public IEnumerable<IComponentContent> MakeContent(Pinstance instance)
     {
-        IEnumerable<object> SelectPublicConnectors(Pinstance instance)
+        IEnumerable<object> SelectPublicConnectors(Component component)
         {
-
-            var connectivity = instance.Connectivity();
+            var connectivity = component.Instance.Connectivity();
             if (connectivity != null)
             {
                 var publicConnectors = connectivity.Connectors.Where(c => c.IsPublic);
@@ -33,7 +32,9 @@ public class ICDTableIterator : IIterator<IComponentContent>
         {
             PropertyIterator = SelectPublicConnectors,
             RecursionCondition = (c, l) => c.IsPublic,
-            WriteBranches = true
+            WriteBranches = true,
+            GroupPNsAtSameLocation = false,
+            StackPropertiesSingleChildBranches = false,
         };
 
         var contents = componentIterator.MakeContent(instance);
@@ -46,11 +47,17 @@ public class ICDTableIterator : IIterator<IComponentContent>
             bool isSubOfATopMost = topMostConnectors.Contains(port.TopMostUser());
             return !isATopMostConnector && isSubOfATopMost;
         }
-        var topmostConnectorContents = contents.OfType<IPropertyContent>().Where(c =>
-            ! IsSubOfTopMostConnectors((c.Property as ICDTableContentProperty)!.Port));
+        var topmostConnectorContents = contents.Where(c =>
+            c switch
+            {
+                IPropertyContent { Property : ICDTableContentProperty prop } => ! IsSubOfTopMostConnectors(prop.Port),
+                not IPropertyContent => c.Component.IsPublic, // Private part are still present as leaf, we remove them
+                _ => false,
+            });
+            
 
         var topmostConnectorsR = ComponentIterator.SubIterateProperties<ICDTableContentProperty>(topmostConnectorContents,
-            p => p.Port.Definition!.SubPorts.Select(p => new ICDTableContentProperty() { Port = p }));
+            content => content.Port.Definition!.SubPorts.Select(p => new ICDTableContentProperty() { Port = p }));
 
         foreach (var c in topmostConnectorsR)
         {

@@ -127,6 +127,22 @@ public class CablingConnectionsTests
         var benchInstance = i.Components.First().Instance;
         WriteConnection(ConnectorIdentity.Topmost, benchInstance);
     }
+
+
+    private void WriteICD(ConnectorIdentity displayIdentity, Part part)
+    => WriteICD(displayIdentity, new Pinstance(part));
+    private void WriteICD(ConnectorIdentity displayIdentity, Pinstance instance)
+    {
+        var table = new TextTableFile(instance)
+        {
+            Table = ConnectivityTables.InterfaceControlDocumentTable(),
+            Formater = new Export.Tables.MarkdownTableFormater()
+        };
+        table.WriteToConsole();
+    }
+
+    [TestMethod] public void WriteRack1_ICD() => WriteICD(ConnectorIdentity.Immediate, new Rack1());
+    [TestMethod] public void WriteRack2_ICD() => WriteICD(ConnectorIdentity.Topmost, new Rack2());
 }
 
 class Bench4 : Bench3, IPartAdditionalDocuments
