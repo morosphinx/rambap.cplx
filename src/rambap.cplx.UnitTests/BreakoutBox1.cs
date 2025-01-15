@@ -6,6 +6,7 @@ public class BreakoutBox1 : Part
 {
     ConnecteurSubD9 J01;
 
+    [ComponentDescription("Fiches 4mm Noires")]
     Fiche4mmNoir J11, J12, J13, J14, J15, J16, J17, J18, J19;
 
     BraidedCableSleeve10mm CableSleeve;
@@ -18,7 +19,11 @@ public class BreakoutBox1 : Part
 
     BreakoutPCB PCB01;
 
+    [ComponentDescription("L Identification")]
     ASticker Sticker;
+
+    [ComponentDescription("R Identification")]
+    ASticker SecondSticker;
 
     Part Sticket2;
 }

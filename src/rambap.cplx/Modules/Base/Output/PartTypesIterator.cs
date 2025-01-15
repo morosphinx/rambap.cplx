@@ -66,14 +66,26 @@ public class PartTypesIterator : IIterator<IComponentContent>
             }
             else
             {
-                // Group has some items that we want to enumerate into
-                if (WriteBranches)
-                    yield return new BranchComponent(componentGroup);
                 if (IsAPropertyTable)
                 {
                     var properties = PropertyIterator!.Invoke(primaryItem.Component);
-                    foreach (var prop in properties)
-                        yield return new LeafComponentWithProperty(componentGroup) { Property = prop, IsLeafBecause = LeafCause.NoChild };
+                    bool hasProperties = properties.Any();
+                    if (hasProperties)
+                    {
+                        // Part have has some property items that we want to enumerate into
+                        if (WriteBranches)
+                            yield return new BranchComponent(componentGroup);
+                        foreach (var prop in properties)
+                            yield return new LeafComponentWithProperty(componentGroup) { Property = prop, IsLeafBecause = LeafCause.NoChild };
+                    } else
+                    {
+                        // art have no property item child
+                        yield return new LeafComponent(componentGroup) { IsLeafBecause = LeafCause.NoChild };
+                    }
+                }
+                else // Not a property table. All Components are returned as leaf with no child
+                {
+                    yield return new LeafComponent(componentGroup) { IsLeafBecause = LeafCause.NoChild };
                 }
             }
         }

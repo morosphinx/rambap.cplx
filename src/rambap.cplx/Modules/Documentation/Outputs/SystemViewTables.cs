@@ -26,10 +26,9 @@ public static class SystemViewTables
            },
            Columns = [
                 IDColumns.ComponentNumberPrettyTree(),
-                CommonColumns.ComponentTotalCount(),
+                CommonColumns.ComponentTotalCount(displayBranches : true),
                 IDColumns.GroupCNs(),
                 IDColumns.PartNumber(),
-                CommonColumns.ComponentComment(),
                 DescriptionColumns.PartDescription(),
            ],
        };
