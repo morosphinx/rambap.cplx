@@ -6,7 +6,7 @@ namespace rambap.cplx.Modules.Base.Output;
 public static class CommonColumns
 {
     public static IColumn<IComponentContent> EmptyColumn(string title = "")
-        => new DelegateColumn<IComponentContent>(title, ColumnTypeHint.String,
+        => new DelegateColumn<IComponentContent>(title, ColumnTypeHint.StringFormatable,
             i => "");
 
     public static IColumn<IComponentContent> LineNumber()
@@ -29,13 +29,15 @@ public static class CommonColumns
             });
 
     public static DelegateColumn<IComponentContent> ComponentComment() =>
-        new DelegateColumn<IComponentContent>("Component description", ColumnTypeHint.String,
+        new DelegateColumn<IComponentContent>("Component description", ColumnTypeHint.StringFormatable,
             i => i.Component.Comment);
 
     public class ComponentPrettyTreeColumn : IColumn<IComponentContent>
     {
         public required string Title { get; init; }
-        public ColumnTypeHint TypeHint => ColumnTypeHint.String;
+        public bool CanFormat = false;
+        public ColumnTypeHint TypeHint =>
+            CanFormat ? ColumnTypeHint.StringFormatable : ColumnTypeHint.StringExact ;
 
         private List<bool> LevelDone { get; } = [];
         public string CellFor(IComponentContent item)

@@ -34,4 +34,9 @@ public class DocumentationBuilder
         ContextPart = part;
         ContextInstance = instance;
     }
+
+    public void AddInstruction(string filename, IInstruction instruction)
+        => AdditionalInstructions.Add((filename, instruction));
+    public void AddInstruction(Func<Pinstance, FilenameAndInstruction> instructionBuilder)
+        => AdditionalInstructionBuilders.Add(instructionBuilder);
 }

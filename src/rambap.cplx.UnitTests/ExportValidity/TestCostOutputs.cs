@@ -10,7 +10,7 @@ public class TestCostOutputs
 {
     private void TestTotalCost_SumCoherence(IIterator<IComponentContent> iterator)
     {
-        SetPropertyIterator(iterator, i => i.Cost()?.NativeCosts ?? []);
+        SetPropertyIterator(iterator, c => c.Instance.Cost()?.NativeCosts ?? []);
         var part = new DecimalPropertyPartExemple<Cost>.Part_A();
         var instance = new Pinstance(part);
         ColumnTester.TestDecimalColumn_SumCoherence(

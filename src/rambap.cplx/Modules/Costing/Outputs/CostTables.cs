@@ -11,13 +11,13 @@ public static class CostTables
     /// Used to display costless part in bill of materials
     /// We want to be aware if something cost 0.0 in those
     /// </summary>
-    /// <param name="i"></param>
+    /// <param name="c"></param>
     /// <returns></returns>
-    private static IEnumerable<object> ListCostOr0(Core.Pinstance i)
+    private static IEnumerable<object> ListCostOr0(Core.Component c)
     {
-        if (i.Cost() != null)
+        if (c.Instance.Cost() is not null and var cost)
         {
-            var nativeCosts = i.Cost()!.NativeCosts;
+            var nativeCosts = cost.NativeCosts;
             if (nativeCosts.Count == 0)
                 return [new InstanceCost.NativeCostInfo("", 0)];
             else
@@ -44,7 +44,7 @@ public static class CostTables
             Columns = [
                 CommonColumns.LineTypeNumber(),
                 IDColumns.PartNumber(),
-                DescriptionColumns.GroupDescription(),
+                DescriptionColumns.PartDescription(),
                 CostColumns.CostName(),
                 CostColumns.UnitCost(),
                 CommonColumns.ComponentTotalCount(),
@@ -60,7 +60,7 @@ public static class CostTables
         {
             Iterator = new ComponentIterator()
             {
-                PropertyIterator = (i) => i.Cost()?.NativeCosts ?? new(),
+                PropertyIterator = (c) => c.Instance.Cost()?.NativeCosts ?? new(),
                 GroupPNsAtSameLocation = true,
                 StackPropertiesSingleChildBranches = true,
             },

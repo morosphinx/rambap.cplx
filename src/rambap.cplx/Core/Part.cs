@@ -83,7 +83,8 @@ public partial class Part
 
 
     /// <summary>
-    /// Overide of the default CN of this part when used as a component
+    /// Overide of the default CN of this part when used as a component <br/>
+    /// This take priority over <see cref="RenameAttribute"/>
     /// </summary>
     public string? CN { init => CNOverride = value; }
     internal string? CNOverride { get; private set; } = null;
@@ -100,6 +101,7 @@ public partial class Part
     internal bool RequirePNOverride
         => AdditionalComponents.Count() > 0;
 
+
     /// <summary>
     /// TODO : Usage ?
     /// TBD : Parent of this part in the part tree.
@@ -108,6 +110,12 @@ public partial class Part
     [CplxIgnore]
     internal Part? Parent  = null;
 
+    /// <summary>
+    /// TODO : Usage ?
+    /// TBD : Instance implementing this Part
+    /// </summary>
+    [CplxIgnore]
+    internal Pinstance ImplementingInstance { get; set; }
 
     /// <summary>
     /// You can override the Part() constructor to implement some custom logic. <br/>

@@ -9,7 +9,7 @@ namespace rambap.cplx.Modules.Costing.Outputs;
 public static class TaskColumns
 {
     public static DelegateColumn<IComponentContent> TaskName()
-        => new DelegateColumn<IComponentContent>("Task Name", ColumnTypeHint.String,
+        => new DelegateColumn<IComponentContent>("Task Name", ColumnTypeHint.StringFormatable,
             i => i switch
             {
                 IPropertyContent { Property : InstanceTasks.NamedTask  prop} lp => prop.Name,
@@ -20,7 +20,7 @@ public static class TaskColumns
             });
 
     public static DelegateColumn<IComponentContent> TaskCategory()
-        => new DelegateColumn<IComponentContent>("Task Category", ColumnTypeHint.String,
+        => new DelegateColumn<IComponentContent>("Task Category", ColumnTypeHint.StringFormatable,
             i => i switch
             {
                 IPropertyContent { Property: InstanceTasks.NamedTask prop } => prop.Category,
@@ -30,7 +30,7 @@ public static class TaskColumns
             });
 
     public static DelegateColumn<IComponentContent> TaskRecurence()
-        => new DelegateColumn<IComponentContent>("R", ColumnTypeHint.String,
+        => new DelegateColumn<IComponentContent>("R", ColumnTypeHint.StringExact,
             i => i switch
             {
                 IPropertyContent { Property: InstanceTasks.NamedTask prop } => prop.IsRecurent ? "*" : "",

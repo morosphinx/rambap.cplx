@@ -12,7 +12,7 @@ public class InstanceConnectivity : IInstanceConceptProperty
     public bool IsACable { get; init; } = true;
 
     public required List<ConnectablePort> Connectors { get; init; }
-    public required List<Mate> Connections { get; init; }
+    public required List<IAssemblingConnection> Connections { get; init; }
     public required List<WiringAction> Wirings { get; init; }
 
     public enum DisplaySide
@@ -45,13 +45,13 @@ internal class ConnectionConcept : IConcept<InstanceConnectivity>
             var connectionBuilder = new ConnectionBuilder(instance, template);
             // User defined connection and exposition are created from here
             a.Assembly_Connections(connectionBuilder);
-            foreach(var c in selfConnectors)
+            foreach (var c in selfConnectors)
             {
                 if (!c.HasbeenDefined)
                     c.DefineAsHadHoc();
             }
 
-            var selfDefinedConnection = connectionBuilder!.Mates;
+            var selfDefinedConnection = connectionBuilder!.Connections;
             var selfDefinedWirings = connectionBuilder!.Wirings;
             // 
             // var groups = ConnectionHelpers.GroupConnectionsByTopmostPort(selfDefinedWirings);
@@ -85,7 +85,7 @@ internal class ConnectionConcept : IConcept<InstanceConnectivity>
                 Wirings = selfDefinedWirings.ToList(),
             };
         }
-        else
+        else if (selfConnectors.Any())
         {
             // Force definition on every connector, even if the part is not an IPartConnectable
             foreach (var c in selfConnectors)
@@ -93,7 +93,13 @@ internal class ConnectionConcept : IConcept<InstanceConnectivity>
                 if (!c.HasbeenDefined)
                     c.DefineAsHadHoc();
             }
-            return null;
-        };
+            return new InstanceConnectivity()
+            {
+                Connectors = selfConnectors,
+                Connections = [],
+                Wirings = [],
+            };
+        }
+        else return null;
     }
 }

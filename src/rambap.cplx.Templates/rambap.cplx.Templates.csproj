@@ -3,7 +3,7 @@
   <PropertyGroup>
     <!-- The package metadata. Fill in the properties marked as TODO below -->
     <!-- Follow the instructions on https://learn.microsoft.com/en-us/nuget/create-packages/package-authoring-best-practices -->
-    <Version>0.1.0-alpha8</Version>
+    <Version>0.1.0-alphb.10</Version>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     <PackageOutputPath>..\nupckgs</PackageOutputPath>
     <Title>CPLX Templates</Title>

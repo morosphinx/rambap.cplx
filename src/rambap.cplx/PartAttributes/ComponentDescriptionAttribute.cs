@@ -1,7 +1,7 @@
 ﻿namespace rambap.cplx.PartAttributes;
 
 /// <summary>
-/// Apply this atttribute to a property/field of type <see cref="Part"/> to add description to the component it represent. <br/>
+/// Apply this attribute to a property/field of type <see cref="Part"/> to add description to the component it represent. <br/>
 /// </summary>
 [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property, AllowMultiple = true)]
 public class ComponentDescriptionAttribute : Attribute

@@ -123,7 +123,7 @@ internal static class ColumnTester
     }
 
     public static void SetPropertyIterator(IIterator<IComponentContent> iterator,
-        Func<Pinstance, IEnumerable<object>>? propertyIterator)
+        Func<Component, IEnumerable<object>>? propertyIterator)
     {
         switch(iterator)
         {

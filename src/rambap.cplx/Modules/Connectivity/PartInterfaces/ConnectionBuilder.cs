@@ -14,13 +14,13 @@ namespace rambap.cplx.PartInterfaces;
 public class ConnectionBuilder
 {
     internal List<StructuralConnection> StructuralConnections { get; } = [];
-    internal List<Mate> Mates { get; } = [];
+    internal List<IAssemblingConnection> Connections { get; } = [];
     internal List<WiringAction> Wirings { get; } = [];
 
 
     private void AssertOwnThisCabling(Mate cabling)
     {
-        if (!Mates.Contains(cabling))
+        if (!Connections.Contains(cabling))
             throw new InvalidOperationException($"Cabling {cabling} is not owned by this");
     }
     private void AssertOwnThisWiring(WiringAction wiring)
@@ -86,7 +86,7 @@ public class ConnectionBuilder
         ContextPart.AssertIsOwnerOrParent(connectorB);
         // TODO : Test here that both connector are compatible
         var connection = new Mate(connectorA, connectorB);
-        Mates.Add(connection);
+        Connections.Add(connection);
         return connection;
     }
 
@@ -97,22 +97,40 @@ public class ConnectionBuilder
     /// <param name="connectorA"></param>
     /// <param name="connectorB"></param>
     /// <returns></returns>
-    public (Mate LeftMate, Mate RigthMate) ConnectWith(Part cablePart, ConnectablePort connectorA, ConnectablePort connectorB)
+    public Cable CableWith(Part cablePart, ConnectablePort connectorA, ConnectablePort connectorB)
     {
         // 1 - Assert with contextInstance that cablePart is a component or subcomponent of this.
         ContextPart.AssertIsASubComponent(cablePart);
         // 2 - Find in the instance of this part
+        Pinstance i = cablePart.ImplementingInstance;
         // 3 - Assert that the instance connector is a Cable
+        if (i.Connectivity() == null)
+            throw new InvalidOperationException($"{cablePart} is not a Connectable part");
+        var ci = i.Connectivity()!;
         // 3 a - It must have exactly 2 public port
         //   b - Both must NOT be connected yet (fully connectable, no connected subPort)
+        if (ci.Connectors.Count() != 2)
+            throw new InvalidOperationException($"{cablePart} must have exacly two connectors");
+        if (ci.Connectors.Any(c => !c.CanAddExclusiveConnection))
+            throw new InvalidOperationException($"{cablePart} is already connected elsewhere");
+        // Check that connector A and  connectorB are also not connected ?
+        // This is all to prevent the mates from begin created if any of them may fail
+
+        var cons = ci.Connectors.OrderBy(c => c.Name).ToList();
+        // TODO : 
         // 4 - Test both direction for connection validity. If one is valid, good.
         // If none are valid, crash
         // If both are valid, pick the firt one if connector are equivalent (how to prove ?) otherwise throw
+
         // 5 - If all good, create both matings (call the Mate() function) and return the mates
-
-        throw new NotImplementedException();
-
         // Etablish // with format of wire (WirePort A, WirePort B, Wire Definition) : we are doing something similar
+        var leftMate = Mate(connectorA, cons[0]);
+        var rigthMate = Mate(cons[1],connectorB);
+        Connections.Remove(leftMate);
+        Connections.Remove(rigthMate);
+        var cable = new Cable(cablePart, leftMate, rigthMate);
+        Connections.Add(cable);
+        return cable;
     }
 
     /// <summary>

@@ -1,48 +1,69 @@
-﻿using rambap.cplx.Export.Tables;
+﻿using rambap.cplx.Core;
+using rambap.cplx.Export.Tables;
+using rambap.cplx.Modules.Connectivity.Model;
 using static rambap.cplx.Modules.Connectivity.Outputs.ConnectivityTableContent;
 
 namespace rambap.cplx.Modules.Connectivity.Outputs;
 
 internal static class ConnectivityColumns
 {
+    public enum ConnectorIdentity
+    {
+        Immediate, // Will display the immediate connector
+        Topmost, // Will traverse the connector hierarchy and return informatio nrelative to the uppermost Expose() call
+    }
 
-    //public static DelegateColumn<ConnectivityTableContent> //LeftPart(ConnectorSide side, IColumn<ComponentContent> //componentColumn, string? title)
-    //{
-    //    return new DelegateColumn<ConnectivityTableContent>(
-    //        title ?? componentColumn.Title,
-    //        componentColumn.TypeHint,
-    //        i => componentColumn.CellFor(i.GetConnector//(side).TopMostUser().Owner
-    //            )
-    //        );
-    //}
-
-    public static DelegateColumn<ConnectivityTableContent> ConnectorName(ConnectorSide side)
+    public static DelegateColumn<ConnectivityTableContent> ConnectorName(ConnectorSide side, ConnectorIdentity identity, bool fullName = false)
         => new DelegateColumn<ConnectivityTableContent>(
             "Connector",
-            ColumnTypeHint.String,
-            i => i.GetImmediateConnector(side).Name);
+            ColumnTypeHint.StringExact,
+            i => identity switch
+            {
+                ConnectorIdentity.Immediate when fullName   => i.GetImmediateConnector(side).Name,
+                ConnectorIdentity.Immediate when !fullName  => i.GetImmediateConnector(side).FullDefinitionName(),
+                ConnectorIdentity.Topmost when fullName     => i.GetTopMostConnector(side).Name,
+                ConnectorIdentity.Topmost when !fullName    => i.GetTopMostConnector(side).FullDefinitionName(),
+                _ => throw new NotImplementedException(),
+            });
 
-    public static DelegateColumn<ConnectivityTableContent> ConnectorFullName(ConnectorSide side)
+    public static DelegateColumn<ConnectivityTableContent> ConnectorPart(
+            ConnectorSide side,
+            ConnectorIdentity identity,
+            string title,
+            Func<Pinstance,string> getter,
+            bool format = false)
         => new DelegateColumn<ConnectivityTableContent>(
-            "ConnectorFullName",
-            ColumnTypeHint.String,
-            i => i.GetImmediateConnector(side).FullDefinitionName());
+            title,
+            format ? ColumnTypeHint.StringFormatable : ColumnTypeHint.StringExact,
+            i => getter.Invoke(identity switch
+            {
+                ConnectorIdentity.Immediate => i.GetImmediateConnector(side).Owner!.ImplementingInstance,
+                ConnectorIdentity.Topmost   => i.GetTopMostConnector(side).Owner!.ImplementingInstance,
+                _ => throw new NotImplementedException(),
+            }));
 
-    public static DelegateColumn<ConnectivityTableContent> TopMostConnectorName(ConnectorSide side)
+    public static DelegateColumn<ConnectivityTableContent> CablePart(
+            string title, Func<Pinstance,
+            string> getter,
+            bool format = false)
         => new DelegateColumn<ConnectivityTableContent>(
-            "TopMostConnector",
-            ColumnTypeHint.String,
-            i => i.GetTopMostConnector(side).Name);
+            title,
+            format ? ColumnTypeHint.StringFormatable : ColumnTypeHint.StringExact,
+            i => i.Connection switch
+            {
+                Cable c => getter.Invoke(c.CablePart.ImplementingInstance) ,
+                _ => "",
+            });
 
-    public static DelegateColumn<ConnectivityTableContent> Dashes()
+    public static DelegateColumn<ConnectivityTableContent> Dashes(string title = "-- Connect to --")
         => new DelegateColumn<ConnectivityTableContent>(
-            "-- Connect to --",
-            ColumnTypeHint.String,
-            i => "----------------");
+            title,
+            ColumnTypeHint.StringExact,
+            i => new string('-',title.Length));
 
     public static DelegateColumn<ConnectivityTableContent> ConnectionKind()
         => new DelegateColumn<ConnectivityTableContent>(
             "Kind",
-            ColumnTypeHint.String,
+            ColumnTypeHint.StringFormatable,
             i => i.GetConnectionKind.ToString());
 }

@@ -9,6 +9,11 @@ namespace rambap.cplx.Core;
 /// </summary>
 public class Component
 {
+    internal Component(Pinstance parent)
+    {
+        Parent = parent;
+    }
+
     /// <summary>
     /// Definition if this component 
     /// </summary>
@@ -16,7 +21,17 @@ public class Component
     /// as unique instances of the Part class, even when reused identicaly in diferent contexts.
     /// This is wastefull, and could one day be optimised to allow components to share Pinstance class instances.
     /// Therefore a Component IS NOT a Pinstance itself, but point to one.
-    public required Pinstance Instance { get; init; }
+    public required Pinstance Instance
+    {
+        get => instance!;
+        set
+        {
+            value.Parent = this;
+            instance = value;
+        }
+    }
+    Pinstance? instance;
+    internal Pinstance? Parent;
 
     /// <summary>
     /// Component Number : Identifier of this component in its owner
@@ -82,6 +97,22 @@ public class Pinstance
     public Pinstance(Part template) : this(template, new PartConfiguration()) { }
 
 
+    /// <summary>
+    /// Component, if any, where this instance is used
+    /// </summary>
+    /// TODO : Using this imply Pinstance instance are unique,
+    public Component? Parent { get; set; }
+    public string CN => Parent?.CN ?? "*";
+    public string CID()
+    {
+        if (Parent == null)
+            return CN;
+        if (Parent!.Parent == null)
+            return Parent.CN;
+        else
+            return Parent!.Parent.CID() + Core.CID.Separator + CN;
+    }
+
     private static string MakeCommment(IEnumerable<ComponentDescriptionAttribute> commentAttributes)
         => string.Join("", commentAttributes.Select(c => c.Text));
 
@@ -91,7 +122,10 @@ public class Pinstance
     public Pinstance(Part template, PartConfiguration conf)
     {
         PartType = template.GetType();
-        template.CplxImplicitInitialization(); // is implicitly initialized
+        if (template.ImplementingInstance != null)
+            throw new InvalidOperationException("A Pinstance has already been created with this part");
+        template.ImplementingInstance = this; // Temporary, some concepts need to know instance from the part
+        template.CplxImplicitInitialization(); // run the implicit init on this part and all subparts
 
         // Select part PN
         var PNAttribute = template.GetType().GetCustomAttribute(typeof(PNAttribute)) as PNAttribute;
@@ -116,11 +150,15 @@ public class Pinstance
         var CommonNameAttribute = template.GetType().GetCustomAttribute(typeof(CommonNameAttribute)) as CommonNameAttribute;
         if (CommonNameAttribute != null)
         {
-            CommonName = CommonNameAttribute.CommonName; // Revision attribute value is used
+            CommonName = CommonNameAttribute.CommonName; // Common Name attribute value is used
+        }
+        else if(! string.IsNullOrEmpty(template.CommonName))
+        {
+            CommonName = template.CommonName; // Template Common Name value is used if not empty
         }
         else
         {
-            CommonName = template.CommonName; // Template Revision value is used
+            CommonName = PN; // Otherwise the Common Name is the PN
         }
 
         // Select part Revision
@@ -137,7 +175,7 @@ public class Pinstance
         // Create components from Parts properties/fields
         ScanObjectContentFor<Part>(template,
             (p, i) => components.Add(
-                new Component()
+                new Component(this)
                 {
                     Instance = new Pinstance(p, conf),
                     CN = p.CNOverride ?? i.Name,
@@ -152,7 +190,7 @@ public class Pinstance
             string cn_prefix = info.Name;
             int i = 1;
             return parts.Select(
-                p => new Component()
+                p => new Component(this)
                 {
                     Instance = new Pinstance(p, conf),
                     CN = p.CNOverride ?? $"{cn_prefix}_{i++:00}",
@@ -173,7 +211,7 @@ public class Pinstance
             {
                 var selectedPart = conf.Decide(a)!;
                 components.Add(
-                    new Component()
+                    new Component(this)
                     {
                         Instance = new Pinstance(selectedPart, conf),
                         CN = selectedPart.CNOverride ?? i.Name,
@@ -192,7 +230,7 @@ public class Pinstance
                 a =>
                 {
                     var selectedPart = conf.Decide(a)!;
-                    return new Component()
+                    return new Component(this)
                     {
                         Instance = new Pinstance(selectedPart, conf),
                         CN = selectedPart.CNOverride ?? $"{cn_prefix}_{i++:00}",

@@ -47,9 +47,10 @@ public class ExcelTableFile_CreatedNew : IInstruction
         // Excel Col and Rows are 1 indexed
         int firstColl = 1;
         uint currentRow = 1;
+        var headerLine = Table.MakeHeaderLine();
         FillInLineContent(sheetData,
-            Table.MakeHeaderLine(),
-            Table.MakeHeaderLine().Select(c => ColumnTypeHint.String).ToList(),
+            headerLine,
+            Enumerable.Range(0, headerLine.Count).Select(i => ColumnTypeHint.StringFormatable).ToList(),
             currentRow++, firstColl);
         FillInTableContents(sheetData,
             Table.MakeContentLines(Content),

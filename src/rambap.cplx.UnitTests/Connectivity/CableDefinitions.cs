@@ -66,14 +66,14 @@ public class TestSimpleCableContainer
         // Write the output table for reference
         var table = new TextTableFile(instance)
         {
-            Table = ConnectivityTables.ConnectionTable(),
+            Table = ConnectivityTables.ConnectionTable(ConnectivityColumns.ConnectorIdentity.Immediate),
             Formater = new Export.Tables.MarkdownTableFormater()
         };
         table.WriteToConsole();
         // Test Connectivity property value
         var connectivity = instance.Connectivity();
         //Assert.AreEqual(expectedBoxConnectionCount, connectivity!.Connections.Count);
-        Assert.AreEqual(expectedBoxConnectionCount, ConnectivityTableIterator.GetAllConnection(instance).Count());
+        Assert.AreEqual(expectedBoxConnectionCount, ConnectivityTableIterator.GetAllAssemblingConnection(instance).Count());
         
         // TODO : Assert End To end Link
         // if internal connected, assert B.LeftBoxConnector and B.RigthBoxConnector are connected

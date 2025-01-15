@@ -5,7 +5,19 @@ namespace rambap.cplx.Export.Tables;
 
 public enum ColumnTypeHint
 {
-    String,
+    /// <summary>
+    /// Column display a string whose content must be printed as-is (eg : PN)
+    /// </summary>
+    StringExact,
+    
+    /// <summary>
+    /// Column display a string whose content may be reformated (eg : textual comment) 
+    /// </summary>
+    StringFormatable, 
+
+    /// <summary>
+    /// Column display a numeric value
+    /// </summary>
     Numeric,
 }
 
