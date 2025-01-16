@@ -12,6 +12,7 @@ public class InstanceConnectivity : IInstanceConceptProperty
     public bool IsACable { get; init; } = true;
 
     public required List<ConnectablePort> Connectors { get; init; }
+    public required List<WireablePort> Wireables { get; init; }
     public required List<IAssemblingConnection> Connections { get; init; }
     public required List<WiringAction> Wirings { get; init; }
 
@@ -33,12 +34,16 @@ internal class ConnectionConcept : IConcept<InstanceConnectivity>
     public override InstanceConnectivity? Make(Pinstance instance, Part template)
     {
         var selfConnectors = new List<ConnectablePort>();
-        var selfPublicConnectors = new List<ConnectablePort>();
         ScanObjectContentFor<ConnectablePort>(template,
             (p, s) => {
                 selfConnectors.Add(p);
-                if(s.IsPublicOrAssembly) selfPublicConnectors.Add(p);
             });
+        var selfWirings = new List<WireablePort>();
+        ScanObjectContentFor<WireablePort>(template,
+            (p, s) => {
+                selfWirings.Add(p);
+            });
+
         // At this point no connector in the selfConnectorList has a definition
         if (template is IPartConnectable a)
         {
@@ -78,12 +83,15 @@ internal class ConnectionConcept : IConcept<InstanceConnectivity>
             //     }
             // }
 
-            return new InstanceConnectivity()
+            var connectivity = new InstanceConnectivity()
             {
                 Connectors = selfConnectors,
+                Wireables = selfWirings,
                 Connections = selfDefinedConnection.ToList(),
                 Wirings = selfDefinedWirings.ToList(),
             };
+            CheckInterfaceContracts(template, connectivity);
+            return connectivity;
         }
         else if (selfConnectors.Any())
         {
@@ -93,13 +101,31 @@ internal class ConnectionConcept : IConcept<InstanceConnectivity>
                 if (!c.HasbeenDefined)
                     c.DefineAsHadHoc();
             }
-            return new InstanceConnectivity()
+            foreach (var w in selfWirings)
+            {
+                if (!w.HasbeenDefined)
+                    w.DefineAsHadHoc();
+            }
+            var connectivity = new InstanceConnectivity()
             {
                 Connectors = selfConnectors,
+                Wireables = selfWirings,
                 Connections = [],
                 Wirings = [],
             };
+            CheckInterfaceContracts(template, connectivity);
+            return connectivity;
         }
         else return null;
+    }
+
+    private void CheckInterfaceContracts(Part part, InstanceConnectivity connectivity)
+    {
+        if (part is ISingleMateablePart)
+            if (connectivity.Connections.Count > 1)
+                throw new InvalidDataException($"{part} implement {nameof(ISingleMateablePart)} but has more than one {nameof(ConnectablePort)}");
+        if (part is ISingleWireablePart)
+            if (connectivity.Wireables.Count > 1)
+                throw new InvalidDataException($"{part} implement {nameof(ISingleWireablePart)} but has more than one {nameof(WireablePort)}");
     }
 }

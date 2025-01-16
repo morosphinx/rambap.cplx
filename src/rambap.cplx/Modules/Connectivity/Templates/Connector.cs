@@ -5,7 +5,7 @@ using System.Collections.ObjectModel;
 
 namespace rambap.cplx.Modules.Connectivity.Templates;
 
-public abstract class Connector<T> : Part, IPartConnectable
+public abstract class Connector<T> : Part, IPartConnectable, ISingleMateablePart
     where T : Pin, new()
 {
     public int PinCount { get; init; }
@@ -13,6 +13,9 @@ public abstract class Connector<T> : Part, IPartConnectable
 
     public ConnectablePort MateFace { get; }
     public ReadOnlyCollection<WireablePort> Pins { get; }
+
+    // ISingleMateablePart contract implementation
+    public ConnectablePort SingleConnectablePort => MateFace;
 
     public Connector(int pinCount) 
         : this(Enumerable.Range(0,pinCount).Select(i => $"{i+1}").ToList())

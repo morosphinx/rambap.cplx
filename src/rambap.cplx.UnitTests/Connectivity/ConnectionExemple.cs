@@ -133,8 +133,8 @@ class WiringA : Part, IPartConnectable
         Do.Wire(C03.Pins[6], C03.Pins[7]);
 
         // Expositions
-        Do.ExposeAs(C01.MateFace, J01);
-        Do.ExposeAs(C02.MateFace, J02);
+        Do.ExposeAs(C01, J01);
+        Do.ExposeAs(C02, J02);
         Do.ExposeAs(C03.MateFace, J03);
     }
 }
