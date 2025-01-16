@@ -6,10 +6,13 @@ namespace rambap.cplx.Modules.Connectivity.Outputs;
 
 internal class ConnectivityTableIterator : IIterator<ConnectivityTableContent>
 {
+    public required bool IncludeSubComponentConnections { get; init; }
+    public required ConnectionKind IteratedConnectionKind { get; init; }
+
     public IEnumerable<ConnectivityTableContent> MakeContent(Pinstance instance)
     {
         var connectivity = instance.Connectivity()!; // Throw if no connectivity definition
-        var connections = GetAllAssemblingConnection(instance);
+        var connections = GetAllConnections(instance, IncludeSubComponentConnections, IteratedConnectionKind);
         // var connectionsFlattened = connections.SelectMany(c => c.Connections);
 
         var connectionsGrouped = ConnectionHelpers.GroupConnectionsByTopmostPort(connections);
@@ -40,16 +43,33 @@ internal class ConnectivityTableIterator : IIterator<ConnectivityTableContent>
         }
     }
 
-    public static IEnumerable<IAssemblingConnection> GetAllAssemblingConnection(Pinstance instance)
+    public enum ConnectionKind
+    {
+        Assembly,
+        Wiring
+    }
+    public static IEnumerable<ISignalPortConnection> GetAllConnections(Pinstance instance, bool recursive, ConnectionKind connectionKind)
     {
         // Return all connection, NOT flattening grouped ones (Twisting / Sielding)
-        foreach (var c in instance.Connectivity()?.Connections ?? [])
-            yield return c;
-        foreach(var subcomp in instance.Components)
+        switch (connectionKind)
         {
-            if(instance.Connectivity != null) // TBD : include even non conectivity defining components ?
-                foreach(var c in GetAllAssemblingConnection(subcomp.Instance))
+            case ConnectionKind.Assembly:
+                foreach (var c in instance.Connectivity()?.Connections ?? [])
                     yield return c;
+                break;
+            case ConnectionKind.Wiring:
+                foreach (var c in instance.Connectivity()?.Wirings ?? [])
+                    yield return c;
+                break;
+        }
+        if (recursive)
+        {
+            foreach(var subcomp in instance.Components)
+            {
+                if(instance.Connectivity != null) // TBD : include even non connectivity defining components ?
+                    foreach(var c in GetAllConnections(subcomp.Instance,recursive,connectionKind))
+                        yield return c;
+            }
         }
     }
 }

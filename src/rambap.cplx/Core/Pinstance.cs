@@ -103,7 +103,7 @@ public class Pinstance
     /// TODO : Using this imply Pinstance instance are unique,
     public Component? Parent { get; set; }
     public string CN => Parent?.CN ?? "*";
-    public string CID()
+    public string CID(string separator = Core.CID.Separator)
     {
         if (Parent == null)
             return CN;

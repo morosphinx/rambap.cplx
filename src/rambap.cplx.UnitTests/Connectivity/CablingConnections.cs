@@ -84,16 +84,35 @@ class CableTypeB : Part
 [TestClass]
 public class CablingConnectionsTests
 {
-    private void WriteConnection(ConnectorIdentity displayIdentity, Part part)
+    internal static void WriteConnection(ConnectorIdentity displayIdentity, Part part)
         => WriteConnection(displayIdentity, new Pinstance(part));
-    private void WriteConnection(ConnectorIdentity displayIdentity, Pinstance instance)
+    internal static void WriteConnection(ConnectorIdentity displayIdentity, Pinstance instance)
     {
-        var table = new TextTableFile(instance)
+        Console.WriteLine("Connectivity");
+        var table1 = new TextTableFile(instance)
         {
             Table = ConnectivityTables.ConnectionTable(displayIdentity),
             Formater = new Export.Tables.MarkdownTableFormater()
         };
-        table.WriteToConsole();
+        table1.WriteToConsole();
+
+        Console.WriteLine("");
+        Console.WriteLine("Wirings");
+        var table2 = new TextTableFile(instance)
+        {
+            Table = ConnectivityTables.WiringTable(),
+            Formater = new Export.Tables.MarkdownTableFormater()
+        };
+        table2.WriteToConsole();
+
+        Console.WriteLine("");
+        Console.WriteLine("ICD");
+        var table3 = new TextTableFile(instance)
+        {
+            Table = ConnectivityTables.InterfaceControlDocumentTable(),
+            Formater = new Export.Tables.MarkdownTableFormater()
+        };
+        table3.WriteToConsole();
     }
 
     [TestMethod] public void WriteBench1_IM() => WriteConnection(ConnectorIdentity.Immediate, new Bench1());

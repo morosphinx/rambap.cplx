@@ -19,7 +19,7 @@ public record TableProducer<T> : ITableProducer
 
     /// <summary>
     /// Enumerable transformation applied while running <see cref="MakeContentLines(Pinstance)"/> </br>
-    /// Can be used to add filterign to the table data.
+    /// Can be used to add filtering to the table data.
     /// </summary>
     public Func<IEnumerable<T>, IEnumerable<T>>? ContentTransform { get; init; } = null;
 

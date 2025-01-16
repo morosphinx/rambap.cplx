@@ -73,7 +73,8 @@ public class TestSimpleCableContainer
         // Test Connectivity property value
         var connectivity = instance.Connectivity();
         //Assert.AreEqual(expectedBoxConnectionCount, connectivity!.Connections.Count);
-        Assert.AreEqual(expectedBoxConnectionCount, ConnectivityTableIterator.GetAllAssemblingConnection(instance).Count());
+        var connections = ConnectivityTableIterator.GetAllConnections(instance, true, ConnectivityTableIterator.ConnectionKind.Assembly);
+        Assert.AreEqual(expectedBoxConnectionCount, connections.Count());
         
         // TODO : Assert End To end Link
         // if internal connected, assert B.LeftBoxConnector and B.RigthBoxConnector are connected

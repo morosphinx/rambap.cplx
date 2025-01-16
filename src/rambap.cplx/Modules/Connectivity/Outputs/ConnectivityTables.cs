@@ -11,15 +11,38 @@ internal class ConnectivityTables
     public static TableProducer<ConnectivityTableContent> ConnectionTable(ConnectorIdentity identity)
         => new TableProducer<ConnectivityTableContent>()
         {
-            Iterator = new ConnectivityTableIterator(),
+            Iterator = new ConnectivityTableIterator()
+            {
+                IncludeSubComponentConnections = true,
+                IteratedConnectionKind = ConnectivityTableIterator.ConnectionKind.Assembly
+            },
             Columns = [
-                    ConnectorPart(ConnectorSide.Left,identity,"CID", i => i.CID()),
+                    ConnectorPart(ConnectorSide.Left,identity,"CID", i => i.CID(" / ")),
                     ConnectorName(ConnectorSide.Left,identity),
                     Dashes("--"),
                     CablePart("Cable",c => c.CN),
                     Dashes("--"),
+                    ConnectorPart(ConnectorSide.Rigth,identity,"CID", i => i.CID(" / ")),
                     ConnectorName(ConnectorSide.Rigth,identity),
-                    ConnectorPart(ConnectorSide.Rigth,identity,"CID", i => i.CID()),
+                ]
+        };
+
+    public static TableProducer<ConnectivityTableContent> WiringTable(ConnectorIdentity identity = ConnectorIdentity.Immediate)
+        => new TableProducer<ConnectivityTableContent>()
+        {
+            Iterator = new ConnectivityTableIterator()
+            {
+                IncludeSubComponentConnections = false,
+                IteratedConnectionKind = ConnectivityTableIterator.ConnectionKind.Wiring
+            },
+            Columns = [
+                    ConnectorPart(ConnectorSide.Left,identity,"CN", i => i.CN),
+                    ConnectorName(ConnectorSide.Left,identity),
+                    Dashes("--"),
+                    EmptyColumn("Signal"),
+                    Dashes("--"),
+                    ConnectorPart(ConnectorSide.Rigth,identity,"CN", i => i.CN),
+                    ConnectorName(ConnectorSide.Rigth,identity),
                 ]
         };
 

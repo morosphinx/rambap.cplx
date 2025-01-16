@@ -8,12 +8,12 @@ public static class CID
     /// <summary>
     /// Separator added between components CN
     /// </summary>
-    public static string Separator => "/";
+    public const string Separator = "/";
 
     /// <summary>
     /// Name given to the root component in the tree
     /// </summary>
-    public static string ImplicitRoot => "*";
+    public const string ImplicitRoot = "*";
 
     /// <summary>
     /// Append a component CN to a CID path
