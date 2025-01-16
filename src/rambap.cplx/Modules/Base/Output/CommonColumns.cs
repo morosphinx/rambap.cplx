@@ -20,17 +20,23 @@ public static class CommonColumns
         => new DelegateColumn<IComponentContent>("Depth", ColumnTypeHint.Numeric,
             i => i.Location.Depth.ToString());
 
-    public static DelegateColumn<IComponentContent> ComponentTotalCount(bool includeBranches = false)
+    public static DelegateColumn<IComponentContent> ComponentTotalCount(bool displayBranches = false)
         => new DelegateColumn<IComponentContent>("Count", ColumnTypeHint.Numeric,
             i => i switch
             {
-                BranchComponent bc when !includeBranches => "",
+                BranchComponent bc when !displayBranches => "",
                 _ => i.ComponentTotalCount.ToString(),
             });
 
     public static DelegateColumn<IComponentContent> ComponentComment() =>
         new DelegateColumn<IComponentContent>("Component description", ColumnTypeHint.StringFormatable,
-            i => i.Component.Comment);
+            i => i switch
+            {
+                // In case of a group of component, only display if the components have the same comment
+                var con when con.IsGrouping => con.AllComponentsMatch(c => c.Comment, out var val) ? val : "", 
+                _ => i.Component.Comment,
+            });
+
 
     public class ComponentPrettyTreeColumn : IColumn<IComponentContent>
     {

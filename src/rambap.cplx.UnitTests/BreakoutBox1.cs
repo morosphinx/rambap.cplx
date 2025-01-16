@@ -6,6 +6,7 @@ public class BreakoutBox1 : Part
 {
     ConnecteurSubD9 J01;
 
+    [ComponentDescription("Fiches 4mm Noires")]
     Fiche4mmNoir J11, J12, J13, J14, J15, J16, J17, J18, J19;
 
     BraidedCableSleeve10mm CableSleeve;
@@ -18,11 +19,16 @@ public class BreakoutBox1 : Part
 
     BreakoutPCB PCB01;
 
+    [ComponentDescription("L Identification")]
     ASticker Sticker;
+
+    [ComponentDescription("R Identification")]
+    ASticker SecondSticker;
 
     Part Sticket2;
 }
 
+[CommonName("PCB")]
 class BreakoutPCB : Part
 {
     Cost Components = 250.74;
@@ -48,8 +54,8 @@ class BraidedCableSleeve10mm : Part
 
 
 [PN("MHDPPK9-DB9S-K")]
-[PartDescription(
-@"Connecteur SubD9 a souder. Avec backshell incluse")]
+[PartDescription(@"Connecteur SubD9 a souder. Avec backshell incluse")]
+[CommonName("DSub9")]
 class ConnecteurSubD9 : Part
 {
     Link rs = "https://fr.rs-online.com/web/p/connecteurs-sub-d/7659555?gb=s";
@@ -62,6 +68,7 @@ class ConnecteurSubD9 : Part
 
 [PN("934099100")]
 [PartDescription("Fiche de Test male protégée 4mm")]
+[CommonName("4mm Socket")]
 class Fiche4mmNoir : Part
 {
 

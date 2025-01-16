@@ -1,5 +1,6 @@
 ﻿using rambap.cplx.Core;
 using rambap.cplx.Export.Tables;
+using rambap.cplx.Modules.Base.Output;
 using rambap.cplx.Modules.Connectivity.Model;
 using static rambap.cplx.Modules.Connectivity.Outputs.ConnectivityTableContent;
 
@@ -10,7 +11,7 @@ internal static class ConnectivityColumns
     public enum ConnectorIdentity
     {
         Immediate, // Will display the immediate connector
-        Topmost, // Will traverse the connector hierarchy and return informatio nrelative to the uppermost Expose() call
+        Topmost, // Will traverse the connector hierarchy and return information relative to the uppermost Expose() call
     }
 
     public static DelegateColumn<ConnectivityTableContent> ConnectorName(ConnectorSide side, ConnectorIdentity identity, bool fullName = false)
@@ -60,6 +61,10 @@ internal static class ConnectivityColumns
             title,
             ColumnTypeHint.StringExact,
             i => new string('-',title.Length));
+
+    public static DelegateColumn<ConnectivityTableContent> EmptyColumn(string title = "")
+        => new DelegateColumn<ConnectivityTableContent>(title, ColumnTypeHint.StringFormatable,
+            i => "");
 
     public static DelegateColumn<ConnectivityTableContent> ConnectionKind()
         => new DelegateColumn<ConnectivityTableContent>(

@@ -2,13 +2,11 @@
 
 namespace rambap.cplx.UnitTests.CoreTests;
 
-
-
 [TestClass]
 public class ImplicitPartConstruction
 {
     /// <summary>
-    /// Test class with all different ways to declare a part as a component of another
+    /// Test class with all different ways to declare a part as a component of another, no inheritance
     /// </summary>
     class TopLvlPart : Part
     {
@@ -21,11 +19,15 @@ public class ImplicitPartConstruction
         public MidLvlPart Mid_constructed_field;
         public MidLvlPart Mid_constructed_property { get; init; }
 
+        public MidLvlPart Mid_inlineConstructed_Property { get; } = new();
+
         [CplxIgnore]
         public MidLvlPart Ignored_null_field;
 
         [CplxIgnore]
         public MidLvlPart Ignored_null_property;
+
+        public MidLvlPart PartAlias => Ignored_null_field;
 
         public TopLvlPart()
         {
@@ -41,31 +43,40 @@ public class ImplicitPartConstruction
                 nameof(Mid_auto_property),
                 nameof(Mid_constructed_field),
                 nameof(Mid_constructed_property),
+                nameof(Mid_inlineConstructed_Property),
             ];
 
-        public static List<string> IgnoredComponents =>
+        public static List<string> NotExpectedComponents =>
             [
                 nameof(Ignored_null_field),
                 nameof(Ignored_null_property),
+                nameof(PartAlias),
             ];
     }
     class MidLvlPart : Part { }
 
+
     /// <summary>
-    /// Test that all ways to declare a component are supported
+    /// Test classes with all different ways to declare a part as a component of another, with inheritance
     /// </summary>
-    [TestMethod]
-    public void TestSingleComponentCreation()
+    class ParentPart : Part
     {
-        var p = new TopLvlPart();
-        var i = new Pinstance(p);
-        foreach(var cn in TopLvlPart.ExpectedComponents)
-        {
-            Assert.IsTrue(i.Components.Any(c => c.CN == cn));
-        }
-        Assert.AreEqual(TopLvlPart.ExpectedComponents.Count, i.Components.Count());
+        MidLvlPart PrivHiddenField;
+        MidLvlPart PrivHiddenProp { get; } = new();
+    }
+    class ChildPart : ParentPart
+    {
+        MidLvlPart PrivHiddenField;
+        MidLvlPart PrivHiddenProp { get; } = new();
+        MidLvlPart ErrorTrigger => null;
+
+        public const int ExpectedComponentCount = 4; // Both parent and child should be here, no collision
     }
 
+
+    /// <summary>
+    /// Test classes with all different ways to declare a lsit of components
+    /// </summary>
     class TopLvlPart_ListMode : Part
     {
         public List<MidLvlPart> MidParts_auto_field = [
@@ -99,6 +110,29 @@ public class ImplicitPartConstruction
 
 
     /// <summary>
+    /// Test that all ways to declare a component are supported
+    /// </summary>
+    [TestMethod]
+    public void TestSingleComponentCreation()
+    {
+        var p = new TopLvlPart();
+        var i = new Pinstance(p);
+        foreach (var cn in TopLvlPart.ExpectedComponents)
+        {
+            Assert.IsTrue(i.Components.Any(c => c.CN == cn));
+        }
+        Assert.AreEqual(TopLvlPart.ExpectedComponents.Count, i.Components.Count());
+    }
+
+    [TestMethod]
+    public void TestInheritanceomponentCreation()
+    {
+        var p = new ChildPart();
+        var i = new Pinstance(p);
+        Assert.AreEqual(ChildPart.ExpectedComponentCount, i.Components.Count());
+    }
+
+    /// <summary>
     /// Test that all ways to declare a component list are supported
     /// </summary>
     [TestMethod]
@@ -122,7 +156,7 @@ public class ImplicitPartConstruction
     {
         var p = new TopLvlPart();
         var i = new Pinstance(p);
-        foreach (var cn in TopLvlPart.IgnoredComponents)
+        foreach (var cn in TopLvlPart.NotExpectedComponents)
         {
             Assert.IsFalse(i.Components.Any(c => c.CN == cn));
         }

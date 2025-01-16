@@ -19,18 +19,18 @@ public static class CostColumns
             },
             i => i.Cost()?.Total.ToString("0.00"));
 
-    public static DelegateColumn<IComponentContent> CostName(bool include_branches = false)
+    public static DelegateColumn<IComponentContent> CostName(bool displayBranches = false)
         => new DelegateColumn<IComponentContent>("Cost Name", ColumnTypeHint.StringFormatable,
             i => i switch
             {
                 IPropertyContent {Property : InstanceCost.NativeCostInfo prop} lp => prop.name,
                 LeafComponent lc => "unit",
-                BranchComponent bc when include_branches => "total per unit",
-                BranchComponent bc when !include_branches => "",
+                BranchComponent bc when displayBranches => "total per unit",
+                BranchComponent bc when !displayBranches => "",
                 _ => throw new NotImplementedException(),
             });
 
-    public static DelegateColumn<IComponentContent> UnitCost(bool include_branches = false)
+    public static DelegateColumn<IComponentContent> UnitCost(bool displayBranches = false)
         => new DelegateColumn<IComponentContent>("Unit Cost", ColumnTypeHint.Numeric,
             i => i switch
             {
@@ -39,11 +39,11 @@ public static class CostColumns
                     lc.AllComponentsMatch(c => c.Instance.Cost()?.Total, out var value)
                         ? (value?.CostToString() ?? "")
                         : "error",
-                BranchComponent bc when include_branches =>
+                BranchComponent bc when displayBranches =>
                     bc.AllComponentsMatch(c => c.Instance.Cost()?.Total, out var value)
                         ? (value?.CostToString() ?? "")
                         : "error",
-                BranchComponent bc when !include_branches => "",
+                BranchComponent bc when !displayBranches => "",
                 _ => throw new NotImplementedException(),
             });
 

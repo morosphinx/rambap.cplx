@@ -25,6 +25,9 @@ public interface IComponentContent
     int ComponentTotalCount { get; }
 
     IEnumerable<(RecursionLocation location, Component component)> AllComponents();
+
+    public bool AllComponentsMatch<T>(Func<Component, T> getter);
+    public bool AllComponentsMatch<T>(Func<Component, T> getter, out T coherentValue);
 }
 
 
@@ -54,7 +57,7 @@ public abstract record ComponentContent : IComponentContent
 
     public bool AllComponentsMatch<T>(Func<Component, T> getter)
     {
-        return AllComponentsMatch<T>(getter, out T coherentValue);
+        return AllComponentsMatch<T>(getter, out T _);
     }
     public bool AllComponentsMatch<T>(Func<Component, T> getter, out T coherentValue)
     {
