@@ -76,6 +76,11 @@ public static class FileGroups
                     Table = Modules.Connectivity.Outputs.ConnectivityTables.ConnectionTable(ConnectorIdentity.Immediate),
                     Formater = new MarkdownTableFormater()
                 }),
+                ($"Wirings_{filenamePattern}.csv", new TextTableFile(i)
+                {
+                    Table = Modules.Connectivity.Outputs.ConnectivityTables.WiringTable(),
+                    Formater = new MarkdownTableFormater()
+                }),
                 ($"ICD_{filenamePattern}.csv", new TextTableFile(i)
                 {
                     Table = Modules.Connectivity.Outputs.ConnectivityTables.InterfaceControlDocumentTable(),
