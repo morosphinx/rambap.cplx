@@ -12,7 +12,24 @@ public abstract class Connector<T> : Part, IPartConnectable, ISingleMateablePart
     List<T> PinParts { get; }
 
     public ConnectablePort MateFace { get; }
-    public ReadOnlyCollection<WireablePort> Pins { get; }
+
+    // This is not public, because everybody identify pin with a 1-based indexed value
+    // Force this convention through the Pin() method
+    ReadOnlyCollection<WireablePort> WireablePorts { get; }
+    /// <summary>
+    /// Return the wireable Port with the *_1-based_* pin index 
+    /// </summary>
+    /// <param name="oneIndex">1-based pin index.<br/>
+    /// Eg : the first pin is GetPin(1), the last pint is Pin(PinCount)</param>
+    /// <returns></returns>
+    public WireablePort Pin(int oneBasedIndex)
+    {
+        if (PinCount == 0)
+            throw new InvalidOperationException("There are no pins in this connector");
+        if (oneBasedIndex == 0 || oneBasedIndex > PinCount)
+            throw new InvalidOperationException($"Invalid index. Use 1-based index to access pins. The first pin is {nameof(Pin)}(1). The last pin is {nameof(Pin)}({PinCount})");
+        return PinParts[oneBasedIndex - 1].Receptacle;
+    }
 
     // ISingleMateablePart contract implementation
     public ConnectablePort SingleConnectablePort => MateFace;
@@ -28,9 +45,9 @@ public abstract class Connector<T> : Part, IPartConnectable, ISingleMateablePart
         var pinParts = Enumerable.Range(1, PinCount).Select(i => new T());
         PinParts = pinParts.ToList();
         MateFace = new() { IsPublic = true };
-        Pins = pinParts.Select(p => new WireablePort() { IsPublic = true }).ToList().AsReadOnly();
+        WireablePorts = pinParts.Select(p => new WireablePort() { IsPublic = true }).ToList().AsReadOnly();
         int idx = 0;
-        foreach (var pin in Pins)
+        foreach (var pin in WireablePorts)
             pin.Name = pinNames[idx++];
     }
 
@@ -42,7 +59,7 @@ public abstract class Connector<T> : Part, IPartConnectable, ISingleMateablePart
         // Expose Pins backs
         foreach(var i in Enumerable.Range(0, PinCount))
         {
-            Do.ExposeAs(PinParts[i].Receptacle, Pins[i]);
+            Do.ExposeAs(PinParts[i].Receptacle, WireablePorts[i]);
         }
     }
 }
