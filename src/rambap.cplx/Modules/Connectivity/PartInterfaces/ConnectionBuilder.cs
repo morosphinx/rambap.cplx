@@ -41,13 +41,25 @@ public class ConnectionBuilder
         ContextPart.AssertIsOwnedBySubComponent(source);
         ContextPart.AssertIsOwner(target);
         target.DefineAsAnExpositionOf(source);
-    }
+    }   
+    // Helper methods
+    // The second connectable port CANNOT be an ISingleMateablePart,
+    // Because it is owned by the part, checked by AssertIsOwner()
+    public void ExposeAs(ISingleMateablePart sourcePart, ConnectablePort target)
+        => ExposeAs(sourcePart.SingleConnectablePort, target);
+
+
     public void ExposeAs(WireablePort source, WireablePort target)
     {
         ContextPart.AssertIsOwnedBySubComponent(source);
         ContextPart.AssertIsOwner(target);
         target.DefineAsAnExpositionOf(source);
     }
+    // Helper methods
+    // The second connectable port CANNOT be an ISingleWireablePart,
+    // Because it is owned by the part, checked by AssertIsOwner()
+    public void ExposeAs(ISingleWireablePart sourcePart, WireablePort target)
+    => ExposeAs(sourcePart.SingleWireablePort, target);
 
     /// <summary>
     /// Same as <see cref="ExposeAs(ConnectablePort, ConnectablePort)"/>, but instead multiplesubcomponent connectors
@@ -89,6 +101,16 @@ public class ConnectionBuilder
         Connections.Add(connection);
         return connection;
     }
+
+    // Helper methods
+    // The ISingleMateablePart may be the second or first argument
+    public Mate Mate(ConnectablePort connectorA, ISingleMateablePart partB)
+        => Mate(connectorA, partB.SingleConnectablePort);
+    public Mate Mate(ISingleMateablePart partA, ConnectablePort connectorB)
+        => Mate(partA.SingleConnectablePort, connectorB);
+    public Mate Mate(ISingleMateablePart partA, ISingleMateablePart partB)
+        => Mate(partA.SingleConnectablePort, partB.SingleConnectablePort);
+
 
     /// <summary>
     /// Try to use a cable to connect two connector

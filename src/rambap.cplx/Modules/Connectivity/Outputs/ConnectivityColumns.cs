@@ -6,7 +6,7 @@ using static rambap.cplx.Modules.Connectivity.Outputs.ConnectivityTableContent;
 
 namespace rambap.cplx.Modules.Connectivity.Outputs;
 
-internal static class ConnectivityColumns
+public static class ConnectivityColumns
 {
     public enum ConnectorIdentity
     {

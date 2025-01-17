@@ -10,6 +10,8 @@ class Box0 : Part, IPartConnectable
     BoxB B;
     CableC C;
 
+    public BoxA A => AA.A;
+
     public void Assembly_Connections(ConnectionBuilder Do)
     {
         Do.CableWith(C, AA.A.J01, B.J02);
@@ -51,8 +53,8 @@ class BoxE : Part
 }
 class BoxF : Part, IPartConnectable
 {
-    BoxE E;
-    BoxB B;
+    public BoxE E;
+    public BoxB B;
     CableC C;
 
     public void Assembly_Connections(ConnectionBuilder Do)
@@ -119,22 +121,22 @@ class WiringA : Part, IPartConnectable
     public void Assembly_Connections(ConnectionBuilder Do)
     {
         // 4 straitgh connection
-        Do.Wire(C01.Pins[0], C02.Pins[0]);
-        Do.Wire(C01.Pins[1], C02.Pins[1]);
-        Do.Wire(C01.Pins[2], C02.Pins[2]);
-        Do.Wire(C01.Pins[3], C02.Pins[3]);
+        Do.Wire(C01.Pin(1), C02.Pin(1));
+        Do.Wire(C01.Pin(2), C02.Pin(2));
+        Do.Wire(C01.Pin(3), C02.Pin(3));
+        Do.Wire(C01.Pin(4), C02.Pin(4));
         // 2 to another connector, mixed
-        Do.Wire(C01.Pins[5], C03.Pins[0]);
-        Do.Wire(C01.Pins[6], C03.Pins[1]);
+        Do.Wire(C01.Pin(6), C03.Pin(1));
+        Do.Wire(C01.Pin(7), C03.Pin(2));
         // A multiconnector distribution
-        Do.Wire(C01.Pins[9], C02.Pins[9]);
-        Do.Wire(C01.Pins[9], C03.Pins[9]);
+        Do.Wire(C01.Pin(10), C02.Pin(10));
+        Do.Wire(C01.Pin(10), C03.Pin(10));
         // A loopback
-        Do.Wire(C03.Pins[6], C03.Pins[7]);
+        Do.Wire(C03.Pin(7), C03.Pin(8));
 
         // Expositions
-        Do.ExposeAs(C01.MateFace, J01);
-        Do.ExposeAs(C02.MateFace, J02);
+        Do.ExposeAs(C01, J01);
+        Do.ExposeAs(C02, J02);
         Do.ExposeAs(C03.MateFace, J03);
     }
 }

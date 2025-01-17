@@ -4,7 +4,7 @@ using rambap.cplx.Modules.Connectivity.Model;
 
 namespace rambap.cplx.Modules.Connectivity.Outputs;
 
-internal class ConnectivityTableIterator : IIterator<ConnectivityTableContent>
+public class ConnectivityTableIterator : IIterator<ConnectivityTableContent>
 {
     public required bool IncludeSubComponentConnections { get; init; }
     public required ConnectionKind IteratedConnectionKind { get; init; }

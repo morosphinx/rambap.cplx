@@ -3,7 +3,7 @@ using rambap.cplx.Modules.Connectivity.Model;
 
 namespace rambap.cplx.Modules.Connectivity.Outputs;
 
-class ConnectivityTableContent
+public class ConnectivityTableContent
 {
     public enum ConnectorSide
     {

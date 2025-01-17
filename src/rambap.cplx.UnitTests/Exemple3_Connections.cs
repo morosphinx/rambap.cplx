@@ -50,13 +50,13 @@ class InternalCable1 : Part, IPartConnectable
     public void Assembly_Connections(ConnectionBuilder Do)
     {
         // D38 to D38 connection
-        Do.Wire(C01.A, C02.Pins[0]);
-        Do.Wire(C01.B, C02.Pins[1]);
-        Do.Wire(C01.C, C02.Pins[2]);
-        Do.Wire(C01.D, C02.Pins[3]);
-        Do.Wire(C01.E, C02.Pins[4]);
-        Do.Wire(C01.F, C02.Pins[5]);
-        Do.Wire(C01.G, C02.Pins[6]);
+        Do.Wire(C01.A, C02.Pin(1));
+        Do.Wire(C01.B, C02.Pin(2));
+        Do.Wire(C01.C, C02.Pin(3));
+        Do.Wire(C01.D, C02.Pin(4));
+        Do.Wire(C01.E, C02.Pin(5));
+        Do.Wire(C01.F, C02.Pin(6));
+        Do.Wire(C01.G, C02.Pin(7));
         // Power
         Do.Wire(C01.J, C04.SolderPoint);
         Do.Wire(C01.K, C05.SolderPoint);
@@ -124,17 +124,17 @@ class ComplexConnectorDeclarationKind3 : Connector<Size24pin>
 {
     // Same as kind2, but add explicit pin naming
 
-    public WireablePort A => Pins[0];
-    public WireablePort B => Pins[1];
-    public WireablePort C => Pins[2];
-    public WireablePort D => Pins[3];
-    public WireablePort E => Pins[4];
-    public WireablePort F => Pins[5];
-    public WireablePort G => Pins[6];
-    public WireablePort H => Pins[7];
-    public WireablePort I => Pins[8];
-    public WireablePort J => Pins[9];
-    public WireablePort K => Pins[10];
+    public WireablePort A => Pin(1);
+    public WireablePort B => Pin(2);
+    public WireablePort C => Pin(3);
+    public WireablePort D => Pin(4);
+    public WireablePort E => Pin(5);
+    public WireablePort F => Pin(6);
+    public WireablePort G => Pin(7);
+    public WireablePort H => Pin(8);
+    public WireablePort I => Pin(9);
+    public WireablePort J => Pin(10);
+    public WireablePort K => Pin(11);
     public ComplexConnectorDeclarationKind3() : base(11)
     { }
 }

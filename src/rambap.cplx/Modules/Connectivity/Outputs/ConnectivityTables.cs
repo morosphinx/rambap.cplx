@@ -6,7 +6,7 @@ using static rambap.cplx.Modules.Connectivity.Outputs.ICDTableIterator;
 
 namespace rambap.cplx.Modules.Connectivity.Outputs;
 
-internal class ConnectivityTables
+public class ConnectivityTables
 {
     public static TableProducer<ConnectivityTableContent> ConnectionTable(ConnectorIdentity identity)
         => new TableProducer<ConnectivityTableContent>()
