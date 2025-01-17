@@ -10,6 +10,8 @@ class Box0 : Part, IPartConnectable
     BoxB B;
     CableC C;
 
+    public BoxA A => AA.A;
+
     public void Assembly_Connections(ConnectionBuilder Do)
     {
         Do.CableWith(C, AA.A.J01, B.J02);
@@ -51,8 +53,8 @@ class BoxE : Part
 }
 class BoxF : Part, IPartConnectable
 {
-    BoxE E;
-    BoxB B;
+    public BoxE E;
+    public BoxB B;
     CableC C;
 
     public void Assembly_Connections(ConnectionBuilder Do)

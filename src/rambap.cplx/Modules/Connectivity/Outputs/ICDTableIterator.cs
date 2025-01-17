@@ -15,6 +15,7 @@ public class ICDTableIterator : IIterator<IComponentContent>
 
     public IEnumerable<IComponentContent> MakeContent(Pinstance instance)
     {
+        // Iterate all public connector of a part
         IEnumerable<object> SelectPublicConnectors(Component component)
         {
             var connectivity = component.Instance.Connectivity();
@@ -28,6 +29,7 @@ public class ICDTableIterator : IIterator<IComponentContent>
             }
         }
 
+        // Iterate all public components in the hierarchy
         var componentIterator = new ComponentIterator()
         {
             PropertyIterator = SelectPublicConnectors,
@@ -38,15 +40,20 @@ public class ICDTableIterator : IIterator<IComponentContent>
         };
 
         var contents = componentIterator.MakeContent(instance);
-        var connectorContents = contents.Where(c => c is not LeafComponent);
 
+        // Remove Leaf components, that have no public connector
+        var connectorContents = contents.Where(c => c is not LeafComponent);
+        // List all public topMostConnectors in the hierarchy
         var topMostConnectors = connectorContents.OfType<IPropertyContent>().Select(c => (c.Property as ICDTableContentProperty)!.Port.TopMostUser()).ToList();
+        
+        // Return true if the SignalPort is a subPort of a public TopMostconnector (combined or exposed as a topmostConnector)
         bool IsSubOfTopMostConnectors(SignalPort port)
         {
             bool isATopMostConnector = topMostConnectors.Contains(port);
             bool isSubOfATopMost = topMostConnectors.Contains(port.TopMostUser());
             return !isATopMostConnector && isSubOfATopMost;
         }
+        // Remove subPort that will be displayed/included as another TopMostPort
         var topmostConnectorContents = contents.Where(c =>
             c switch
             {
@@ -55,7 +62,7 @@ public class ICDTableIterator : IIterator<IComponentContent>
                 _ => false,
             });
             
-
+        // Recursively explicit the content of each SignalPort still in the hierarchy
         var topmostConnectorsR = ComponentIterator.SubIterateProperties<ICDTableContentProperty>(topmostConnectorContents,
             content => content.Port.Definition!.SubPorts.Select(p => new ICDTableContentProperty() { Port = p }));
 

@@ -49,11 +49,10 @@ public class ComponentIterator : IIterator<IComponentContent>
             // Test wether we should recurse inside this component's subcomponents
             var stopRecurseAttrib = mainComponent.Instance.PartType.GetCustomAttribute(typeof(CplxHideContentsAttribute));
             bool mayRecursePastThis =
-                stopRecurseAttrib == null &&
+                location.Depth == 0  || // Always recurse the first iteration (root node), no mater the recursion condition
                 (
-                    RecursionCondition == null
-                    || RecursionCondition(mainComponent, location)
-                    || location.Depth == 0 // Always recurse the first iteration (root node), no mater the recursion condition
+                    stopRecurseAttrib == null && // CplxHideContentsAttribute must not be present
+                    (RecursionCondition == null || RecursionCondition(mainComponent, location))
                 );
             bool isLeafDueToRecursionBreak = !mayRecursePastThis;
             if (isLeafDueToRecursionBreak)
