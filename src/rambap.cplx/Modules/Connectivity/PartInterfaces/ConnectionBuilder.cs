@@ -170,6 +170,14 @@ public class ConnectionBuilder
         Wirings.Add(connection);
         return connection;
     }
+    // Helper methods
+    // The ISingleWireablePart may be the second or first argument
+    public Wire Wire(WireablePort wireableA, ISingleWireablePart partB)
+        => Wire(wireableA, partB.SingleWireablePort);
+    public Wire Wire(ISingleWireablePart partA, WireablePort wireableB)
+        => Wire(partA.SingleWireablePort, wireableB);
+    public Wire Wire(ISingleWireablePart partA, ISingleWireablePart partB)
+        => Wire(partA.SingleWireablePort, partB.SingleWireablePort);
 
     public Twist Twist(IEnumerable<WiringAction> twistedCablings)
     {
