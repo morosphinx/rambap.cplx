@@ -7,6 +7,10 @@ namespace rambap.cplx.Modules.Connectivity.Model;
 
 public interface ISignalPortConnection
 {
+    Pinstance DeclaringInstance { get; }
+    Pinstance LeftPortInstance { get;  }
+    Pinstance RigthPortInstance { get; }
+
     SignalPort LeftPort { get; }
     SignalPort RightPort { get; }
     bool IsExclusive { get; }
@@ -67,11 +71,11 @@ public record Cable : IAssemblingConnection
     public Mate LeftMate { get; }
     public Mate RigthMate { get; }
 
-    public Part CablePart { get; }
+    public Component CableComponent { get; }
 
-    internal Cable(Part cablePart, Mate leftMate, Mate rigthMate)
+    internal Cable(Component cable, Mate leftMate, Mate rigthMate)
     {
-        CablePart = cablePart;
+        CableComponent = cable;
         LeftMate = leftMate;
         RigthMate = rigthMate;
     }

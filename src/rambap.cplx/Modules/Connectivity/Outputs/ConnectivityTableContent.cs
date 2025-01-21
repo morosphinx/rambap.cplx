@@ -1,5 +1,6 @@
 ﻿using rambap.cplx.PartProperties;
 using rambap.cplx.Modules.Connectivity.Model;
+using rambap.cplx.Core;
 
 namespace rambap.cplx.Modules.Connectivity.Outputs;
 
@@ -11,12 +12,18 @@ public class ConnectivityTableContent
         Rigth,
     }
 
+
+
     // TODO : why are those in their own property here, while they can also be deduced from the connection data ?
     // Group connection together on display, detect changs in left/right definition ?
     // This may also be inversed from the ocnnecton left / rigth definition
     public required SignalPort LeftTopMostConnector { get; init; }
     public required SignalPort RigthTopMostConnector { get; init; }
 
+
+
+    public Pinstance RigthPortOwner { get; }
+    public Pinstance LeftPortOwner { get; }
     public required ISignalPortConnection Connection { get; init; }
 
     public SignalPort GetTopMostConnector(ConnectorSide side)

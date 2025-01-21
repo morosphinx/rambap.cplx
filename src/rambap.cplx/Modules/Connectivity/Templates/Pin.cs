@@ -4,7 +4,7 @@ using rambap.cplx.PartProperties;
 
 namespace rambap.cplx.Modules.Connectivity.Templates;
 
-public abstract class Pin : Part, IPartConnectable, ISingleMateablePart, ISingleWireablePart
+public abstract class Pin : Part, IPartConnectable, ISingleMateable, ISingleWireable
 {
     // Fields are filled by cplx
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
@@ -15,7 +15,7 @@ public abstract class Pin : Part, IPartConnectable, ISingleMateablePart, ISingle
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
 
     // ISingleMateablePart contract implementation
-    public ConnectablePort SingleConnectablePort => Contact;
+    public ConnectablePort SingleMateablePort => Contact;
 
     // ISingleWireablePart contract implementation
     public WireablePort SingleWireablePort => Receptacle;

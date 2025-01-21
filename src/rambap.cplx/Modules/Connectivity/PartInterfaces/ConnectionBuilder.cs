@@ -36,17 +36,13 @@ public class ConnectionBuilder
     /// </summary>
     /// <param name="source">Connector of a subcomponent. Need to be public</param>
     /// <param name="target">Connector of this part. Need to be public</param>
-    public void ExposeAs(ConnectablePort source, ConnectablePort target)
+    public void ExposeAs(ISingleMateable source, ConnectablePort target)
     {
-        ContextPart.AssertIsOwnedBySubComponent(source);
+        var sourcePort = source.SingleMateablePort;
+        ContextPart.AssertIsOwnedBySubComponent(sourcePort);
         ContextPart.AssertIsOwner(target);
-        target.DefineAsAnExpositionOf(source);
-    }   
-    // Helper methods
-    // The second connectable port CANNOT be an ISingleMateablePart,
-    // Because it is owned by the part, checked by AssertIsOwner()
-    public void ExposeAs(ISingleMateablePart sourcePart, ConnectablePort target)
-        => ExposeAs(sourcePart.SingleConnectablePort, target);
+        target.DefineAsAnExpositionOf(sourcePort);
+    }
 
 
     public void ExposeAs(WireablePort source, WireablePort target)
@@ -58,7 +54,7 @@ public class ConnectionBuilder
     // Helper methods
     // The second connectable port CANNOT be an ISingleWireablePart,
     // Because it is owned by the part, checked by AssertIsOwner()
-    public void ExposeAs(ISingleWireablePart sourcePart, WireablePort target)
+    public void ExposeAs(ISingleWireable sourcePart, WireablePort target)
     => ExposeAs(sourcePart.SingleWireablePort, target);
 
     /// <summary>
@@ -92,8 +88,10 @@ public class ConnectionBuilder
     /// <param name="connectorA">Left side connector. Must be owed by this part or one of it components</param>
     /// <param name="connectorB">Rigth side connector. Must be owed by this part or one ofits components</param>
     /// <returns>Object representing the created wire</returns>
-    public Mate Mate(ConnectablePort connectorA, ConnectablePort connectorB)
+    public Mate Mate(ISingleMateable mateableA, ISingleMateable mateableB)
     {
+        var connectorA = mateableA.SingleMateablePort;
+        var connectorB = mateableB.SingleMateablePort;
         ContextPart.AssertIsOwnerOrParent(connectorA);
         ContextPart.AssertIsOwnerOrParent(connectorB);
         // TODO : Test here that both connector are compatible
@@ -101,15 +99,6 @@ public class ConnectionBuilder
         Connections.Add(connection);
         return connection;
     }
-
-    // Helper methods
-    // The ISingleMateablePart may be the second or first argument
-    public Mate Mate(ConnectablePort connectorA, ISingleMateablePart partB)
-        => Mate(connectorA, partB.SingleConnectablePort);
-    public Mate Mate(ISingleMateablePart partA, ConnectablePort connectorB)
-        => Mate(partA.SingleConnectablePort, connectorB);
-    public Mate Mate(ISingleMateablePart partA, ISingleMateablePart partB)
-        => Mate(partA.SingleConnectablePort, partB.SingleConnectablePort);
 
 
     /// <summary>
@@ -119,12 +108,14 @@ public class ConnectionBuilder
     /// <param name="connectorA"></param>
     /// <param name="connectorB"></param>
     /// <returns></returns>
-    public Cable CableWith(Part cablePart, ConnectablePort connectorA, ConnectablePort connectorB)
+    public Cable CableWith(Part cablePart, ISingleMateable connectorA, ISingleMateable connectorB)
     {
+
+
         // 1 - Assert with contextInstance that cablePart is a component or subcomponent of this.
         ContextPart.AssertIsASubComponent(cablePart);
         // 2 - Find in the instance of this part
-        Pinstance i = cablePart.ImplementingInstance;
+        Pinstance i = cablePart.ImplementingInstance; // TODO . find instqncem bqsed on this context4 childs
         // 3 - Assert that the instance connector is a Cable
         if (i.Connectivity() == null)
             throw new InvalidOperationException($"{cablePart} is not a Connectable part");
@@ -150,10 +141,15 @@ public class ConnectionBuilder
         var rigthMate = Mate(cons[1],connectorB);
         Connections.Remove(leftMate);
         Connections.Remove(rigthMate);
-        var cable = new Cable(cablePart, leftMate, rigthMate);
-        Connections.Add(cable);
-        return cable;
+        var cableComponent = cablePart.ImplementingInstance;
+        throw new NotImplementedException();
+        //var cable = new Cable(cablePart, leftMate, rigthMate);
+        //Connections.Add(cable);
+        //return cable;
     }
+
+
+
 
     /// <summary>
     /// Connect connectorA and connectorB using a non descript, signal carrying wire <br/>
@@ -162,22 +158,16 @@ public class ConnectionBuilder
     /// <param name="wireableA">Left side connector. Must be owed by this part or one of it components</param>
     /// <param name="wireableB">Rigth side connector. Must be owed by this part or one ofits components</param>
     /// <returns>Object representing the created wire</returns>
-    public Wire Wire(WireablePort wireableA, WireablePort wireableB)
+    public Wire Wire(ISingleWireable wireableA, ISingleWireable wireableB)
     {
-        ContextPart.AssertIsOwnerOrParent(wireableA);
-        ContextPart.AssertIsOwnerOrParent(wireableB);
-        var connection = new Wire(wireableA, wireableB);
+        var wireablePortA = wireableA.SingleWireablePort;
+        var wireablePortB = wireableB.SingleWireablePort;
+        ContextPart.AssertIsOwnerOrParent(wireablePortA);
+        ContextPart.AssertIsOwnerOrParent(wireablePortB);
+        var connection = new Wire(wireablePortA, wireablePortB);
         Wirings.Add(connection);
         return connection;
     }
-    // Helper methods
-    // The ISingleWireablePart may be the second or first argument
-    public Wire Wire(WireablePort wireableA, ISingleWireablePart partB)
-        => Wire(wireableA, partB.SingleWireablePort);
-    public Wire Wire(ISingleWireablePart partA, WireablePort wireableB)
-        => Wire(partA.SingleWireablePort, wireableB);
-    public Wire Wire(ISingleWireablePart partA, ISingleWireablePart partB)
-        => Wire(partA.SingleWireablePort, partB.SingleWireablePort);
 
     public Twist Twist(IEnumerable<WiringAction> twistedCablings)
     {

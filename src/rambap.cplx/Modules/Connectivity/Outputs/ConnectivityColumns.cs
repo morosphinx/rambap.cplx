@@ -27,11 +27,11 @@ public static class ConnectivityColumns
                 _ => throw new NotImplementedException(),
             });
 
-    public static DelegateColumn<ConnectivityTableContent> ConnectorPart(
+    public static DelegateColumn<ConnectivityTableContent> ConnectorComponent(
             ConnectorSide side,
             ConnectorIdentity identity,
             string title,
-            Func<Pinstance,string> getter,
+            Func<Component,string> getter,
             bool format = false)
         => new DelegateColumn<ConnectivityTableContent>(
             title,
@@ -44,7 +44,7 @@ public static class ConnectivityColumns
             }));
 
     public static DelegateColumn<ConnectivityTableContent> CablePart(
-            string title, Func<Pinstance,
+            string title, Func<Component,
             string> getter,
             bool format = false)
         => new DelegateColumn<ConnectivityTableContent>(
@@ -52,7 +52,7 @@ public static class ConnectivityColumns
             format ? ColumnTypeHint.StringFormatable : ColumnTypeHint.StringExact,
             i => i.Connection switch
             {
-                Cable c => getter.Invoke(c.CablePart.ImplementingInstance) ,
+                Cable c => getter.Invoke(c.CableComponent) ,
                 _ => "",
             });
 

@@ -103,15 +103,6 @@ public class Pinstance
     /// TODO : Using this imply Pinstance instance are unique,
     public Component? Parent { get; set; }
     public string CN => Parent?.CN ?? "*";
-    public string CID(string separator = Core.CID.Separator)
-    {
-        if (Parent == null)
-            return CN;
-        if (Parent!.Parent == null)
-            return Parent.CN;
-        else
-            return Parent!.Parent.CID() + Core.CID.Separator + CN;
-    }
 
     private static string MakeCommment(IEnumerable<ComponentDescriptionAttribute> commentAttributes)
         => string.Join("", commentAttributes.Select(c => c.Text));
