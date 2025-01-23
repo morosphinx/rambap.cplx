@@ -13,7 +13,7 @@ public class InstanceConnectivity : IInstanceConceptProperty
 
     public required List<ConnectablePort> Connectors { get; init; }
     public required List<WireablePort> Wireables { get; init; }
-    public required List<IAssemblingConnection> Connections { get; init; }
+    public required List<AssemblingConnection> Connections { get; init; }
     public required List<WiringAction> Wirings { get; init; }
 
     public enum DisplaySide
@@ -121,11 +121,11 @@ internal class ConnectionConcept : IConcept<InstanceConnectivity>
 
     private void CheckInterfaceContracts(Part part, InstanceConnectivity connectivity)
     {
-        if (part is ISingleMateablePart)
+        if (part is ISingleMateable)
             if (connectivity.Connections.Count > 1)
-                throw new InvalidDataException($"{part} implement {nameof(ISingleMateablePart)} but has more than one {nameof(ConnectablePort)}");
-        if (part is ISingleWireablePart)
+                throw new InvalidDataException($"{part} implement {nameof(ISingleMateable)} but has more than one {nameof(ConnectablePort)}");
+        if (part is ISingleWireable)
             if (connectivity.Wireables.Count > 1)
-                throw new InvalidDataException($"{part} implement {nameof(ISingleWireablePart)} but has more than one {nameof(WireablePort)}");
+                throw new InvalidDataException($"{part} implement {nameof(ISingleWireable)} but has more than one {nameof(WireablePort)}");
     }
 }

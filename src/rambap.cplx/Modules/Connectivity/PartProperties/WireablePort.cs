@@ -1,4 +1,5 @@
 ﻿using rambap.cplx.Core;
+using rambap.cplx.PartInterfaces;
 
 #pragma warning disable IDE0130 // Namespace does not match folder structure
 namespace rambap.cplx.PartProperties;
@@ -9,6 +10,7 @@ namespace rambap.cplx.PartProperties;
 /// To be then used by Parts implementing <see cref="PartInterfaces.IPartConnectable"/> <br/>
 /// Define <see cref="ConnectablePort"/> as public when they can be seen and used from outside the Part.
 /// </summary>
-public class WireablePort : SignalPort
+public class WireablePort : SignalPort, ISingleWireable
 {
+    public WireablePort SingleWireablePort => this;
 }

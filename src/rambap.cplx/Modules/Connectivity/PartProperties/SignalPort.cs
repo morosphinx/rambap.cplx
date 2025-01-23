@@ -52,10 +52,10 @@ public abstract class SignalPort : IPartProperty
         };
     }
 
-    private ISignalPortConnection? ExclusiveConnection { get; set; }
-    private List<ISignalPortConnection> NonExclusiveConnections { get; } = new();
+    private SignalPortConnection? ExclusiveConnection { get; set; }
+    private List<SignalPortConnection> NonExclusiveConnections { get; } = new();
 
-    public void AddConnection(ISignalPortConnection connection)
+    public void AddConnection(SignalPortConnection connection)
     {
         if (connection.IsExclusive)
         {
@@ -69,7 +69,7 @@ public abstract class SignalPort : IPartProperty
         }
     }
 
-    internal IEnumerable<ISignalPortConnection> Connections
+    internal IEnumerable<SignalPortConnection> Connections
         => ExclusiveConnection != null
             ? [ExclusiveConnection, .. NonExclusiveConnections]
             : NonExclusiveConnections;
@@ -169,7 +169,7 @@ public abstract class SignalPort : IPartProperty
     {
         var structuralEquivalences = Connections
             .OfType<StructuralConnection>()
-            .Select(c => ((ISignalPortConnection)c).GetOtherSide(this));
+            .Select(c => ((SignalPortConnection)c).GetOtherSide(this));
         var structuralEquivalenceTopMost = structuralEquivalences.Select(c => c.TopMostUser());
         var structuralEquivalenceNames = structuralEquivalenceTopMost.Select(c => c.Name);
         return $"{Name}({string.Join(",", structuralEquivalenceNames)})";

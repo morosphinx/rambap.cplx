@@ -5,11 +5,15 @@ using System.Runtime.CompilerServices;
 
 namespace rambap.cplx.Modules.Connectivity.Model;
 
-public interface ISignalPortConnection
+public abstract class SignalPortConnection
 {
-    SignalPort LeftPort { get; }
-    SignalPort RightPort { get; }
-    bool IsExclusive { get; }
+    public required Pinstance DeclaringInstance { get; init; }
+    public required Pinstance LeftPortInstance { get; init; }
+    public required Pinstance RigthPortInstance { get; init; }
+
+    public abstract SignalPort LeftPort { get; }
+    public abstract SignalPort RightPort { get; }
+    public abstract bool IsExclusive { get; }
 
     public SignalPort GetOtherSide(SignalPort thisSide)
     {
@@ -19,7 +23,7 @@ public interface ISignalPortConnection
     }
 }
 
-public record StructuralConnection : ISignalPortConnection
+public class StructuralConnection : SignalPortConnection
 {
     public SignalPort ConnectedPort { get; protected init; }
     public SignalPort WiringPort { get; protected init; }
@@ -31,14 +35,14 @@ public record StructuralConnection : ISignalPortConnection
         connector.AddConnection(this);
         wireable.AddConnection(this);
     }
-    public SignalPort LeftPort => ConnectedPort;
-    public SignalPort RightPort => WiringPort;
-    public bool IsExclusive => false;
+    public override SignalPort LeftPort => ConnectedPort;
+    public override SignalPort RightPort => WiringPort;
+    public override bool IsExclusive => false;
 }
 
-public interface IAssemblingConnection : ISignalPortConnection { }
+public abstract class AssemblingConnection : SignalPortConnection { }
 
-public record Mate : IAssemblingConnection
+public class Mate : AssemblingConnection
 {
     internal Mate(SignalPort leftConnectedPort, SignalPort rigthConnectedPort)
     {
@@ -54,27 +58,27 @@ public record Mate : IAssemblingConnection
     public virtual IEnumerable<Mate> Connections
         => [this];
 
-    public SignalPort LeftPort => LeftConnectedPort;
-    public SignalPort RightPort => RigthConnectedPort;
-    public bool IsExclusive => true;
+    public override SignalPort LeftPort => LeftConnectedPort;
+    public override SignalPort RightPort => RigthConnectedPort;
+    public override bool IsExclusive => true;
 }
 
-public record Cable : IAssemblingConnection
+public class Cable : AssemblingConnection
 {
-    public SignalPort LeftPort => LeftMate.LeftPort;
-    public SignalPort RightPort => RigthMate.RightPort;
+    public override SignalPort LeftPort => LeftMate.LeftPort;
+    public override SignalPort RightPort => RigthMate.RightPort;
+    public override bool IsExclusive => true;
 
     public Mate LeftMate { get; }
     public Mate RigthMate { get; }
 
-    public Part CablePart { get; }
+    public Component CableComponent { get; }
 
-    internal Cable(Part cablePart, Mate leftMate, Mate rigthMate)
+    internal Cable(Component cable, Mate leftMate, Mate rigthMate)
     {
-        CablePart = cablePart;
+        CableComponent = cable;
         LeftMate = leftMate;
         RigthMate = rigthMate;
     }
 
-    public bool IsExclusive => true;
 }

@@ -31,12 +31,21 @@ public class Component
         }
     }
     Pinstance? instance;
+
     internal Pinstance? Parent;
 
     /// <summary>
     /// Component Number : Identifier of this component in its owner
     /// </summary>
     public required string CN { get; init; } // 
+
+    public string CID(string separator = Core.CID.Separator)
+    {
+        if (Parent == null)
+            return CN;
+        else
+            return Parent!.CID() + Core.CID.Separator + CN;
+    }
 
     /// <summary>
     /// Comment relative to this component - eg : his purpose or usage in its owner
@@ -101,16 +110,14 @@ public class Pinstance
     /// Component, if any, where this instance is used
     /// </summary>
     /// TODO : Using this imply Pinstance instance are unique,
-    public Component? Parent { get; set; }
+    public Component? Parent { get; internal set; }
     public string CN => Parent?.CN ?? "*";
     public string CID(string separator = Core.CID.Separator)
     {
-        if (Parent == null)
-            return CN;
-        if (Parent!.Parent == null)
-            return Parent.CN;
+        if (Parent != null)
+            return Parent.CID(separator);
         else
-            return Parent!.Parent.CID() + Core.CID.Separator + CN;
+            return "*";
     }
 
     private static string MakeCommment(IEnumerable<ComponentDescriptionAttribute> commentAttributes)
