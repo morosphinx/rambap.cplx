@@ -13,7 +13,7 @@ public class InstanceConnectivity : IInstanceConceptProperty
 
     public required List<ConnectablePort> Connectors { get; init; }
     public required List<WireablePort> Wireables { get; init; }
-    public required List<IAssemblingConnection> Connections { get; init; }
+    public required List<AssemblingConnection> Connections { get; init; }
     public required List<WiringAction> Wirings { get; init; }
 
     public enum DisplaySide

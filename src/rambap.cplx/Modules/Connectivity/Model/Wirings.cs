@@ -3,31 +3,32 @@
 namespace rambap.cplx.Modules.Connectivity.Model;
 
 
-public abstract record WiringAction : ISignalPortConnection
+public abstract class WiringAction : SignalPortConnection
 {
-    public WireablePort LeftWiredPort { get; protected init; }
-    public WireablePort RigthWiredPort { get; protected init; }
-
+    public abstract WireablePort LeftWiredPort { get; init; }
+    public abstract WireablePort RigthWiredPort { get; init; }
     public virtual IEnumerable<WiringAction> Wirings
         => [this];
 
-    protected static (SignalPort, SignalPort) GetCommonPathOrThrow(IEnumerable<WiringAction> connections)
+    internal static (SignalPort, SignalPort) GetCommonPathOrThrow(IEnumerable<WiringAction> connections)
     {
         // Check that all items share the same path
-        var leftTopMosts = connections.Select(t => t.LeftWiredPort.TopMostUser());
+        var leftTopMosts = connections.Select(t => t.LeftPort.TopMostUser());
         var leftConnector = leftTopMosts.Distinct().Single();
-        var rigthTopMosts = connections.Select(t => t.RigthWiredPort.TopMostUser());
+        var rigthTopMosts = connections.Select(t => t.RightPort.TopMostUser());
         var rigthConnector = rigthTopMosts.Distinct().Single();
         return (leftConnector, rigthConnector);
     }
-    public SignalPort LeftPort => LeftWiredPort;
-    public SignalPort RightPort => RigthWiredPort;
+    public override SignalPort LeftPort => LeftWiredPort;
+    public override SignalPort RightPort => RigthWiredPort;
+    public override bool IsExclusive => false;
 
-    public bool IsExclusive => false;
 }
 
-public record Wire : WiringAction
+public class Wire : WiringAction
 {
+    public override WireablePort LeftWiredPort { get; init; }
+    public override WireablePort RigthWiredPort { get; init; }
     internal Wire(WireablePort wireableA, WireablePort wireableB)
     {
         LeftWiredPort = wireableA;
@@ -37,8 +38,10 @@ public record Wire : WiringAction
     }
 }
 
-public abstract record WireableGrouping : WiringAction
+public abstract class WireableGrouping : WiringAction
 {
+    public override WireablePort LeftWiredPort { get; init; }
+    public override WireablePort RigthWiredPort { get; init; }
     public IEnumerable<WiringAction> GroupedItems { get; init; }
     public override IEnumerable<WiringAction> Wirings
         => [.. GroupedItems.SelectMany(c => c.Wirings)];
@@ -54,19 +57,19 @@ public abstract record WireableGrouping : WiringAction
     }
 }
 
-public record Bundle : WireableGrouping
+public class Bundle : WireableGrouping
 {
     internal Bundle(IEnumerable<WiringAction> twistedItems)
         : base(twistedItems) { }
 }
 
-public record Twist : WireableGrouping
+public class Twist : WireableGrouping
 {
     internal Twist(IEnumerable<WiringAction> twistedItems)
         : base(twistedItems) { }
 }
 
-public record Shield : WireableGrouping
+public class Shield : WireableGrouping
 {
     public enum ShieldingSide { Left, Right, Both, Neither };
     public ShieldingSide Shielding { get; init; } = ShieldingSide.Both;

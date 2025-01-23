@@ -48,7 +48,7 @@ public class ConnectivityTableIterator : IIterator<ConnectivityTableContent>
         Assembly,
         Wiring
     }
-    public static IEnumerable<ISignalPortConnection> GetAllConnections(Pinstance instance, bool recursive, ConnectionKind connectionKind)
+    public static IEnumerable<SignalPortConnection> GetAllConnections(Pinstance instance, bool recursive, ConnectionKind connectionKind)
     {
         // Return all connection, NOT flattening grouped ones (Twisting / Sielding)
         switch (connectionKind)

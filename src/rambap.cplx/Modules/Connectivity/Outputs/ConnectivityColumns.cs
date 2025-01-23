@@ -20,10 +20,10 @@ public static class ConnectivityColumns
             ColumnTypeHint.StringExact,
             i => identity switch
             {
-                ConnectorIdentity.Immediate when fullName   => i.GetImmediateConnector(side).Name,
-                ConnectorIdentity.Immediate when !fullName  => i.GetImmediateConnector(side).FullDefinitionName(),
-                ConnectorIdentity.Topmost when fullName     => i.GetTopMostConnector(side).Name,
-                ConnectorIdentity.Topmost when !fullName    => i.GetTopMostConnector(side).FullDefinitionName(),
+                ConnectorIdentity.Immediate when fullName   => i.GetImmediatePort(side).Name,
+                ConnectorIdentity.Immediate when !fullName  => i.GetImmediatePort(side).FullDefinitionName(),
+                ConnectorIdentity.Topmost when fullName     => i.GetTopMostPort(side).Name,
+                ConnectorIdentity.Topmost when !fullName    => i.GetTopMostPort(side).FullDefinitionName(),
                 _ => throw new NotImplementedException(),
             });
 
@@ -31,15 +31,15 @@ public static class ConnectivityColumns
             ConnectorSide side,
             ConnectorIdentity identity,
             string title,
-            Func<Component,string> getter,
+            Func<Component?,string> getter,
             bool format = false)
         => new DelegateColumn<ConnectivityTableContent>(
             title,
             format ? ColumnTypeHint.StringFormatable : ColumnTypeHint.StringExact,
             i => getter.Invoke(identity switch
             {
-                ConnectorIdentity.Immediate => i.GetImmediateConnector(side).Owner!.ImplementingInstance,
-                ConnectorIdentity.Topmost   => i.GetTopMostConnector(side).Owner!.ImplementingInstance,
+                ConnectorIdentity.Immediate => i.GetConnectedComponent(side),
+                ConnectorIdentity.Topmost   => i.GetConnectedComponent(side),
                 _ => throw new NotImplementedException(),
             }));
 

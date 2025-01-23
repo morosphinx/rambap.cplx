@@ -19,14 +19,9 @@ public class ConnectivityTableContent
     // This may also be inversed from the ocnnecton left / rigth definition
     public required SignalPort LeftTopMostConnector { get; init; }
     public required SignalPort RigthTopMostConnector { get; init; }
+    public required SignalPortConnection Connection { get; init; }
 
-
-
-    public Pinstance RigthPortOwner { get; }
-    public Pinstance LeftPortOwner { get; }
-    public required ISignalPortConnection Connection { get; init; }
-
-    public SignalPort GetTopMostConnector(ConnectorSide side)
+    public SignalPort GetTopMostPort(ConnectorSide side)
         => side switch
         {
             ConnectorSide.Left => LeftTopMostConnector,
@@ -34,13 +29,22 @@ public class ConnectivityTableContent
             _ => throw new NotImplementedException(),
         };
 
-    public SignalPort GetImmediateConnector(ConnectorSide side)
+    public SignalPort GetImmediatePort(ConnectorSide side)
         => side switch
         {
             ConnectorSide.Left => Connection.LeftPort,
             ConnectorSide.Rigth => Connection.RightPort,
             _ => throw new NotImplementedException(),
         };
+
+    public Component? GetConnectedComponent(ConnectorSide side)
+        => side switch
+        {
+            ConnectorSide.Left => LeftTopMostConnector.Owner!.ImplementingInstance.Parent,
+            ConnectorSide.Rigth => RigthTopMostConnector.Owner!.ImplementingInstance.Parent,
+            _ => throw new NotImplementedException(),
+        };
+
 
     public enum ConnectionKind
     {

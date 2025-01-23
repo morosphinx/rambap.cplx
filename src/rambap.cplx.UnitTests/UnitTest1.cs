@@ -55,7 +55,17 @@ namespace rambap.cplx.UnitTests
         public void TestGeneration_Exemple3()
         {
             var p = new RackConnected1();
-            //var p = new InternalCable1();
+            var i = new Pinstance(p);
+
+            // IInstruction WiringDescription = new WiringDescriptionGenerator<RackConnected1>(
+            //     p, r => r.J11, r.J12);
+            var generator = GetDemoGeneratorWithEverything();
+            generator.Do(i, "C:\\TestFolder\\Exemple3");
+        }
+        [TestMethod]
+        public void TestGeneration_Exemple3_i()
+        {
+            var p = new InternalCable1();
             var i = new Pinstance(p);
 
             // IInstruction WiringDescription = new WiringDescriptionGenerator<RackConnected1>(

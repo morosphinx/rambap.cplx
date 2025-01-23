@@ -1,6 +1,7 @@
 ﻿using rambap.cplx.Core;
 using rambap.cplx.PartProperties;
 using rambap.cplx.Modules.Connectivity.Model;
+using rambap.cplx.Modules.Connectivity.Templates;
 
 #pragma warning disable IDE0130 // Namespace does not match folder structure
 namespace rambap.cplx.PartInterfaces;
@@ -14,7 +15,7 @@ namespace rambap.cplx.PartInterfaces;
 public class ConnectionBuilder
 {
     internal List<StructuralConnection> StructuralConnections { get; } = [];
-    internal List<IAssemblingConnection> Connections { get; } = [];
+    internal List<AssemblingConnection> Connections { get; } = [];
     internal List<WiringAction> Wirings { get; } = [];
 
 
@@ -76,7 +77,12 @@ public class ConnectionBuilder
         source.DefineAsHadHoc(); // Force the source to be a simple connecable, throw otherwise
         ContextPart.AssertIsOwnerOrParent(source);
         ContextPart.AssertIsOwnerOrParent(target);
-        var connection = new StructuralConnection(source, target);
+        var connection = new StructuralConnection(source, target)
+        {
+            LeftPortInstance = source.Owner!.ImplementingInstance,
+            RigthPortInstance = target.Owner!.ImplementingInstance,
+            DeclaringInstance = ContextInstance
+        };
         StructuralConnections.Add(connection);
         return connection;
     }
@@ -95,7 +101,12 @@ public class ConnectionBuilder
         ContextPart.AssertIsOwnerOrParent(connectorA);
         ContextPart.AssertIsOwnerOrParent(connectorB);
         // TODO : Test here that both connector are compatible
-        var connection = new Mate(connectorA, connectorB);
+        var connection = new Mate(connectorA, connectorB)
+        {
+            LeftPortInstance = connectorA.Owner!.ImplementingInstance,
+            RigthPortInstance = connectorB.Owner!.ImplementingInstance,
+            DeclaringInstance = ContextInstance
+        };
         Connections.Add(connection);
         return connection;
     }
@@ -141,11 +152,16 @@ public class ConnectionBuilder
         var rigthMate = Mate(cons[1],connectorB);
         Connections.Remove(leftMate);
         Connections.Remove(rigthMate);
-        var cableComponent = cablePart.ImplementingInstance;
-        throw new NotImplementedException();
-        //var cable = new Cable(cablePart, leftMate, rigthMate);
-        //Connections.Add(cable);
-        //return cable;
+
+        var cableComponent = cablePart.ImplementingInstance.Parent!;
+        var cable = new Cable(cableComponent, leftMate, rigthMate)
+        {
+            LeftPortInstance = leftMate.LeftPortInstance,
+            RigthPortInstance = rigthMate.RigthPortInstance,
+            DeclaringInstance = ContextInstance
+        };
+        Connections.Add(cable);
+        return cable;
     }
 
 
@@ -164,7 +180,12 @@ public class ConnectionBuilder
         var wireablePortB = wireableB.SingleWireablePort;
         ContextPart.AssertIsOwnerOrParent(wireablePortA);
         ContextPart.AssertIsOwnerOrParent(wireablePortB);
-        var connection = new Wire(wireablePortA, wireablePortB);
+        var connection = new Wire(wireablePortA, wireablePortB)
+        {
+            LeftPortInstance = wireablePortA.Owner!.ImplementingInstance,
+            RigthPortInstance = wireablePortB.Owner!.ImplementingInstance,
+            DeclaringInstance = ContextInstance
+        };
         Wirings.Add(connection);
         return connection;
     }
@@ -173,9 +194,15 @@ public class ConnectionBuilder
     {
         foreach (var c in twistedCablings)
             AssertOwnThisWiring(c);
+        var path = WiringAction.GetCommonPathOrThrow(twistedCablings);
         foreach (var c in twistedCablings)
             Wirings.Remove(c);
-        var twist = new Twist(twistedCablings);
+        var twist = new Twist(twistedCablings)
+        {
+            LeftPortInstance = path.Item1.Owner!.ImplementingInstance,
+            RigthPortInstance = path.Item2.Owner!.ImplementingInstance,
+            DeclaringInstance = ContextInstance
+        };
         Wirings.Add(twist);
         return twist;
     }
@@ -184,9 +211,15 @@ public class ConnectionBuilder
     {
         foreach (var c in twistedCablings)
             AssertOwnThisWiring(c);
+        var path = WiringAction.GetCommonPathOrThrow(twistedCablings);
         foreach (var c in twistedCablings)
             Wirings.Remove(c);
-        var twist = new Shield(twistedCablings);
+        var twist = new Shield(twistedCablings)
+        {
+            LeftPortInstance = path.Item1.Owner!.ImplementingInstance,
+            RigthPortInstance = path.Item2.Owner!.ImplementingInstance,
+            DeclaringInstance = ContextInstance
+        };
         Wirings.Add(twist);
         return twist;
     }

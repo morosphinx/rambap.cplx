@@ -17,12 +17,12 @@ public class ConnectivityTables
                 IteratedConnectionKind = ConnectivityTableIterator.ConnectionKind.Assembly
             },
             Columns = [
-                    ConnectorComponent(ConnectorSide.Left,identity,"CID", i => i.CID(" / ")),
+                    ConnectorComponent(ConnectorSide.Left,identity,"CID", c => c?.CID(" / ") ?? "."),
                     ConnectorName(ConnectorSide.Left,identity),
                     Dashes("--"),
                     CablePart("Cable",c => c.CN),
                     Dashes("--"),
-                    ConnectorComponent(ConnectorSide.Rigth,identity,"CID", i => i.CID(" / ")),
+                    ConnectorComponent(ConnectorSide.Rigth,identity,"CID", c => c?.CID(" / ") ?? "."),
                     ConnectorName(ConnectorSide.Rigth,identity),
                 ]
         };
