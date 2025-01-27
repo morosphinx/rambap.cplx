@@ -34,7 +34,8 @@ internal static class Support
     }
 
     /// <summary>
-    /// Iterate all properties and fields of type T of an object. Call onData() on each encountered value of exact or derived type
+    /// Iterate all properties and fields of type T of an object. Call onData() on each encountered value of exact or derived type <br/>
+    /// Auto construction of scanned properties/fields can be configured by setting the contentMode
     /// </summary>
     /// <typeparam name="T">Type to look for</typeparam>
     /// <param name="obj">Object looked into</param>
@@ -46,7 +47,24 @@ internal static class Support
         Action<T, PropertyOrFieldInfo> onData,
         AutoContent contentMode = AutoContent.IgnoreNulls)
         where T : class
-        => ScanObjectContentFor(obj, onData, contentMode, (y, s) => (T)Activator.CreateInstance(y)!);
+        => ScanObjectContentFor(obj, onData, contentMode, (y, s) => (T)Activator.CreateInstance(y)!, false);
+
+
+    /// <summary>
+    /// Iterate all properties and fields of type T of an object. Call onData() on each encountered value of exact or derived type<br/>
+    /// Unbacked (eg : var a => b ;) properties may be scanned
+    /// </summary>
+    /// <typeparam name="T">Type to look for</typeparam>
+    /// <param name="obj">Object looked into</param>
+    /// <param name="onData">Action to call : void (value, property_or_field_info)</param>
+    /// <param name="acceptUnbacked">Behavior if the value is null. <br/>
+    /// When <see cref="AutoContent.ConstructIfNulls"/>, a parameterless constructor is called </param>
+    internal static void ScanObjectContentFor<T>(
+        object obj,
+        Action<T, PropertyOrFieldInfo> onData,
+        bool acceptUnbacked)
+        where T : class
+        => ScanObjectContentFor(obj, onData, AutoContent.IgnoreNulls, (y, s) => (T)Activator.CreateInstance(y)!, acceptUnbacked);
 
     /// <summary>
     /// Iterate all properties and fields of type T of an object. Call onData() on each encountered value of exact or derived type
@@ -60,7 +78,7 @@ internal static class Support
         Action<T, PropertyOrFieldInfo> onData,
         Func<Type, PropertyOrFieldInfo, T> constructor)
         where T : class
-        => ScanObjectContentFor(obj, onData, AutoContent.ConstructIfNulls, constructor);
+        => ScanObjectContentFor(obj, onData, AutoContent.ConstructIfNulls, constructor, false);
 
     // Accept public/internal felds and properties with a get()
 
@@ -68,7 +86,8 @@ internal static class Support
         object obj,
         Action<T, PropertyOrFieldInfo> onData,
         AutoContent contentMode,
-        Func<Type, PropertyOrFieldInfo, T> constructor)
+        Func<Type, PropertyOrFieldInfo, T> constructor,
+        bool includeUnbackedProperties)
         where T : class
     {
         var objectType = obj.GetType();
@@ -80,7 +99,7 @@ internal static class Support
             p.GetMethod != null && 
             p.GetCustomAttribute<CplxIgnoreAttribute>() == null &&
             p.GetCustomAttribute<CompilerGeneratedAttribute>() == null // Avoid matching auto-generated properties 
-            && HasBackingField<T>(p)); // Avoid matching expression bodied properties, such as "Part Name => Other ;"/
+            && (includeUnbackedProperties || HasBackingField<T>(p))); // Avoid matching expression bodied properties, such as "Part Name => Other ;"/
                                        // Expression bodied properties have a get accessor, no set, and cannot be initialised
         foreach (var p in validProperties)
         {
@@ -103,7 +122,7 @@ internal static class Support
         var fields = GetFieldsRecursive<T>(objectType);
         var validFields = fields.Where(f =>
             f.GetCustomAttribute<CplxIgnoreAttribute>() == null &&
-            f.GetCustomAttribute<CompilerGeneratedAttribute>() == null); // Avoid matching backing auto-generated fields
+            f.GetCustomAttribute<CompilerGeneratedAttribute>() == null); // Avoid matching fields backing auto-generated properties
         foreach (var f in validFields)
         {
             bool isPublicOrAssembly = f.IsPublic || f.IsAssembly;
