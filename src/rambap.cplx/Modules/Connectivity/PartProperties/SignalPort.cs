@@ -120,7 +120,7 @@ public abstract class SignalPort : IPartProperty
     }
     internal class ExposedDefinition : PortDefinition // Exposed connector
     {
-        public override IEnumerable<SignalPort> SubPorts => ExposedPort.Definition!.SubPorts;
+        public override IEnumerable<SignalPort> SubPorts => ExposedPort.Definition?.SubPorts ?? [];
         public required SignalPort ExposedPort { get; init; }
     }
     internal class CombinedDefinition : PortDefinition // Exposed / grouped connector
@@ -165,18 +165,24 @@ public abstract class SignalPort : IPartProperty
     private IEnumerable<SignalPort> GetExpositionChilds()
         => Definition is ExposedDefinition def ? def.ExposedPort.GetExpositionChilds() : [];
 
-    public string GetStructuralName()
-    {
-        var structuralEquivalences = Connections
-            .OfType<StructuralConnection>()
-            .Select(c => ((SignalPortConnection)c).GetOtherSide(this));
-        var structuralEquivalenceTopMost = structuralEquivalences.Select(c => c.TopMostUser());
-        var structuralEquivalenceNames = structuralEquivalenceTopMost.Select(c => c.Name);
-        return $"{Name}({string.Join(",", structuralEquivalenceNames)})";
-    }
 
-    public string GetExpositionColumnName()
-        => string.Join(".", GetExpositionColumn().Select(port => port.GetStructuralName()));
+    public bool HasImmediateStructuralEquivalence =>
+        Connections.OfType<StructuralConnection>().Any();
+    public SignalPort GetImmediateStructuralEquivalence()
+        => Connections.OfType<StructuralConnection>().Single().GetOtherSide(this);
+
+    public bool HasStructuralEquivalence =>
+        HasImmediateStructuralEquivalence || (Definition is ExposedDefinition { ExposedPort.HasStructuralEquivalence: true }) ;
+
+    public SignalPort GetShallowestStructuralEquivalence()
+    {
+        if (HasImmediateStructuralEquivalence)
+            return GetImmediateStructuralEquivalence();
+        else if (Definition is ExposedDefinition dexp)
+            return dexp.ExposedPort.GetShallowestStructuralEquivalence();
+        else
+            throw new InvalidOperationException("No Structural equivalence on this port");
+    }
 
     internal SignalPort TopMostUser()
     {

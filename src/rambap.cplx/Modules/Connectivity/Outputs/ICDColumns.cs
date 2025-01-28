@@ -51,7 +51,7 @@ public static class ICDColumns
             i => i switch
             {
                 BranchComponent b => "",
-                IPropertyContent { Property: ICDTableContentProperty prop } p => prop.Port.GetExpositionColumnName(),
+                IPropertyContent { Property: ICDTableContentProperty prop } p => "",
                 LeafComponent c => "",
                 _ => throw new NotImplementedException(),
             });
