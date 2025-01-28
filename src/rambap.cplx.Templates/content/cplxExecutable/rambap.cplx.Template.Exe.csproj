@@ -12,7 +12,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="rambap.cplx.Core" Version="0.1.0-alphb.13" />
+    <PackageReference Include="rambap.cplx.Core" Version="0.1.0-alphb.14" />
     <!--<PackageReference Include="rambap.cplx.Export.Spreadsheet" Version="*" />-->
   </ItemGroup>
 
