@@ -37,7 +37,7 @@ public class StructuralConnection : SignalPortConnection
     }
     public override SignalPort LeftPort => ConnectedPort;
     public override SignalPort RightPort => WiringPort;
-    public override bool IsExclusive => false;
+    public override bool IsExclusive => true;
 }
 
 public abstract class AssemblingConnection : SignalPortConnection { }
