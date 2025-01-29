@@ -23,7 +23,7 @@ public class ConnectivityTableIterator : IIterator<ConnectivityTableContent>
             var groupRightConnector = group.RigthTopMost;
             foreach (var connection in group.Connections)
             {
-                bool shouldReverse = connection.LeftPort.TopMostUser() != groupLeftConnector;
+                bool shouldReverse = connection.LeftPort.GetTopMostUser() != groupLeftConnector;
                 if (shouldReverse)
                     yield return new ConnectivityTableContent()
                     {

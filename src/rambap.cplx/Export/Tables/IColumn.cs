@@ -58,7 +58,7 @@ public interface IColumn<T> : IColumn
 /// <summary>
 /// Wrapper around <see cref="IColumn"/> to define a Column using a delegate
 /// </summary>
-public class DelegateColumn<T> : IColumn<T>
+public record DelegateColumn<T> : IColumn<T>
 {
     public required string Title { get; init; }
     public required ColumnTypeHint TypeHint { get; init; }

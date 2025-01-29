@@ -17,13 +17,17 @@ public class ConnectivityTables
                 IteratedConnectionKind = ConnectivityTableIterator.ConnectionKind.Assembly
             },
             Columns = [
-                    ConnectorComponent(ConnectorSide.Left,identity,"CID", c => c?.CID(" / ") ?? "."),
-                    PortName(ConnectorSide.Left,identity),
+                    ConnectedComponent(ConnectorSide.Left,identity,"CID", c => c?.CID(" / ") ?? "."),
+                    ConnectedPortName(ConnectorSide.Left,identity),
                     Dashes("--"),
                     CablePart("Cable",c => c.CN),
                     Dashes("--"),
-                    ConnectorComponent(ConnectorSide.Rigth,identity,"CID", c => c?.CID(" / ") ?? "."),
-                    PortName(ConnectorSide.Rigth,identity),
+                    ConnectedComponent(ConnectorSide.Rigth,identity,"CID", c => c?.CID(" / ") ?? "."),
+                    ConnectedPortName(ConnectorSide.Rigth,identity),
+                    Dashes("--"),
+                    CablePart("Description",c => c.Instance.Documentation()?.Descriptions.FirstOrDefault()?.Text ?? ""),
+                    CablePort(ConnectorSide.Left, "L", c => c.GetDeepestExposition().Owner!.ImplementingInstance.PN),
+                    CablePort(ConnectorSide.Rigth, "R", c => c.GetDeepestExposition().Owner!.ImplementingInstance.PN),
                 ]
         };
 
@@ -36,15 +40,15 @@ public class ConnectivityTables
                 IteratedConnectionKind = ConnectivityTableIterator.ConnectionKind.Wiring
             },
             Columns = [
-                    ConnectorComponent(ConnectorSide.Left,ConnectorIdentity.Topmost,"CN", c => c.CN),
-                    ConnectorStructuralEquivalenceTopmostPort(ConnectorSide.Left,"Connector", c => c.Name),
-                    PortName(ConnectorSide.Left,ConnectorIdentity.Topmost),
+                    ConnectedComponent(ConnectorSide.Left,ConnectorIdentity.Topmost,"CN", c => c.CN),
+                    ConnectedStructuralEquivalenceTopmostPort(ConnectorSide.Left,"Connector", c => c.Name),
+                    ConnectedPortName(ConnectorSide.Left,ConnectorIdentity.Topmost),
                     Dashes("--"),
                     EmptyColumn("Signal"),
                     Dashes("--"),
-                    ConnectorComponent(ConnectorSide.Rigth,ConnectorIdentity.Topmost,"CN", c => c.CN),
-                    ConnectorStructuralEquivalenceTopmostPort(ConnectorSide.Rigth,"Connector", c => c.Name),
-                    PortName(ConnectorSide.Rigth,ConnectorIdentity.Topmost,true),
+                    ConnectedComponent(ConnectorSide.Rigth,ConnectorIdentity.Topmost,"CN", c => c.CN),
+                    ConnectedStructuralEquivalenceTopmostPort(ConnectorSide.Rigth,"Connector", c => c.Name),
+                    ConnectedPortName(ConnectorSide.Rigth,ConnectorIdentity.Topmost,true),
                 ]
         };
 
@@ -58,7 +62,7 @@ public class ConnectivityTables
                         {
                             if(i.Property is ICDTableContentProperty prop){
                                  if(prop.Port.HasStructuralEquivalence)
-                                    return prop.Port.GetShallowestStructuralEquivalence().TopMostRelevant().Name ?? "";
+                                    return prop.Port.GetShallowestStructuralEquivalence().GetTopMostExposition().Name ?? "";
                                  return prop.Port.Name ?? "";
                             }
                             return "";

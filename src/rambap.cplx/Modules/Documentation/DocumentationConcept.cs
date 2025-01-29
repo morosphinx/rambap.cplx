@@ -20,6 +20,22 @@ public class InstanceDocumentation : IInstanceConceptProperty
     public List<NamedText> Descriptions { get; init; } = new();
     public List<NamedText> Links { get; init; } = new();
 
+
+    public string GetAllLineDescription()
+    {
+        var descriptions = Descriptions.Select(d => d.Text);
+        return string.Join("\r\n", descriptions);
+    }
+    public string GetSingleLineDescription()
+    {
+        var firstDesc = Descriptions.FirstOrDefault()?.Text;
+        if (firstDesc == null) return "";
+        var idx = firstDesc.IndexOfAny(['\r', '\n']);
+        if (idx > 0) return firstDesc.Substring(0, idx);
+        else return firstDesc;
+    }
+
+    // 
     public Func<Pinstance, IEnumerable<(string, IInstruction)>>? MakeAdditionalDocuments { get; init; }
 }
 

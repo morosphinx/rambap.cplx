@@ -39,6 +39,25 @@ class CableC : Part
     ConnectablePort R;
 }
 
+class CableC2 : Part, IPartConnectable
+{
+    public ConnectablePort L;
+    public ConnectablePort R;
+
+    ConnectorC2 U1;
+    ConnectorC2 U2;
+
+    public void Assembly_Connections(ConnectionBuilder Do)
+    {
+        Do.ExposeAs(U1.MateFace, L);
+        Do.ExposeAs(U2.MateFace, R);
+    }
+}
+class ConnectorC2: Part
+{
+    public ConnectablePort MateFace;
+}
+
 
 class BoxD : Part
 {
@@ -158,6 +177,20 @@ class WiringB : Part, IPartConnectable
     }
 }
 
+class BoxAAA : Part, IPartConnectable
+{
+    WiringA P1;
+    WiringA P2;
+
+    CableC2 c2;
+
+    public void Assembly_Connections(ConnectionBuilder Do)
+    {
+        Do.Mate(P1.J01, P2.J01);
+        Do.CableWith(c2, P1.J02, P2.J02);
+    }
+}
+
 
 [TestClass]
 public class TestSomeOutputs
@@ -198,6 +231,12 @@ public class TestSomeOutputs
     public void TestConnectionWiringB()
     {
         var p = new WiringB();
+        CablingConnectionsTests.WriteConnection(ConnectorIdentity.Topmost, p);
+    }
+    [TestMethod]
+    public void TestConnectionWiringAAA()
+    {
+        var p = new BoxAAA();
         CablingConnectionsTests.WriteConnection(ConnectorIdentity.Topmost, p);
     }
 }

@@ -44,13 +44,13 @@ public class ICDTableIterator : IIterator<IComponentContent>
         // Remove Leaf components, that have no public connector
         var connectorContents = contents.Where(c => c is not LeafComponent);
         // List all public topMostConnectors in the hierarchy
-        var topMostConnectors = connectorContents.OfType<IPropertyContent>().Select(c => (c.Property as ICDTableContentProperty)!.Port.TopMostUser()).ToList();
+        var topMostConnectors = connectorContents.OfType<IPropertyContent>().Select(c => (c.Property as ICDTableContentProperty)!.Port.GetTopMostUser()).ToList();
         
         // Return true if the SignalPort is a subPort of a public TopMostconnector (combined or exposed as a topmostConnector)
         bool IsSubOfTopMostConnectors(SignalPort port)
         {
             bool isATopMostConnector = topMostConnectors.Contains(port);
-            bool isSubOfATopMost = topMostConnectors.Contains(port.TopMostUser());
+            bool isSubOfATopMost = topMostConnectors.Contains(port.GetTopMostUser());
             return !isATopMostConnector && isSubOfATopMost;
         }
         // Remove subPort that will be displayed/included as another TopMostPort

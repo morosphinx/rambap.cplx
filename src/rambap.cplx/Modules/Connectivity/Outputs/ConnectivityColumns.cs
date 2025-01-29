@@ -15,7 +15,7 @@ public static class ConnectivityColumns
         Topmost, // Will traverse the connector hierarchy and return information relative to the uppermost Expose() call
     }
 
-    public static DelegateColumn<ConnectivityTableContent> PortName(ConnectorSide side, ConnectorIdentity identity, bool fullName = false)
+    public static DelegateColumn<ConnectivityTableContent> ConnectedPortName(ConnectorSide side, ConnectorIdentity identity, bool fullName = false)
         => new DelegateColumn<ConnectivityTableContent>(
             "Port",
             ColumnTypeHint.StringExact,
@@ -28,7 +28,7 @@ public static class ConnectivityColumns
                 _ => throw new NotImplementedException(),
             });
 
-    public static DelegateColumn<ConnectivityTableContent> ConnectorComponent(
+    public static DelegateColumn<ConnectivityTableContent> ConnectedComponent(
             ConnectorSide side,
             ConnectorIdentity identity,
             string title,
@@ -44,7 +44,7 @@ public static class ConnectivityColumns
                 _ => throw new NotImplementedException(),
             }));
 
-    public static DelegateColumn<ConnectivityTableContent> ConnectorStructuralEquivalenceTopmostComponent(
+    public static DelegateColumn<ConnectivityTableContent> ConnectedStructuralEquivalenceTopmostComponent(
             ConnectorSide side,
             string title,
             Func<Component?, string> getter,
@@ -57,11 +57,11 @@ public static class ConnectivityColumns
                 var port = i.GetImmediatePort(side);
                 if (!port.HasStructuralEquivalence) return "-";
                 var structuralequiv = port.GetShallowestStructuralEquivalence();
-                var stuctequivtop = structuralequiv.TopMostUser();
+                var stuctequivtop = structuralequiv.GetTopMostUser();
                 var comp = stuctequivtop.Owner!.ImplementingInstance.Parent;
                 return getter(comp);
             });
-    public static DelegateColumn<ConnectivityTableContent> ConnectorStructuralEquivalenceTopmostPort(
+    public static DelegateColumn<ConnectivityTableContent> ConnectedStructuralEquivalenceTopmostPort(
             ConnectorSide side,
             string title,
             Func<SignalPort, string> getter,
@@ -74,13 +74,13 @@ public static class ConnectivityColumns
                 var port = i.GetImmediatePort(side);
                 if (!port.HasStructuralEquivalence) return "-";
                 var structuralequiv = port.GetShallowestStructuralEquivalence();
-                var stuctequivtop = structuralequiv.TopMostUser();
+                var stuctequivtop = structuralequiv.GetTopMostUser();
                 return getter(stuctequivtop);
             });
 
     public static DelegateColumn<ConnectivityTableContent> CablePart(
-            string title, Func<Component,
-            string> getter,
+            string title,
+            Func<Component,string> getter,
             bool format = false)
         => new DelegateColumn<ConnectivityTableContent>(
             title,
@@ -90,6 +90,34 @@ public static class ConnectivityColumns
                 Cable c => getter.Invoke(c.CableComponent) ,
                 _ => "",
             });
+
+    public static DelegateColumn<ConnectivityTableContent> CableConnector(
+            ConnectorSide side,
+            string title,
+            Func<Component, string> getter,
+            bool format = false)
+        => new DelegateColumn<ConnectivityTableContent>(
+            title,
+            format ? ColumnTypeHint.StringFormatable : ColumnTypeHint.StringExact,
+            i => i.Connection switch
+            {
+                Cable c => getter.Invoke(i.GetCableConnectionComponent(side)!),
+                _ => "",
+            });
+
+    public static DelegateColumn<ConnectivityTableContent> CablePort(
+           ConnectorSide side,
+           string title,
+           Func<SignalPort,string> getter,
+           bool format = false)
+       => new DelegateColumn<ConnectivityTableContent>(
+           title,
+           format ? ColumnTypeHint.StringFormatable : ColumnTypeHint.StringExact,
+           i => i.Connection switch
+           {
+               Cable c => getter.Invoke(i.GetCableConnectionPort(side)!),
+               _ => "",
+           });
 
     public static DelegateColumn<ConnectivityTableContent> Dashes(string title = "-- Connect to --")
         => new DelegateColumn<ConnectivityTableContent>(
