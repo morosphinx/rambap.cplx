@@ -184,21 +184,32 @@ public abstract class SignalPort : IPartProperty
             throw new InvalidOperationException("No Structural equivalence on this port");
     }
 
-    internal SignalPort TopMostUser()
+    internal SignalPort GetTopMostUser()
     {
         return Usage switch
         {
-            PortDefinitionUsage usage => usage.User.TopMostUser(),
+            PortDefinitionUsage usage => usage.User.GetTopMostUser(),
             null => this,
         };
     }
-    internal SignalPort TopMostRelevant()
+    internal SignalPort GetTopMostExposition()
     {
-        // = return GetExpositionColumn().First();
         return Usage switch
         {
-            UsageExposedAs usage => usage.User.TopMostRelevant(),
+            UsageExposedAs usage => usage.User.GetTopMostExposition(),
             UsageCombinedInto usage => this,
+            null => this,
+            _ => throw new NotImplementedException(),
+        };
+    }
+    internal SignalPort GetDeepestExposition()
+    {
+        // = return GetExpositionColumn().First();
+        return Definition switch
+        {
+            AdHocDefinition def => this,
+            ExposedDefinition def => def.ExposedPort.GetDeepestExposition(),
+            CombinedDefinition def => this,
             null => this,
             _ => throw new NotImplementedException(),
         };

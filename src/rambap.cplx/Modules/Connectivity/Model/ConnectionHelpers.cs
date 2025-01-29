@@ -20,7 +20,7 @@ internal static class ConnectionHelpers
         IEnumerable<SignalPortConnection> connections)
     {
         (SignalPort, SignalPort) GetTopMostConnectors(SignalPortConnection con)
-            => (con.LeftPort.TopMostUser(), con.RightPort.TopMostUser());
+            => (con.LeftPort.GetTopMostUser(), con.RightPort.GetTopMostUser());
         var linkComparer = new LinkNondirectionalEqualityComparer();
 
         var allPairDirectionDependant = connections.Select(GetTopMostConnectors).Distinct();

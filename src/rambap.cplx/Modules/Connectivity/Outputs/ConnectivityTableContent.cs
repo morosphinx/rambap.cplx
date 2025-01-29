@@ -45,6 +45,33 @@ public class ConnectivityTableContent
             _ => throw new NotImplementedException(),
         };
 
+    public Component? GetCableConnectionComponent(ConnectorSide side)
+    {
+        if (Connection is Cable c)
+        {
+            return side switch
+            {
+                ConnectorSide.Left => c.LeftMate.RightPort.Owner!.ImplementingInstance.Parent,
+                ConnectorSide.Rigth => c.RigthMate.LeftPort.Owner!.ImplementingInstance.Parent,
+                _ => throw new NotImplementedException(),
+            };
+
+        } else return null;
+    }
+    public SignalPort? GetCableConnectionPort(ConnectorSide side)
+    {
+        if (Connection is Cable c)
+        {
+            return side switch
+            {
+                ConnectorSide.Left => c.LeftMate.RightPort,
+                ConnectorSide.Rigth => c.RigthMate.LeftPort,
+                _ => throw new NotImplementedException(),
+            };
+
+        }
+        else return null;
+    }
 
     public enum ConnectionKind
     {

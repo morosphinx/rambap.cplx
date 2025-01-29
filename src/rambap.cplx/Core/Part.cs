@@ -115,7 +115,7 @@ public partial class Part
     /// TBD : Instance implementing this Part
     /// </summary>
     [CplxIgnore]
-    internal Pinstance ImplementingInstance { get; set; }
+    public Pinstance ImplementingInstance { get; set; }
 
     /// <summary>
     /// You can override the Part() constructor to implement some custom logic. <br/>
