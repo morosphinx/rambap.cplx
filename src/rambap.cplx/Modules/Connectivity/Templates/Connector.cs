@@ -1,4 +1,5 @@
 ﻿using rambap.cplx.Core;
+using rambap.cplx.PartAttributes;
 using rambap.cplx.PartInterfaces;
 using rambap.cplx.PartProperties;
 using System.Collections.ObjectModel;
@@ -12,6 +13,12 @@ public abstract class Connector<T> : Part, IPartConnectable, ISingleMateable
     List<T> PinParts { get; }
 
     public ConnectablePort MateFace { get; }
+
+    // ISingleMateablePart contract implementation
+    [CplxIgnore]
+    public ConnectablePort SingleMateablePort => MateFace;
+
+    public static implicit operator ConnectablePort(Connector<T> c) => c.SingleMateablePort;
 
     // This is not public, because everybody identify pin with a 1-based indexed value
     // Force this convention through the Pin() method
@@ -31,8 +38,6 @@ public abstract class Connector<T> : Part, IPartConnectable, ISingleMateable
         return PinParts[oneBasedIndex - 1].Receptacle;
     }
 
-    // ISingleMateablePart contract implementation
-    public ConnectablePort SingleMateablePort => MateFace;
 
     public Connector(int pinCount) 
         : this(Enumerable.Range(0,pinCount).Select(i => $"{i+1}").ToList())

@@ -33,7 +33,7 @@ internal class ConnectionConcept : IConcept<InstanceConnectivity>
 {
     public override InstanceConnectivity? Make(Pinstance instance, Part template)
     {
-        Port MakePort(SignalPort p, PropertyOrFieldInfo s){
+        Port? MakePort(SignalPort p, PropertyOrFieldInfo s){
             var newPort = new Port()
             {
                 Label = p.Name!,
@@ -43,7 +43,7 @@ internal class ConnectionConcept : IConcept<InstanceConnectivity>
             // Prevent double implementation of local ports
             if (p.Implementations.TryPeek(out var partPort))
                 if (p.LocalImplementation.Owner == instance)
-                    throw new InvalidOperationException($"Part signalPort {p} is already implemented by this instance, by {p.LocalImplementation}");
+                    return null; // Port is already implemented, ignore it
             // Register as an implementation
             newPort.Implement(p);
             if (s.Type == PropertyOrFieldType.UnbackedProperty)
@@ -58,24 +58,41 @@ internal class ConnectionConcept : IConcept<InstanceConnectivity>
         }
 
         var portsConnectable = new List<Port>();
-        var partConnectablePorts = new List<ConnectablePort>();
         ScanObjectContentFor<ConnectablePort>(template,
             (p, s) => {
-                partConnectablePorts.Add(p);
                 var newPort = MakePort(p, s);
-                portsConnectable.Add(newPort);
-            });
+                if(newPort != null)
+                    portsConnectable.Add(newPort);
+            },true);
+        ScanObjectContentFor<IEnumerable<ConnectablePort>>(template,
+            (iep, s) => {
+                foreach(var p in iep)
+                {
+                    var newPort = MakePort(p, s);
+                    if (newPort != null)
+                        portsConnectable.Add(newPort);
+                }
+            }, true);
+
 
         var portWireable = new List<Port>();
-        var partWireablePorts = new List<WireablePort>();
         ScanObjectContentFor<WireablePort>(template,
             (p, s) => {
-                partWireablePorts.Add(p);
                 var newPort = MakePort(p, s);
-                portWireable.Add(newPort);
-            });
+                if (newPort != null)
+                    portWireable.Add(newPort);
+            }, true);
+        ScanObjectContentFor<IEnumerable<WireablePort>>(template,
+            (iep, s) => {
+                foreach (var p in iep)
+                {
+                    var newPort = MakePort(p, s);
+                    if (newPort != null)
+                        portWireable.Add(newPort);
+                }
+            }, true);
 
-        bool hasAnyPort = partConnectablePorts.Any() || partWireablePorts.Any();
+        bool hasAnyPort = portsConnectable.Any() || portWireable.Any();
 
         // At this point no connector in the selfConnectorList has a definition
         if (template is IPartConnectable a)

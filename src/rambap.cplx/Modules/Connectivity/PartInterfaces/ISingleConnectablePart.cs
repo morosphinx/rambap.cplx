@@ -1,4 +1,5 @@
 ﻿using rambap.cplx.PartProperties;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 #pragma warning disable IDE0130 // Namespace does not match folder structure
 namespace rambap.cplx.PartInterfaces;
