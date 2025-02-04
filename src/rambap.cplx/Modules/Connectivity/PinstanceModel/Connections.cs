@@ -3,7 +3,7 @@ using rambap.cplx.Modules.Connectivity.Templates;
 using rambap.cplx.PartProperties;
 using System.Runtime.CompilerServices;
 
-namespace rambap.cplx.Modules.Connectivity.Model;
+namespace rambap.cplx.Modules.Connectivity.PinstanceModel;
 
 public abstract class SignalPortConnection
 {
@@ -11,11 +11,11 @@ public abstract class SignalPortConnection
     public required Pinstance LeftPortInstance { get; init; }
     public required Pinstance RigthPortInstance { get; init; }
 
-    public abstract SignalPort LeftPort { get; }
-    public abstract SignalPort RightPort { get; }
+    public abstract Port LeftPort { get; }
+    public abstract Port RightPort { get; }
     public abstract bool IsExclusive { get; }
 
-    public SignalPort GetOtherSide(SignalPort thisSide)
+    public Port GetOtherSide(Port thisSide)
     {
         if (thisSide == LeftPort) return RightPort;
         else if (thisSide == RightPort) return LeftPort;
@@ -25,18 +25,18 @@ public abstract class SignalPortConnection
 
 public class StructuralConnection : SignalPortConnection
 {
-    public SignalPort ConnectedPort { get; protected init; }
-    public SignalPort WiringPort { get; protected init; }
+    public Port ConnectedPort { get; protected init; }
+    public Port WiringPort { get; protected init; }
 
     internal StructuralConnection(ConnectablePort connector, WireablePort wireable)
     {
-        ConnectedPort = connector;
-        WiringPort = wireable;
-        connector.AddConnection(this);
-        wireable.AddConnection(this);
+        ConnectedPort = connector.LocalImplementation;
+        WiringPort = wireable.LocalImplementation;
+        ConnectedPort.AddConnection(this);
+        WiringPort.AddConnection(this);
     }
-    public override SignalPort LeftPort => ConnectedPort;
-    public override SignalPort RightPort => WiringPort;
+    public override Port LeftPort => ConnectedPort;
+    public override Port RightPort => WiringPort;
     public override bool IsExclusive => false;
 }
 
@@ -46,27 +46,27 @@ public class Mate : AssemblingConnection
 {
     internal Mate(SignalPort leftConnectedPort, SignalPort rigthConnectedPort)
     {
-        LeftConnectedPort = leftConnectedPort;
-        RigthConnectedPort = rigthConnectedPort;
+        LeftConnectedPort = leftConnectedPort.LocalImplementation;
+        RigthConnectedPort = rigthConnectedPort.LocalImplementation;
         LeftConnectedPort.AddConnection(this);
         RigthConnectedPort.AddConnection(this);
     }
 
-    public SignalPort LeftConnectedPort { get; protected init; }
-    public SignalPort RigthConnectedPort { get; protected init; }
+    public Port LeftConnectedPort { get; protected init; }
+    public Port RigthConnectedPort { get; protected init; }
 
     public virtual IEnumerable<Mate> Connections
         => [this];
 
-    public override SignalPort LeftPort => LeftConnectedPort;
-    public override SignalPort RightPort => RigthConnectedPort;
+    public override Port LeftPort => LeftConnectedPort;
+    public override Port RightPort => RigthConnectedPort;
     public override bool IsExclusive => true;
 }
 
 public class Cable : AssemblingConnection
 {
-    public override SignalPort LeftPort => LeftMate.LeftPort;
-    public override SignalPort RightPort => RigthMate.RightPort;
+    public override Port LeftPort => LeftMate.LeftPort;
+    public override Port RightPort => RigthMate.RightPort;
     public override bool IsExclusive => true;
 
     public Mate LeftMate { get; }

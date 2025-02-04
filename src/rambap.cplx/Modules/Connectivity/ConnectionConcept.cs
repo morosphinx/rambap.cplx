@@ -2,7 +2,7 @@
 using rambap.cplx.PartInterfaces;
 using rambap.cplx.PartProperties;
 using static rambap.cplx.Core.Support;
-using rambap.cplx.Modules.Connectivity.Model;
+using rambap.cplx.Modules.Connectivity.PinstanceModel;
 
 namespace rambap.cplx.Modules.Connectivity;
 
@@ -11,8 +11,8 @@ public class InstanceConnectivity : IInstanceConceptProperty
     // TODO : set definition somewhere in the Part
     public bool IsACable { get; init; } = true;
 
-    public required List<ConnectablePort> Connectors { get; init; }
-    public required List<WireablePort> Wireables { get; init; }
+    public required List<Port> Connectors { get; init; }
+    public required List<Port> Wireables { get; init; }
     public required List<AssemblingConnection> Connections { get; init; }
     public required List<WiringAction> Wirings { get; init; }
 
@@ -33,28 +33,57 @@ internal class ConnectionConcept : IConcept<InstanceConnectivity>
 {
     public override InstanceConnectivity? Make(Pinstance instance, Part template)
     {
-        var selfConnectors = new List<ConnectablePort>();
+        Port MakePort(SignalPort p, PropertyOrFieldInfo s){
+            var newPort = new Port() { Label = p.Name! , Owner = instance};
+            // Prevent double implementation of local ports
+            if (p.Implementations.TryPeek(out var partPort))
+                if (p.LocalImplementation.Owner == instance)
+                    throw new InvalidOperationException($"Part signalPort {p} is already implemented by this instance, by {p.LocalImplementation}");
+            // Register as an implementation
+            newPort.Implement(p);
+            if (s.Type == PropertyOrFieldType.UnbackedProperty)
+            {
+                // Express an exposition
+                var subPart = template.AssertIsOwnedBySubComponent(p);
+                var subInstance = subPart.ImplementingInstance;
+                var subPort = p.Implementations.Peek();
+                newPort.DefineAsAnExpositionOf(subPort);
+            }
+            return newPort;
+        }
+
+        var portsConnectable = new List<Port>();
+        var partConnectablePorts = new List<ConnectablePort>();
         ScanObjectContentFor<ConnectablePort>(template,
             (p, s) => {
-                selfConnectors.Add(p);
+                partConnectablePorts.Add(p);
+                var newPort = MakePort(p, s);
+                portsConnectable.Add(newPort);
             });
-        var selfWirings = new List<WireablePort>();
+
+        var portWireable = new List<Port>();
+        var partWireablePorts = new List<WireablePort>();
         ScanObjectContentFor<WireablePort>(template,
             (p, s) => {
-                selfWirings.Add(p);
+                partWireablePorts.Add(p);
+                var newPort = MakePort(p, s);
+                portWireable.Add(newPort);
             });
+
+        bool hasAnyPort = partConnectablePorts.Any() || partWireablePorts.Any();
 
         // At this point no connector in the selfConnectorList has a definition
         if (template is IPartConnectable a)
         {
+            // All signalport should have an implementing port at this point
+            
+            // User defined exposition are created from here
+            var portBuilder = new PortBuilder(instance, template);
+            a.Assembly_Ports(portBuilder);
+
+            // User defined connections are created from here
             var connectionBuilder = new ConnectionBuilder(instance, template);
-            // User defined connection and exposition are created from here
             a.Assembly_Connections(connectionBuilder);
-            foreach (var c in selfConnectors)
-            {
-                if (!c.HasbeenDefined)
-                    c.DefineAsHadHoc();
-            }
 
             var selfDefinedConnection = connectionBuilder!.Connections;
             var selfDefinedWirings = connectionBuilder!.Wirings;
@@ -85,31 +114,20 @@ internal class ConnectionConcept : IConcept<InstanceConnectivity>
 
             var connectivity = new InstanceConnectivity()
             {
-                Connectors = selfConnectors,
-                Wireables = selfWirings,
+                Connectors = portsConnectable,
+                Wireables = portWireable,
                 Connections = selfDefinedConnection.ToList(),
                 Wirings = selfDefinedWirings.ToList(),
             };
             CheckInterfaceContracts(template, connectivity);
             return connectivity;
         }
-        else if (selfConnectors.Any())
+        else if (hasAnyPort)
         {
-            // Force definition on every connector, even if the part is not an IPartConnectable
-            foreach (var c in selfConnectors)
-            {
-                if (!c.HasbeenDefined)
-                    c.DefineAsHadHoc();
-            }
-            foreach (var w in selfWirings)
-            {
-                if (!w.HasbeenDefined)
-                    w.DefineAsHadHoc();
-            }
             var connectivity = new InstanceConnectivity()
             {
-                Connectors = selfConnectors,
-                Wireables = selfWirings,
+                Connectors = portsConnectable,
+                Wireables = portWireable,
                 Connections = [],
                 Wirings = [],
             };

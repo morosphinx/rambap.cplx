@@ -13,9 +13,15 @@ namespace rambap.cplx.PartInterfaces;
 public interface IPartConnectable
 {
     /// <summary>
-    /// Define the connection and exposition of <see cref="ConnectablePort"/>s of the Part
+    /// Define the exposition of <see cref="ConnectablePort"/>s of the Part
     /// </summary>
-    /// <param name="Do">A <see cref="ConnectionBuilder"/> with the method difining wiirng</param>
+    /// <param name="Do">A <see cref="PortBuilder"/> with the method difining expositions</param>
+    public void Assembly_Ports(PortBuilder Do) { } // Implementation is optional
+
+    /// <summary>
+    /// Define the connection and of <see cref="ConnectablePort"/>s of the Part
+    /// </summary>
+    /// <param name="Do">A <see cref="ConnectionBuilder"/> with the method defining connection and wirings</param>
     public void Assembly_Connections(ConnectionBuilder Do);
 }
 

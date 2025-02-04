@@ -1,7 +1,7 @@
 ﻿using rambap.cplx.PartProperties;
 using System.Diagnostics.CodeAnalysis;
 
-namespace rambap.cplx.Modules.Connectivity.Model;
+namespace rambap.cplx.Modules.Connectivity.PinstanceModel;
 
 using TopmostConnectionGroup = (SignalPort LeftTopMost, SignalPort RigthTopMost, IEnumerable<SignalPortConnection> Connections);
 

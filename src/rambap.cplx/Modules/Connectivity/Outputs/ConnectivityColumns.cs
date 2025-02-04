@@ -1,7 +1,7 @@
 ﻿using rambap.cplx.Core;
 using rambap.cplx.Export.Tables;
 using rambap.cplx.Modules.Base.Output;
-using rambap.cplx.Modules.Connectivity.Model;
+using rambap.cplx.Modules.Connectivity.PinstanceModel;
 using rambap.cplx.PartProperties;
 using static rambap.cplx.Modules.Connectivity.Outputs.ConnectivityTableContent;
 
@@ -21,9 +21,9 @@ public static class ConnectivityColumns
             ColumnTypeHint.StringExact,
             i => identity switch
             {
-                ConnectorIdentity.Immediate when !fullName   => i.GetImmediatePort(side).Name,
+                ConnectorIdentity.Immediate when !fullName   => i.GetImmediatePort(side).Label,
                 ConnectorIdentity.Immediate when fullName  => i.GetImmediatePort(side).FullDefinitionName(),
-                ConnectorIdentity.Topmost when !fullName     => i.GetTopMostPort(side).Name,
+                ConnectorIdentity.Topmost when !fullName     => i.GetTopMostPort(side).Label,
                 ConnectorIdentity.Topmost when fullName    => i.GetTopMostPort(side).FullDefinitionName(),
                 _ => throw new NotImplementedException(),
             });
@@ -58,13 +58,13 @@ public static class ConnectivityColumns
                 if (!port.HasStructuralEquivalence) return "-";
                 var structuralequiv = port.GetShallowestStructuralEquivalence();
                 var stuctequivtop = structuralequiv.GetTopMostUser();
-                var comp = stuctequivtop.Owner!.ImplementingInstance.Parent;
+                var comp = stuctequivtop.Owner!.Parent;
                 return getter(comp);
             });
     public static DelegateColumn<ConnectivityTableContent> ConnectedStructuralEquivalenceTopmostPort(
             ConnectorSide side,
             string title,
-            Func<SignalPort, string> getter,
+            Func<Port, string> getter,
             bool format = false)
         => new DelegateColumn<ConnectivityTableContent>(
             title,
@@ -108,7 +108,7 @@ public static class ConnectivityColumns
     public static DelegateColumn<ConnectivityTableContent> CablePort(
            ConnectorSide side,
            string title,
-           Func<SignalPort,string> getter,
+           Func<Port, string> getter,
            bool format = false)
        => new DelegateColumn<ConnectivityTableContent>(
            title,

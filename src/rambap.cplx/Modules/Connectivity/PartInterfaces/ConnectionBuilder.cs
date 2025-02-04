@@ -1,34 +1,42 @@
 ﻿using rambap.cplx.Core;
 using rambap.cplx.PartProperties;
-using rambap.cplx.Modules.Connectivity.Model;
+using rambap.cplx.Modules.Connectivity.PinstanceModel;
 using rambap.cplx.Modules.Connectivity.Templates;
 
 #pragma warning disable IDE0130 // Namespace does not match folder structure
 namespace rambap.cplx.PartInterfaces;
 #pragma warning restore IDE0130 // Namespace does not match folder structure
 
+public abstract class ConnectivityBuilder
+{
+    /// <summary>
+    /// The owning part implementing <see cref="IPartConnectable"/> we are currently processing
+    /// </summary>
+    internal Part ContextPart { get; }
+
+    /// <summary>
+    /// Instance of the part we are currently processing. <br/>
+    /// We need this to access calculated subcomponent information. <br/>
+    /// Properties on this Pinstance Are note complete
+    /// </summary>
+    internal Pinstance ContextInstance { get; }
+
+    // Internal constructor, prevent usage from outside assembly
+    internal ConnectivityBuilder(Pinstance instance, Part part)
+    {
+        ContextPart = part;
+        ContextInstance = instance;
+    }
+}
+
 
 /// <summary>
-/// Contains functions to define a part connectivity <br/>
+/// Contains functions to define a part ports <br/>
 /// You cannot create this class directly. Instead, implement <see cref="IPartConnectable"/> on a <see cref="Part"/>
 /// </summary>
-public class ConnectionBuilder
+public class PortBuilder : ConnectivityBuilder
 {
-    internal List<StructuralConnection> StructuralConnections { get; } = [];
-    internal List<AssemblingConnection> Connections { get; } = [];
-    internal List<WiringAction> Wirings { get; } = [];
-
-
-    private void AssertOwnThisCabling(Mate cabling)
-    {
-        if (!Connections.Contains(cabling))
-            throw new InvalidOperationException($"Cabling {cabling} is not owned by this");
-    }
-    private void AssertOwnThisWiring(WiringAction wiring)
-    {
-        if (!Wirings.Contains(wiring))
-            throw new InvalidOperationException($"Wiring {wiring} is not owned by this");
-    }
+    internal PortBuilder(Pinstance instance, Part part) : base(instance, part) { }
 
     /// <summary>
     /// Define a connector as an exposition of another. Typical use case : <br/>
@@ -42,7 +50,7 @@ public class ConnectionBuilder
         var sourcePort = source.SingleMateablePort;
         ContextPart.AssertIsOwnedBySubComponent(sourcePort);
         ContextPart.AssertIsOwner(target);
-        target.DefineAsAnExpositionOf(sourcePort);
+        target.LocalImplementation.DefineAsAnExpositionOf(sourcePort.LocalImplementation);
     }
 
 
@@ -50,7 +58,7 @@ public class ConnectionBuilder
     {
         ContextPart.AssertIsOwnedBySubComponent(source);
         ContextPart.AssertIsOwner(target);
-        target.DefineAsAnExpositionOf(source);
+        target.LocalImplementation.DefineAsAnExpositionOf(source.LocalImplementation);
     }
     // Helper methods
     // The second connectable port CANNOT be an ISingleWireablePart,
@@ -69,12 +77,40 @@ public class ConnectionBuilder
         foreach (var c in sources)
             ContextPart.AssertIsOwnedBySubComponent(c);
         ContextPart.AssertIsOwner(target);
-        target.DefineAsAnExpositionOf(sources);
+        target.LocalImplementation.DefineAsAnExpositionOf(sources.Select(s => s.LocalImplementation));
+    }
+}
+
+
+/// <summary>
+/// Contains functions to define a part wonnection and wiring <br/>
+/// You cannot create this class directly. Instead, implement <see cref="IPartConnectable"/> on a <see cref="Part"/>
+/// </summary>
+public class ConnectionBuilder : ConnectivityBuilder
+{
+    internal ConnectionBuilder(Pinstance instance, Part part) : base(instance, part) { }
+
+    internal List<StructuralConnection> StructuralConnections { get; } = [];
+    internal List<AssemblingConnection> Connections { get; } = [];
+    internal List<WiringAction> Wirings { get; } = [];
+
+    private void AssertOwnThisCabling(Mate cabling)
+    {
+        if (!Connections.Contains(cabling))
+            throw new InvalidOperationException($"Cabling {cabling} is not owned by this");
+    }
+    private void AssertOwnThisWiring(WiringAction wiring)
+    {
+        if (!Wirings.Contains(wiring))
+            throw new InvalidOperationException($"Wiring {wiring} is not owned by this");
     }
 
     public StructuralConnection StructuralConnection(ConnectablePort source, WireablePort target)
     {
-        source.DefineAsHadHoc(); // Force the source to be a simple connecable, throw otherwise
+        if (source.LocalImplementation.HasbeenDefined)
+            throw new InvalidOperationException("Port cannot have a structural definition if its exposed");
+        if (target.LocalImplementation.HasbeenDefined)
+            throw new InvalidOperationException("Port cannot have a structural definition if its exposed");
         ContextPart.AssertIsOwnerOrParent(source);
         ContextPart.AssertIsOwnerOrParent(target);
         var connection = new StructuralConnection(source, target)
@@ -126,7 +162,7 @@ public class ConnectionBuilder
         // 1 - Assert with contextInstance that cablePart is a component or subcomponent of this.
         ContextPart.AssertIsASubComponent(cablePart);
         // 2 - Find in the instance of this part
-        Pinstance i = cablePart.ImplementingInstance; // TODO . find instqncem bqsed on this context4 childs
+        Pinstance i = cablePart.ImplementingInstance;
         // 3 - Assert that the instance connector is a Cable
         if (i.Connectivity() == null)
             throw new InvalidOperationException($"{cablePart} is not a Connectable part");
@@ -140,7 +176,9 @@ public class ConnectionBuilder
         // Check that connector A and  connectorB are also not connected ?
         // This is all to prevent the mates from begin created if any of them may fail
 
-        var cons = ci.Connectors.OrderBy(c => c.Name).ToList();
+        var cons = ci.Connectors.OrderBy(c => c.Label).ToList();
+        var cableLeft = (ISingleMateable) cons[0].ImplementedPort!;
+        var cableRigth = (ISingleMateable)cons[1].ImplementedPort!;
         // TODO : 
         // 4 - Test both direction for connection validity. If one is valid, good.
         // If none are valid, crash
@@ -148,8 +186,8 @@ public class ConnectionBuilder
 
         // 5 - If all good, create both matings (call the Mate() function) and return the mates
         // Etablish // with format of wire (WirePort A, WirePort B, Wire Definition) : we are doing something similar
-        var leftMate = Mate(connectorA, cons[0]);
-        var rigthMate = Mate(cons[1],connectorB);
+        var leftMate = Mate(connectorA, cableLeft);
+        var rigthMate = Mate(cableRigth, connectorB);
         Connections.Remove(leftMate);
         Connections.Remove(rigthMate);
 
@@ -226,27 +264,8 @@ public class ConnectionBuilder
 
     public void AssignTo(Signal signal, SignalPort port)
     {
-        port.Signal = signal;
-    }
-
-    /// <summary>
-    /// The owning part implementing <see cref="IPartConnectable"/> we are currently processing
-    /// </summary>
-    Part ContextPart { get; }
-
-    /// <summary>
-    /// Instance of the part we are currently processing. <br/>
-    /// We need this to access calculated subcomponent information. <br/>
-    /// Properties on this Pinstance Are note complete
-    /// </summary>
-    Pinstance ContextInstance{ get; }
-
-
-    // Internal constructor, prevent usage from outside assembly
-    internal ConnectionBuilder(Pinstance instance, Part part)
-    {
-        ContextPart = part;
-        ContextInstance = instance;
+        throw new NotImplementedException();
+        // port.Signal = signal;
     }
 }
 

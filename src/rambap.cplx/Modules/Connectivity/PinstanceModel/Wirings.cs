@@ -1,12 +1,12 @@
 ﻿using rambap.cplx.PartProperties;
 
-namespace rambap.cplx.Modules.Connectivity.Model;
+namespace rambap.cplx.Modules.Connectivity.PinstanceModel;
 
 
 public abstract class WiringAction : SignalPortConnection
 {
-    public abstract WireablePort LeftWiredPort { get; init; }
-    public abstract WireablePort RigthWiredPort { get; init; }
+    public abstract Port LeftWiredPort { get; init; }
+    public abstract Port RigthWiredPort { get; init; }
     public virtual IEnumerable<WiringAction> Wirings
         => [this];
 
@@ -17,31 +17,31 @@ public abstract class WiringAction : SignalPortConnection
         var leftConnector = leftTopMosts.Distinct().Single();
         var rigthTopMosts = connections.Select(t => t.RightPort.GetTopMostUser());
         var rigthConnector = rigthTopMosts.Distinct().Single();
-        return (leftConnector, rigthConnector);
+        return (leftConnector.ImplementedPort!, rigthConnector.ImplementedPort!);
     }
-    public override SignalPort LeftPort => LeftWiredPort;
-    public override SignalPort RightPort => RigthWiredPort;
+    public override Port LeftPort => LeftWiredPort;
+    public override Port RightPort => RigthWiredPort;
     public override bool IsExclusive => false;
 
 }
 
 public class Wire : WiringAction
 {
-    public override WireablePort LeftWiredPort { get; init; }
-    public override WireablePort RigthWiredPort { get; init; }
+    public override Port LeftWiredPort { get; init; }
+    public override Port RigthWiredPort { get; init; }
     internal Wire(WireablePort wireableA, WireablePort wireableB)
     {
-        LeftWiredPort = wireableA;
-        RigthWiredPort = wireableB;
-        wireableA.AddConnection(this);
-        wireableB.AddConnection(this);
+        LeftWiredPort = wireableA.LocalImplementation;
+        RigthWiredPort = wireableB.LocalImplementation;
+        LeftWiredPort.AddConnection(this);
+        RigthWiredPort.AddConnection(this);
     }
 }
 
 public abstract class WireableGrouping : WiringAction
 {
-    public override WireablePort LeftWiredPort { get; init; }
-    public override WireablePort RigthWiredPort { get; init; }
+    public override Port LeftWiredPort { get; init; }
+    public override Port RigthWiredPort { get; init; }
     public IEnumerable<WiringAction> GroupedItems { get; init; }
     public override IEnumerable<WiringAction> Wirings
         => [.. GroupedItems.SelectMany(c => c.Wirings)];
@@ -49,8 +49,8 @@ public abstract class WireableGrouping : WiringAction
     internal WireableGrouping(IEnumerable<WiringAction> groupedItems)
     {
         var commonPath = GetCommonPathOrThrow(groupedItems);
-        LeftWiredPort = (WireablePort) commonPath.Item1;
-        RigthWiredPort = (WireablePort) commonPath.Item2;
+        LeftWiredPort = commonPath.Item1.LocalImplementation;
+        RigthWiredPort = commonPath.Item2.LocalImplementation;
         GroupedItems = groupedItems.ToList();
         LeftWiredPort.AddConnection(this);
         RigthWiredPort.AddConnection(this);

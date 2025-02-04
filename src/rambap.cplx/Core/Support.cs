@@ -13,15 +13,11 @@ namespace rambap.cplx.Core;
 /// </summary>
 internal static class Support
 {
-    /// <summary> Define execution behavior </summary>
-    internal enum AutoContent
+    public enum PropertyOrFieldType
     {
-        /// <summary> Skip encountered null values </summary>
-        IgnoreNulls,
-        /// <summary> Process encountered null value </summary>
-        AcceptNulls,
-        /// <summary> Create and assign a new() value before processing null values </summary>
-        ConstructIfNulls
+        Field,
+        BackedProperty,
+        UnbackedProperty,
     }
 
     internal record PropertyOrFieldInfo
@@ -31,6 +27,19 @@ internal static class Support
 
         // see https://learn.microsoft.com/en-us/dotnet/api/system.reflection.methodbase.isassembly
         public required bool IsPublicOrAssembly { get; init; }
+
+        public required PropertyOrFieldType Type { get; init; }
+    }
+
+    /// <summary> Define <see cref="ScanObjectContentFor"/> execution behavior </summary>
+    internal enum AutoContent
+    {
+        /// <summary> Skip encountered null values </summary>
+        IgnoreNulls,
+        /// <summary> Process encountered null value </summary>
+        AcceptNulls,
+        /// <summary> Create and assign a new() value before processing null values </summary>
+        ConstructIfNulls
     }
 
     /// <summary>
@@ -96,24 +105,33 @@ internal static class Support
         // Search type and parent for all properties assignable to T that does not have the CplxIgnore Attribute
         var properties = GetPropertiesRecursive<T>(objectType);
         var validProperties = properties.Where(p =>
-            p.GetMethod != null && 
+            p.GetMethod != null &&
             p.GetCustomAttribute<CplxIgnoreAttribute>() == null &&
-            p.GetCustomAttribute<CompilerGeneratedAttribute>() == null // Avoid matching auto-generated properties 
-            && (includeUnbackedProperties || HasBackingField<T>(p))); // Avoid matching expression bodied properties, such as "Part Name => Other ;"/
-                                       // Expression bodied properties have a get accessor, no set, and cannot be initialised
-        foreach (var p in validProperties)
+            p.GetCustomAttribute<CompilerGeneratedAttribute>() == null)// Avoid matching auto-generated properties 
+            .Select(p => (p, HasBackingField<T>(p)));
+        if (!includeUnbackedProperties)
         {
+            // Avoid matching expression bodied properties, such as "Part Name => Other ;"/
+            // Expression bodied properties have a get accessor, no set, and cannot be initialised
+            validProperties = validProperties.Where(v => v.Item2);
+        }
+
+        foreach (var t in validProperties)
+        {
+            var p = t.p;
+            var isBacked = t.Item2;
             bool isPublicOrAssembly = p.GetMethod!.IsPublic || p.GetMethod!.IsAssembly;
             var rename = p.GetCustomAttribute<RenameAttribute>()?.Name;
             PropertyOrFieldInfo info = new() {
                 Name = rename ?? p.Name,
                 Comments = p.GetCustomAttributes<ComponentDescriptionAttribute>(), 
-                IsPublicOrAssembly = isPublicOrAssembly };
+                IsPublicOrAssembly = isPublicOrAssembly,
+                Type = isBacked ? PropertyOrFieldType.BackedProperty : PropertyOrFieldType.UnbackedProperty};
             var val = p.GetValue(obj) as T;
             if (val is null && ConstructNulls)
             {
                 val = constructor(p.PropertyType, info);
-                p.SetValue(obj, val);
+                p.SetValue(obj, val); // Will throw if no set accessor ({get;} only, or unbacked)
             }
             if (val != null || AcceptNulls)
                 onData(val!, info);
@@ -130,7 +148,8 @@ internal static class Support
             PropertyOrFieldInfo info = new(){
                 Name = rename ?? f.Name,
                 Comments = f.GetCustomAttributes<ComponentDescriptionAttribute>(),
-                IsPublicOrAssembly = isPublicOrAssembly
+                IsPublicOrAssembly = isPublicOrAssembly,
+                Type = PropertyOrFieldType.Field,
             };
             var val = f.GetValue(obj) as T;
             if (val is null && ConstructNulls)

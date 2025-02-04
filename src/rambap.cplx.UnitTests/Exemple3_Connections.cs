@@ -1,7 +1,7 @@
 ﻿namespace rambap.cplx.UnitTests;
 
 using rambap.cplx.Export.TextFiles;
-using rambap.cplx.Modules.Connectivity.Model;
+using rambap.cplx.Modules.Connectivity.PinstanceModel;
 using rambap.cplx.Modules.Connectivity.Templates;
 
 class RackConnected1 : Part, IPartConnectable, IPartAdditionalDocuments
