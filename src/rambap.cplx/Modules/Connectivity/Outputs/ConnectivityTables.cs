@@ -26,8 +26,8 @@ public class ConnectivityTables
                     ConnectedPortName(ConnectorSide.Rigth,identity),
                     Dashes("--"),
                     CablePart("Description",c => c.Instance.Documentation()?.Descriptions.FirstOrDefault()?.Text ?? ""),
-                    CablePort(ConnectorSide.Left, "L", c => c.GetDeepestExposition().Owner!.ImplementingInstance.PN),
-                    CablePort(ConnectorSide.Rigth, "R", c => c.GetDeepestExposition().Owner!.ImplementingInstance.PN),
+                    CablePort(ConnectorSide.Left, "L", c => c.GetDeepestExposition().Owner.PN),
+                    CablePort(ConnectorSide.Rigth, "R", c => c.GetDeepestExposition().Owner.PN),
                 ]
         };
 
@@ -41,13 +41,13 @@ public class ConnectivityTables
             },
             Columns = [
                     ConnectedComponent(ConnectorSide.Left,ConnectorIdentity.Topmost,"CN", c => c.CN),
-                    ConnectedStructuralEquivalenceTopmostPort(ConnectorSide.Left,"Connector", c => c.Name),
+                    ConnectedStructuralEquivalenceTopmostPort(ConnectorSide.Left,"Connector", c => c.Label),
                     ConnectedPortName(ConnectorSide.Left,ConnectorIdentity.Topmost),
                     Dashes("--"),
                     EmptyColumn("Signal"),
                     Dashes("--"),
                     ConnectedComponent(ConnectorSide.Rigth,ConnectorIdentity.Topmost,"CN", c => c.CN),
-                    ConnectedStructuralEquivalenceTopmostPort(ConnectorSide.Rigth,"Connector", c => c.Name),
+                    ConnectedStructuralEquivalenceTopmostPort(ConnectorSide.Rigth,"Connector", c => c.Label),
                     ConnectedPortName(ConnectorSide.Rigth,ConnectorIdentity.Topmost,true),
                 ]
         };
@@ -62,8 +62,8 @@ public class ConnectivityTables
                         {
                             if(i.Property is ICDTableContentProperty prop){
                                  if(prop.Port.HasStructuralEquivalence)
-                                    return prop.Port.GetShallowestStructuralEquivalence().GetTopMostExposition().Name ?? "";
-                                 return prop.Port.Name ?? "";
+                                    return prop.Port.GetShallowestStructuralEquivalence().GetTopMostExposition().Label ?? "";
+                                 return prop.Port.Label ?? "";
                             }
                             return "";
                         }),

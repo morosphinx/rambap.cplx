@@ -51,17 +51,13 @@ class Rack1 : Part
     public Equipement1 EQ_PB;
 }
 
-class Rack2 : Part, IPartConnectable
+class Rack2 : Part
 {
     Equipement1 eqA;
     Equipement1 eqB;
-    public ConnectablePort InterfaceA;
-    public ConnectablePort InterfaceB;
-    public void Assembly_Connections(ConnectionBuilder Do)
-    {
-        Do.ExposeAs(eqA.Port, InterfaceA);
-        Do.ExposeAs(eqB.Port, InterfaceB);
-    }
+
+    public ConnectablePort InterfaceA => eqA.Port;
+    public ConnectablePort InterfaceB => eqB.Port;
 }
 
 class Equipement1 : Part

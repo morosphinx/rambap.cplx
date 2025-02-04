@@ -5,6 +5,8 @@ namespace rambap.cplx.Modules.Connectivity.PinstanceModel;
 
 public partial class Port
 {    
+
+    public required bool IsPublic { get; init; }
     public required Pinstance Owner { get; init; }
 
     /// <summary>

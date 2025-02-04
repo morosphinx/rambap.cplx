@@ -29,7 +29,21 @@ internal class Part_ContainerBox(ConnectionAction actionOnL, ConnectionAction ac
     public ConnectablePort RigthBoxConnector;
 
     Part_InternalCable Cable = new Part_InternalCable(internalConnected);
-
+    private static void DoPortAction(PortBuilder Do, ConnectionAction action, ConnectablePort A, ConnectablePort B)
+    {
+        switch (action)
+        {
+            case (ConnectionAction.Nothing):
+                break;
+            case (ConnectionAction.Mate):
+                break;
+            case (ConnectionAction.Expose):
+                Do.ExposeAs(B, A); // Expose the cable connector on the box exterior
+                break;
+            default:
+                throw new NotImplementedException();
+        };
+    }
     private static void DoConnectionAction(ConnectionBuilder Do, ConnectionAction action, ConnectablePort A, ConnectablePort B)
     {
         switch (action)
@@ -40,11 +54,15 @@ internal class Part_ContainerBox(ConnectionAction actionOnL, ConnectionAction ac
                 Do.Mate(A, B); // Connect the cable connector to the box connector in a nondescript way
                 break;
             case (ConnectionAction.Expose):
-                Do.ExposeAs(B, A); // Expose the cable connector on the box exterior
                 break;
             default:
                 throw new NotImplementedException();
         };
+    }
+    public void Assembly_Ports(PortBuilder Do)
+    {
+        DoPortAction(Do, actionOnL, LeftBoxConnector, Cable.LeftCableConnector);
+        DoPortAction(Do, actionOnR, RigthBoxConnector, Cable.RigthCableConnector);
     }
 
     public void Assembly_Connections(ConnectionBuilder Do)

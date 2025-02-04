@@ -1,8 +1,8 @@
 ﻿using rambap.cplx.Core;
 using rambap.cplx.Export.Tables;
 using rambap.cplx.Modules.Base.Output;
+using rambap.cplx.Modules.Connectivity.PinstanceModel;
 using rambap.cplx.PartProperties;
-using System.Security.Cryptography.X509Certificates;
 
 namespace rambap.cplx.Modules.Connectivity.Outputs;
 
@@ -10,7 +10,7 @@ public class ICDTableIterator : IIterator<IComponentContent>
 {
     public class ICDTableContentProperty
     {
-        public required SignalPort Port { get; init; }
+        public required Port Port { get; init; }
     }
 
     public IEnumerable<IComponentContent> MakeContent(Pinstance instance)
@@ -47,7 +47,7 @@ public class ICDTableIterator : IIterator<IComponentContent>
         var topMostConnectors = connectorContents.OfType<IPropertyContent>().Select(c => (c.Property as ICDTableContentProperty)!.Port.GetTopMostUser()).ToList();
         
         // Return true if the SignalPort is a subPort of a public TopMostconnector (combined or exposed as a topmostConnector)
-        bool IsSubOfTopMostConnectors(SignalPort port)
+        bool IsSubOfTopMostConnectors(Port port)
         {
             bool isATopMostConnector = topMostConnectors.Contains(port);
             bool isSubOfATopMost = topMostConnectors.Contains(port.GetTopMostUser());

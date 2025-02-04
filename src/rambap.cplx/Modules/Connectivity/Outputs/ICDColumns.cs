@@ -15,7 +15,7 @@ public static class ICDColumns
         i => i switch
         {
             BranchComponent b => b.Component.CN,
-            IPropertyContent { Property: ICDTableContentProperty prop } p => prop.Port.GetTopMostUser().Owner?.ImplementingInstance.CN ?? "",
+            IPropertyContent { Property: ICDTableContentProperty prop } p => prop.Port.GetTopMostUser().Owner.CN ?? "",
             LeafComponent c => c.Component.CN,
             _ => throw new NotImplementedException(),
         });
@@ -27,7 +27,7 @@ public static class ICDColumns
             i => i switch
             {
                 BranchComponent b => "",
-                IPropertyContent { Property : ICDTableContentProperty prop} p => prop.Port.GetTopMostUser().Name,
+                IPropertyContent { Property : ICDTableContentProperty prop} p => prop.Port.GetTopMostUser().Label,
                 LeafComponent c => "",
                 _ => throw new NotImplementedException(),
             });
@@ -39,7 +39,7 @@ public static class ICDColumns
             i => i switch
             {
                 BranchComponent b => "",
-                IPropertyContent { Property: ICDTableContentProperty prop } p => prop.Port.GetTopMostExposition().Name,
+                IPropertyContent { Property: ICDTableContentProperty prop } p => prop.Port.GetTopMostExposition().Label,
                 LeafComponent c => "",
                 _ => throw new NotImplementedException(),
             });
@@ -63,7 +63,7 @@ public static class ICDColumns
             i => i switch
             {
                 BranchComponent b => "",
-                IPropertyContent { Property: ICDTableContentProperty prop } p => prop.Port.Name,
+                IPropertyContent { Property: ICDTableContentProperty prop } p => prop.Port.Label,
                 LeafComponent c => "",
                 _ => throw new NotImplementedException(),
             });

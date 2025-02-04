@@ -34,7 +34,12 @@ internal class ConnectionConcept : IConcept<InstanceConnectivity>
     public override InstanceConnectivity? Make(Pinstance instance, Part template)
     {
         Port MakePort(SignalPort p, PropertyOrFieldInfo s){
-            var newPort = new Port() { Label = p.Name! , Owner = instance};
+            var newPort = new Port()
+            {
+                Label = p.Name!,
+                Owner = instance,
+                IsPublic = s.IsPublicOrAssembly,
+            };
             // Prevent double implementation of local ports
             if (p.Implementations.TryPeek(out var partPort))
                 if (p.LocalImplementation.Owner == instance)

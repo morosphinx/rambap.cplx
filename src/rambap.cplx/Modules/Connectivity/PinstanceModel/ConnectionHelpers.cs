@@ -3,23 +3,23 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace rambap.cplx.Modules.Connectivity.PinstanceModel;
 
-using TopmostConnectionGroup = (SignalPort LeftTopMost, SignalPort RigthTopMost, IEnumerable<SignalPortConnection> Connections);
+using TopmostConnectionGroup = (Port LeftTopMost, Port RigthTopMost, IEnumerable<SignalPortConnection> Connections);
 
 internal static class ConnectionHelpers
 {
-    class LinkNondirectionalEqualityComparer : EqualityComparer<(SignalPort A, SignalPort B)>
+    class LinkNondirectionalEqualityComparer : EqualityComparer<(Port A, Port B)>
     {
-        public override bool Equals((SignalPort A, SignalPort B) x, (SignalPort A, SignalPort B) y)
+        public override bool Equals((Port A, Port B) x, (Port A, Port B) y)
             => (x.A == y.A && x.B == y.B) || (x.A == y.B && x.B == y.A);
 
-        public override int GetHashCode([DisallowNull] (SignalPort A, SignalPort B) obj)
+        public override int GetHashCode([DisallowNull] (Port A, Port B) obj)
             => obj.A.GetHashCode() ^ obj.B.GetHashCode();
     }
 
     public static IEnumerable<TopmostConnectionGroup> GroupConnectionsByTopmostPort(
         IEnumerable<SignalPortConnection> connections)
     {
-        (SignalPort, SignalPort) GetTopMostConnectors(SignalPortConnection con)
+        (Port, Port) GetTopMostConnectors(SignalPortConnection con)
             => (con.LeftPort.GetTopMostUser(), con.RightPort.GetTopMostUser());
         var linkComparer = new LinkNondirectionalEqualityComparer();
 

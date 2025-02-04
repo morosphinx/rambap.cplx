@@ -51,15 +51,20 @@ public abstract class Connector<T> : Part, IPartConnectable, ISingleMateable
             pin.Name = pinNames[idx++];
     }
 
-    public void Assembly_Connections(ConnectionBuilder Do)
+    public void Assembly_Ports(PortBuilder Do)
     {
         // Expose MateFace
         var contacts = PinParts.Select(p => p.Contact);
-        Do.ExposeAs(contacts,MateFace);
+        Do.ExposeAs(contacts, MateFace);
         // Expose Pins backs
-        foreach(var i in Enumerable.Range(0, PinCount))
+        foreach (var i in Enumerable.Range(0, PinCount))
         {
             Do.ExposeAs(PinParts[i].Receptacle, WireablePorts[i]);
         }
+    }
+
+    public void Assembly_Connections(ConnectionBuilder Do)
+    {
+
     }
 }

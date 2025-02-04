@@ -39,18 +39,16 @@ class CableC : Part
     ConnectablePort R;
 }
 
-class CableC2 : Part, IPartConnectable
+class CableC2 : Part
 {
-    public ConnectablePort L;
-    public ConnectablePort R;
+    public ConnectablePort L => U1.MateFace;
+    public ConnectablePort R => U2.MateFace;
 
     ConnectorC2 U1;
     ConnectorC2 U2;
 
     public void Assembly_Connections(ConnectionBuilder Do)
     {
-        Do.ExposeAs(U1.MateFace, L);
-        Do.ExposeAs(U2.MateFace, R);
     }
 }
 class ConnectorC2: Part
@@ -85,11 +83,10 @@ class BoxF : Part, IPartConnectable
 class BoxE2 : Part, IPartConnectable
 {
     BoxD D;
-    public ConnectablePort J03;
+    public ConnectablePort J03 => D.AL.J01;
 
     public void Assembly_Connections(ConnectionBuilder Do)
     {
-        Do.ExposeAs(D.AL.J01, J03);
     }
 }
 class BoxF2 : Part, IPartConnectable
@@ -110,9 +107,13 @@ class BoxE3 : Part, IPartConnectable
     public BoxD D;
     BoxA SubA;
 
-    public void Assembly_Connections(ConnectionBuilder Do)
+    public void Assembly_Ports(PortBuilder Do)
     {
         Do.ExposeAs(SubA.J01, D.AL.J01);
+    }
+
+    public void Assembly_Connections(ConnectionBuilder Do)
+    {
     }
 }
 class BoxF3 : Part, IPartConnectable
@@ -129,9 +130,9 @@ class BoxF3 : Part, IPartConnectable
 
 class WiringA : Part, IPartConnectable
 {
-    public ConnectablePort J01;
-    public ConnectablePort J02;
-    public ConnectablePort J03;
+    public ConnectablePort J01 => C01.MateFace;
+    public ConnectablePort J02 => C02.MateFace;
+    public ConnectablePort J03 => C03.MateFace;
 
     ConnectorA C01;
     ConnectorA C02;
@@ -152,11 +153,6 @@ class WiringA : Part, IPartConnectable
         Do.Wire(C01.Pin(10), C03.Pin(10));
         // A loopback
         Do.Wire(C03.Pin(7), C03.Pin(8));
-
-        // Expositions
-        Do.ExposeAs(C01, J01);
-        Do.ExposeAs(C02, J02);
-        Do.ExposeAs(C03.MateFace, J03);
     }
 }
 class ConnectorA : Connector<PinA>
