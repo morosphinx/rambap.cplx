@@ -34,7 +34,7 @@ public interface IComponentContent
 /// <summary>
 /// Content of a Iterated table representing a component or group of component
 /// </summary>
-public abstract record ComponentContent : IComponentContent
+public abstract class ComponentContent : IComponentContent
 {
     public RecursionLocation Location { get; init; }
     public Component Component { get; }
@@ -111,7 +111,7 @@ public enum LeafCause
 /// <summary>
 /// A content of a component Tree representing a component. Has no child content
 /// </summary>
-public record LeafComponent : ComponentContent
+public class LeafComponent : ComponentContent
 {
     public LeafComponent(RecursionLocation loc, Component comp)
         : base(loc, comp)
@@ -127,7 +127,7 @@ public record LeafComponent : ComponentContent
 /// <summary>
 /// A content of a component Tree representing a component. Has descendants, either <see cref="LeafComponent"/> or <see cref="IPropertyContent"/>
 /// </summary>
-public record BranchComponent : ComponentContent
+public class BranchComponent : ComponentContent
 {
     public BranchComponent(RecursionLocation loc, Component comp)
     : base(loc, comp)
@@ -138,7 +138,7 @@ public record BranchComponent : ComponentContent
     { }
 }
 
-public record LeafComponentWithProperty : LeafComponent, IPropertyContent
+public class LeafComponentWithProperty<T> : LeafComponent, IPropertyContent<T>
 {
     public LeafComponentWithProperty(RecursionLocation loc, Component comp)
         : base(loc, comp)
@@ -148,18 +148,18 @@ public record LeafComponentWithProperty : LeafComponent, IPropertyContent
         : base(allComponents)
     { }
 
-    public required object? Property { get; init; } = null;
+    public required T Property { get; init; }
 }
 
 /// <summary>
 /// A content of a component Tree representing a property of a component.
 /// </summary>
-public interface IPropertyContent : IComponentContent
+public interface IPropertyContent<out T> : IComponentContent
 {
     /// <summary>
     /// Property value. Is owned by the Component
     /// </summary>
-    object? Property { get; init; }
+    T Property { get; }
 
     LeafCause IsLeafBecause { get; }
 }

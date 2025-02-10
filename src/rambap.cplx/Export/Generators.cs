@@ -205,7 +205,7 @@ public class FlattenedDocumentationTreeGenerator : IGenerator
 
     public override IInstruction PrepareInstruction(Pinstance i)
     {
-        var partTree= new PartTypesIterator()
+        var partTree= new PartTypesIterator<object>()
         {
             RecursionCondition = (c, l) => this.SubComponentInclusionCondition?.Invoke(c) ?? false
         };

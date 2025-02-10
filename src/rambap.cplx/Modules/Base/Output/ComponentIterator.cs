@@ -9,7 +9,7 @@ namespace rambap.cplx.Modules.Base.Output;
 /// Produce an IEnumerable iterating over the component tree of an instance, and its properties <br/>
 /// Output is structured like a tree of <see cref="ComponentContent"/>. <br/>
 /// </summary>
-public class ComponentIterator : IIterator<IComponentContent>
+public class ComponentIterator<T> : IIterator<IComponentContent>
 {
     /// <summary>
     /// If False, each subcomponent produce its own content.
@@ -27,7 +27,7 @@ public class ComponentIterator : IIterator<IComponentContent>
     /// Define a final level of iteration on of components
     /// Leave this empty to return no properties items
     /// </summary>
-    public Func<Component, IEnumerable<object>>? PropertyIterator { private get; set; }
+    public Func<Component, IEnumerable<T>>? PropertyIterator { private get; init; }
 
     public bool StackPropertiesSingleChildBranches { private get; init; } = true;
 
@@ -87,7 +87,7 @@ public class ComponentIterator : IIterator<IComponentContent>
             {
                 var property = PropertyIterator!(mainComponent).Single();
                 var propLocation = location; // Same location, we replace the branch
-                yield return new LeafComponentWithProperty(componentsAndLocation) { Property = property, IsLeafBecause = LeafCause.SingleStackedPropertyChild };
+                yield return new LeafComponentWithProperty<T>(componentsAndLocation) { Property = property, IsLeafBecause = LeafCause.SingleStackedPropertyChild };
                 yield break;
             }
 
@@ -115,7 +115,7 @@ public class ComponentIterator : IIterator<IComponentContent>
                         LocalItemCount = subItemTotalCount,
                     };
                     var componentsWithPropLocation = componentsAndLocation.Select(t => (propLocation, t.c));
-                    yield return new LeafComponentWithProperty(componentsWithPropLocation) { Property = prop, IsLeafBecause = LeafCause.NoChild };
+                    yield return new LeafComponentWithProperty<T>(componentsWithPropLocation) { Property = prop, IsLeafBecause = LeafCause.NoChild };
                 }
             }
             // Output the subcomponents contents
@@ -164,15 +164,15 @@ public class ComponentIterator : IIterator<IComponentContent>
         }
     }
 
-    public static IEnumerable<IComponentContent> SubIterateProperties<T>(
+    public static IEnumerable<IComponentContent> SubIterateProperties(
         IEnumerable<IComponentContent> contents,
         Func<T, IEnumerable<T>> additionalProperties,
         bool applyRecursively = true)
     {
-        IEnumerable<LeafComponentWithProperty> MakeAditionalContents(IPropertyContent leafProperty)
+        IEnumerable<LeafComponentWithProperty<T>> MakeAditionalContents(IPropertyContent<T> leafProperty)
         {
             var location = leafProperty.Location;
-            T property = (T)leafProperty.Property!;
+            T property = leafProperty.Property!;
             var newProperties = additionalProperties(property);
 
             var currentSubitemIndex = 0;
@@ -187,7 +187,7 @@ public class ComponentIterator : IIterator<IComponentContent>
                     LocalItemCount = subItemTotalCount,
                 };
                 var relocatedComponents = leafProperty.AllComponents().Select(c => (propLocation, c.component));
-                yield return new LeafComponentWithProperty(relocatedComponents)
+                yield return new LeafComponentWithProperty<T>(relocatedComponents)
                 {
                     Property = p,
                     IsLeafBecause = LeafCause.NoChild
@@ -195,10 +195,10 @@ public class ComponentIterator : IIterator<IComponentContent>
             }
 
         }
-        return ComponentIterator.SubIterate(contents,
+        return ComponentIterator<T>.SubIterate(contents,
             c => c switch
             {
-                IPropertyContent { Property: T prop } lp => MakeAditionalContents(lp),
+                IPropertyContent<T> lp => MakeAditionalContents(lp),
                 LeafComponent lc => [],
                 BranchComponent bc => [],
                 _ => throw new NotImplementedException(),

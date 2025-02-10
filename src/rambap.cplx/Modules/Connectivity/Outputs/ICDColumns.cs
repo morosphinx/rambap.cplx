@@ -15,7 +15,7 @@ public static class ICDColumns
         i => i switch
         {
             BranchComponent b => b.Component.CN,
-            IPropertyContent { Property: ICDTableContentProperty prop } p => prop.Port.GetTopMostUser().Owner.CN ?? "",
+            IPropertyContent<ICDTableContentProperty> p => p.Property.Port.GetTopMostUser().Owner.CN ?? "",
             LeafComponent c => c.Component.CN,
             _ => throw new NotImplementedException(),
         });
@@ -27,7 +27,7 @@ public static class ICDColumns
             i => i switch
             {
                 BranchComponent b => "",
-                IPropertyContent { Property : ICDTableContentProperty prop} p => prop.Port.GetTopMostUser().Label,
+                IPropertyContent<ICDTableContentProperty> p => p.Property.Port.GetTopMostUser().Label,
                 LeafComponent c => "",
                 _ => throw new NotImplementedException(),
             });
@@ -39,7 +39,7 @@ public static class ICDColumns
             i => i switch
             {
                 BranchComponent b => "",
-                IPropertyContent { Property: ICDTableContentProperty prop } p => prop.Port.GetTopMostExposition().Label,
+                IPropertyContent<ICDTableContentProperty> p => p.Property.Port.GetTopMostExposition().Label,
                 LeafComponent c => "",
                 _ => throw new NotImplementedException(),
             });
@@ -51,7 +51,7 @@ public static class ICDColumns
             i => i switch
             {
                 BranchComponent b => "",
-                IPropertyContent { Property: ICDTableContentProperty prop } p => "",
+                IPropertyContent<ICDTableContentProperty> p => "",
                 LeafComponent c => "",
                 _ => throw new NotImplementedException(),
             });
@@ -63,7 +63,7 @@ public static class ICDColumns
             i => i switch
             {
                 BranchComponent b => "",
-                IPropertyContent { Property: ICDTableContentProperty prop } p => prop.Port.Label,
+                IPropertyContent<ICDTableContentProperty> p => p.Property.Port.Label,
                 LeafComponent c => "",
                 _ => throw new NotImplementedException(),
             });

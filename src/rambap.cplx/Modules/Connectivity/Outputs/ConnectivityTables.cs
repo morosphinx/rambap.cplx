@@ -57,15 +57,13 @@ public class ConnectivityTables
         {
             Iterator = new ICDTableIterator(),
             Columns = [
-                    IDColumns.ComponentNumberPrettyTree(
+                    IDColumns.ComponentNumberPrettyTree<ICDTableContentProperty>(
                         i =>
                         {
-                            if(i.Property is ICDTableContentProperty prop){
-                                 if(prop.Port.HasStructuralEquivalence)
-                                    return prop.Port.GetShallowestStructuralEquivalence().GetTopMostExposition().Label ?? "";
-                                 return prop.Port.Label ?? "";
-                            }
-                            return "";
+                            var prop = i.Property;
+                            if(prop.Port.HasStructuralEquivalence)
+                               return prop.Port.GetShallowestStructuralEquivalence().GetTopMostExposition().Label ?? "";
+                            return prop.Port.Label ?? "";
                         }),
                     ICDColumns.TopMostPortPart(),
                     ICDColumns.TopMostPortName(),

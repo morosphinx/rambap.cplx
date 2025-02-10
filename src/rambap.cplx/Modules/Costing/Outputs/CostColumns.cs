@@ -11,7 +11,7 @@ public static class CostColumns
         new DelegateColumn<IComponentContent>("Total Cost", ColumnTypeHint.Numeric,
             i => i switch
             {
-                IPropertyContent {Property : InstanceCost.NativeCostInfo prop } lp => (prop.value.Price * lp.ComponentTotalCount).CostToString(),
+                IPropertyContent<InstanceCost.NativeCostInfo> lp =>( lp.Property.value.Price * lp.ComponentTotalCount).CostToString(),
                 LeafComponent lc => i.AllComponents().Select(c => c.component.Instance.Cost()?.Total ?? 0).Sum().CostToString(),
                 BranchComponent bc => "", // Do not display branch costs : subcosts are displayed in properties or component leafs
                                           // And we want to keep the column total cost (when summing the cells themselves) correct
@@ -23,7 +23,7 @@ public static class CostColumns
         => new DelegateColumn<IComponentContent>("Cost Name", ColumnTypeHint.StringFormatable,
             i => i switch
             {
-                IPropertyContent {Property : InstanceCost.NativeCostInfo prop} lp => prop.name,
+                IPropertyContent<InstanceCost.NativeCostInfo> lp => lp.Property.name,
                 LeafComponent lc => "unit",
                 BranchComponent bc when displayBranches => "total per unit",
                 BranchComponent bc when !displayBranches => "",
@@ -34,7 +34,7 @@ public static class CostColumns
         => new DelegateColumn<IComponentContent>("Unit Cost", ColumnTypeHint.Numeric,
             i => i switch
             {
-                IPropertyContent { Property: InstanceCost.NativeCostInfo prop } lp => prop.value.Price.CostToString(),
+                IPropertyContent<InstanceCost.NativeCostInfo> lp => lp.Property.value.Price.CostToString(),
                 LeafComponent lc =>
                     lc.AllComponentsMatch(c => c.Instance.Cost()?.Total, out var value)
                         ? (value?.CostToString() ?? "")
@@ -53,8 +53,8 @@ public static class CostColumns
             Title = "SumCost",
             GetLocationText = i => i switch
             {
-                IPropertyContent { Property: InstanceCost.NativeCostInfo cost } =>
-                        cost.value.Price.CostToString(), // Do not display multiplicity for properties : this is a local cost representation
+                IPropertyContent<InstanceCost.NativeCostInfo> lp =>
+                    lp.Property.value.Price.CostToString(), // Do not display multiplicity for properties : this is a local cost representation
                 (LeafComponent or BranchComponent) when i.Component.Instance.Cost() is not null =>
                     i.IsGrouping
                         ? $"{i.ComponentLocalCount}x: {i.Component.Instance.Cost()!.Total.CostToString()}"

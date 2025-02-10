@@ -8,7 +8,7 @@ namespace rambap.cplx.Modules.Base.Output;
 /// Produce an IEnumerable iterating over parts used as subcomponents of an instance, and properties of those parts. <br/>
 /// Output is structured like a list of <see cref="PartContent"/>.
 /// </summary>
-public class PartTypesIterator : IIterator<IComponentContent>
+public class PartTypesIterator<T> : IIterator<IComponentContent>
 {
 
     public bool WriteBranches { get; init; } = true;
@@ -23,7 +23,7 @@ public class PartTypesIterator : IIterator<IComponentContent>
     /// Define a final level of iteration on of parts that return properties
     /// Leave this empty to return no properties items
     /// </summary>
-    public Func<Component, IEnumerable<object>>? PropertyIterator { private get; set; }
+    public Func<Component, IEnumerable<T>>? PropertyIterator { private get; init; }
     private bool IsAPropertyTable => PropertyIterator != null;
 
     /// <summary>
@@ -37,7 +37,7 @@ public class PartTypesIterator : IIterator<IComponentContent>
     public IEnumerable<IComponentContent> MakeContent(Pinstance instance)
     {
         // Produce a tree table of All Components, stopping on recursing condition.
-        var ComponentTable = new ComponentIterator()
+        var ComponentTable = new ComponentIterator<T>()
         {
             WriteBranches = true, // We want information about all tree components
             RecursionCondition = RecursionCondition,
@@ -76,7 +76,7 @@ public class PartTypesIterator : IIterator<IComponentContent>
                         if (WriteBranches)
                             yield return new BranchComponent(componentGroup);
                         foreach (var prop in properties)
-                            yield return new LeafComponentWithProperty(componentGroup) { Property = prop, IsLeafBecause = LeafCause.NoChild };
+                            yield return new LeafComponentWithProperty<T>(componentGroup) { Property = prop, IsLeafBecause = LeafCause.NoChild };
                     } else
                     {
                         // art have no property item child

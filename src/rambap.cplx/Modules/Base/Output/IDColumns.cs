@@ -102,13 +102,15 @@ public static class IDColumns
                 CID = Core.CID.RemoveImplicitRoot(CID);
                 return i switch
                 {
-                    IPropertyContent p => CID + Core.CID.Separator + propname,
+                    IPropertyContent<object> p => CID + Core.CID.Separator + propname,
                     _ => CID
                 };
             });
 
-    
-    public static IColumn<IComponentContent> ComponentNumberPrettyTree(Func<IPropertyContent, string>? propertyNaming = null)
+
+    public static IColumn<IComponentContent> ComponentNumberPrettyTree()
+        => ComponentNumberPrettyTree<object>(null);
+    public static IColumn<IComponentContent> ComponentNumberPrettyTree<T>(Func<IPropertyContent<T>, string>? propertyNaming)
         => new ComponentPrettyTreeColumn()
         {
             Title = "CN",
@@ -117,7 +119,7 @@ public static class IDColumns
                 var componentOrPartGroupName = i.IsGrouping
                         ? $"{i.ComponentLocalCount}x: {i.Component.Instance.PN}" // Group present the "n x PN"
                         : $"{i.Component.CN}";// Single components present the CN
-                if(i is IPropertyContent pc)
+                if(i is IPropertyContent<T> pc)
                 {
                     var propName = propertyNaming?.Invoke(pc) ?? "?";
                     var shouldStillDisplayPN = pc.IsLeafBecause == LeafCause.SingleStackedPropertyChild;

@@ -12,7 +12,7 @@ namespace rambap.cplx.Modules.Costing.Outputs
         public static TableProducer<IComponentContent> BillOfTasks()
         => new()
         {
-            Iterator = new PartTypesIterator()
+            Iterator = new PartTypesIterator<InstanceTasks.NamedTask>()
             {
                 WriteBranches = false,
                 PropertyIterator =
@@ -47,14 +47,14 @@ namespace rambap.cplx.Modules.Costing.Outputs
         public static TableProducer<IComponentContent> TaskBreakdown()
             => new()
             {
-                Iterator = new ComponentIterator()
+                Iterator = new ComponentIterator<InstanceTasks.NamedTask>()
                 {
                     PropertyIterator = (c) => c.Instance.Tasks() is not null and var t ? [.. t.RecurentTasks,.. t.NonRecurentTasks] : [],
                     GroupPNsAtSameLocation = true,
                     StackPropertiesSingleChildBranches = true,
                 },
                 Columns = [
-                    IDColumns.ComponentNumberPrettyTree(pc => (pc.Property is InstanceTasks.NamedTask task) ? task.Name : "!"),
+                    IDColumns.ComponentNumberPrettyTree<InstanceTasks.NamedTask>(pc => pc.Property.Name),
                     TaskColumns.LocalRecurentSum(),
                     TaskColumns.LocalNonRecurentTotal(),
                     IDColumns.ComponentID(),

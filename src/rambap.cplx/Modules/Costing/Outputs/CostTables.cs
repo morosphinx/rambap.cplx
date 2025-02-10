@@ -13,7 +13,7 @@ public static class CostTables
     /// </summary>
     /// <param name="c"></param>
     /// <returns></returns>
-    private static IEnumerable<object> ListCostOr0(Core.Component c)
+    private static IEnumerable<InstanceCost.NativeCostInfo> ListCostOr0(Core.Component c)
     {
         if (c.Instance.Cost() is not null and var cost)
         {
@@ -35,7 +35,7 @@ public static class CostTables
     public static TableProducer<IComponentContent> BillOfMaterial(bool recurse = true)
         => new()
         {
-            Iterator = new PartTypesIterator()
+            Iterator = new PartTypesIterator<InstanceCost.NativeCostInfo>()
             {
                 WriteBranches = false,
                 RecursionCondition = recurse ? null : (c, l) => false, // null = always recurse
@@ -58,14 +58,14 @@ public static class CostTables
     public static TableProducer<IComponentContent> CostBreakdown()
         => new()
         {
-            Iterator = new ComponentIterator()
+            Iterator = new ComponentIterator<InstanceCost.NativeCostInfo>()
             {
                 PropertyIterator = (c) => c.Instance.Cost()?.NativeCosts ?? new(),
                 GroupPNsAtSameLocation = true,
                 StackPropertiesSingleChildBranches = true,
             },
             Columns = [
-                IDColumns.ComponentNumberPrettyTree(pc => (pc.Property is InstanceCost.NativeCostInfo cost) ? cost.name : "!"),
+                IDColumns.ComponentNumberPrettyTree<InstanceCost.NativeCostInfo>(pc => pc.Property.name),
                 CostColumns.LocalSumCost(),
                 IDColumns.ComponentID(),
                 IDColumns.PartNumber(),

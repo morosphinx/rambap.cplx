@@ -18,7 +18,7 @@ public class InstanceTasks : IInstanceConceptProperty
     public static decimal GetTotalNonRecurentTaskDurations(Pinstance instance)
     {
         decimal total = 0;
-        var tree = new PartTypesIterator();
+        var tree = new PartTypesIterator<object>();
         foreach (var i in tree.MakeContent(instance))
         {
             var tasks = i.Component.Instance.Tasks();

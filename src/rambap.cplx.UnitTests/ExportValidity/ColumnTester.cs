@@ -6,70 +6,70 @@ namespace rambap.cplx.UnitTests.ExportValidity;
 
 internal static class ColumnTester
 {
-    public static ComponentIterator ComponentIterator_Flat_NoBranches() => new ComponentIterator()
+    public static ComponentIterator<object> ComponentIterator_Flat_NoBranches() => new ComponentIterator<object>()
     {
         RecursionCondition = (c, l) => false,
         WriteBranches = false,
     };
-    public static ComponentIterator ComponentIterator_Recursive_NoBranches() => new ComponentIterator()
+    public static ComponentIterator<object> ComponentIterator_Recursive_NoBranches() => new ComponentIterator<object>()
     {
         RecursionCondition = (c, l) => true,
         WriteBranches = false,
     };
-    public static ComponentIterator ComponentIterator_Flat_WithBranches() => new ComponentIterator()
+    public static ComponentIterator<object> ComponentIterator_Flat_WithBranches() => new ComponentIterator<object>()
     {
         RecursionCondition = (c, l) => false,
         WriteBranches = true,
     };
-    public static ComponentIterator ComponentIterator_Recursive_With_Branches() => new ComponentIterator()
-    {
-        RecursionCondition = (c, l) => true,
-        WriteBranches = true,
-    };
-
-
-    public static PartTypesIterator PartTypeIterator_Flat_NoBranches() => new PartTypesIterator()
-    {
-        RecursionCondition = (c, l) => false,
-        WriteBranches = false,
-    };
-    public static PartTypesIterator PartTypeIterator_Recursive_NoBranches() => new PartTypesIterator()
-    {
-        RecursionCondition = (c, l) => true,
-        WriteBranches = false,
-    };
-    public static PartTypesIterator PartTypeIterator_Flat_WithBranches() => new PartTypesIterator()
-    {
-        RecursionCondition = (c, l) => false,
-        WriteBranches = true,
-    };
-    public static PartTypesIterator PartTypeIterator_Recursive_WithBranches() => new PartTypesIterator()
+    public static ComponentIterator<object> ComponentIterator_Recursive_With_Branches() => new ComponentIterator<object>()
     {
         RecursionCondition = (c, l) => true,
         WriteBranches = true,
     };
 
 
-    public static ComponentIterator PartLocationIterator_Flat_NoBranches() => new ComponentIterator()
+    public static PartTypesIterator<object> PartTypeIterator_Flat_NoBranches() => new PartTypesIterator<object>()
+    {
+        RecursionCondition = (c, l) => false,
+        WriteBranches = false,
+    };
+    public static PartTypesIterator<object> PartTypeIterator_Recursive_NoBranches() => new PartTypesIterator<object>()
+    {
+        RecursionCondition = (c, l) => true,
+        WriteBranches = false,
+    };
+    public static PartTypesIterator<object> PartTypeIterator_Flat_WithBranches() => new PartTypesIterator<object>()
+    {
+        RecursionCondition = (c, l) => false,
+        WriteBranches = true,
+    };
+    public static PartTypesIterator<object> PartTypeIterator_Recursive_WithBranches() => new PartTypesIterator<object>()
+    {
+        RecursionCondition = (c, l) => true,
+        WriteBranches = true,
+    };
+
+
+    public static ComponentIterator<object> PartLocationIterator_Flat_NoBranches() => new ComponentIterator<object>()
     {
         RecursionCondition = (c, l) => false,
         GroupPNsAtSameLocation = true,
         WriteBranches = false,
     };
-    public static ComponentIterator PartLocationIterator_Recursive_NoBranches() => new ComponentIterator()
+    public static ComponentIterator<object> PartLocationIterator_Recursive_NoBranches() => new ComponentIterator<object>()
     {
         RecursionCondition = (c, l) => true,
         GroupPNsAtSameLocation = true,
         WriteBranches = false, // TODO : case write branch is true
     };
 
-    public static ComponentIterator PartLocationIterator_Flat_WithBranches() => new ComponentIterator()
+    public static ComponentIterator<object> PartLocationIterator_Flat_WithBranches() => new ComponentIterator<object>()
     {
         RecursionCondition = (c, l) => false,
         GroupPNsAtSameLocation = true,
         WriteBranches = true,
     };
-    public static ComponentIterator PartLocationIterator_Recursive_WithBranches() => new ComponentIterator()
+    public static ComponentIterator<object> PartLocationIterator_Recursive_WithBranches() => new ComponentIterator<object>()
     {
         RecursionCondition = (c, l) => true,
         GroupPNsAtSameLocation = true,
@@ -120,21 +120,6 @@ internal static class ColumnTester
     {
         var columnTotal = Convert.ToDecimal(testedColumn.TotalFor(pinstance));
         Assert.AreEqual(expectedTotal, columnTotal, $"Incoherent column autocalculated sum");
-    }
-
-    public static void SetPropertyIterator(IIterator<IComponentContent> iterator,
-        Func<Component, IEnumerable<object>>? propertyIterator)
-    {
-        switch(iterator)
-        {
-            case ComponentIterator ci:
-                ci.PropertyIterator = propertyIterator;
-                break;
-            case PartTypesIterator pi:
-                pi.PropertyIterator = propertyIterator;
-                break;
-            default: throw new NotImplementedException();
-        };
     }
 }
 

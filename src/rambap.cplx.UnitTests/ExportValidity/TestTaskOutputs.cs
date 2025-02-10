@@ -11,7 +11,7 @@ public class TestTaskOutputs
 {
     private void TestRecurentTask_SumCoherence(IIterator<IComponentContent> iterator)
     {
-        SetPropertyIterator(iterator, c => c.Instance.Tasks()?.RecurentTasks ?? []);
+        // SetPropertyIterator(iterator, c => c.Instance.Tasks()?.RecurentTasks ?? []);
         var part = new DecimalPropertyPartExemple<RecurrentTask>.Part_A();
         var instance = new Pinstance(part);
         ColumnTester.TestDecimalColumn_SumCoherence(

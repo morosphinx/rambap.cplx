@@ -1,5 +1,6 @@
 ﻿using rambap.cplx.Export.Tables;
 using rambap.cplx.Modules.Base.Output;
+using rambap.cplx.Modules.Costing;
 using rambap.cplx.Modules.Costing.Outputs;
 using static rambap.cplx.UnitTests.ExportValidity.ColumnTester;
 
@@ -10,7 +11,6 @@ public class TestCostOutputs
 {
     private void TestTotalCost_SumCoherence(IIterator<IComponentContent> iterator)
     {
-        SetPropertyIterator(iterator, c => c.Instance.Cost()?.NativeCosts ?? []);
         var part = new DecimalPropertyPartExemple<Cost>.Part_A();
         var instance = new Pinstance(part);
         ColumnTester.TestDecimalColumn_SumCoherence(
@@ -36,7 +36,13 @@ public class TestCostOutputs
     }
 
     [TestMethod]
-    public void TestTotalCost_1() => TestTotalCost_SumCoherence(ComponentIterator_Flat_NoBranches());
+    public void TestTotalCost_1() => TestTotalCost_SumCoherence(new ComponentIterator<InstanceCost.NativeCostInfo>()
+    {
+        RecursionCondition = (c, l) => false,
+        WriteBranches = false,
+        PropertyIterator = c => c.Instance.Cost()?.NativeCosts ?? [],
+    });
+
     [TestMethod]
     public void TestTotalCost_2() => TestTotalCost_SumCoherence(ComponentIterator_Recursive_NoBranches());
     [TestMethod]

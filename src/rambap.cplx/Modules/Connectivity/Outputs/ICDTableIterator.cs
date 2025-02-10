@@ -16,7 +16,7 @@ public class ICDTableIterator : IIterator<IComponentContent>
     public IEnumerable<IComponentContent> MakeContent(Pinstance instance)
     {
         // Iterate all public connector of a part
-        IEnumerable<object> SelectPublicConnectors(Component component)
+        IEnumerable<ICDTableContentProperty> SelectPublicConnectors(Component component)
         {
             var connectivity = component.Instance.Connectivity();
             if (connectivity != null)
@@ -30,7 +30,7 @@ public class ICDTableIterator : IIterator<IComponentContent>
         }
 
         // Iterate all public components in the hierarchy
-        var componentIterator = new ComponentIterator()
+        var componentIterator = new ComponentIterator<ICDTableContentProperty>()
         {
             PropertyIterator = SelectPublicConnectors,
             RecursionCondition = (c, l) => c.IsPublic,
@@ -44,7 +44,7 @@ public class ICDTableIterator : IIterator<IComponentContent>
         // Remove Leaf components, that have no public connector
         var connectorContents = contents.Where(c => c is not LeafComponent);
         // List all public topMostConnectors in the hierarchy
-        var topMostConnectors = connectorContents.OfType<IPropertyContent>().Select(c => (c.Property as ICDTableContentProperty)!.Port.GetTopMostUser()).ToList();
+        var topMostConnectors = connectorContents.OfType<IPropertyContent<ICDTableContentProperty>>().Select(c => c.Property.Port.GetTopMostUser()).ToList();
         
         // Return true if the SignalPort is a subPort of a public TopMostconnector (combined or exposed as a topmostConnector)
         bool IsSubOfTopMostConnectors(Port port)
@@ -57,13 +57,12 @@ public class ICDTableIterator : IIterator<IComponentContent>
         var topmostConnectorContents = contents.Where(c =>
             c switch
             {
-                IPropertyContent { Property : ICDTableContentProperty prop } => ! IsSubOfTopMostConnectors(prop.Port),
-                not IPropertyContent => c.Component.IsPublic, // Private part are still present as leaf, we remove them
-                _ => false,
+                IPropertyContent<ICDTableContentProperty> lp => ! IsSubOfTopMostConnectors(lp.Property.Port),
+                _ => c.Component.IsPublic, // Private part are still present as leaf, we remove them
             });
             
         // Recursively explicit the content of each SignalPort still in the hierarchy
-        var topmostConnectorsR = ComponentIterator.SubIterateProperties<ICDTableContentProperty>(topmostConnectorContents,
+        var topmostConnectorsR = ComponentIterator<ICDTableContentProperty>.SubIterateProperties(topmostConnectorContents,
             content => content.Port.Definition!.SubPorts.Select(p => new ICDTableContentProperty() { Port = p }));
 
         foreach (var c in topmostConnectorsR)
@@ -74,10 +73,10 @@ public class ICDTableIterator : IIterator<IComponentContent>
 
     public IEnumerable<IComponentContent> ExplicitConnectors(IEnumerable<ComponentContent> contents)
     {
-        return ComponentIterator.SubIterate(contents,
+        return ComponentIterator<ICDTableContentProperty>.SubIterate(contents,
             c => c switch
             {
-                IPropertyContent { Property : ICDTableContentProperty prop} lp => [], 
+                IPropertyContent<ICDTableContentProperty> lp => [], 
                 LeafComponent lc => [c],
                 BranchComponent bc => [c],
                 _ => throw new NotImplementedException(),
