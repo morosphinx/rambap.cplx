@@ -42,6 +42,7 @@ public partial class Port
 
     internal void DefineAsAnExpositionOf(Port source)
     {
+        if (source == this) throw new InvalidOperationException("Can't expose self on self");
         if (HasbeenDefined) throw new InvalidOperationException($"Port has already been defined");
         if (source.HasBeenUseDefined) throw new InvalidOperationException($"Connector {source} has already been used in another definition ({source.Usage!.User})");
         Definition = new PortDefinition_Exposed() { ExposedPort = source };

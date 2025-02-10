@@ -80,43 +80,12 @@ class CableTypeB : Part
 [TestClass]
 public class CablingConnectionsTests
 {
-    internal static void WriteConnection(ConnectorIdentity displayIdentity, Part part)
-        => WriteConnection(displayIdentity, new Pinstance(part));
-    internal static void WriteConnection(ConnectorIdentity displayIdentity, Pinstance instance)
-    {
-        Console.WriteLine("Connectivity");
-        var table1 = new TextTableFile(instance)
-        {
-            Table = ConnectivityTables.ConnectionTable(displayIdentity),
-            Formater = new Export.Tables.MarkdownTableFormater()
-        };
-        table1.WriteToConsole();
-
-        Console.WriteLine("");
-        Console.WriteLine("Wirings");
-        var table2 = new TextTableFile(instance)
-        {
-            Table = ConnectivityTables.WiringTable(),
-            Formater = new Export.Tables.MarkdownTableFormater()
-        };
-        table2.WriteToConsole();
-
-        Console.WriteLine("");
-        Console.WriteLine("ICD");
-        var table3 = new TextTableFile(instance)
-        {
-            Table = ConnectivityTables.InterfaceControlDocumentTable(),
-            Formater = new Export.Tables.MarkdownTableFormater()
-        };
-        table3.WriteToConsole();
-    }
-
-    [TestMethod] public void WriteBench1_IM() => WriteConnection(ConnectorIdentity.Immediate, new Bench1());
-    [TestMethod] public void WriteBench1_TOP() => WriteConnection(ConnectorIdentity.Topmost, new Bench1());
-    [TestMethod] public void WriteBench2_IM() => WriteConnection(ConnectorIdentity.Immediate, new Bench2());
-    [TestMethod] public void WriteBench2_TOP() => WriteConnection(ConnectorIdentity.Topmost, new Bench2());
-    [TestMethod] public void WriteBench3_IM() => WriteConnection(ConnectorIdentity.Immediate, new Bench3());
-    [TestMethod] public void WriteBench3_TOP() => WriteConnection(ConnectorIdentity.Topmost, new Bench3());
+    [TestMethod] public void WriteBench1_IM() => TestOutputs.WriteConnection(ConnectorIdentity.Immediate, new Bench1());
+    [TestMethod] public void WriteBench1_TOP() => TestOutputs.WriteConnection(ConnectorIdentity.Topmost, new Bench1());
+    [TestMethod] public void WriteBench2_IM() => TestOutputs.WriteConnection(ConnectorIdentity.Immediate, new Bench2());
+    [TestMethod] public void WriteBench2_TOP() => TestOutputs.WriteConnection(ConnectorIdentity.Topmost, new Bench2());
+    [TestMethod] public void WriteBench3_IM() => TestOutputs.WriteConnection(ConnectorIdentity.Immediate, new Bench3());
+    [TestMethod] public void WriteBench3_TOP() => TestOutputs.WriteConnection(ConnectorIdentity.Topmost, new Bench3());
 
 
     class BenchWrapper<T> : Part
@@ -131,7 +100,7 @@ public class CablingConnectionsTests
         var p = new BenchWrapper<Bench3>();
         var i = new Pinstance(p);
         var benchInstance = i.Components.First().Instance;
-        WriteConnection(ConnectorIdentity.Immediate, benchInstance);
+        TestOutputs.WriteConnection(ConnectorIdentity.Immediate, benchInstance);
     }
 
     [TestMethod] 
@@ -140,7 +109,7 @@ public class CablingConnectionsTests
         var p = new BenchWrapper<Bench3>();
         var i = new Pinstance(p);
         var benchInstance = i.Components.First().Instance;
-        WriteConnection(ConnectorIdentity.Topmost, benchInstance);
+        TestOutputs.WriteConnection(ConnectorIdentity.Topmost, benchInstance);
     }
 
 

@@ -102,7 +102,7 @@ public static class IDColumns
                 CID = Core.CID.RemoveImplicitRoot(CID);
                 return i switch
                 {
-                    IPropertyContent p => CID + "/" + propname,
+                    IPropertyContent p => CID + Core.CID.Separator + propname,
                     _ => CID
                 };
             });

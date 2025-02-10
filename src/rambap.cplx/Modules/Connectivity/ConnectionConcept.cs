@@ -36,7 +36,7 @@ internal class ConnectionConcept : IConcept<InstanceConnectivity>
         Port? MakePort(SignalPort p, PropertyOrFieldInfo s){
             var newPort = new Port()
             {
-                Label = p.Name!,
+                Label = s.Name,
                 Owner = instance,
                 IsPublic = s.IsPublicOrAssembly,
             };
@@ -44,8 +44,6 @@ internal class ConnectionConcept : IConcept<InstanceConnectivity>
             if (p.Implementations.TryPeek(out var partPort))
                 if (p.LocalImplementation.Owner == instance)
                     return null; // Port is already implemented, ignore it
-            // Register as an implementation
-            newPort.Implement(p);
             if (s.Type == PropertyOrFieldType.UnbackedProperty)
             {
                 // Express an exposition
@@ -54,6 +52,8 @@ internal class ConnectionConcept : IConcept<InstanceConnectivity>
                 var subPort = p.Implementations.Peek();
                 newPort.DefineAsAnExpositionOf(subPort);
             }
+            // Register as an implementation
+            newPort.Implement(p);
             return newPort;
         }
 

@@ -80,3 +80,19 @@ public record DelegateColumn<T> : IColumn<T>
         GetTotalValue = getTotalValue;
     }
 }
+
+public record WrapperColumn<T> : IColumn<T>
+{
+    public required IColumn<T> WrappedColumn { get; init; }
+    public string Title => WrappedColumn.Title;
+    public ColumnTypeHint TypeHint => WrappedColumn.TypeHint;
+
+    public string CellFor(T item)
+        => WrappedColumn.CellFor(item);
+
+    public void Reset()
+        => WrappedColumn.Reset();
+
+    public string TotalFor(Pinstance root)
+        => WrappedColumn.TotalFor(root);
+}

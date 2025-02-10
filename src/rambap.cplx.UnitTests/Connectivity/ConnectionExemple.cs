@@ -195,44 +195,44 @@ public class TestSomeOutputs
     public void TestConnectionExemple1()
     {
         var p = new Box0();
-        CablingConnectionsTests.WriteConnection(ConnectorIdentity.Topmost, p);
+        TestOutputs.WriteConnection(ConnectorIdentity.Topmost, p);
     }
 
     [TestMethod]
     public void TestConnectionExempleE()
     {
         var p = new BoxF();
-        CablingConnectionsTests.WriteConnection(ConnectorIdentity.Topmost, p);
+        TestOutputs.WriteConnection(ConnectorIdentity.Topmost, p);
     }
 
     [TestMethod]
     public void TestConnectionExempleE2()
     {
         var p = new BoxF2();
-        CablingConnectionsTests.WriteConnection(ConnectorIdentity.Topmost, p);
+        TestOutputs.WriteConnection(ConnectorIdentity.Topmost, p);
     }
     [TestMethod]
     public void TestConnectionExempleE3()
     {
         var p = new BoxF3();
-        CablingConnectionsTests.WriteConnection(ConnectorIdentity.Topmost, p);
+        TestOutputs.WriteConnection(ConnectorIdentity.Topmost, p);
     }
     [TestMethod]
     public void TestConnectionWiringA()
     {
         var p = new WiringA();
-        CablingConnectionsTests.WriteConnection(ConnectorIdentity.Topmost, p);
+        TestOutputs.WriteConnection(ConnectorIdentity.Topmost, p);
     }
     [TestMethod]
     public void TestConnectionWiringB()
     {
         var p = new WiringB();
-        CablingConnectionsTests.WriteConnection(ConnectorIdentity.Topmost, p);
+        TestOutputs.WriteConnection(ConnectorIdentity.Topmost, p);
     }
     [TestMethod]
     public void TestConnectionWiringAAA()
     {
         var p = new BoxAAA();
-        CablingConnectionsTests.WriteConnection(ConnectorIdentity.Topmost, p);
+        TestOutputs.WriteConnection(ConnectorIdentity.Topmost, p);
     }
 }
