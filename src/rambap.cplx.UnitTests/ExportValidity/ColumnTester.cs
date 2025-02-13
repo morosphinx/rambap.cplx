@@ -6,22 +6,22 @@ namespace rambap.cplx.UnitTests.ExportValidity;
 
 internal static class ColumnTester
 {
-    public static ComponentIterator<object> ComponentIterator_Flat_NoBranches() => new ComponentIterator<object>()
+    public static ComponentIterator ComponentIterator_Flat_NoBranches() => new ComponentIterator()
     {
         RecursionCondition = (c, l) => false,
         WriteBranches = false,
     };
-    public static ComponentIterator<object> ComponentIterator_Recursive_NoBranches() => new ComponentIterator<object>()
+    public static ComponentIterator ComponentIterator_Recursive_NoBranches() => new ComponentIterator()
     {
         RecursionCondition = (c, l) => true,
         WriteBranches = false,
     };
-    public static ComponentIterator<object> ComponentIterator_Flat_WithBranches() => new ComponentIterator<object>()
+    public static ComponentIterator ComponentIterator_Flat_WithBranches() => new ComponentIterator()
     {
         RecursionCondition = (c, l) => false,
         WriteBranches = true,
     };
-    public static ComponentIterator<object> ComponentIterator_Recursive_With_Branches() => new ComponentIterator<object>()
+    public static ComponentIterator ComponentIterator_Recursive_With_Branches() => new ComponentIterator()
     {
         RecursionCondition = (c, l) => true,
         WriteBranches = true,
@@ -50,26 +50,26 @@ internal static class ColumnTester
     };
 
 
-    public static ComponentIterator<object> PartLocationIterator_Flat_NoBranches() => new ComponentIterator<object>()
+    public static ComponentIterator PartLocationIterator_Flat_NoBranches() => new ComponentIterator()
     {
         RecursionCondition = (c, l) => false,
         GroupPNsAtSameLocation = true,
         WriteBranches = false,
     };
-    public static ComponentIterator<object> PartLocationIterator_Recursive_NoBranches() => new ComponentIterator<object>()
+    public static ComponentIterator PartLocationIterator_Recursive_NoBranches() => new ComponentIterator()
     {
         RecursionCondition = (c, l) => true,
         GroupPNsAtSameLocation = true,
         WriteBranches = false, // TODO : case write branch is true
     };
 
-    public static ComponentIterator<object> PartLocationIterator_Flat_WithBranches() => new ComponentIterator<object>()
+    public static ComponentIterator PartLocationIterator_Flat_WithBranches() => new ComponentIterator()
     {
         RecursionCondition = (c, l) => false,
         GroupPNsAtSameLocation = true,
         WriteBranches = true,
     };
-    public static ComponentIterator<object> PartLocationIterator_Recursive_WithBranches() => new ComponentIterator<object>()
+    public static ComponentIterator PartLocationIterator_Recursive_WithBranches() => new ComponentIterator()
     {
         RecursionCondition = (c, l) => true,
         GroupPNsAtSameLocation = true,

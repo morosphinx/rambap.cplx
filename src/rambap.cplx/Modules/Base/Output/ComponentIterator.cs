@@ -5,11 +5,12 @@ using System.Reflection;
 
 namespace rambap.cplx.Modules.Base.Output;
 
+
 /// <summary>
 /// Produce an IEnumerable iterating over the component tree of an instance, and its properties <br/>
 /// Output is structured like a tree of <see cref="ComponentContent"/>. <br/>
 /// </summary>
-public class ComponentIterator<T> : IIterator<IComponentContent>
+public class ComponentIterator : IIterator<IComponentContent>
 {
     /// <summary>
     /// If False, each subcomponent produce its own content.
@@ -20,74 +21,64 @@ public class ComponentIterator<T> : IIterator<IComponentContent>
     /// <summary> If true, return every component encountered when traversing the tree. Otherwise, return only the final leaf components and leaf properties. </summary>
     public bool WriteBranches { get; init; } = true;
 
-    /// <summary> If true, iterate on the component properties </summary>
-    bool WriteProperties => PropertyIterator != null;
-
-    /// <summary>
-    /// Define a final level of iteration on of components
-    /// Leave this empty to return no properties items
-    /// </summary>
-    public Func<Component, IEnumerable<T>>? PropertyIterator { private get; init; }
-
-    public bool StackPropertiesSingleChildBranches { private get; init; } = true;
-
     /// <summary>
     /// Define when to recurse on components (will return properties items and subcomponents items) and when not to (will only return the component item)
     /// If null, always recurse
     /// </summary>
     public Func<Component, RecursionLocation, bool>? RecursionCondition { private get; init; }
 
-    public IEnumerable<IComponentContent> MakeContent(Pinstance instance)
+    protected abstract class IterationSubChild()
     {
-        // Generate the contents and subcontent for the group of components
-        // The group of components must all be of same PN at the same location
-        IEnumerable<ComponentContent> Recurse(IEnumerable<Component> components, RecursionLocation location)
+        public required RecursionLocation Location { get; init; }
+    }
+    protected class SubComponentGroup : IterationSubChild
+    {
+        public Component MainComponent => Components.First();
+        public required IEnumerable<Component> Components{ get; init; }
+    }
+
+
+
+    protected virtual bool ShouldRecurse(IterationSubChild iterationTarget)
+    {
+        if (iterationTarget is SubComponentGroup group)
         {
-            var localMultiplicity = components.Count();
-            var componentsAndLocation = components.Select(c => (location, c));
-            var mainComponent = components.First();
+            var mainComponent = group.MainComponent;
+            var location = group.Location;
+
             // Test wether we should recurse inside this component's subcomponents
             var stopRecurseAttrib = mainComponent.Instance.PartType.GetCustomAttribute(typeof(CplxHideContentsAttribute));
             bool mayRecursePastThis =
-                location.Depth == 0  || // Always recurse the first iteration (root node), no mater the recursion condition
+                location.Depth == 0 || // Always recurse the first iteration (root node), no mater the recursion condition
                 (
                     stopRecurseAttrib == null && // CplxHideContentsAttribute must not be present
                     (RecursionCondition == null || RecursionCondition(mainComponent, location))
                 );
-            bool isLeafDueToRecursionBreak = !mayRecursePastThis;
-            if (isLeafDueToRecursionBreak)
-            {
-                yield return new LeafComponent(componentsAndLocation) { IsLeafBecause = LeafCause.RecursionBreak };
-                yield break; // Leaf component : stop iteration here, do not write subcomponent or properties
-            }
+            return mayRecursePastThis;
+        }
+        else
+        {
+            // Always recurse on other types
+            return true;
+        }
+    }
 
-            // Test wether this component will have any child content
-            bool willHaveAnyChildItem =
-                mainComponent.Instance.Components.Any() ||
-                WriteProperties && PropertyIterator!(mainComponent).Any();
-            bool isLeafDueToNoChild = !willHaveAnyChildItem;
+    protected virtual IEnumerable<IComponentContent> GetRecursionBreakContent(IterationSubChild iterationTarget)
+    {
+        if(iterationTarget is SubComponentGroup group)
+        {
+            yield return new LeafComponent(group.Location,group.Components) { IsLeafBecause = LeafCause.RecursionBreak };
+        }
+    }
+
+    protected virtual IEnumerable<IComponentContent> GetRecursionContinueContent(IterationSubChild iterationTarget, LocationBuilder subItemLocationBuilder ,List<IterationSubChild> subItems)
+    {
+        if(iterationTarget is SubComponentGroup group)
+        {
+            bool isLeafDueToNoChild = subItems.Count() == 0; ;
             if (isLeafDueToNoChild)
             {
-                yield return new LeafComponent(componentsAndLocation) { IsLeafBecause = LeafCause.NoChild };
-                yield break;
-            }
-
-            // prepare subcomponents contents. Group them by same PartType & PN if configured :
-            var subcomponents = mainComponent.Instance.Components;
-            var subcomponentContents = GroupPNsAtSameLocation switch
-            {
-                false => subcomponents.Select<Component, IEnumerable<Component>>(c => [c]),
-                true => subcomponents.GroupBy(c => (c.Instance.PartType, c.Instance.PN)).Select(g => g.Select(c => c)),
-            };
-
-            // If there is only a single property child content, return a Leaf with it instead of a Branch+Leaf
-            // This behavior is toggleable. It makes  prettiers trees
-            var onlyHasASingleProperty = subcomponentContents.Count() == 0 && WriteProperties && PropertyIterator!(mainComponent).Count() == 1;
-            if(onlyHasASingleProperty && StackPropertiesSingleChildBranches)
-            {
-                var property = PropertyIterator!(mainComponent).Single();
-                var propLocation = location; // Same location, we replace the branch
-                yield return new LeafComponentWithProperty<T>(componentsAndLocation) { Property = property, IsLeafBecause = LeafCause.SingleStackedPropertyChild };
+                yield return new LeafComponent(group.Location, group.Components) { IsLeafBecause = LeafCause.NoChild };
                 yield break;
             }
 
@@ -95,44 +86,86 @@ public class ComponentIterator<T> : IIterator<IComponentContent>
             // Wether we output the component itself is configurable :
             if (WriteBranches)
             {
-                yield return new BranchComponent(componentsAndLocation);
+                yield return new BranchComponent(group.Location, group.Components);
+            }
+        }
+    }
+
+    protected virtual int ExpectedchildCount(IterationSubChild iterationTarget)
+        => iterationTarget switch
+        {
+            SubComponentGroup group => group.MainComponent.Instance.Components.Count(), // TODO : include subcomponent group
+            _ => 0
+        };
+    protected virtual IEnumerable<IterationSubChild> GetChilds(IterationSubChild iterationTarget, LocationBuilder loc)
+    {
+        if (iterationTarget is SubComponentGroup group)
+        {
+            // prepare subcomponents contents. Group them by same PartType & PN if configured :
+            var subcomponents = group.Components.First().Instance.Components;
+            var subcomponentContents = GroupPNsAtSameLocation switch
+            {
+                false => subcomponents.Select<Component, IEnumerable<Component>>(c => [c]),
+                true => subcomponents.GroupBy(c => (c.Instance.PartType, c.Instance.PN)).Select(g => g.Select(c => c)),
+            };
+            foreach (var i in subcomponentContents)
+            {
+                var mainComponent = group.MainComponent;
+                var currentlocation = iterationTarget.Location;
+                var subItemLocation = loc.GetNextSubItem();
+                subItemLocation = subItemLocation with
+                {
+                    // Set subPart Location and multiplicity
+                    CIN = CID.Append(currentlocation.CIN, mainComponent.CN),
+                    Multiplicity = currentlocation.Multiplicity * group.Components.Count(),
+                };
+                var item =  new SubComponentGroup() { Components = i , Location  = subItemLocation };
+                yield return item;
+            }
+        }
+    }
+
+    public IEnumerable<IComponentContent> MakeContent(Pinstance instance)
+    {
+        // Generate the contents and subcontent for the group of components
+        // The group of components must all be of same PN at the same location
+        IEnumerable<IComponentContent> Recurse(IterationSubChild currentItem)
+        {            
+            bool mayRecursePastThis = ShouldRecurse(currentItem);
+            bool isLeafDueToRecursionBreak = !mayRecursePastThis;
+
+            if (isLeafDueToRecursionBreak)
+            {
+                var items = GetRecursionBreakContent(currentItem);
+                foreach (var i in items)
+                    yield return i;
+                yield break; // Leaf component : stop iteration here, do not write subcomponent or properties
             }
 
+
+            var expectedChildCount = ExpectedchildCount(currentItem);
             // Counter of subcontents, to etablish location information
-            var currentSubitemIndex = 0;
-            var subItemTotalCount = subcomponentContents.Count();
-            // Output the properties content, if configured :
-            if (WriteProperties)
+            var loc = new LocationBuilder()
             {
-                var propertiesContents = PropertyIterator!(mainComponent);
-                subItemTotalCount += propertiesContents.Count();
-                foreach (var prop in propertiesContents)
-                {
-                    var propLocation = location with
-                    {
-                        Depth = location.Depth + 1,
-                        LocalItemIndex = currentSubitemIndex ++,
-                        LocalItemCount = subItemTotalCount,
-                    };
-                    var componentsWithPropLocation = componentsAndLocation.Select(t => (propLocation, t.c));
-                    yield return new LeafComponentWithProperty<T>(componentsWithPropLocation) { Property = prop, IsLeafBecause = LeafCause.NoChild };
-                }
+                ParentLocation = currentItem.Location,
+                TotalSubItemCount = expectedChildCount,
+            };
+
+            var childs = GetChilds(currentItem, loc).ToList();
+            {
+                var items = GetRecursionContinueContent(currentItem, loc, childs);
+                foreach (var i in items)
+                    yield return i;
             }
+
             // Output the subcomponents contents
-            foreach (var subcontent in subcomponentContents)
+            foreach (var child in childs)
             {
-                RecursionLocation subLocation = new()
-                {
-                    CIN = CID.Append(location.CIN, mainComponent.CN),
-                    Multiplicity = location.Multiplicity * localMultiplicity,
-                    Depth = location.Depth + 1,
-                    LocalItemIndex = currentSubitemIndex++,
-                    LocalItemCount = subItemTotalCount,
-                };
-                foreach (var l in Recurse(subcontent, subLocation))
+                foreach (var l in Recurse(child))
                     yield return l;
             }
         }
+
         // Create a dummy component to start recuring
         Component rootComponent = new(null)
         {
@@ -148,7 +181,12 @@ public class ComponentIterator<T> : IIterator<IComponentContent>
             LocalItemIndex = 0,
             LocalItemCount = 1,
         };
-        return Recurse([rootComponent], rootLocation);
+        SubComponentGroup rootItem = new()
+        {
+            Components = [rootComponent],
+            Location = rootLocation,
+        };
+        return Recurse(rootItem);
     }
 
     public static IEnumerable<IComponentContent> SubIterate(
@@ -164,46 +202,46 @@ public class ComponentIterator<T> : IIterator<IComponentContent>
         }
     }
 
-    public static IEnumerable<IComponentContent> SubIterateProperties(
-        IEnumerable<IComponentContent> contents,
-        Func<T, IEnumerable<T>> additionalProperties,
-        bool applyRecursively = true)
-    {
-        IEnumerable<LeafComponentWithProperty<T>> MakeAditionalContents(IPropertyContent<T> leafProperty)
-        {
-            var location = leafProperty.Location;
-            T property = leafProperty.Property!;
-            var newProperties = additionalProperties(property);
-
-            var currentSubitemIndex = 0;
-            var subItemTotalCount = newProperties.Count();
-
-            foreach (var p in newProperties)
-            {
-                var propLocation = location with
-                {
-                    Depth = location.Depth + 1,
-                    LocalItemIndex = currentSubitemIndex++,
-                    LocalItemCount = subItemTotalCount,
-                };
-                var relocatedComponents = leafProperty.AllComponents().Select(c => (propLocation, c.component));
-                yield return new LeafComponentWithProperty<T>(relocatedComponents)
-                {
-                    Property = p,
-                    IsLeafBecause = LeafCause.NoChild
-                };
-            }
-
-        }
-        return ComponentIterator<T>.SubIterate(contents,
-            c => c switch
-            {
-                IPropertyContent<T> lp => MakeAditionalContents(lp),
-                LeafComponent lc => [],
-                BranchComponent bc => [],
-                _ => throw new NotImplementedException(),
-            });
-    }
+    // public static IEnumerable<IComponentContent> SubIterateProperties(
+    //     IEnumerable<IComponentContent> contents,
+    //     Func<T, IEnumerable<T>> additionalProperties,
+    //     bool applyRecursively = true)
+    // {
+    //     IEnumerable<LeafComponentWithProperty<T>> MakeAditionalContents(IPropertyContent<T> leafProperty)
+    //     {
+    //         var location = leafProperty.Location;
+    //         T property = leafProperty.Property!;
+    //         var newProperties = additionalProperties(property);
+    // 
+    //         var currentSubitemIndex = 0;
+    //         var subItemTotalCount = newProperties.Count();
+    // 
+    //         foreach (var p in newProperties)
+    //         {
+    //             var propLocation = location with
+    //             {
+    //                 Depth = location.Depth + 1,
+    //                 LocalItemIndex = currentSubitemIndex++,
+    //                 LocalItemCount = subItemTotalCount,
+    //             };
+    //             var relocatedComponents = leafProperty.AllComponents().Select(c => (propLocation, c.component));
+    //             yield return new LeafComponentWithProperty<T>(relocatedComponents)
+    //             {
+    //                 Property = p,
+    //                 IsLeafBecause = LeafCause.NoChild
+    //             };
+    //         }
+    // 
+    //     }
+    //     return ComponentIterator<T>.SubIterate(contents,
+    //         c => c switch
+    //         {
+    //             IPropertyContent<T> lp => MakeAditionalContents(lp),
+    //             LeafComponent lc => [],
+    //             BranchComponent bc => [],
+    //             _ => throw new NotImplementedException(),
+    //         });
+    // }
 }
 
 

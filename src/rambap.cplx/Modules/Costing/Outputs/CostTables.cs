@@ -58,7 +58,7 @@ public static class CostTables
     public static TableProducer<IComponentContent> CostBreakdown()
         => new()
         {
-            Iterator = new ComponentIterator<InstanceCost.NativeCostInfo>()
+            Iterator = new ComponentPropertyIterator<InstanceCost.NativeCostInfo>()
             {
                 PropertyIterator = (c) => c.Instance.Cost()?.NativeCosts ?? new(),
                 GroupPNsAtSameLocation = true,

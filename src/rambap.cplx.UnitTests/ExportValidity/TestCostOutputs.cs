@@ -36,7 +36,7 @@ public class TestCostOutputs
     }
 
     [TestMethod]
-    public void TestTotalCost_1() => TestTotalCost_SumCoherence(new ComponentIterator<InstanceCost.NativeCostInfo>()
+    public void TestTotalCost_1() => TestTotalCost_SumCoherence(new ComponentPropertyIterator<InstanceCost.NativeCostInfo>()
     {
         RecursionCondition = (c, l) => false,
         WriteBranches = false,

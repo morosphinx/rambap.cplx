@@ -47,7 +47,7 @@ namespace rambap.cplx.Modules.Costing.Outputs
         public static TableProducer<IComponentContent> TaskBreakdown()
             => new()
             {
-                Iterator = new ComponentIterator<InstanceTasks.NamedTask>()
+                Iterator = new ComponentPropertyIterator<InstanceTasks.NamedTask>()
                 {
                     PropertyIterator = (c) => c.Instance.Tasks() is not null and var t ? [.. t.RecurentTasks,.. t.NonRecurentTasks] : [],
                     GroupPNsAtSameLocation = true,

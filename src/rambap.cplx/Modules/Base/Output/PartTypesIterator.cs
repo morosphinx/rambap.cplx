@@ -37,12 +37,12 @@ public class PartTypesIterator<T> : IIterator<IComponentContent>
     public IEnumerable<IComponentContent> MakeContent(Pinstance instance)
     {
         // Produce a tree table of All Components, stopping on recursing condition.
-        var ComponentTable = new ComponentIterator<T>()
+        var ComponentTable = new ComponentIterator()
         {
             WriteBranches = true, // We want information about all tree components
             RecursionCondition = RecursionCondition,
-            PropertyIterator = null, // No property iteration when iterating the component tree
-                                     // => Will return only LeafComponent or BranchComponent
+            // No property iteration when iterating the component tree
+            // => Will return only LeafComponent or BranchComponent
         };
         var componentsItems = ComponentTable.MakeContent(instance);
         // All returned items of the tree table represent components (eg : No LeafProperty)

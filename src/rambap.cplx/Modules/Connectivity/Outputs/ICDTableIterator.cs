@@ -30,7 +30,7 @@ public class ICDTableIterator : IIterator<IComponentContent>
         }
 
         // Iterate all public components in the hierarchy
-        var componentIterator = new ComponentIterator<ICDTableContentProperty>()
+        var componentIterator = new ComponentPropertyIterator<ICDTableContentProperty>()
         {
             PropertyIterator = SelectPublicConnectors,
             RecursionCondition = (c, l) => c.IsPublic,
@@ -61,25 +61,28 @@ public class ICDTableIterator : IIterator<IComponentContent>
                 _ => c.Component.IsPublic, // Private part are still present as leaf, we remove them
             });
             
-        // Recursively explicit the content of each SignalPort still in the hierarchy
-        var topmostConnectorsR = ComponentIterator<ICDTableContentProperty>.SubIterateProperties(topmostConnectorContents,
-            content => content.Port.Definition!.SubPorts.Select(p => new ICDTableContentProperty() { Port = p }));
 
-        foreach (var c in topmostConnectorsR)
-        {
-            yield return c;
-        }
+        throw new NotImplementedException();
+        // Recursively explicit the content of each SignalPort still in the hierarchy
+        // var topmostConnectorsR = ComponentPropertyIterator<ICDTableContentProperty>.SubIterateProperties(topmostConnectorContents,
+        //     content => content.Port.Definition!.SubPorts.Select(p => new ICDTableContentProperty() { Port = p }));
+
+        // foreach (var c in topmostConnectorsR)
+        // {
+        //     yield return c;
+        // }
     }
 
     public IEnumerable<IComponentContent> ExplicitConnectors(IEnumerable<ComponentContent> contents)
     {
-        return ComponentIterator<ICDTableContentProperty>.SubIterate(contents,
-            c => c switch
-            {
-                IPropertyContent<ICDTableContentProperty> lp => [], 
-                LeafComponent lc => [c],
-                BranchComponent bc => [c],
-                _ => throw new NotImplementedException(),
-            });
+        throw new NotImplementedException();
+        // return ComponentPropertyIterator<ICDTableContentProperty>.SubIterate(contents,
+        //     c => c switch
+        //     {
+        //         IPropertyContent<ICDTableContentProperty> lp => [], 
+        //         LeafComponent lc => [c],
+        //         BranchComponent bc => [c],
+        //         _ => throw new NotImplementedException(),
+        //     });
     }
 }

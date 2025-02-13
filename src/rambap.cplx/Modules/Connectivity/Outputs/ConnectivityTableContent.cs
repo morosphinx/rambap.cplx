@@ -4,6 +4,10 @@ using rambap.cplx.Core;
 
 namespace rambap.cplx.Modules.Connectivity.Outputs;
 
+/// <summary>
+///  TODO : THIS SHOULD BE A PROPERTY ON THE STANDARD ITERATOR
+/// </summary>
+
 public class ConnectivityTableContent
 {
     public enum ConnectorSide

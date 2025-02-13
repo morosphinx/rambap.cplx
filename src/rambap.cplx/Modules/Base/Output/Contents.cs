@@ -15,6 +15,25 @@ public record RecursionLocation()
     public required int LocalItemCount { get; init; }
 }
 
+public class LocationBuilder()
+{
+    public required RecursionLocation ParentLocation { get; init; }
+
+    public required int TotalSubItemCount { get; set; }
+
+    public int CurrentSubItemIndex { get; private set; } = 0;
+
+    public RecursionLocation GetNextSubItem()
+    {
+        return ParentLocation with
+        {
+            Depth = ParentLocation.Depth + 1,
+            LocalItemIndex = CurrentSubItemIndex++,
+            LocalItemCount = TotalSubItemCount,
+        };
+    }
+}
+
 public interface IComponentContent
 {
     RecursionLocation Location { get; }
@@ -74,6 +93,8 @@ public abstract class ComponentContent : IComponentContent
         Location = loc;
         Component = comp;
     }
+    public ComponentContent(RecursionLocation loc, IEnumerable<Component> allComponents)
+        : this(allComponents.Select(c => (loc, c))) { }
 
     public ComponentContent(IEnumerable<(RecursionLocation loc, Component comp)> allComponents)
     {
@@ -117,6 +138,10 @@ public class LeafComponent : ComponentContent
         : base(loc, comp)
     { }
 
+    public LeafComponent(RecursionLocation loc, IEnumerable<Component> allComponents)
+        : base(loc, allComponents)
+    { }
+
     public LeafComponent(IEnumerable<(RecursionLocation loc, Component comp)> allComponents)
         : base(allComponents)
     { }
@@ -133,6 +158,10 @@ public class BranchComponent : ComponentContent
     : base(loc, comp)
     { }
 
+    public BranchComponent(RecursionLocation loc, IEnumerable<Component> allComponents)
+    : base(loc, allComponents)
+    { }
+
     public BranchComponent(IEnumerable<(RecursionLocation loc, Component comp)> allComponents)
         : base(allComponents)
     { }
@@ -142,6 +171,10 @@ public class LeafComponentWithProperty<T> : LeafComponent, IPropertyContent<T>
 {
     public LeafComponentWithProperty(RecursionLocation loc, Component comp)
         : base(loc, comp)
+    { }
+
+    public LeafComponentWithProperty(RecursionLocation loc, IEnumerable<Component> allComponents)
+        : base(loc, allComponents)
     { }
 
     public LeafComponentWithProperty(IEnumerable<(RecursionLocation loc, Component comp)> allComponents)

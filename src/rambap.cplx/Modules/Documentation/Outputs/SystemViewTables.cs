@@ -8,7 +8,7 @@ public static class SystemViewTables
     public static TableProducer<IComponentContent> ComponentTree_Detailled()
         => new()
         {
-            Iterator = new ComponentIterator<object>(),
+            Iterator = new ComponentIterator(),
             Columns = [
                 IDColumns.ComponentNumberPrettyTree(),
                 IDColumns.PartNumber(),
@@ -20,7 +20,7 @@ public static class SystemViewTables
     public static TableProducer<IComponentContent> ComponentTree_Stacked()
        => new()
        {
-           Iterator = new ComponentIterator<object>()
+           Iterator = new ComponentIterator()
            {
                GroupPNsAtSameLocation = true,
            },
