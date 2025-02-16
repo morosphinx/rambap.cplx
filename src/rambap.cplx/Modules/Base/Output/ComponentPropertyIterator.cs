@@ -4,9 +4,27 @@ namespace rambap.cplx.Modules.Base.Output;
 
 class ComponentPropertyIterator<T> : ComponentIterator
 {
-    protected class SubComponentGroupWithProperty : SubComponentGroup
+    protected sealed class SubComponentGroupWithProperty : ComponentGroupSubChild
     {
         public required T Property { get; init; }
+
+        public override IEnumerable<IComponentContent> GetRecursionBreakContent()
+        {
+            yield return new LeafComponentWithProperty<T>(Location, Components)
+            {
+                Property = Property,
+                IsLeafBecause = LeafCause.NoChild
+            };
+        }
+
+        public override IEnumerable<IComponentContent> GetRecursionContinueContent(LocationBuilder subItemLocationBuilder, List<IterationSubChild> subItems)
+        {
+            yield return new LeafComponentWithProperty<T>(Location, Components)
+            {
+                Property = Property,
+                IsLeafBecause = LeafCause.NoChild
+            };
+        }
     }
 
     /// <summary>
@@ -18,46 +36,12 @@ class ComponentPropertyIterator<T> : ComponentIterator
     // TODO : Redo this behavior
     public bool StackPropertiesSingleChildBranches { private get; init; } = true;
 
-
-    protected override IEnumerable<IComponentContent> GetRecursionBreakContent(IterationSubChild iterationTarget)
-    {
-        if (iterationTarget is SubComponentGroupWithProperty group)
-        {
-            yield return new LeafComponentWithProperty<T>(group.Location, group.Components)
-            {
-                Property = group.Property, IsLeafBecause = LeafCause.NoChild
-            };
-        }
-        else
-        {
-            foreach(var i in base.GetRecursionBreakContent(iterationTarget))
-                yield return i;
-        }
-    }
-
-    protected override IEnumerable<IComponentContent> GetRecursionContinueContent(IterationSubChild iterationTarget, LocationBuilder subItemLocationBuilder, List<IterationSubChild> subItems)
-    {
-        if (iterationTarget is SubComponentGroupWithProperty group)
-        {
-            yield return new LeafComponentWithProperty<T>(group.Location, group.Components)
-            {
-                Property = group.Property,
-                IsLeafBecause = LeafCause.NoChild
-            };
-        }
-        else
-        {
-            foreach (var i in base.GetRecursionContinueContent(iterationTarget, subItemLocationBuilder, subItems))
-                yield return i;
-        }
-    }
-
     protected override int ExpectedchildCount(IterationSubChild iterationTarget)
         =>
             base.ExpectedchildCount(iterationTarget)
             + iterationTarget switch
             {
-                SubComponentGroup group => PropertyIterator(group.MainComponent).Count(),
+                SubComponentGroupWithProperty group => PropertyIterator(group.MainComponent).Count(),
                 _ => 0,
             };
 
@@ -79,6 +63,7 @@ class ComponentPropertyIterator<T> : ComponentIterator
                     Components = group.Components,
                     Location = propLocation,
                     Property = prop,
+                    WriteBranches = WriteBranches,
                 };
                 // yield return new LeafComponentWithProperty<T>(propLocation, group.Components)
                 // {

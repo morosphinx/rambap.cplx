@@ -30,13 +30,43 @@ public class ComponentIterator : IIterator<IComponentContent>
     protected abstract class IterationSubChild()
     {
         public required RecursionLocation Location { get; init; }
+
+        public abstract IEnumerable<IComponentContent> GetRecursionBreakContent();
+
+        public abstract IEnumerable<IComponentContent> GetRecursionContinueContent(LocationBuilder subItemLocationBuilder, List<IterationSubChild> subItems);
+
     }
-    protected class SubComponentGroup : IterationSubChild
+    protected abstract class ComponentGroupSubChild : IterationSubChild
     {
+        public required bool WriteBranches { get ; init; }
+
         public Component MainComponent => Components.First();
         public required IEnumerable<Component> Components{ get; init; }
+
+        public override IEnumerable<IComponentContent> GetRecursionBreakContent()
+        {
+            yield return new LeafComponent(Location, Components) { IsLeafBecause = LeafCause.RecursionBreak };
+        }
+
+        public override IEnumerable<IComponentContent> GetRecursionContinueContent(LocationBuilder subItemLocationBuilder, List<IterationSubChild> subItems)
+        {
+            bool isLeafDueToNoChild = subItems.Count() == 0; ;
+            if (isLeafDueToNoChild)
+            {
+                yield return new LeafComponent(Location, Components) { IsLeafBecause = LeafCause.NoChild };
+                yield break;
+            }
+
+            // If we reached this point, the component is assured to have child content
+            // Wether we output the component itself is configurable :
+            if (WriteBranches)
+            {
+                yield return new BranchComponent(Location, Components);
+            }
+        }
     }
 
+    protected sealed class SubComponentGroup : ComponentGroupSubChild { }
 
 
     protected virtual bool ShouldRecurse(IterationSubChild iterationTarget)
@@ -60,34 +90,6 @@ public class ComponentIterator : IIterator<IComponentContent>
         {
             // Always recurse on other types
             return true;
-        }
-    }
-
-    protected virtual IEnumerable<IComponentContent> GetRecursionBreakContent(IterationSubChild iterationTarget)
-    {
-        if(iterationTarget is SubComponentGroup group)
-        {
-            yield return new LeafComponent(group.Location,group.Components) { IsLeafBecause = LeafCause.RecursionBreak };
-        }
-    }
-
-    protected virtual IEnumerable<IComponentContent> GetRecursionContinueContent(IterationSubChild iterationTarget, LocationBuilder subItemLocationBuilder ,List<IterationSubChild> subItems)
-    {
-        if(iterationTarget is SubComponentGroup group)
-        {
-            bool isLeafDueToNoChild = subItems.Count() == 0; ;
-            if (isLeafDueToNoChild)
-            {
-                yield return new LeafComponent(group.Location, group.Components) { IsLeafBecause = LeafCause.NoChild };
-                yield break;
-            }
-
-            // If we reached this point, the component is assured to have child content
-            // Wether we output the component itself is configurable :
-            if (WriteBranches)
-            {
-                yield return new BranchComponent(group.Location, group.Components);
-            }
         }
     }
 
@@ -119,7 +121,7 @@ public class ComponentIterator : IIterator<IComponentContent>
                     CIN = CID.Append(currentlocation.CIN, mainComponent.CN),
                     Multiplicity = currentlocation.Multiplicity * group.Components.Count(),
                 };
-                var item =  new SubComponentGroup() { Components = i , Location  = subItemLocation };
+                var item =  new SubComponentGroup() { Components = i , Location  = subItemLocation, WriteBranches = WriteBranches };
                 yield return item;
             }
         }
@@ -136,7 +138,7 @@ public class ComponentIterator : IIterator<IComponentContent>
 
             if (isLeafDueToRecursionBreak)
             {
-                var items = GetRecursionBreakContent(currentItem);
+                var items = currentItem.GetRecursionBreakContent();
                 foreach (var i in items)
                     yield return i;
                 yield break; // Leaf component : stop iteration here, do not write subcomponent or properties
@@ -153,7 +155,7 @@ public class ComponentIterator : IIterator<IComponentContent>
 
             var childs = GetChilds(currentItem, loc).ToList();
             {
-                var items = GetRecursionContinueContent(currentItem, loc, childs);
+                var items = currentItem.GetRecursionContinueContent(loc, childs);
                 foreach (var i in items)
                     yield return i;
             }
@@ -185,6 +187,7 @@ public class ComponentIterator : IIterator<IComponentContent>
         {
             Components = [rootComponent],
             Location = rootLocation,
+            WriteBranches = WriteBranches,
         };
         return Recurse(rootItem);
     }

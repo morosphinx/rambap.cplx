@@ -9,6 +9,23 @@ namespace rambap.cplx.UnitTests.ExportValidity;
 [TestClass]
 public class TestCostOutputs
 {
+    private void TestTotalCost_SumCoherence_ComponentIterator(bool recursive, bool writeBranches, bool groupPNsAtSameLocation = false)
+        => TestTotalCost_SumCoherence(new ComponentPropertyIterator<InstanceCost.NativeCostInfo>()
+        {
+            RecursionCondition = (c, l) => recursive,
+            WriteBranches = writeBranches,
+            PropertyIterator = c => c.Instance.Cost()?.NativeCosts ?? [],
+            GroupPNsAtSameLocation = groupPNsAtSameLocation,
+        });
+
+    private void TestTotalCost_SumCoherence_PartTypeIterators(bool recursive, bool writeBranches)
+    => TestTotalCost_SumCoherence(new PartTypesIterator<InstanceCost.NativeCostInfo>()
+    {
+        RecursionCondition = (c, l) => recursive,
+        WriteBranches = writeBranches,
+        PropertyIterator = c => c.Instance.Cost()?.NativeCosts ?? [],
+    });
+
     private void TestTotalCost_SumCoherence(IIterator<IComponentContent> iterator)
     {
         var part = new DecimalPropertyPartExemple<Cost>.Part_A();
@@ -36,33 +53,27 @@ public class TestCostOutputs
     }
 
     [TestMethod]
-    public void TestTotalCost_1() => TestTotalCost_SumCoherence(new ComponentPropertyIterator<InstanceCost.NativeCostInfo>()
-    {
-        RecursionCondition = (c, l) => false,
-        WriteBranches = false,
-        PropertyIterator = c => c.Instance.Cost()?.NativeCosts ?? [],
-    });
-
+    public void TestTotalCost_1() => TestTotalCost_SumCoherence_ComponentIterator(false, false);
     [TestMethod]
-    public void TestTotalCost_2() => TestTotalCost_SumCoherence(ComponentIterator_Recursive_NoBranches());
+    public void TestTotalCost_2() => TestTotalCost_SumCoherence_ComponentIterator(true, false);
     [TestMethod]
-    public void TestTotalCost_3() => TestTotalCost_SumCoherence(ComponentIterator_Flat_WithBranches());
+    public void TestTotalCost_3() => TestTotalCost_SumCoherence_ComponentIterator(false, true);
     [TestMethod]
-    public void TestTotalCost_4() => TestTotalCost_SumCoherence(ComponentIterator_Recursive_With_Branches());
+    public void TestTotalCost_4() => TestTotalCost_SumCoherence_ComponentIterator(true, true);
     [TestMethod]
-    public void TestTotalCost_5() => TestTotalCost_SumCoherence(PartTypeIterator_Flat_NoBranches());
+    public void TestTotalCost_5() => TestTotalCost_SumCoherence_PartTypeIterators(false, false);
     [TestMethod]
-    public void TestTotalCost_6() => TestTotalCost_SumCoherence(PartTypeIterator_Recursive_NoBranches());
+    public void TestTotalCost_6() => TestTotalCost_SumCoherence_PartTypeIterators(true, false);
     [TestMethod]
-    public void TestTotalCost_7() => TestTotalCost_SumCoherence(PartTypeIterator_Flat_WithBranches());
+    public void TestTotalCost_7() => TestTotalCost_SumCoherence_PartTypeIterators(false, true);
     [TestMethod]
-    public void TestTotalCost_8() => TestTotalCost_SumCoherence(PartTypeIterator_Recursive_WithBranches());
+    public void TestTotalCost_8() => TestTotalCost_SumCoherence_PartTypeIterators(true, true);
     [TestMethod]
-    public void TestTotalCost_9() => TestTotalCost_SumCoherence(PartLocationIterator_Flat_NoBranches());
+    public void TestTotalCost_9() => TestTotalCost_SumCoherence_ComponentIterator(false, false, true);
     [TestMethod]
-    public void TestTotalCost_10() => TestTotalCost_SumCoherence(PartLocationIterator_Recursive_NoBranches());
+    public void TestTotalCost_10() => TestTotalCost_SumCoherence_ComponentIterator(true, false, true);
     [TestMethod]
-    public void TestTotalCost_11() => TestTotalCost_SumCoherence(PartLocationIterator_Flat_WithBranches());
+    public void TestTotalCost_11() => TestTotalCost_SumCoherence_ComponentIterator(false, true, true);
     [TestMethod]
-    public void TestTotalCost_12() => TestTotalCost_SumCoherence(PartLocationIterator_Recursive_WithBranches());
+    public void TestTotalCost_12() => TestTotalCost_SumCoherence_ComponentIterator(true, true, true);
 }

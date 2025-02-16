@@ -1,7 +1,5 @@
 ﻿namespace rambap.cplx.UnitTests.ExportValidity;
 
-
-
 internal static class DecimalPropertyPartExemple
 {
     public static decimal ExpectedTotal_ExtensiveT => 142483;
