@@ -1,5 +1,6 @@
 ﻿using rambap.cplx.Export.Tables;
 using rambap.cplx.Modules.Base.Output;
+using rambap.cplx.Modules.Costing;
 using rambap.cplx.Modules.Costing.Outputs;
 using static rambap.cplx.UnitTests.ExportValidity.ColumnTester;
 
@@ -14,11 +15,12 @@ public class TestTaskOutputs
         // SetPropertyIterator(iterator, c => c.Instance.Tasks()?.RecurentTasks ?? []);
         var part = new DecimalPropertyPartExemple<RecurrentTask>.Part_A();
         var instance = new Pinstance(part);
-        ColumnTester.TestDecimalColumn_SumCoherence(
+        ColumnTester.TestDecimalColumn_SumCoherence<InstanceTasks.NamedTask>(
             instance,
             iterator,
             DecimalPropertyPartExemple.ExpectedTotal_ExtensiveT,
             TaskColumns.TaskTotalDuration(false),
+            pc => pc.Property.Name,
             [
                 TaskColumns.TaskName(),
                 TaskColumns.TaskCategory(),

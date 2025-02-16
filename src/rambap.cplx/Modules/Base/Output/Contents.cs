@@ -17,19 +17,28 @@ public record RecursionLocation()
 
 public class LocationBuilder()
 {
-    public required RecursionLocation ParentLocation { get; init; }
+    public required RecursionLocation LocationFrom { get; init; }
 
-    public required int TotalSubItemCount { get; set; }
+    public required int TotalSubItemCount { get; init; }
 
     public int CurrentSubItemIndex { get; private set; } = 0;
 
     public RecursionLocation GetNextSubItem()
     {
-        return ParentLocation with
+        return LocationFrom with
         {
-            Depth = ParentLocation.Depth + 1,
+            Depth = LocationFrom.Depth + 1,
             LocalItemIndex = CurrentSubItemIndex++,
             LocalItemCount = TotalSubItemCount,
+        };
+    }
+
+    public RecursionLocation GetNextSubItem(string CNappend, int multiplicty = 1)
+    {
+        return GetNextSubItem() with
+        {
+            CIN = CID.Append(LocationFrom.CIN, CNappend),
+            Multiplicity = LocationFrom.Multiplicity * multiplicty,
         };
     }
 }

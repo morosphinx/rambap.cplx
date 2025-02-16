@@ -27,28 +27,32 @@ public class ComponentIterator : IIterator<IComponentContent>
     /// </summary>
     public Func<Component, RecursionLocation, bool>? RecursionCondition { private get; init; }
 
-    protected abstract class IterationSubChild()
+    protected interface IterationSubChild
+    {
+        RecursionLocation Location { get; }
+        abstract IEnumerable<IComponentContent> GetRecursionBreakContent();
+        abstract IEnumerable<IComponentContent> GetRecursionContinueContent(List<IterationSubChild> subItems);
+    }
+
+    protected interface ComponentIterationSubChild : IterationSubChild
+    {
+        IEnumerable<Component> Components { get; }
+    }
+
+    protected sealed class SubComponentGroup : ComponentIterationSubChild
     {
         public required RecursionLocation Location { get; init; }
-
-        public abstract IEnumerable<IComponentContent> GetRecursionBreakContent();
-
-        public abstract IEnumerable<IComponentContent> GetRecursionContinueContent(LocationBuilder subItemLocationBuilder, List<IterationSubChild> subItems);
-
-    }
-    protected abstract class ComponentGroupSubChild : IterationSubChild
-    {
         public required bool WriteBranches { get ; init; }
 
         public Component MainComponent => Components.First();
         public required IEnumerable<Component> Components{ get; init; }
 
-        public override IEnumerable<IComponentContent> GetRecursionBreakContent()
+        public IEnumerable<IComponentContent> GetRecursionBreakContent()
         {
-            yield return new LeafComponent(Location, Components) { IsLeafBecause = LeafCause.RecursionBreak };
+            yield return new LeafComponent(Location, Components) {IsLeafBecause = LeafCause.RecursionBreak };
         }
 
-        public override IEnumerable<IComponentContent> GetRecursionContinueContent(LocationBuilder subItemLocationBuilder, List<IterationSubChild> subItems)
+        public IEnumerable<IComponentContent> GetRecursionContinueContent(List<IterationSubChild> subItems)
         {
             bool isLeafDueToNoChild = subItems.Count() == 0; ;
             if (isLeafDueToNoChild)
@@ -65,8 +69,6 @@ public class ComponentIterator : IIterator<IComponentContent>
             }
         }
     }
-
-    protected sealed class SubComponentGroup : ComponentGroupSubChild { }
 
 
     protected virtual bool ShouldRecurse(IterationSubChild iterationTarget)
@@ -99,29 +101,35 @@ public class ComponentIterator : IIterator<IComponentContent>
             SubComponentGroup group => group.MainComponent.Instance.Components.Count(), // TODO : include subcomponent group
             _ => 0
         };
+
+    protected IEnumerable<IEnumerable<Component>> GroupComponents(ComponentIterationSubChild group)
+    {
+        var subcomponents = group.Components.First().Instance.Components;
+        var subcomponentContents = GroupPNsAtSameLocation switch
+        {
+            false => subcomponents.Select<Component, IEnumerable<Component>>(c => [c]),
+            true => subcomponents.GroupBy(c => (c.Instance.PartType, c.Instance.PN)).Select(g => g.Select(c => c)),
+        };
+        return subcomponentContents;
+    }
     protected virtual IEnumerable<IterationSubChild> GetChilds(IterationSubChild iterationTarget, LocationBuilder loc)
     {
         if (iterationTarget is SubComponentGroup group)
         {
             // prepare subcomponents contents. Group them by same PartType & PN if configured :
-            var subcomponents = group.Components.First().Instance.Components;
-            var subcomponentContents = GroupPNsAtSameLocation switch
-            {
-                false => subcomponents.Select<Component, IEnumerable<Component>>(c => [c]),
-                true => subcomponents.GroupBy(c => (c.Instance.PartType, c.Instance.PN)).Select(g => g.Select(c => c)),
-            };
+            var subcomponentContents = GroupComponents(group);
             foreach (var i in subcomponentContents)
             {
-                var mainComponent = group.MainComponent;
-                var currentlocation = iterationTarget.Location;
-                var subItemLocation = loc.GetNextSubItem();
-                subItemLocation = subItemLocation with
+                var CN = group.MainComponent.CN;
+                var multiplicity = group.Components.Count();
+                var subItemLocation = loc.GetNextSubItem(CN, multiplicity);
+
+                var item =  new SubComponentGroup()
                 {
-                    // Set subPart Location and multiplicity
-                    CIN = CID.Append(currentlocation.CIN, mainComponent.CN),
-                    Multiplicity = currentlocation.Multiplicity * group.Components.Count(),
+                    Location  = subItemLocation,
+                    Components = i ,
+                    WriteBranches = WriteBranches
                 };
-                var item =  new SubComponentGroup() { Components = i , Location  = subItemLocation, WriteBranches = WriteBranches };
                 yield return item;
             }
         }
@@ -143,28 +151,29 @@ public class ComponentIterator : IIterator<IComponentContent>
                     yield return i;
                 yield break; // Leaf component : stop iteration here, do not write subcomponent or properties
             }
-
-
-            var expectedChildCount = ExpectedchildCount(currentItem);
-            // Counter of subcontents, to etablish location information
-            var loc = new LocationBuilder()
+            else
             {
-                ParentLocation = currentItem.Location,
-                TotalSubItemCount = expectedChildCount,
-            };
+                var expectedChildCount = ExpectedchildCount(currentItem);
+                // Counter of subcontents, to etablish location information
+                var loc = new LocationBuilder()
+                {
+                    LocationFrom = currentItem.Location,
+                    TotalSubItemCount = expectedChildCount,
+                };
 
-            var childs = GetChilds(currentItem, loc).ToList();
-            {
-                var items = currentItem.GetRecursionContinueContent(loc, childs);
-                foreach (var i in items)
-                    yield return i;
-            }
+                var childs = GetChilds(currentItem, loc).ToList();
+                {
+                    var items = currentItem.GetRecursionContinueContent(childs);
+                    foreach (var i in items)
+                        yield return i;
+                }
 
-            // Output the subcomponents contents
-            foreach (var child in childs)
-            {
-                foreach (var l in Recurse(child))
-                    yield return l;
+                // Output the subcomponents contents
+                foreach (var child in childs)
+                {
+                    foreach (var l in Recurse(child))
+                        yield return l;
+                }
             }
         }
 

@@ -77,11 +77,12 @@ internal static class ColumnTester
     };
 
 
-    public static void TestDecimalColumn_SumCoherence(
+    public static void TestDecimalColumn_SumCoherence<T>(
         Pinstance pinstance,
         IIterator<IComponentContent> iterator,
         decimal expectedTotal,
         IColumn<IComponentContent> testedColumn,
+        Func<IPropertyContent<T>, string> propertyNaming,
         IEnumerable<IColumn<IComponentContent>> debugDataColumns)
     {
         var res = iterator.MakeContent(pinstance);
@@ -97,7 +98,7 @@ internal static class ColumnTester
                 [
                     CommonColumns.LineNumber(),
                     IDColumns.ContentLocation(),
-                    IDColumns.ComponentNumberPrettyTree(),
+                    IDColumns.ComponentNumberPrettyTree<T>(propertyNaming),
                     IDColumns.PartNumber(),
                     IDColumns.GroupCNs(),
                     CommonColumns.ComponentTotalCount(),

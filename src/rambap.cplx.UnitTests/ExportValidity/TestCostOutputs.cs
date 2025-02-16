@@ -30,11 +30,12 @@ public class TestCostOutputs
     {
         var part = new DecimalPropertyPartExemple<Cost>.Part_A();
         var instance = new Pinstance(part);
-        ColumnTester.TestDecimalColumn_SumCoherence(
+        ColumnTester.TestDecimalColumn_SumCoherence<InstanceCost.NativeCostInfo>(
             instance,
             iterator,
             DecimalPropertyPartExemple.ExpectedTotal_ExtensiveT,
             CostColumns.TotalCost(),
+            pc => pc.Property.name,
             [
                 CostColumns.CostName(),
                 CostColumns.UnitCost(),
