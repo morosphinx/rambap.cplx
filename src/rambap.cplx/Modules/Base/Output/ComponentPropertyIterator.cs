@@ -22,12 +22,22 @@ class ComponentPropertyIterator<T> : ComponentIterator
 
         public IEnumerable<IComponentContent> GetRecursionContinueContent(List<IterationSubChild> subItems)
         {
-            // TODO : may be branch component, if prperty recursion
-            yield return new LeafComponentWithProperty<T>(Location, Components)
+            bool isLeafDueToNoChild = subItems.Count() == 0; ;
+            if (isLeafDueToNoChild)
             {
-                Property = Property,
-                IsLeafBecause = LeafCause.NoChild
-            };
+                yield return new LeafComponentWithProperty<T>(Location, Components)
+                {
+                    Property = Property,
+                    IsLeafBecause = LeafCause.NoChild
+                };
+            }
+            else
+            {
+                yield return new BranchComponentWithProperty<T>(Location, Components)
+                {
+                    Property = Property,
+                };
+            }
         }
     }
 
@@ -44,12 +54,21 @@ class ComponentPropertyIterator<T> : ComponentIterator
 
         public IEnumerable<IComponentContent> GetRecursionContinueContent(List<IterationSubChild> subItems)
         {
-            // TODO : may be branch component, if prperty recursion
-            yield return new LeafComponentWithProperty<T>(Location, Components)
+            bool isLeafDueToNoChild = subItems.Count() == 0; ;
+            if (isLeafDueToNoChild)
             {
-                Property = Property,
-                IsLeafBecause = LeafCause.SingleStackedPropertyChild
-            };
+                yield return new LeafComponentWithProperty<T>(Location, Components)
+                {
+                    Property = Property,
+                    IsLeafBecause = LeafCause.SingleStackedPropertyChild
+                };
+            } else
+            {
+                yield return new BranchComponentWithProperty<T>(Location, Components)
+                {
+                    Property = Property,
+                };
+            }
         }
     }
 
@@ -78,8 +97,7 @@ class ComponentPropertyIterator<T> : ComponentIterator
     {
         if (iterationTarget is SubComponentGroup group)
         {
-            // Properties
-
+            // Properties of Components
             var localMultiplicity = group.Components.Count();
             var mainComponent = group.MainComponent;
 
@@ -129,21 +147,41 @@ class ComponentPropertyIterator<T> : ComponentIterator
                     {
                         Location = subItemLocation,
                         Components = i,
-                        WriteBranches = WriteBranches
+                        WriteComponentBranches = WriteBranches
                     };
                     yield return item;
                 }
             }
         }
-        else if(iterationTarget is SubComponentGroupWithSingleProperty soloSubProp
+        else if(iterationTarget is SubComponentGroupWithSingleProperty soloSubPropItem
             && PropertySubIterator != null)
         {
-            // TODO : subiterate properties
+            var properties = PropertySubIterator(soloSubPropItem.Property);
+            foreach(var prop in properties)
+            {
+                var propLocation = loc.GetNextSubItem();
+                yield return new SubComponentGroupWithProperty()
+                {
+                    Components = soloSubPropItem.Components,
+                    Location = propLocation,
+                    Property = prop,
+                };
+            }
         }
-        else if(iterationTarget is SubComponentGroupWithProperty prop
+        else if(iterationTarget is SubComponentGroupWithProperty propItem
             && PropertySubIterator != null)
         {
-            // TODO : subiterate properties
+            var properties = PropertySubIterator(propItem.Property);
+            foreach (var prop in properties)
+            {
+                var propLocation = loc.GetNextSubItem();
+                yield return new SubComponentGroupWithProperty()
+                {
+                    Components = propItem.Components,
+                    Location = propLocation,
+                    Property = prop,
+                };
+            }
         }
     }
 }

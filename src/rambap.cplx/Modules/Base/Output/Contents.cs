@@ -141,7 +141,7 @@ public enum LeafCause
 /// <summary>
 /// A content of a component Tree representing a component. Has no child content
 /// </summary>
-public class LeafComponent : ComponentContent
+public class LeafComponent : ComponentContent, ILeafContent
 {
     public LeafComponent(RecursionLocation loc, Component comp)
         : base(loc, comp)
@@ -176,7 +176,7 @@ public class BranchComponent : ComponentContent
     { }
 }
 
-public class LeafComponentWithProperty<T> : LeafComponent, IPropertyContent<T>
+public class LeafComponentWithProperty<T> : LeafComponent, IPropertyContent<T>, ILeafContent
 {
     public LeafComponentWithProperty(RecursionLocation loc, Component comp)
         : base(loc, comp)
@@ -193,6 +193,23 @@ public class LeafComponentWithProperty<T> : LeafComponent, IPropertyContent<T>
     public required T Property { get; init; }
 }
 
+public class BranchComponentWithProperty<T> : BranchComponent, IPropertyContent<T>
+{
+    public BranchComponentWithProperty(RecursionLocation loc, Component comp)
+        : base(loc, comp)
+    { }
+
+    public BranchComponentWithProperty(RecursionLocation loc, IEnumerable<Component> allComponents)
+        : base(loc, allComponents)
+    { }
+
+    public BranchComponentWithProperty(IEnumerable<(RecursionLocation loc, Component comp)> allComponents)
+        : base(allComponents)
+    { }
+
+    public required T Property { get; init; }
+}
+
 /// <summary>
 /// A content of a component Tree representing a property of a component.
 /// </summary>
@@ -203,5 +220,10 @@ public interface IPropertyContent<out T> : IComponentContent
     /// </summary>
     T Property { get; }
 
+}
+
+public interface ILeafContent : IComponentContent
+{
     LeafCause IsLeafBecause { get; }
+
 }

@@ -16,15 +16,30 @@ public class ICDTableIterator : IIterator<IComponentContent>
     public IEnumerable<IComponentContent> MakeContent(Pinstance instance)
     {
         // Iterate all public connector of a part
-        IEnumerable<ICDTableContentProperty> SelectPublicConnectors(Component component)
+        IEnumerable<ICDTableContentProperty> SelectPublicTopmostConnectors(Component component)
         {
             var connectivity = component.Instance.Connectivity();
             if (connectivity != null)
             {
                 var publicConnectors = connectivity.Connectors.Where(c => c.IsPublic);
-                foreach (var con in publicConnectors)
+                var publicTopMostConnectors = publicConnectors.Where(c => c.GetTopMostUser() == c);
+                foreach (var con in publicTopMostConnectors)
                 {
                    yield return new ICDTableContentProperty() { Port = con };
+                }
+            }
+        }
+
+        // Iterate all subconnectors
+        IEnumerable<ICDTableContentProperty> SelectConnectorSubs(ICDTableContentProperty content)
+        {
+            var port = content.Port;
+            // if (port.Definition is PortDefinition_Combined def)
+            {
+                var subConnectors = port.Definition!.SubPorts;
+                foreach (var con in subConnectors)
+                {
+                    yield return new ICDTableContentProperty() { Port = con };
                 }
             }
         }
@@ -32,7 +47,8 @@ public class ICDTableIterator : IIterator<IComponentContent>
         // Iterate all public components in the hierarchy
         var componentIterator = new ComponentPropertyIterator<ICDTableContentProperty>()
         {
-            PropertyIterator = SelectPublicConnectors,
+            PropertyIterator = SelectPublicTopmostConnectors,
+            PropertySubIterator = SelectConnectorSubs,
             RecursionCondition = (c, l) => c.IsPublic,
             WriteBranches = true,
             GroupPNsAtSameLocation = false,
@@ -41,39 +57,18 @@ public class ICDTableIterator : IIterator<IComponentContent>
 
         var contents = componentIterator.MakeContent(instance);
 
-        // Remove Leaf components, that have no public connector
-        var connectorContents = contents.Where(c => c is not LeafComponent);
-        // List all public topMostConnectors in the hierarchy
-        var topMostConnectors = connectorContents
-            .OfType<IPropertyContent<ICDTableContentProperty>>()
-            .Select(c => c.Property.Port.GetTopMostUser())
-            .ToList();
-        
-        // Return true if the SignalPort is a subPort of a public TopMostconnector (combined or exposed as a topmostConnector)
-        bool IsSubOfTopMostConnectors(Port port)
-        {
-            bool isATopMostConnector = topMostConnectors.Contains(port);
-            bool isSubOfATopMost = topMostConnectors.Contains(port.GetTopMostUser());
-            return !isATopMostConnector && isSubOfATopMost;
-        }
-        // Remove subPort that will be displayed/included as another TopMostPort
-        var topmostConnectorContents = contents.Where(c =>
+        // Remove undesirable contents
+        var filteredContents = contents.Where(c =>
             c switch
             {
-                IPropertyContent<ICDTableContentProperty> lp => ! IsSubOfTopMostConnectors(lp.Property.Port),
+                IPropertyContent<ICDTableContentProperty> lp => true,
                 _ => c.Component.IsPublic, // Private part are still present as leaf, we remove them
             });
             
-
-        throw new NotImplementedException();
-        // Recursively explicit the content of each SignalPort still in the hierarchy
-        // var topmostConnectorsR = ComponentPropertyIterator<ICDTableContentProperty>.SubIterateProperties(topmostConnectorContents,
-        //     content => content.Port.Definition!.SubPorts.Select(p => new ICDTableContentProperty() { Port = p }));
-        // 
-        // foreach (var c in topmostConnectorsR)
-        // {
-        //     yield return c;
-        // }
+        foreach (var c in filteredContents)
+        {
+            yield return c;
+        }
     }
 
     public IEnumerable<IComponentContent> ExplicitConnectors(IEnumerable<ComponentContent> contents)

@@ -42,7 +42,7 @@ public class ComponentIterator : IIterator<IComponentContent>
     protected sealed class SubComponentGroup : ComponentIterationSubChild
     {
         public required RecursionLocation Location { get; init; }
-        public required bool WriteBranches { get ; init; }
+        public required bool WriteComponentBranches { get ; init; }
 
         public Component MainComponent => Components.First();
         public required IEnumerable<Component> Components{ get; init; }
@@ -58,13 +58,11 @@ public class ComponentIterator : IIterator<IComponentContent>
             if (isLeafDueToNoChild)
             {
                 yield return new LeafComponent(Location, Components) { IsLeafBecause = LeafCause.NoChild };
-                yield break;
             }
-
-            // If we reached this point, the component is assured to have child content
-            // Wether we output the component itself is configurable :
-            if (WriteBranches)
+            else if (WriteComponentBranches)
             {
+                // If we reached this point, the component is assured to have child content
+                // Wether we output the component itself is configurable :
                 yield return new BranchComponent(Location, Components);
             }
         }
@@ -128,7 +126,7 @@ public class ComponentIterator : IIterator<IComponentContent>
                 {
                     Location  = subItemLocation,
                     Components = i ,
-                    WriteBranches = WriteBranches
+                    WriteComponentBranches = WriteBranches
                 };
                 yield return item;
             }
@@ -196,7 +194,7 @@ public class ComponentIterator : IIterator<IComponentContent>
         {
             Components = [rootComponent],
             Location = rootLocation,
-            WriteBranches = WriteBranches,
+            WriteComponentBranches = WriteBranches,
         };
         return Recurse(rootItem);
     }

@@ -122,7 +122,9 @@ public static class IDColumns
                 if(i is IPropertyContent<T> pc)
                 {
                     var propName = propertyNaming?.Invoke(pc) ?? "?";
-                    var shouldStillDisplayPN = pc.IsLeafBecause == LeafCause.SingleStackedPropertyChild;
+                    var shouldStillDisplayPN = pc is ILeafContent lc
+                        ? lc.IsLeafBecause == LeafCause.SingleStackedPropertyChild
+                        : true;
                     return shouldStillDisplayPN
                         ? $"{componentOrPartGroupName} / {propName}"
                         : $"/ {propName}";
