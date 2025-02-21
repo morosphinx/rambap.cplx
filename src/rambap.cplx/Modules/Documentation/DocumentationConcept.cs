@@ -1,5 +1,5 @@
 ﻿using rambap.cplx.Core;
-using rambap.cplx.PartAttributes;
+using rambap.cplx.Attributes;
 using rambap.cplx.PartProperties;
 using System.Reflection;
 using static rambap.cplx.Modules.Documentation.InstanceDocumentation;

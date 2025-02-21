@@ -1,4 +1,4 @@
-﻿namespace rambap.cplx.PartAttributes;
+﻿namespace rambap.cplx.Attributes;
 
 /// <summary>
 /// Apply this attribute to a property/field of type <see cref="Part"/> to add description to the component it represent. <br/>

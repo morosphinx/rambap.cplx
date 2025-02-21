@@ -1,6 +1,6 @@
 ﻿using rambap.cplx.Core;
 using rambap.cplx.Export.Tables;
-using rambap.cplx.PartAttributes;
+using rambap.cplx.Attributes;
 using System.Reflection;
 
 namespace rambap.cplx.Modules.Base.Output;
@@ -93,13 +93,6 @@ public class ComponentIterator : IIterator<IComponentContent>
         }
     }
 
-    protected virtual int ExpectedchildCount(IterationSubChild iterationTarget)
-        => iterationTarget switch
-        {
-            SubComponentGroup group => group.MainComponent.Instance.Components.Count(), // TODO : include subcomponent group
-            _ => 0
-        };
-
     protected IEnumerable<IEnumerable<Component>> GroupComponents(ComponentIterationSubChild group)
     {
         var subcomponents = group.Components.First().Instance.Components;
@@ -137,40 +130,55 @@ public class ComponentIterator : IIterator<IComponentContent>
     {
         // Generate the contents and subcontent for the group of components
         // The group of components must all be of same PN at the same location
-        IEnumerable<IComponentContent> Recurse(IterationSubChild currentItem)
+        IEnumerable<IComponentContent> Recurse(IterationSubChild currentItem, bool tagLevelEnd)
         {            
             bool mayRecursePastThis = ShouldRecurse(currentItem);
             bool isLeafDueToRecursionBreak = !mayRecursePastThis;
 
             if (isLeafDueToRecursionBreak)
             {
-                var items = currentItem.GetRecursionBreakContent();
-                foreach (var i in items)
-                    yield return i;
-                yield break; // Leaf component : stop iteration here, do not write subcomponent or properties
+                var currentItemContent = currentItem.GetRecursionBreakContent();
+
+                var c1 = currentItemContent.ToList();
+                foreach (var content in currentItemContent)
+                {
+
+                    if (tagLevelEnd && content == c1.Last())
+                        content.Location.IsEnd = true;
+                    yield return content;
+                }
             }
             else
             {
-                var expectedChildCount = ExpectedchildCount(currentItem);
+                // var expectedChildCount = ExpectedchildCount(currentItem);
                 // Counter of subcontents, to etablish location information
                 var loc = new LocationBuilder()
                 {
                     LocationFrom = currentItem.Location,
-                    TotalSubItemCount = expectedChildCount,
+                    TotalSubItemCount = 0,
                 };
 
                 var childs = GetChilds(currentItem, loc).ToList();
+
+                var currentItemContent = currentItem.GetRecursionContinueContent(childs);
+
+                var c1 = currentItemContent.ToList();
+                foreach (var content in c1)
                 {
-                    var items = currentItem.GetRecursionContinueContent(childs);
-                    foreach (var i in items)
-                        yield return i;
+                    if(tagLevelEnd && content == c1.Last())
+                        content.Location.IsEnd = true;
+                    yield return content;
                 }
 
                 // Output the subcomponents contents
-                foreach (var child in childs)
+                var c2 = childs.ToList();
+                foreach (var child in c2)
                 {
-                    foreach (var l in Recurse(child))
+                    var isLastChild = child == c2.Last();
+                    foreach (var l in Recurse(child, isLastChild))
+                    {
                         yield return l;
+                    }
                 }
             }
         }
@@ -196,62 +204,8 @@ public class ComponentIterator : IIterator<IComponentContent>
             Location = rootLocation,
             WriteComponentBranches = WriteBranches,
         };
-        return Recurse(rootItem);
+        return Recurse(rootItem, true);
     }
-
-    public static IEnumerable<IComponentContent> SubIterate(
-        IEnumerable<IComponentContent> contents,
-        Func<IComponentContent, IEnumerable<IComponentContent>> additionalComponents)
-    {
-        foreach (var content in contents)
-        {
-            var newContents = additionalComponents(content);
-            IEnumerable<IComponentContent> allContents = [content, .. newContents];
-            foreach(var c in allContents)
-                yield return c;
-        }
-    }
-
-    // public static IEnumerable<IComponentContent> SubIterateProperties(
-    //     IEnumerable<IComponentContent> contents,
-    //     Func<T, IEnumerable<T>> additionalProperties,
-    //     bool applyRecursively = true)
-    // {
-    //     IEnumerable<LeafComponentWithProperty<T>> MakeAditionalContents(IPropertyContent<T> leafProperty)
-    //     {
-    //         var location = leafProperty.Location;
-    //         T property = leafProperty.Property!;
-    //         var newProperties = additionalProperties(property);
-    // 
-    //         var currentSubitemIndex = 0;
-    //         var subItemTotalCount = newProperties.Count();
-    // 
-    //         foreach (var p in newProperties)
-    //         {
-    //             var propLocation = location with
-    //             {
-    //                 Depth = location.Depth + 1,
-    //                 LocalItemIndex = currentSubitemIndex++,
-    //                 LocalItemCount = subItemTotalCount,
-    //             };
-    //             var relocatedComponents = leafProperty.AllComponents().Select(c => (propLocation, c.component));
-    //             yield return new LeafComponentWithProperty<T>(relocatedComponents)
-    //             {
-    //                 Property = p,
-    //                 IsLeafBecause = LeafCause.NoChild
-    //             };
-    //         }
-    // 
-    //     }
-    //     return ComponentIterator<T>.SubIterate(contents,
-    //         c => c switch
-    //         {
-    //             IPropertyContent<T> lp => MakeAditionalContents(lp),
-    //             LeafComponent lc => [],
-    //             BranchComponent bc => [],
-    //             _ => throw new NotImplementedException(),
-    //         });
-    // }
 }
 
 

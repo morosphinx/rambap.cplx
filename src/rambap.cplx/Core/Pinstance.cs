@@ -1,5 +1,5 @@
 ﻿using System.Reflection;
-using rambap.cplx.PartAttributes;
+using rambap.cplx.Attributes;
 using static rambap.cplx.Core.Support;
 
 namespace rambap.cplx.Core;

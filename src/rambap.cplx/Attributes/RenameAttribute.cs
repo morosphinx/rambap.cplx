@@ -1,6 +1,6 @@
 ﻿using static System.Net.Mime.MediaTypeNames;
 
-namespace rambap.cplx.PartAttributes;
+namespace rambap.cplx.Attributes;
 
 /// <summary>
 /// Apply this attribute to a property/field to rename it in CPLX documentation <br/>

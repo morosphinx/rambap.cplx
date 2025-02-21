@@ -1,4 +1,4 @@
-﻿namespace rambap.cplx.PartAttributes;
+﻿namespace rambap.cplx.Attributes;
 
 [AttributeUsage(AttributeTargets.Class, AllowMultiple = false)]
 public class CommonNameAttribute : Attribute

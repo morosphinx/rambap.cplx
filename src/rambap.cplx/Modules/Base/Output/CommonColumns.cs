@@ -52,7 +52,7 @@ public static class CommonColumns
             LevelDone[item.Location.Depth] = false;
             //
             string ver = " │ "; // That's an Alt+179, and not an Alt+124 '|', this latter is reserved for markdown 
-            bool isEnd = item.Location.LocalItemIndex == item.Location.LocalItemCount - 1;
+            bool isEnd = item.Location.IsEnd; //item.Location.LocalItemIndex == item.Location.LocalItemCount - 1;
             string end = isEnd ? " └─" : " ├─";
             if (item.Location.Depth > 0)
                 LevelDone[item.Location.Depth - 1] = isEnd;

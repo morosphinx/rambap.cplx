@@ -82,17 +82,6 @@ class ComponentPropertyIterator<T> : ComponentIterator
 
     public Func<T, IEnumerable<T>>? PropertySubIterator { private get; init; }
 
-    protected override int ExpectedchildCount(IterationSubChild iterationTarget)
-        =>
-            iterationTarget switch
-            {
-                SubComponentGroup group => PropertyIterator(group.MainComponent).Count()
-                                          + base.ExpectedchildCount(iterationTarget),
-                SubComponentGroupWithSingleProperty so => PropertySubIterator?.Invoke(so.Property).Count() ?? 0,
-                SubComponentGroupWithProperty so => PropertySubIterator?.Invoke(so.Property).Count() ?? 0,
-                _ => 0,
-            };
-
     protected override IEnumerable<IterationSubChild> GetChilds(IterationSubChild iterationTarget, LocationBuilder loc)
     {
         if (iterationTarget is SubComponentGroup group)

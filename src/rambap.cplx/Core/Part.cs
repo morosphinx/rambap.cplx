@@ -1,4 +1,4 @@
-﻿using rambap.cplx.PartAttributes;
+﻿using rambap.cplx.Attributes;
 
 namespace rambap.cplx.Core;
 

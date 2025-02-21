@@ -29,7 +29,7 @@ public interface IColumn
     /// <summary>
     /// Title of the column  in the CSV dile
     /// </summary>
-    string Title { get; }
+    string Title { get; set; }
 
     ColumnTypeHint TypeHint { get; }
 
@@ -43,6 +43,20 @@ public interface IColumn
     /// </summary>
     void Reset();
 }
+
+public static class IColumnExtensions
+{
+    /// <summary>
+    /// Helper method to set a column title inside of [ ] enumarable column declaration
+    /// </summary>
+    public static T SetTitle<T>(this T e, string title)
+        where T : IColumn
+    {
+        e.Title = title;
+        return e;
+    }
+}
+
 
 /// <summary>
 /// Define the content, and construction, of a table Column
@@ -60,7 +74,7 @@ public interface IColumn<T> : IColumn
 /// </summary>
 public record DelegateColumn<T> : IColumn<T>
 {
-    public required string Title { get; init; }
+    public required string Title { get; set; }
     public required ColumnTypeHint TypeHint { get; init; }
 
     public required Func<T, string?> GetCellValue { get; init; }
@@ -84,7 +98,11 @@ public record DelegateColumn<T> : IColumn<T>
 public record WrapperColumn<T> : IColumn<T>
 {
     public required IColumn<T> WrappedColumn { get; init; }
-    public string Title => WrappedColumn.Title;
+    public string Title
+    {
+        get => WrappedColumn.Title;
+        set => WrappedColumn.Title = value;
+    }
     public ColumnTypeHint TypeHint => WrappedColumn.TypeHint;
 
     public string CellFor(T item)

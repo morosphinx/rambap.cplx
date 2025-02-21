@@ -140,6 +140,6 @@ public static class IDColumns
             i =>
             {
                 var loc = i.Location;
-                return $"dep{loc.Depth} - {loc.LocalItemIndex+1} of {loc.LocalItemCount}";
+                return $"dep{loc.Depth} - {loc.LocalItemIndex+1} of {loc.LocalItemCount} - {(loc.IsEnd ? "END" : "")}";
             });
 }

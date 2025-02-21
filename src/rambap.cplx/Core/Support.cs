@@ -1,4 +1,4 @@
-﻿using rambap.cplx.PartAttributes;
+﻿using rambap.cplx.Attributes;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Xml.Linq;

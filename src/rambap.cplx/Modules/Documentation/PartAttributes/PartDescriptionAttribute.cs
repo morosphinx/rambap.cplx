@@ -1,4 +1,4 @@
-﻿namespace rambap.cplx.PartAttributes;
+﻿namespace rambap.cplx.Attributes;
 
 /// <summary>
 /// Apply this atttribute to a <see cref="Part"> class to add additional descriptions to it<br/>

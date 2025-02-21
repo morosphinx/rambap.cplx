@@ -12,7 +12,8 @@ public record RecursionLocation()
     public required int Multiplicity { get; init; }
     public required int Depth { get; init; }
     public required int LocalItemIndex { get; init; }
-    public required int LocalItemCount { get; init; }
+    public int LocalItemCount { get; internal set; }
+    public bool IsEnd { get; internal set; }
 }
 
 public class LocationBuilder()

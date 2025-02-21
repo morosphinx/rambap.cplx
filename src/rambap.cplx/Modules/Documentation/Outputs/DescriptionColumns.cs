@@ -6,8 +6,6 @@ namespace rambap.cplx.Modules.Documentation.Outputs;
 
 public static class DescriptionColumns
 {
-
-
     public static DelegateColumn<IComponentContent> PartDescription(bool allLines = false) =>
         new DelegateColumn<IComponentContent>("Part Description", ColumnTypeHint.StringFormatable,
             i => allLines
