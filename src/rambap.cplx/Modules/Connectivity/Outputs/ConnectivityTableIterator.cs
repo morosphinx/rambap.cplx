@@ -1,18 +1,26 @@
 ﻿using rambap.cplx.Core;
 using rambap.cplx.Export.Tables;
+using rambap.cplx.Modules.Base.Output;
 using rambap.cplx.Modules.Connectivity.PinstanceModel;
 
 namespace rambap.cplx.Modules.Connectivity.Outputs;
 
-public class ConnectivityTableIterator : IIterator<ConnectivityTableContent>
+public static class ConnectivityTableIterator
 {
-    public required bool IncludeSubComponentConnections { get; init; }
-    public required ConnectionKind IteratedConnectionKind { get; init; }
-
-    public IEnumerable<ConnectivityTableContent> MakeContent(Pinstance instance)
+    public enum ConnectionKind
     {
+        Assembly,
+        Wiring
+    }
+
+    public static IEnumerable<ConnectivityTableContent> MakeConnectivityTableContent(
+        Component c,
+        bool includeSubComponentConnections,
+        ConnectionKind iteratedConnectionKind)
+    {
+        var instance = c.Instance;
         var connectivity = instance.Connectivity()!; // Throw if no connectivity definition
-        var connections = GetAllConnections(instance, IncludeSubComponentConnections, IteratedConnectionKind);
+        var connections = GetAllConnections(instance, includeSubComponentConnections, iteratedConnectionKind);
         // var connectionsFlattened = connections.SelectMany(c => c.Connections);
 
         var connectionsGrouped = ConnectionHelpers.GroupConnectionsByTopmostPort(connections);
@@ -43,11 +51,6 @@ public class ConnectivityTableIterator : IIterator<ConnectivityTableContent>
         }
     }
 
-    public enum ConnectionKind
-    {
-        Assembly,
-        Wiring
-    }
     public static IEnumerable<SignalPortConnection> GetAllConnections(Pinstance instance, bool recursive, ConnectionKind connectionKind)
     {
         // Return all connection, NOT flattening grouped ones (Twisting / Sielding)

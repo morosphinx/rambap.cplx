@@ -5,6 +5,12 @@ namespace rambap.cplx.Modules.Base.Output;
 
 public static class CommonColumns
 {
+    public static DelegateColumn<IComponentContent> Dashes(string title)
+        => new DelegateColumn<IComponentContent>(
+            title,
+            ColumnTypeHint.StringExact,
+            i => new string('-', title.Length));
+
     public static IColumn<IComponentContent> EmptyColumn(string title = "")
         => new DelegateColumn<IComponentContent>(title, ColumnTypeHint.StringFormatable,
             i => "");

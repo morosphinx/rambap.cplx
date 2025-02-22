@@ -2,7 +2,7 @@
 
 namespace rambap.cplx.Modules.Base.Output;
 
-class ComponentPropertyIterator<T> : ComponentIterator
+public class ComponentPropertyIterator<T> : ComponentIterator
 {
     protected sealed class SubComponentGroupWithProperty : IterationSubChild
     {

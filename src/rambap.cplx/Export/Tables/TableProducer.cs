@@ -22,6 +22,10 @@ public record TableProducer<T> : TableProducer
     /// </summary>
     public Func<IEnumerable<T>, IEnumerable<T>>? ContentTransform { get; init; } = null;
 
+    public Func<T, T, bool>? AddSpacerCondition { get; init; } = null;
+    public Func<T, T, bool>? AddTableBreakCondition { get; init; } = null;
+
+
     /// <summary>
     /// If true, all text are converted from CamelCase to normal case. Exemple : <br/>
     /// "PartName" => "Part Name"
@@ -87,19 +91,50 @@ public record TableProducer<T> : TableProducer
         }
     }
 
+
+    private Line MakeBreakLine()
+    {
+        return new()
+        {
+            Type = Line.LineType.TableBreak,
+            Cells = Columns.Select(c => "").ToList()
+        };
+    }
+    private Line MakeSpacerLine()
+    {
+        return new()
+        {
+            Type = Line.LineType.Spacer,
+            Cells = Columns.Select(c => "").ToList()
+        };
+    }
     public override IEnumerable<Line> MakeContentLines(Pinstance rootComponent)
     {
-        if (ContentTransform is null)
+        var contents = Iterator.MakeContent(rootComponent);
+        // Apply content transform
+        if(ContentTransform is not null)
+            contents = ContentTransform(contents);
+        // Add additional breaks f required
+        T? previousContent = default;
+        foreach (var c in contents)
         {
-            foreach (var c in Iterator.MakeContent(rootComponent))
+            if (previousContent is null)
+            {
+                // First iteration
                 yield return MakeContentLine(c);
-        }
-        else
-        {
-            var content = Iterator.MakeContent(rootComponent);
-            content = ContentTransform(content);
-            foreach (var c in content)
+            } else
+            {
+                // Add spacers if required
+                bool doSpace = AddSpacerCondition?.Invoke(previousContent,c) ?? false;
+                bool doBreak = AddTableBreakCondition?.Invoke(previousContent, c) ?? false;
+                if (doBreak)
+                    yield return MakeBreakLine();
+                else if (doSpace)
+                    yield return MakeSpacerLine();
+                // Content Line
                 yield return MakeContentLine(c);
+            }
+            previousContent = c;
         }
     }
 

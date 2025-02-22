@@ -56,8 +56,12 @@ public class MarkdownTableFormater : ITableFormater
                 switch (line.Type)
                 {
                     case Line.LineType.Header:
-                        yield return line;
-                        yield return markdownTableHeaderSeparator;
+                        if(previousType != Line.LineType.TableBreak)
+                        {
+                            // Table headers are already written on tableBreak
+                            yield return line;
+                            yield return markdownTableHeaderSeparator;
+                        }
                         break;
                     case Line.LineType.Total:
                         if (previousType == Line.LineType.Header)

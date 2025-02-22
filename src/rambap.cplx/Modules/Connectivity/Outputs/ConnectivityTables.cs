@@ -1,20 +1,22 @@
-﻿using static rambap.cplx.Modules.Connectivity.Outputs.ConnectivityTableContent;
-using static rambap.cplx.Modules.Connectivity.Outputs.ConnectivityColumns;
-using rambap.cplx.Export.Tables;
+﻿using rambap.cplx.Export.Tables;
 using rambap.cplx.Modules.Base.Output;
-using static rambap.cplx.Modules.Connectivity.Outputs.ICDTableIterator;
+using static rambap.cplx.Modules.Base.Output.CommonColumns;
+using static rambap.cplx.Modules.Connectivity.Outputs.ConnectivityTableContent;
+using static rambap.cplx.Modules.Connectivity.Outputs.ConnectivityColumns;
 
 namespace rambap.cplx.Modules.Connectivity.Outputs;
 
 public class ConnectivityTables
 {
-    public static TableProducer<ConnectivityTableContent> ConnectionTable(ConnectorIdentity identity)
-        => new TableProducer<ConnectivityTableContent>()
+    public static TableProducer<IComponentContent> ConnectionTable(ConnectorIdentity identity)
+        => new TableProducer<IComponentContent>()
         {
-            Iterator = new ConnectivityTableIterator()
+            Iterator = new ComponentPropertyIterator<ConnectivityTableContent>()
             {
-                IncludeSubComponentConnections = true,
-                IteratedConnectionKind = ConnectivityTableIterator.ConnectionKind.Assembly
+                PropertyIterator = c => ConnectivityTableIterator.MakeConnectivityTableContent(
+                    c, true, ConnectivityTableIterator.ConnectionKind.Assembly),
+                WriteBranches = false,
+
             },
             Columns = [
                     ConnectedComponent(ConnectorSide.Left,identity,"CID", c => c?.CID(" / ") ?? "."),
@@ -31,13 +33,13 @@ public class ConnectivityTables
                 ]
         };
 
-    public static TableProducer<ConnectivityTableContent> WiringTable()
-        => new TableProducer<ConnectivityTableContent>()
+    public static TableProducer<IComponentContent> WiringTable()
+        => new TableProducer<IComponentContent>()
         {
-            Iterator = new ConnectivityTableIterator()
+            Iterator = new ComponentPropertyIterator<ConnectivityTableContent>()
             {
-                IncludeSubComponentConnections = false,
-                IteratedConnectionKind = ConnectivityTableIterator.ConnectionKind.Wiring
+                PropertyIterator = c => ConnectivityTableIterator.MakeConnectivityTableContent(
+                    c, false, ConnectivityTableIterator.ConnectionKind.Wiring),
             },
             Columns = [
                     ConnectedComponent(ConnectorSide.Left,ConnectorIdentity.Topmost,"CN", c => c.CN),
@@ -55,9 +57,24 @@ public class ConnectivityTables
     public static TableProducer<IComponentContent> InterfaceControlDocumentTable()
         => new TableProducer<IComponentContent>()
         {
-            Iterator = new ICDTableIterator(),
+            Iterator = new ComponentPropertyIterator<ICDTableIterator.ICDTableContentProperty>()
+            {
+
+                PropertyIterator = ICDTableIterator.SelectPublicTopmostConnectors,
+                PropertySubIterator = ICDTableIterator.SelectConnectorSubs,
+                RecursionCondition = (c, l) => c.IsPublic,
+                WriteBranches = true,
+                GroupPNsAtSameLocation = false,
+                StackPropertiesSingleChildBranches = false,
+            },
+            ContentTransform = contents => contents.Where(c =>
+                c switch
+                {
+                    IPropertyContent<ICDTableIterator.ICDTableContentProperty> lp => true,
+                    _ => c.Component.IsPublic, // Private part are still present as leaf, we remove them
+                }),
             Columns = [
-                    IDColumns.ComponentNumberPrettyTree<ICDTableContentProperty>(
+                    IDColumns.ComponentNumberPrettyTree<ICDTableIterator.ICDTableContentProperty>(
                         i =>
                         {
                             var prop = i.Property;
