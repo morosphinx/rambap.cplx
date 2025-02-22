@@ -40,7 +40,7 @@ public static class CommonColumns
 
     public class ComponentPrettyTreeColumn : IColumn<IComponentContent>
     {
-        public required string Title { get; init; }
+        public required string Title { get; set; }
         public bool CanFormat = false;
         public ColumnTypeHint TypeHint =>
             CanFormat ? ColumnTypeHint.StringFormatable : ColumnTypeHint.StringExact ;

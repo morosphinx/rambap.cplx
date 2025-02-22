@@ -71,17 +71,17 @@ CN          	PN              	Component description    	Part Description
 
 - Bill of materials
 
-|#|PN              |Part Description       |Cost Name|Unit Cost|Count|Total Cost|
-|-|----------------|-----------------------|---------|--------:|----:|---------:|
-|1|ServerAssembly  |                       |Cables   |   500.00|    1|    500.00|
-|1|ServerAssembly  |                       |Switches |  1000.00|    1|   1000.00|
-|2|ServerCabinet36U|19' Rack cabinet 36U   |Buy      |  2000.00|    1|   2000.00|
-|3|RackTypeA       |                       |Other    |  4500.00|    2|   9000.00|
-|3|RackTypeA       |                       |Assembly |   400.00|    2|    800.00|
-|4|RTX999          |9nth Gen GPU ; 9Go DRAM|Buy      |   999.00|    5|   4995.00|
-|5|RackTypeB       |                       |Other    |  3000.00|    1|   3000.00|
-|-|----------------|-----------------------|---------|--------:|----:|---------:|
-| |TOTAL           |                       |         |         |     |  21295.00|
+| #|PN              |Part Description       |Cost Name|Unit Cost|Count|Total Cost|
+|-:|----------------|-----------------------|---------|--------:|----:|---------:|
+| 1|ServerAssembly  |                       |Cables   |   500.00|    1|    500.00|
+| 1|ServerAssembly  |                       |Switches |  1000.00|    1|   1000.00|
+| 2|ServerCabinet36U|19' Rack cabinet 36U   |Buy      |  2000.00|    1|   2000.00|
+| 3|RackTypeA       |                       |Other    |  4500.00|    2|   9000.00|
+| 3|RackTypeA       |                       |Assembly |   400.00|    2|    800.00|
+| 4|RTX999          |9nth Gen GPU ; 9Go DRAM|Buy      |   999.00|    5|   4995.00|
+| 5|RackTypeB       |                       |Other    |  3000.00|    1|   3000.00|
+|-:|----------------|-----------------------|---------|--------:|----:|---------:|
+|  |TOTAL           |                       |         |         |     |  21295.00|
 
 - Cost Breakdown
 
@@ -95,11 +95,11 @@ CN          	PN              	Component description    	Part Description
 | ├─ 2x: RackTypeA | ├─ 2x: 6898.00  |R01      |RackTypeA       |         |         |     |          |
 | │  ├─ / Other    | │  ├─ 4500.00   |R01      |RackTypeA       |Other    |  4500.00|    2|   9000.00|
 | │  ├─ / Assembly | │  ├─ 400.00    |R01      |RackTypeA       |Assembly |   400.00|    2|    800.00|
-| │  ├─ 2x: RTX999 | │  ├─ 2x: 999.00|R01/GPU01|RTX999          |         |         |     |          |
-| │  │  └─ / Buy   | │  │  └─ 999.00 |R01/GPU01|RTX999          |Buy      |   999.00|    4|   3996.00|
-| ├─ R03           | ├─ 3999.00      |R03      |RackTypeB       |         |         |     |          |
-| │  ├─ / Other    | │  ├─ 3000.00   |R03      |RackTypeB       |Other    |  3000.00|    1|   3000.00|
-| │  └─ GPU / Other| │  └─ 3000.00   |R03/GPU  |RTX999          |Other    |  3000.00|    1|   3000.00|
+| │  └─ 2x: RTX999 | │  └─ 2x: 999.00|R01/GPU01|RTX999          |         |         |     |          |
+| │     └─ / Buy   | │     └─ 999.00 |R01/GPU01|RTX999          |Buy      |   999.00|    4|   3996.00|
+| └─ R03           | └─ 3999.00      |R03      |RackTypeB       |         |         |     |          |
+|    ├─ / Other    |    ├─ 3000.00   |R03      |RackTypeB       |Other    |  3000.00|    1|   3000.00|
+|    └─ GPU / Other|    └─ 3000.00   |R03/GPU  |RTX999          |Other    |  3000.00|    1|   3000.00|
 |------------------|-----------------|---------|----------------|---------|--------:|----:|---------:|
 |                  |                 |TOTAL    |TOTAL           |         |         |     |  21295.00|
 

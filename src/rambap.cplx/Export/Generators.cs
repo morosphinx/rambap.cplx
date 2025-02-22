@@ -14,34 +14,38 @@ public static class FileGroups
         return [
                 ($"BOMR_{filenamePattern}.csv", new TextTableFile(i)
                 {
-                    Table = CostTables.BillOfMaterial(),
-                    Formater = new MarkdownTableFormater(){
+                    Table = CostTables.BillOfMaterial() with
+                    {
                         WriteTotalLine = true,
                         TotalLineOnTop = true,
-                    }
+                    },
+                    Formater = new MarkdownTableFormater()
                 }),
                 ($"RecurentCosts_{filenamePattern}.csv", new TextTableFile(i)
                 {
-                    Table = CostTables.CostBreakdown(),
-                    Formater = new MarkdownTableFormater(){
+                    Table = CostTables.CostBreakdown() with
+                    {
                         WriteTotalLine = true,
                         TotalLineOnTop = true,
-                    }
+                    },
+                    Formater = new MarkdownTableFormater(),
                 }),
                 ($"BOTR_{filenamePattern}.csv", new TextTableFile(i)
                 {
-                    Table = TaskTables.BillOfTasks(),
-                    Formater = new MarkdownTableFormater(){
+                    Table = TaskTables.BillOfTasks() with
+                    {
                         WriteTotalLine = true,
                         TotalLineOnTop = true,
-                    }
+                    },
+                    Formater = new MarkdownTableFormater(),
                 }),
                 ($"RecurentTasks_{filenamePattern}.csv", new TextTableFile(i) {
-                    Table = TaskTables.TaskBreakdown(),
-                    Formater = new MarkdownTableFormater(){
+                    Table = TaskTables.TaskBreakdown() with
+                    {
                         WriteTotalLine = true,
                         TotalLineOnTop = true,
-                    }
+                    },
+                    Formater = new MarkdownTableFormater(),
                 }),
                 ];
     }

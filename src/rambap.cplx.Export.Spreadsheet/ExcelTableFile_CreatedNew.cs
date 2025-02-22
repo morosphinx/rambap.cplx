@@ -49,11 +49,11 @@ public class ExcelTableFile_CreatedNew : IInstruction
         uint currentRow = 1;
         var headerLine = Table.MakeHeaderLine();
         FillInLineContent(sheetData,
-            headerLine,
-            Enumerable.Range(0, headerLine.Count).Select(i => ColumnTypeHint.StringFormatable).ToList(),
+            headerLine.Cells,
+            Enumerable.Range(0, headerLine.Cells.Count).Select(i => ColumnTypeHint.StringFormatable).ToList(),
             currentRow++, firstColl);
         FillInTableContents(sheetData,
-            Table.MakeContentLines(Content),
+            Table.MakeContentLines(Content).Select(l => l.Cells),
             Table.IColumns.Select(t=>t.TypeHint).ToList(),
             currentRow, firstColl);
 

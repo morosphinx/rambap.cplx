@@ -2,20 +2,19 @@
 
 namespace rambap.cplx.Export.Tables;
 
-using Line = List<string>;
-
 /// <summary>
 /// Definition of a Table to be displayed in a file
 /// Output 2D string array
 /// </summary>
 /// <typeparam name="T">The type of all line of the table. This may be abstract</typeparam>
-public record TableProducer<T> : ITableProducer
+public record TableProducer<T> : TableProducer
 {
     /// <summary> Iterator that select that lines content </summary>
     public required IIterator<T> Iterator { get; init; }
 
     /// <summary> Definition of the columns of the table </summary>
     public required List<IColumn<T>> Columns { get; init; }
+    public override IEnumerable<IColumn> IColumns => Columns;
 
     /// <summary>
     /// Enumerable transformation applied while running <see cref="MakeContentLines(Pinstance)"/> </br>
@@ -53,28 +52,42 @@ public record TableProducer<T> : ITableProducer
             _ => throw new NotImplementedException()
         };
 
-    public IEnumerable<IColumn> IColumns => Columns;
 
-    public Line MakeHeaderLine()
-        => IColumns.Select(col => col.Title).ToList();
+    public override Line MakeHeaderLine()
+        => new ()
+        {
+            Type = Line.LineType.Header,
+            Cells = IColumns.Select(col => col.Title).ToList(),
+        };
+        
     private Line MakeContentLine(T item)
     {
         if (RemoveCamelCase)
         {
-            return Columns.Select(col =>
+            return new()
             {
-                var text = col.CellFor(item);
-                if (CamelCasePossible(col.TypeHint))
-                    return CamelCaseToNormalCase(text);
-                else
-                    return text;
-            }).ToList();
+                Type = Line.LineType.Content,
+                Cells = Columns.Select(col =>
+                {
+                    var text = col.CellFor(item);
+                    if (CamelCasePossible(col.TypeHint))
+                        return CamelCaseToNormalCase(text);
+                    else
+                        return text;
+                }).ToList()
+            };
         }
         else
-            return Columns.Select(col => col.CellFor(item)).ToList();
+        {
+            return new()
+            {
+                Type = Line.LineType.Content,
+                Cells = Columns.Select(col => col.CellFor(item)).ToList(),
+            };
+        }
     }
 
-    public IEnumerable<Line> MakeContentLines(Pinstance rootComponent)
+    public override IEnumerable<Line> MakeContentLines(Pinstance rootComponent)
     {
         if (ContentTransform is null)
         {
@@ -90,7 +103,11 @@ public record TableProducer<T> : ITableProducer
         }
     }
 
-    public Line MakeTotalLine(Pinstance rootComponent)
-        => IColumns.Select(col => col.TotalFor(rootComponent)).ToList();
+    public override Line MakeTotalLine(Pinstance rootComponent)
+        => new()
+        {
+            Type = Line.LineType.Total,
+            Cells = IColumns.Select(col => col.TotalFor(rootComponent)).ToList(),
+        };
 }
 
