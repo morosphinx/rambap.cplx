@@ -3,8 +3,6 @@ using rambap.cplx.Export.Tables;
 
 namespace rambap.cplx.Export.TextFiles;
 
-using Line = List<string>;
-
 public class TextTableFile : IInstruction
 {
     /// <summary> Definition of the table written to the file </summary>

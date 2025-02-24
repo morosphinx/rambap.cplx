@@ -14,10 +14,12 @@ public class ConnectivityTables
             Iterator = new ComponentPropertyIterator<ConnectivityTableContent>()
             {
                 PropertyIterator = c => ConnectivityTableIterator.MakeConnectivityTableContent(
-                    c, true, ConnectivityTableIterator.ConnectionKind.Assembly),
+                    c, ConnectivityTableIterator.ConnectionKind.Assembly),
                 WriteBranches = false,
-
+                RecursionCondition = (c, l) => true,
             },
+            // ContentTransform = 
+            //     l => l.OfType<IPropertyContent<ConnectivityTableContent>>().Select()
             Columns = [
                     ConnectedComponent(ConnectorSide.Left,identity,"CID", c => c?.CID(" / ") ?? "."),
                     ConnectedPortName(ConnectorSide.Left,identity),
@@ -39,7 +41,8 @@ public class ConnectivityTables
             Iterator = new ComponentPropertyIterator<ConnectivityTableContent>()
             {
                 PropertyIterator = c => ConnectivityTableIterator.MakeConnectivityTableContent(
-                    c, false, ConnectivityTableIterator.ConnectionKind.Wiring),
+                    c, ConnectivityTableIterator.ConnectionKind.Wiring),
+                RecursionCondition = (c,l) => false,
             },
             Columns = [
                     ConnectedComponent(ConnectorSide.Left,ConnectorIdentity.Topmost,"CN", c => c.CN),

@@ -10,7 +10,6 @@ namespace rambap.cplx.Modules.Connectivity.PinstanceModel;
 
 public partial class Port
 {
-
     internal IEnumerable<Port> GetExpositionColumn()
     {
         return

@@ -87,6 +87,7 @@ public class ComponentPropertyIterator<T> : ComponentIterator
         if (iterationTarget is SubComponentGroup group)
         {
             // Properties of Components
+            var localCN = group.MainComponent.CN;
             var localMultiplicity = group.Components.Count();
             var mainComponent = group.MainComponent;
 
@@ -108,24 +109,23 @@ public class ComponentPropertyIterator<T> : ComponentIterator
             // in some specific cases
             // prepare subcomponents contents. Group them by same PartType & PN if configured :
             var subcomponentContents = GroupComponents(group);
-            foreach (var i in subcomponentContents)
+            foreach (var subgroup in subcomponentContents)
             {
-                var CN = group.MainComponent.CN;
-                var multiplicity = group.Components.Count();
-                var subItemLocation = loc.GetNextSubItem(CN, multiplicity);
+                var subItemLocation = loc.GetNextSubItem(localCN, localMultiplicity);
 
-                var properties = PropertyIterator(group.MainComponent);
+                var subgroupMainComponent = subgroup.First();
+                var properties = PropertyIterator(subgroupMainComponent);
 
                 if(StackPropertiesSingleChildBranches 
                     && properties.Count() == 1 // Only a single property
-                    && i.First().Instance.Components.Count() == 0) // No other child
+                    && subgroupMainComponent.Instance.Components.Count() == 0) // No other child
                 {
                     // If this would only have a single property as a child, return
                     // A special item that will compact both the component and the property on a single line
                     var item = new SubComponentGroupWithSingleProperty()
                     {
                         Location = subItemLocation,
-                        Components = i,
+                        Components = subgroup,
                         Property = properties.Single()
                     };
                     yield return item;
@@ -135,7 +135,7 @@ public class ComponentPropertyIterator<T> : ComponentIterator
                     var item = new SubComponentGroup()
                     {
                         Location = subItemLocation,
-                        Components = i,
+                        Components = subgroup,
                         WriteComponentBranches = WriteBranches
                     };
                     yield return item;

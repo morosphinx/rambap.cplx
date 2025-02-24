@@ -15,13 +15,15 @@ public static class ConnectivityTableIterator
 
     public static IEnumerable<ConnectivityTableContent> MakeConnectivityTableContent(
         Component c,
-        bool includeSubComponentConnections,
         ConnectionKind iteratedConnectionKind)
     {
         var instance = c.Instance;
         var connectivity = instance.Connectivity()!; // Throw if no connectivity definition
-        var connections = GetAllConnections(instance, includeSubComponentConnections, iteratedConnectionKind);
+        var connections = GetAllConnections(instance, iteratedConnectionKind);
         // var connectionsFlattened = connections.SelectMany(c => c.Connections);
+
+        // TODO / TBD : grouping previously happenned at global level. npt equivalent to grouping in
+        // post trandform ?
 
         var connectionsGrouped = ConnectionHelpers.GroupConnectionsByTopmostPort(connections);
 
@@ -51,7 +53,7 @@ public static class ConnectivityTableIterator
         }
     }
 
-    public static IEnumerable<SignalPortConnection> GetAllConnections(Pinstance instance, bool recursive, ConnectionKind connectionKind)
+    public static IEnumerable<SignalPortConnection> GetAllConnections(Pinstance instance, ConnectionKind connectionKind)
     {
         // Return all connection, NOT flattening grouped ones (Twisting / Sielding)
         switch (connectionKind)
@@ -64,15 +66,6 @@ public static class ConnectivityTableIterator
                 foreach (var c in instance.Connectivity()?.Wirings ?? [])
                     yield return c;
                 break;
-        }
-        if (recursive)
-        {
-            foreach(var subcomp in instance.Components)
-            {
-                if(instance.Connectivity != null) // TBD : include even non connectivity defining components ?
-                    foreach(var c in GetAllConnections(subcomp.Instance,recursive,connectionKind))
-                        yield return c;
-            }
         }
     }
 }

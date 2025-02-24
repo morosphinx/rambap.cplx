@@ -107,13 +107,13 @@ public class ComponentIterator : IIterator<IComponentContent>
     {
         if (iterationTarget is SubComponentGroup group)
         {
+            var localCN = group.MainComponent.CN;
+            var localMultiplicity = group.Components.Count();
             // prepare subcomponents contents. Group them by same PartType & PN if configured :
             var subcomponentContents = GroupComponents(group);
             foreach (var i in subcomponentContents)
             {
-                var CN = group.MainComponent.CN;
-                var multiplicity = group.Components.Count();
-                var subItemLocation = loc.GetNextSubItem(CN, multiplicity);
+                var subItemLocation = loc.GetNextSubItem(localCN, localMultiplicity);
 
                 var item =  new SubComponentGroup()
                 {

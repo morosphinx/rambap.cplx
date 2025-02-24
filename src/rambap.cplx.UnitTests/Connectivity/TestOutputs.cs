@@ -1,4 +1,7 @@
-﻿using rambap.cplx.Export.TextFiles;
+﻿using DocumentFormat.OpenXml.Drawing;
+using rambap.cplx.Export.Tables;
+using rambap.cplx.Export.TextFiles;
+using rambap.cplx.Modules.Base.Output;
 using rambap.cplx.Modules.Connectivity.Outputs;
 using static rambap.cplx.Modules.Connectivity.Outputs.ConnectivityColumns;
 
@@ -22,31 +25,46 @@ internal static class TestOutputs
         Console.WriteLine("");
         Console.WriteLine($"{instance.PN} / {displayIdentity}");
 
+        void AddDebugInfoTo(TableProducer<IComponentContent> tableProducer)
+        {
+            tableProducer.Columns.InsertRange(0,
+            [
+                CommonColumns.LineNumber(),
+                IDColumns.ComponentNumberPrettyTree()
+            ]);
+        }
+
         Console.WriteLine("");
         Console.WriteLine("Connectivity");
-        var table1 = new TextTableFile(instance)
+        var connectiontable = ConnectivityTables.ConnectionTable(displayIdentity);
+        AddDebugInfoTo(connectiontable);
+        var connectionFile = new TextTableFile(instance)
         {
-            Table = ConnectivityTables.ConnectionTable(displayIdentity),
+            Table = connectiontable,
             Formater = new Export.Tables.MarkdownTableFormater()
         };
-        table1.WriteToConsole();
+        connectionFile.WriteToConsole();
 
         Console.WriteLine("");
         Console.WriteLine("Wirings");
-        var table2 = new TextTableFile(instance)
+        var wiringtable = ConnectivityTables.WiringTable();
+        AddDebugInfoTo(wiringtable);
+        var wiringFile = new TextTableFile(instance)
         {
-            Table = ConnectivityTables.WiringTable(),
+            Table = wiringtable,
             Formater = new Export.Tables.MarkdownTableFormater()
         };
-        table2.WriteToConsole();
+        wiringFile.WriteToConsole();
 
         Console.WriteLine("");
         Console.WriteLine("ICD");
-        var table3 = new TextTableFile(instance)
+        var ICDtable = ConnectivityTables.InterfaceControlDocumentTable();
+        AddDebugInfoTo(ICDtable);
+        var ICDfile = new TextTableFile(instance)
         {
-            Table = ConnectivityTables.InterfaceControlDocumentTable(),
+            Table = ICDtable,
             Formater = new Export.Tables.MarkdownTableFormater()
         };
-        table3.WriteToConsole();
+        ICDfile.WriteToConsole();
     }
 }

@@ -2,8 +2,8 @@
 
 internal static class DecimalPropertyPartExemple
 {
-    public static decimal ExpectedTotal_ExtensiveT => 142483;
-    public static decimal ExpectedTotal_IntensiveT => 142223;
+    public static decimal ExpectedTotal_ExtensiveT => 3142483;
+    public static decimal ExpectedTotal_IntensiveT => 2142223;
 }
 
 // TODO : add a part with a single property with subcomponents, and one without,
@@ -42,6 +42,9 @@ internal abstract class DecimalPropertyPartExemple<T>
         Part_D aD1;
         Part_N aN1;
         Part_E aE1;
+        Part_G aG1;
+        Part_H aH1;
+        Part_M aM1;
     }
 
     class Part_B : Part
@@ -91,6 +94,20 @@ internal abstract class DecimalPropertyPartExemple<T>
     {
         T Prop_N1 = Make(0);
         T Prop_N2 = Make(0);
+    }
+
+    class Part_M : Part
+    {
+
+    }
+    class Part_G : Part
+    {
+        T Prop_G1 = Make(1_000_000);
+    }
+    class Part_H : Part
+    {
+        Part_G hG1;
+        T Prop_H1 = Make(1_000_000);
     }
 }
 

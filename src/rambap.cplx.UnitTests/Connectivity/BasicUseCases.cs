@@ -69,14 +69,26 @@ public class BasicUseCases
     public void LoopbackConnector() => TestOutputs.WriteConnection<LoopbackConnectorPart>();
     class LoopbackConnectorPart : Part, IPartConnectable
     {
-        public ConnectablePort J01 ; //=> C01.MateFace;
+        public ConnectablePort J01 => C01.MateFace;
 
         ConnectorPart C01;
 
-        public void Assembly_Ports(PortBuilder Do)
+        public void Assembly_Connections(ConnectionBuilder Do)
         {
-            Do.ExposeAs(C01, J01);
+            Do.Wire(C01.Pin(1), C01.Pin(4));
+            Do.Wire(C01.Pin(2), C01.Pin(3));
         }
+    }
+
+    [TestMethod]
+    public void SimpleCable() => TestOutputs.WriteConnection<LoopbackConnectorPart>();
+    class SimpleCablePart : Part, IPartConnectable
+    {
+        public ConnectablePort J01 => C01.MateFace;
+        public ConnectablePort J02 => C02.MateFace;
+
+        ConnectorPart C01;
+        ConnectorPart C02;
 
         public void Assembly_Connections(ConnectionBuilder Do)
         {
