@@ -38,7 +38,7 @@ public static class ICDTableIterator
         }
     }
 
-    public static IEnumerable<IComponentContent> ExplicitConnectors(IEnumerable<ComponentContent> contents)
+    public static IEnumerable<ICplxContent> ExplicitConnectors(IEnumerable<CplxContent> contents)
     {
         throw new NotImplementedException();
         // return ComponentPropertyIterator<ICDTableContentProperty>.SubIterate(contents,

@@ -18,8 +18,8 @@ public static class ConnectivityColumns
         Topmost, // Will traverse the connector hierarchy and return information relative to the uppermost Expose() call
     }
 
-    public static DelegateColumn<IComponentContent> ConnectedPortName(ConnectorSide side, ConnectorIdentity identity, bool fullName = false)
-        => new DelegateColumn<IComponentContent>(
+    public static DelegateColumn<ICplxContent> ConnectedPortName(ConnectorSide side, ConnectorIdentity identity, bool fullName = false)
+        => new DelegateColumn<ICplxContent>(
             "Port",
             ColumnTypeHint.StringExact,
             i => i switch
@@ -35,13 +35,13 @@ public static class ConnectivityColumns
                 _ => "",
             });
 
-    public static DelegateColumn<IComponentContent> ConnectedComponent(
+    public static DelegateColumn<ICplxContent> ConnectedComponent(
             ConnectorSide side,
             ConnectorIdentity identity,
             string title,
             Func<Component?,string> getter,
             bool format = false)
-        => new DelegateColumn<IComponentContent>(
+        => new DelegateColumn<ICplxContent>(
             title,
             format ? ColumnTypeHint.StringFormatable : ColumnTypeHint.StringExact,
             i => i switch
@@ -55,12 +55,12 @@ public static class ConnectivityColumns
                 _ => "",
             });
 
-    public static DelegateColumn<IComponentContent> ConnectedStructuralEquivalenceTopmostComponent(
+    public static DelegateColumn<ICplxContent> ConnectedStructuralEquivalenceTopmostComponent(
             ConnectorSide side,
             string title,
             Func<Component?, string> getter,
             bool format = false)
-        => new DelegateColumn<IComponentContent>(
+        => new DelegateColumn<ICplxContent>(
             title,
             format ? ColumnTypeHint.StringFormatable : ColumnTypeHint.StringExact,
             i => 
@@ -79,12 +79,12 @@ public static class ConnectivityColumns
                 }
             });
 
-    public static DelegateColumn<IComponentContent> ConnectedStructuralEquivalenceTopmostPort(
+    public static DelegateColumn<ICplxContent> ConnectedStructuralEquivalenceTopmostPort(
             ConnectorSide side,
             string title,
             Func<Port, string> getter,
             bool format = false)
-        => new DelegateColumn<IComponentContent>(
+        => new DelegateColumn<ICplxContent>(
             title,
             format ? ColumnTypeHint.StringFormatable : ColumnTypeHint.StringExact,
             i =>
@@ -102,11 +102,11 @@ public static class ConnectivityColumns
                 }
             });
 
-    public static DelegateColumn<IComponentContent> CablePart(
+    public static DelegateColumn<ICplxContent> CablePart(
             string title,
             Func<Component, string> getter,
             bool format = false)
-        => new DelegateColumn<IComponentContent>(
+        => new DelegateColumn<ICplxContent>(
             title,
             format ? ColumnTypeHint.StringFormatable : ColumnTypeHint.StringExact,
             i => i switch
@@ -119,12 +119,12 @@ public static class ConnectivityColumns
                 _ => "",
             });
 
-    public static DelegateColumn<IComponentContent> CableConnector(
+    public static DelegateColumn<ICplxContent> CableConnector(
             ConnectorSide side,
             string title,
             Func<Component, string> getter,
             bool format = false)
-        => new DelegateColumn<IComponentContent>(
+        => new DelegateColumn<ICplxContent>(
             title,
             format ? ColumnTypeHint.StringFormatable : ColumnTypeHint.StringExact,
             i => i switch
@@ -138,12 +138,12 @@ public static class ConnectivityColumns
                 _ => "",
             });
 
-    public static DelegateColumn<IComponentContent> CablePort(
+    public static DelegateColumn<ICplxContent> CablePort(
            ConnectorSide side,
            string title,
            Func<Port, string> getter,
            bool format = false)
-       => new DelegateColumn<IComponentContent>(
+       => new DelegateColumn<ICplxContent>(
             title,
             format ? ColumnTypeHint.StringFormatable : ColumnTypeHint.StringExact,
             i => i switch
@@ -156,8 +156,8 @@ public static class ConnectivityColumns
                 _ => "",
             });
 
-    public static DelegateColumn<IComponentContent> ConnectionKind()
-        => new DelegateColumn<IComponentContent>(
+    public static DelegateColumn<ICplxContent> ConnectionKind()
+        => new DelegateColumn<ICplxContent>(
             "Kind",
             ColumnTypeHint.StringFormatable,
             i => i switch

@@ -23,7 +23,7 @@ public class TestComponentIterator
 
         var debugTable = new TextTableFile(pinstance)
         {
-            Table = new TableProducer<IComponentContent>()
+            Table = new TableProducer<ICplxContent>()
             {
                 Columns =
                 [

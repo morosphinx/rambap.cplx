@@ -25,7 +25,7 @@ internal static class TestOutputs
         Console.WriteLine("");
         Console.WriteLine($"{instance.PN} / {displayIdentity}");
 
-        void AddDebugInfoTo(TableProducer<IComponentContent> tableProducer)
+        void AddDebugInfoTo(TableProducer<ICplxContent> tableProducer)
         {
             tableProducer.Columns.InsertRange(0,
             [

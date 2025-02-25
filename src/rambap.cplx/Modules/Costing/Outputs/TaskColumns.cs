@@ -8,8 +8,8 @@ namespace rambap.cplx.Modules.Costing.Outputs;
 
 public static class TaskColumns
 {
-    public static DelegateColumn<IComponentContent> TaskName()
-        => new DelegateColumn<IComponentContent>("Task Name", ColumnTypeHint.StringFormatable,
+    public static DelegateColumn<ICplxContent> TaskName()
+        => new DelegateColumn<ICplxContent>("Task Name", ColumnTypeHint.StringFormatable,
             i => i switch
             {
                 IPropertyContent<InstanceTasks.NamedTask> lp => lp.Property.Name,
@@ -19,8 +19,8 @@ public static class TaskColumns
                 _ => throw new NotImplementedException()
             });
 
-    public static DelegateColumn<IComponentContent> TaskCategory()
-        => new DelegateColumn<IComponentContent>("Task Category", ColumnTypeHint.StringFormatable,
+    public static DelegateColumn<ICplxContent> TaskCategory()
+        => new DelegateColumn<ICplxContent>("Task Category", ColumnTypeHint.StringFormatable,
             i => i switch
             {
                 IPropertyContent<InstanceTasks.NamedTask> lp => lp.Property.Category,
@@ -29,8 +29,8 @@ public static class TaskColumns
                 _ => throw new NotImplementedException()
             });
 
-    public static DelegateColumn<IComponentContent> TaskRecurence()
-        => new DelegateColumn<IComponentContent>("R", ColumnTypeHint.StringExact,
+    public static DelegateColumn<ICplxContent> TaskRecurence()
+        => new DelegateColumn<ICplxContent>("R", ColumnTypeHint.StringExact,
             i => i switch
             {
                 IPropertyContent<InstanceTasks.NamedTask> lp => lp.Property.IsRecurent ? "*" : "",
@@ -40,8 +40,8 @@ public static class TaskColumns
                 _ => throw new NotImplementedException()
             });
 
-    public static DelegateColumn<IComponentContent> TaskDuration()
-        => new DelegateColumn<IComponentContent>("Duration", ColumnTypeHint.Numeric,
+    public static DelegateColumn<ICplxContent> TaskDuration()
+        => new DelegateColumn<ICplxContent>("Duration", ColumnTypeHint.Numeric,
             i => i switch
             {
                 IPropertyContent<InstanceTasks.NamedTask> lp => lp.Property.Duration_day.ToString(),
@@ -50,8 +50,8 @@ public static class TaskColumns
                 _ => throw new NotImplementedException()
             });
 
-    public static DelegateColumn<IComponentContent> RecurentTaskUnitDuration()
-        => new DelegateColumn<IComponentContent>("Recurent Unit Duration", ColumnTypeHint.Numeric,
+    public static DelegateColumn<ICplxContent> RecurentTaskUnitDuration()
+        => new DelegateColumn<ICplxContent>("Recurent Unit Duration", ColumnTypeHint.Numeric,
             i => i switch
             {
                 IPropertyContent<InstanceTasks.NamedTask> lp => lp.Property.Duration_day.ToString(),
@@ -60,8 +60,8 @@ public static class TaskColumns
                 _ => throw new NotImplementedException()
             });
 
-    public static DelegateColumn<IComponentContent> TaskCount()
-        => new DelegateColumn<IComponentContent>("Count", ColumnTypeHint.Numeric,
+    public static DelegateColumn<ICplxContent> TaskCount()
+        => new DelegateColumn<ICplxContent>("Count", ColumnTypeHint.Numeric,
             i => i switch
             {
                 IPropertyContent<InstanceTasks.NamedTask> lp =>
@@ -71,8 +71,8 @@ public static class TaskColumns
                 _ => throw new NotImplementedException()
             });
 
-    public static DelegateColumn<IComponentContent> TaskTotalDuration(bool includeNonRecurent)
-        => new DelegateColumn<IComponentContent>("Task Total Duration", ColumnTypeHint.Numeric,
+    public static DelegateColumn<ICplxContent> TaskTotalDuration(bool includeNonRecurent)
+        => new DelegateColumn<ICplxContent>("Task Total Duration", ColumnTypeHint.Numeric,
             i => i switch
             {
                 IPropertyContent<InstanceTasks.NamedTask> lp when lp.Property.IsRecurent =>
@@ -104,7 +104,7 @@ public static class TaskColumns
                 else return "";
             });
 
-    public static IColumn<IComponentContent> LocalRecurentSum()
+    public static IColumn<ICplxContent> LocalRecurentSum()
         => new CommonColumns.ComponentPrettyTreeColumn()
         {
             Title = "RecurentTaskSum",
@@ -120,7 +120,7 @@ public static class TaskColumns
             }
         };
 
-    public static IColumn<IComponentContent> LocalNonRecurentTotal()
+    public static IColumn<ICplxContent> LocalNonRecurentTotal()
         => new CommonColumns.ComponentPrettyTreeColumn()
         {
             Title = "NonRecurentTaskBreakdown",

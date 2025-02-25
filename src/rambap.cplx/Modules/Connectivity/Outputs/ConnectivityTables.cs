@@ -8,8 +8,8 @@ namespace rambap.cplx.Modules.Connectivity.Outputs;
 
 public class ConnectivityTables
 {
-    public static TableProducer<IComponentContent> ConnectionTable(ConnectorIdentity identity)
-        => new TableProducer<IComponentContent>()
+    public static TableProducer<ICplxContent> ConnectionTable(ConnectorIdentity identity)
+        => new TableProducer<ICplxContent>()
         {
             Iterator = new ComponentPropertyIterator<ConnectivityTableContent>()
             {
@@ -18,8 +18,7 @@ public class ConnectivityTables
                 WriteBranches = false,
                 RecursionCondition = (c, l) => true,
             },
-            // ContentTransform = 
-            //     l => l.OfType<IPropertyContent<ConnectivityTableContent>>().Select()
+            ContentTransform = cs => cs.Where(c => c is not IPureComponentContent),
             Columns = [
                     ConnectedComponent(ConnectorSide.Left,identity,"CID", c => c?.CID(" / ") ?? "."),
                     ConnectedPortName(ConnectorSide.Left,identity),
@@ -35,8 +34,8 @@ public class ConnectivityTables
                 ]
         };
 
-    public static TableProducer<IComponentContent> WiringTable()
-        => new TableProducer<IComponentContent>()
+    public static TableProducer<ICplxContent> WiringTable()
+        => new TableProducer<ICplxContent>()
         {
             Iterator = new ComponentPropertyIterator<ConnectivityTableContent>()
             {
@@ -45,7 +44,7 @@ public class ConnectivityTables
                 WriteBranches = false,
                 RecursionCondition = (c,l) => true,
             },
-            ContentTransform = cs => cs.Where(c => c is not LeafComponent),
+            ContentTransform = cs => cs.Where(c => c is not IPureComponentContent),
             Columns = [
                     ConnectedComponent(ConnectorSide.Left,ConnectorIdentity.Topmost,"CN", c => c.CN),
                     ConnectedStructuralEquivalenceTopmostPort(ConnectorSide.Left,"Connector", c => c.Label),
@@ -59,8 +58,8 @@ public class ConnectivityTables
                 ]
         };
 
-    public static TableProducer<IComponentContent> InterfaceControlDocumentTable()
-        => new TableProducer<IComponentContent>()
+    public static TableProducer<ICplxContent> InterfaceControlDocumentTable()
+        => new TableProducer<ICplxContent>()
         {
             Iterator = new ComponentPropertyIterator<ICDTableIterator.ICDTableContentProperty>()
             {

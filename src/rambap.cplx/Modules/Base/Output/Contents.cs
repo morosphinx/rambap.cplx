@@ -4,7 +4,7 @@ using System;
 namespace rambap.cplx.Modules.Base.Output;
 
 /// <summary>
-/// Information about the location in the component tree where a <see cref="ComponentContent"/> was created
+/// Information about the location in the component tree where a <see cref="CplxContent"/> was created
 /// </summary>
 public record RecursionLocation()
 {
@@ -44,7 +44,7 @@ public class LocationBuilder()
     }
 }
 
-public interface IComponentContent
+public interface ICplxContent
 {
     RecursionLocation Location { get; }
     Component Component { get; }
@@ -63,7 +63,7 @@ public interface IComponentContent
 /// <summary>
 /// Content of a Iterated table representing a component or group of component
 /// </summary>
-public abstract class ComponentContent : IComponentContent
+public abstract class CplxContent : ICplxContent
 {
     public RecursionLocation Location { get; init; }
     public Component Component { get; }
@@ -98,18 +98,18 @@ public abstract class ComponentContent : IComponentContent
         return valuesAreCoherent;
     }
 
-    public ComponentContent(RecursionLocation loc, Component comp)
+    public CplxContent(RecursionLocation loc, Component comp)
     {
         Location = loc;
         Component = comp;
     }
-    public ComponentContent(RecursionLocation loc, IEnumerable<Component> allComponents)
+    public CplxContent(RecursionLocation loc, IEnumerable<Component> allComponents)
         : this(allComponents.Select(c => (loc, c))) { }
 
-    public ComponentContent(IEnumerable<(RecursionLocation loc, Component comp)> allComponents)
+    public CplxContent(IEnumerable<(RecursionLocation loc, Component comp)> allComponents)
     {
         if (!allComponents.Any())
-            throw new InvalidOperationException($"{nameof(ComponentContent)} must be created with at least one component");
+            throw new InvalidOperationException($"{nameof(CplxContent)} must be created with at least one component");
         var mainComponent = allComponents.First();
         Location = mainComponent.loc;
         Component = mainComponent.comp;
@@ -142,7 +142,7 @@ public enum LeafCause
 /// <summary>
 /// A content of a component Tree representing a component. Has no child content
 /// </summary>
-public class LeafComponent : ComponentContent, ILeafContent
+public sealed class LeafComponent : CplxContent, IPureComponentContent, ILeafContent
 {
     public LeafComponent(RecursionLocation loc, Component comp)
         : base(loc, comp)
@@ -162,7 +162,7 @@ public class LeafComponent : ComponentContent, ILeafContent
 /// <summary>
 /// A content of a component Tree representing a component. Has descendants, either <see cref="LeafComponent"/> or <see cref="IPropertyContent"/>
 /// </summary>
-public class BranchComponent : ComponentContent
+public sealed class BranchComponent : CplxContent, IPureComponentContent, IBranchContent
 {
     public BranchComponent(RecursionLocation loc, Component comp)
     : base(loc, comp)
@@ -177,44 +177,49 @@ public class BranchComponent : ComponentContent
     { }
 }
 
-public class LeafComponentWithProperty<T> : LeafComponent, IPropertyContent<T>, ILeafContent
+public sealed class LeafProperty<T> : CplxContent, IPropertyContent<T>, ILeafContent
 {
-    public LeafComponentWithProperty(RecursionLocation loc, Component comp)
+    public LeafProperty(RecursionLocation loc, Component comp)
         : base(loc, comp)
     { }
 
-    public LeafComponentWithProperty(RecursionLocation loc, IEnumerable<Component> allComponents)
+    public LeafProperty(RecursionLocation loc, IEnumerable<Component> allComponents)
         : base(loc, allComponents)
     { }
 
-    public LeafComponentWithProperty(IEnumerable<(RecursionLocation loc, Component comp)> allComponents)
+    public LeafProperty(IEnumerable<(RecursionLocation loc, Component comp)> allComponents)
+        : base(allComponents)
+    { }
+
+    public required T Property { get; init; }
+    public required LeafCause IsLeafBecause { get; init; }
+}
+
+public sealed class BranchProperty<T> : CplxContent, IPropertyContent<T>, IBranchContent
+{
+    public BranchProperty(RecursionLocation loc, Component comp)
+        : base(loc, comp)
+    { }
+
+    public BranchProperty(RecursionLocation loc, IEnumerable<Component> allComponents)
+        : base(loc, allComponents)
+    { }
+
+    public BranchProperty(IEnumerable<(RecursionLocation loc, Component comp)> allComponents)
         : base(allComponents)
     { }
 
     public required T Property { get; init; }
 }
 
-public class BranchComponentWithProperty<T> : BranchComponent, IPropertyContent<T>
+public interface IPureComponentContent : ICplxContent
 {
-    public BranchComponentWithProperty(RecursionLocation loc, Component comp)
-        : base(loc, comp)
-    { }
-
-    public BranchComponentWithProperty(RecursionLocation loc, IEnumerable<Component> allComponents)
-        : base(loc, allComponents)
-    { }
-
-    public BranchComponentWithProperty(IEnumerable<(RecursionLocation loc, Component comp)> allComponents)
-        : base(allComponents)
-    { }
-
-    public required T Property { get; init; }
 }
 
 /// <summary>
 /// A content of a component Tree representing a property of a component.
 /// </summary>
-public interface IPropertyContent<out T> : IComponentContent
+public interface IPropertyContent<out T> : ICplxContent
 {
     /// <summary>
     /// Property value. Is owned by the Component
@@ -223,11 +228,11 @@ public interface IPropertyContent<out T> : IComponentContent
 
 }
 
-public interface ILeafContent : IComponentContent
+public interface ILeafContent : ICplxContent
 {
     LeafCause IsLeafBecause { get; }
 }
 
-public interface IBranchContent : IComponentContent
+public interface IBranchContent : ICplxContent
 {
 }

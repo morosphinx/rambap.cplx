@@ -32,7 +32,7 @@ public static class CostTables
     /// </summary>
     /// <param name="recurse">If true, the entire component tree is returned. <br/>
     /// If false, only the immediate components are returned.</param>
-    public static TableProducer<IComponentContent> BillOfMaterial(bool recurse = true)
+    public static TableProducer<ICplxContent> BillOfMaterial(bool recurse = true)
         => new()
         {
             Iterator = new PartTypesIterator<InstanceCost.NativeCostInfo>()
@@ -55,7 +55,7 @@ public static class CostTables
     /// <summary>
     /// Table detailing the amount and duration of each individual Cost of the instance.
     /// </summary>
-    public static TableProducer<IComponentContent> CostBreakdown()
+    public static TableProducer<ICplxContent> CostBreakdown()
         => new()
         {
             Iterator = new ComponentPropertyIterator<InstanceCost.NativeCostInfo>()

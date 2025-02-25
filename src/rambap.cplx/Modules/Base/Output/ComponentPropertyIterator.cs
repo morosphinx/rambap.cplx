@@ -11,21 +11,21 @@ public class ComponentPropertyIterator<T> : ComponentIterator
         public required IEnumerable<Component> Components { get; init; }
         public required T Property { get; init; }
 
-        public IEnumerable<IComponentContent> GetRecursionBreakContent()
+        public IEnumerable<ICplxContent> GetRecursionBreakContent()
         {
-            yield return new LeafComponentWithProperty<T>(Location, Components)
+            yield return new LeafProperty<T>(Location, Components)
             {
                 Property = Property,
                 IsLeafBecause = LeafCause.RecursionBreak
             };
         }
 
-        public IEnumerable<IComponentContent> GetRecursionContinueContent(List<IIterationItem> subItems)
+        public IEnumerable<ICplxContent> GetRecursionContinueContent(List<IIterationItem> subItems)
         {
             bool isLeafDueToNoChild = subItems.Count() == 0; ;
             if (isLeafDueToNoChild)
             {
-                yield return new LeafComponentWithProperty<T>(Location, Components)
+                yield return new LeafProperty<T>(Location, Components)
                 {
                     Property = Property,
                     IsLeafBecause = LeafCause.NoChild
@@ -33,7 +33,7 @@ public class ComponentPropertyIterator<T> : ComponentIterator
             }
             else
             {
-                yield return new BranchComponentWithProperty<T>(Location, Components)
+                yield return new BranchProperty<T>(Location, Components)
                 {
                     Property = Property,
                 };
@@ -47,24 +47,24 @@ public class ComponentPropertyIterator<T> : ComponentIterator
         public required IEnumerable<Component> Components { get; init; }
         public required T Property { get; init; }
 
-        public IEnumerable<IComponentContent> GetRecursionBreakContent()
+        public IEnumerable<ICplxContent> GetRecursionBreakContent()
         {
             yield return new LeafComponent(Location, Components) { IsLeafBecause = LeafCause.RecursionBreak };
         }
 
-        public IEnumerable<IComponentContent> GetRecursionContinueContent(List<IIterationItem> subItems)
+        public IEnumerable<ICplxContent> GetRecursionContinueContent(List<IIterationItem> subItems)
         {
             bool isLeafDueToNoChild = subItems.Count() == 0; ;
             if (isLeafDueToNoChild)
             {
-                yield return new LeafComponentWithProperty<T>(Location, Components)
+                yield return new LeafProperty<T>(Location, Components)
                 {
                     Property = Property,
                     IsLeafBecause = LeafCause.SingleStackedPropertyChild
                 };
             } else
             {
-                yield return new BranchComponentWithProperty<T>(Location, Components)
+                yield return new BranchProperty<T>(Location, Components)
                 {
                     Property = Property,
                 };

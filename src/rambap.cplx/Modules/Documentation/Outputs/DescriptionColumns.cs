@@ -6,14 +6,14 @@ namespace rambap.cplx.Modules.Documentation.Outputs;
 
 public static class DescriptionColumns
 {
-    public static DelegateColumn<IComponentContent> PartDescription(bool allLines = false) =>
-        new DelegateColumn<IComponentContent>("Part Description", ColumnTypeHint.StringFormatable,
+    public static DelegateColumn<ICplxContent> PartDescription(bool allLines = false) =>
+        new DelegateColumn<ICplxContent>("Part Description", ColumnTypeHint.StringFormatable,
             i => allLines
                 ? i.Component.Instance.Documentation()?.GetAllLineDescription() ?? ""
                 : i.Component.Instance.Documentation()?.GetSingleLineDescription() ?? "");
 
-    public static DelegateColumn<IComponentContent> PartCommonName(bool hideIfEqualPN =false) =>
-        new DelegateColumn<IComponentContent>("Part Common Name", ColumnTypeHint.StringFormatable,
+    public static DelegateColumn<ICplxContent> PartCommonName(bool hideIfEqualPN =false) =>
+        new DelegateColumn<ICplxContent>("Part Common Name", ColumnTypeHint.StringFormatable,
             i =>
             {
                 var instance = i.Component.Instance;
@@ -22,8 +22,8 @@ public static class DescriptionColumns
                 else return instance.CommonName;
             });
 
-    public static DelegateColumn<IComponentContent> PartLink() =>
-        new DelegateColumn<IComponentContent>("Link", ColumnTypeHint.StringExact,
+    public static DelegateColumn<ICplxContent> PartLink() =>
+        new DelegateColumn<ICplxContent>("Link", ColumnTypeHint.StringExact,
             i => i.Component.Instance.Documentation()?.Links.FirstOrDefault()?.Text ?? "");
 }
 

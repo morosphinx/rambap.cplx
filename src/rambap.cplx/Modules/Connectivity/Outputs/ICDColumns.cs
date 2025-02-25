@@ -8,8 +8,8 @@ public static class ICDColumns
 {
     // Port names are displayed as exact strings, no formating
 
-    public static DelegateColumn<IComponentContent> TopMostPortPart()
-    => new DelegateColumn<IComponentContent>(
+    public static DelegateColumn<ICplxContent> TopMostPortPart()
+    => new DelegateColumn<ICplxContent>(
         "Part",
         ColumnTypeHint.StringExact,
         i => i switch
@@ -20,8 +20,8 @@ public static class ICDColumns
             _ => throw new NotImplementedException(),
         });
 
-    public static DelegateColumn<IComponentContent> TopMostPortName()
-        => new DelegateColumn<IComponentContent>(
+    public static DelegateColumn<ICplxContent> TopMostPortName()
+        => new DelegateColumn<ICplxContent>(
             "TopMostPort",
             ColumnTypeHint.StringExact,
             i => i switch
@@ -32,8 +32,8 @@ public static class ICDColumns
                 _ => throw new NotImplementedException(),
             });
 
-    public static DelegateColumn<IComponentContent> MostRelevantPortName()
-        => new DelegateColumn<IComponentContent>(
+    public static DelegateColumn<ICplxContent> MostRelevantPortName()
+        => new DelegateColumn<ICplxContent>(
             "PortEXP",
             ColumnTypeHint.StringExact,
             i => i switch
@@ -44,8 +44,8 @@ public static class ICDColumns
                 _ => throw new NotImplementedException(),
             });
 
-    public static DelegateColumn<IComponentContent> MostRelevantPortName_Regard()
-        => new DelegateColumn<IComponentContent>(
+    public static DelegateColumn<ICplxContent> MostRelevantPortName_Regard()
+        => new DelegateColumn<ICplxContent>(
             "ColEXP",
             ColumnTypeHint.StringExact,
             i => i switch
@@ -56,8 +56,8 @@ public static class ICDColumns
                 _ => throw new NotImplementedException(),
             });
 
-    public static DelegateColumn<IComponentContent> SelfPortName()
-        => new DelegateColumn<IComponentContent>(
+    public static DelegateColumn<ICplxContent> SelfPortName()
+        => new DelegateColumn<ICplxContent>(
             "PortSelf",
             ColumnTypeHint.StringExact,
             i => i switch

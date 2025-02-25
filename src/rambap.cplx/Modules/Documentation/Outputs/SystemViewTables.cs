@@ -5,7 +5,7 @@ namespace rambap.cplx.Modules.Documentation.Outputs;
 
 public static class SystemViewTables
 {
-    public static TableProducer<IComponentContent> ComponentTree_Detailled()
+    public static TableProducer<ICplxContent> ComponentTree_Detailled()
         => new()
         {
             Iterator = new ComponentIterator(),
@@ -17,7 +17,7 @@ public static class SystemViewTables
             ],
         };
 
-    public static TableProducer<IComponentContent> ComponentTree_Stacked()
+    public static TableProducer<ICplxContent> ComponentTree_Stacked()
        => new()
        {
            Iterator = new ComponentIterator()
@@ -33,7 +33,7 @@ public static class SystemViewTables
            ],
        };
 
-    public static TableProducer<IComponentContent> ComponentInventory()
+    public static TableProducer<ICplxContent> ComponentInventory()
         => new()
         {
             Iterator = new PartTypesIterator<object>()

@@ -8,11 +8,11 @@ internal static class TestColumn_Support
 {
     public static void TestDecimalColumn_SumCoherence<T>(
         Pinstance pinstance,
-        IIterator<IComponentContent> iterator,
+        IIterator<ICplxContent> iterator,
         decimal expectedTotal,
-        IColumn<IComponentContent> testedColumn,
+        IColumn<ICplxContent> testedColumn,
         Func<IPropertyContent<T>, string> propertyNaming,
-        IEnumerable<IColumn<IComponentContent>> debugDataColumns)
+        IEnumerable<IColumn<ICplxContent>> debugDataColumns)
     {
         var res = iterator.MakeContent(pinstance);
         var values = res.Select(testedColumn.CellFor);
@@ -21,7 +21,7 @@ internal static class TestColumn_Support
         // Write table in console for debug
         var debugTable = new TextTableFile(pinstance)
         {
-            Table = new TableProducer<IComponentContent>()
+            Table = new TableProducer<ICplxContent>()
             {
                 Columns =
                 [
@@ -46,7 +46,7 @@ internal static class TestColumn_Support
     public static void TestDecimalColumn_SelfTotal(
         Pinstance pinstance,
         decimal expectedTotal,
-        IColumn<IComponentContent> testedColumn)
+        IColumn<ICplxContent> testedColumn)
     {
         var columnTotal = Convert.ToDecimal(testedColumn.TotalFor(pinstance));
         Assert.AreEqual(expectedTotal, columnTotal, $"Incoherent column autocalculated sum");

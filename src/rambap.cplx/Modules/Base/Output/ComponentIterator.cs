@@ -8,9 +8,9 @@ namespace rambap.cplx.Modules.Base.Output;
 
 /// <summary>
 /// Produce an IEnumerable iterating over the component tree of an instance, and its properties <br/>
-/// Output is structured like a tree of <see cref="ComponentContent"/>. <br/>
+/// Output is structured like a tree of <see cref="CplxContent"/>. <br/>
 /// </summary>
-public class ComponentIterator : IIterator<IComponentContent>
+public class ComponentIterator : IIterator<ICplxContent>
 {
     /// <summary>
     /// If False, each subcomponent produce its own content.
@@ -30,8 +30,8 @@ public class ComponentIterator : IIterator<IComponentContent>
     protected interface IIterationItem
     {
         RecursionLocation Location { get; }
-        abstract IEnumerable<IComponentContent> GetRecursionBreakContent();
-        abstract IEnumerable<IComponentContent> GetRecursionContinueContent(List<IIterationItem> subItems);
+        abstract IEnumerable<ICplxContent> GetRecursionBreakContent();
+        abstract IEnumerable<ICplxContent> GetRecursionContinueContent(List<IIterationItem> subItems);
     }
 
     protected interface IIterationItem_ComponentGroup : IIterationItem
@@ -47,12 +47,12 @@ public class ComponentIterator : IIterator<IComponentContent>
         public Component MainComponent => Components.First();
         public required IEnumerable<Component> Components{ get; init; }
 
-        public IEnumerable<IComponentContent> GetRecursionBreakContent()
+        public IEnumerable<ICplxContent> GetRecursionBreakContent()
         {
             yield return new LeafComponent(Location, Components) {IsLeafBecause = LeafCause.RecursionBreak };
         }
 
-        public IEnumerable<IComponentContent> GetRecursionContinueContent(List<IIterationItem> subItems)
+        public IEnumerable<ICplxContent> GetRecursionContinueContent(List<IIterationItem> subItems)
         {
             bool isLeafDueToNoChild = subItems.Count() == 0; ;
             if (isLeafDueToNoChild)
@@ -126,11 +126,11 @@ public class ComponentIterator : IIterator<IComponentContent>
         }
     }
 
-    public IEnumerable<IComponentContent> MakeContent(Pinstance instance)
+    public IEnumerable<ICplxContent> MakeContent(Pinstance instance)
     {
         // Generate the contents and subcontent for the group of components
         // The group of components must all be of same PN at the same location
-        IEnumerable<IComponentContent> Recurse(IIterationItem currentItem, bool tagLevelEnd)
+        IEnumerable<ICplxContent> Recurse(IIterationItem currentItem, bool tagLevelEnd)
         {            
             bool mayRecursePastThis = ShouldRecurse(currentItem);
             bool isLeafDueToRecursionBreak = !mayRecursePastThis;

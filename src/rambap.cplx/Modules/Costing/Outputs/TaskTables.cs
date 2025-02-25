@@ -9,7 +9,7 @@ namespace rambap.cplx.Modules.Costing.Outputs
         /// <summary>
         /// Table listing the amount and duration of all tasks kind in the instance
         /// </summary>
-        public static TableProducer<IComponentContent> BillOfTasks()
+        public static TableProducer<ICplxContent> BillOfTasks()
         => new()
         {
             Iterator = new PartTypesIterator<InstanceTasks.NamedTask>()
@@ -44,7 +44,7 @@ namespace rambap.cplx.Modules.Costing.Outputs
         /// <summary>
         /// Table detailing the amount and duration of each individual Recurent Task. <br/>
         /// </summary>
-        public static TableProducer<IComponentContent> TaskBreakdown()
+        public static TableProducer<ICplxContent> TaskBreakdown()
             => new()
             {
                 Iterator = new ComponentPropertyIterator<InstanceTasks.NamedTask>()

@@ -7,8 +7,8 @@ public static class CostColumns
 {
     private static string CostToString(this decimal cost) => cost.ToString("0.00");
 
-    public static DelegateColumn<IComponentContent> TotalCost() =>
-        new DelegateColumn<IComponentContent>("Total Cost", ColumnTypeHint.Numeric,
+    public static DelegateColumn<ICplxContent> TotalCost() =>
+        new DelegateColumn<ICplxContent>("Total Cost", ColumnTypeHint.Numeric,
             i => i switch
             {
                 IPropertyContent<InstanceCost.NativeCostInfo> lp =>( lp.Property.value.Price * lp.ComponentTotalCount).CostToString(),
@@ -19,8 +19,8 @@ public static class CostColumns
             },
             i => i.Cost()?.Total.ToString("0.00"));
 
-    public static DelegateColumn<IComponentContent> CostName(bool displayBranches = false)
-        => new DelegateColumn<IComponentContent>("Cost Name", ColumnTypeHint.StringFormatable,
+    public static DelegateColumn<ICplxContent> CostName(bool displayBranches = false)
+        => new DelegateColumn<ICplxContent>("Cost Name", ColumnTypeHint.StringFormatable,
             i => i switch
             {
                 IPropertyContent<InstanceCost.NativeCostInfo> lp => lp.Property.name,
@@ -30,8 +30,8 @@ public static class CostColumns
                 _ => throw new NotImplementedException(),
             });
 
-    public static DelegateColumn<IComponentContent> UnitCost(bool displayBranches = false)
-        => new DelegateColumn<IComponentContent>("Unit Cost", ColumnTypeHint.Numeric,
+    public static DelegateColumn<ICplxContent> UnitCost(bool displayBranches = false)
+        => new DelegateColumn<ICplxContent>("Unit Cost", ColumnTypeHint.Numeric,
             i => i switch
             {
                 IPropertyContent<InstanceCost.NativeCostInfo> lp => lp.Property.value.Price.CostToString(),
@@ -47,7 +47,7 @@ public static class CostColumns
                 _ => throw new NotImplementedException(),
             });
 
-    public static IColumn<IComponentContent> LocalSumCost()
+    public static IColumn<ICplxContent> LocalSumCost()
         => new CommonColumns.ComponentPrettyTreeColumn()
         {
             Title = "SumCost",

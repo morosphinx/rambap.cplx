@@ -8,7 +8,7 @@ namespace rambap.cplx.Modules.Base.Output;
 /// Produce an IEnumerable iterating over parts used as subcomponents of an instance, and properties of those parts. <br/>
 /// Output is structured like a list of <see cref="PartContent"/>.
 /// </summary>
-public class PartTypesIterator<T> : IIterator<IComponentContent>
+public class PartTypesIterator<T> : IIterator<ICplxContent>
 {
 
     public bool WriteBranches { get; init; } = true;
@@ -27,14 +27,14 @@ public class PartTypesIterator<T> : IIterator<IComponentContent>
     private bool IsAPropertyTable => PropertyIterator != null;
 
     /// <summary>
-    /// Two componentcontent with the same <see cref="ComponentTemplateUnicityIdentifier"/> should be assumed
+    /// Two <see cref="CplxContent"/> with the same <see cref="ComponentTemplateUnicityIdentifier"/> should be assumed
     /// to have the same template part <br/>
-    /// We test the the Type of <see cref="ComponentContent"/> to avoid mixing leaf and branch contents.
+    /// We test the the Type of <see cref="CplxContent"/> to avoid mixing leaf and branch contents.
     /// </summary>
-    static (Type, string, Type) ComponentTemplateUnicityIdentifier(IComponentContent c)
+    static (Type, string, Type) ComponentTemplateUnicityIdentifier(ICplxContent c)
         => (c.Component.Instance.PartType, c.Component.Instance.PN, c.GetType());
 
-    public IEnumerable<IComponentContent> MakeContent(Pinstance instance)
+    public IEnumerable<ICplxContent> MakeContent(Pinstance instance)
     {
         // Produce a tree table of All Components, stopping on recursing condition.
         var ComponentTable = new ComponentIterator()
@@ -76,7 +76,7 @@ public class PartTypesIterator<T> : IIterator<IComponentContent>
                         if (WriteBranches)
                             yield return new BranchComponent(componentGroup);
                         foreach (var prop in properties)
-                            yield return new LeafComponentWithProperty<T>(componentGroup) { Property = prop, IsLeafBecause = LeafCause.NoChild };
+                            yield return new LeafProperty<T>(componentGroup) { Property = prop, IsLeafBecause = LeafCause.NoChild };
                     } else
                     {
                         // art have no property item child

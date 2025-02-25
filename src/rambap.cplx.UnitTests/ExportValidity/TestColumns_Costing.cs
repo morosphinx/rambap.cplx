@@ -12,13 +12,13 @@ public class TestColumn_Costs : TestColumn_ExtensiveProperty<Cost, InstanceCost.
     protected override IEnumerable<InstanceCost.NativeCostInfo> PropertyIterator(Component component)
         => component.Instance.Cost()?.NativeCosts ?? [];
 
-    protected override IColumn<IComponentContent> GetTestedColumn()
+    protected override IColumn<ICplxContent> GetTestedColumn()
         => CostColumns.TotalCost();
 
     protected override string PropertyNaming(IPropertyContent<InstanceCost.NativeCostInfo> instanceProperty)
         => instanceProperty.Property.name;
 
-    protected override IEnumerable<IColumn<IComponentContent>> GetDebugColumns()
+    protected override IEnumerable<IColumn<ICplxContent>> GetDebugColumns()
         => [
                 CostColumns.CostName(),
                 CostColumns.UnitCost(),
@@ -31,13 +31,13 @@ public class TestColumn_NonRecurentTask : TestColumn_ExtensiveProperty<Recurrent
     protected override IEnumerable<InstanceTasks.NamedTask> PropertyIterator(Component component)
         => component.Instance.Tasks()?.RecurentTasks ?? [];
 
-    protected override IColumn<IComponentContent> GetTestedColumn()
+    protected override IColumn<ICplxContent> GetTestedColumn()
         => TaskColumns.TaskTotalDuration(false);
 
     protected override string PropertyNaming(IPropertyContent<InstanceTasks.NamedTask> instanceProperty)
         => instanceProperty.Property.Name;
 
-    protected override IEnumerable<IColumn<IComponentContent>> GetDebugColumns()
+    protected override IEnumerable<IColumn<ICplxContent>> GetDebugColumns()
         => [
                 TaskColumns.TaskName(),
                 TaskColumns.TaskCategory(),
