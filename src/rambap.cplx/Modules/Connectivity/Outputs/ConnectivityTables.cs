@@ -42,8 +42,10 @@ public class ConnectivityTables
             {
                 PropertyIterator = c => ConnectivityTableIterator.MakeConnectivityTableContent(
                     c, ConnectivityTableIterator.ConnectionKind.Wiring),
-                RecursionCondition = (c,l) => false,
+                WriteBranches = false,
+                RecursionCondition = (c,l) => true,
             },
+            ContentTransform = cs => cs.Where(c => c is not LeafComponent),
             Columns = [
                     ConnectedComponent(ConnectorSide.Left,ConnectorIdentity.Topmost,"CN", c => c.CN),
                     ConnectedStructuralEquivalenceTopmostPort(ConnectorSide.Left,"Connector", c => c.Label),

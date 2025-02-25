@@ -4,7 +4,7 @@ namespace rambap.cplx.Modules.Base.Output;
 
 public class ComponentPropertyIterator<T> : ComponentIterator
 {
-    protected sealed class SubComponentGroupWithProperty : IterationSubChild
+    protected sealed class IterationItem_Property : IIterationItem
     {
         public required RecursionLocation Location { get; init; }
 
@@ -20,7 +20,7 @@ public class ComponentPropertyIterator<T> : ComponentIterator
             };
         }
 
-        public IEnumerable<IComponentContent> GetRecursionContinueContent(List<IterationSubChild> subItems)
+        public IEnumerable<IComponentContent> GetRecursionContinueContent(List<IIterationItem> subItems)
         {
             bool isLeafDueToNoChild = subItems.Count() == 0; ;
             if (isLeafDueToNoChild)
@@ -41,7 +41,7 @@ public class ComponentPropertyIterator<T> : ComponentIterator
         }
     }
 
-    protected sealed class SubComponentGroupWithSingleProperty : ComponentIterationSubChild
+    protected sealed class IterationItem_GroupWithSingleProperty : IIterationItem_ComponentGroup
     {
         public required RecursionLocation Location { get; init; }
         public required IEnumerable<Component> Components { get; init; }
@@ -52,7 +52,7 @@ public class ComponentPropertyIterator<T> : ComponentIterator
             yield return new LeafComponent(Location, Components) { IsLeafBecause = LeafCause.RecursionBreak };
         }
 
-        public IEnumerable<IComponentContent> GetRecursionContinueContent(List<IterationSubChild> subItems)
+        public IEnumerable<IComponentContent> GetRecursionContinueContent(List<IIterationItem> subItems)
         {
             bool isLeafDueToNoChild = subItems.Count() == 0; ;
             if (isLeafDueToNoChild)
@@ -71,6 +71,11 @@ public class ComponentPropertyIterator<T> : ComponentIterator
             }
         }
     }
+    protected sealed class IterationItem_GroupWithPrecomputedProperties : IterationItem_ComponentGroup
+    {
+        public required List<T> Properties { get; init; }
+    }
+
 
     /// <summary>
     /// Define a final level of iteration on of components
@@ -82,22 +87,25 @@ public class ComponentPropertyIterator<T> : ComponentIterator
 
     public Func<T, IEnumerable<T>>? PropertySubIterator { private get; init; }
 
-    protected override IEnumerable<IterationSubChild> GetChilds(IterationSubChild iterationTarget, LocationBuilder loc)
+    protected override IEnumerable<IIterationItem> GetChilds(IIterationItem iterationTarget, LocationBuilder loc)
     {
-        if (iterationTarget is SubComponentGroup group)
+        if (iterationTarget is IterationItem_ComponentGroup group)
         {
-            // Properties of Components
             var localCN = group.MainComponent.CN;
             var localMultiplicity = group.Components.Count();
             var mainComponent = group.MainComponent;
 
-            var propertiesContents = PropertyIterator(mainComponent);
+            // Properties of Components may have been precomputed by parent
+            var propertiesContents = group switch
+            {
+                IterationItem_GroupWithPrecomputedProperties p => p.Properties,
+                _ => PropertyIterator(mainComponent).ToList(),
+            };
 
             foreach (var prop in propertiesContents)
             {
                 var propLocation = loc.GetNextSubItem();
-
-                yield return new SubComponentGroupWithProperty()
+                yield return new IterationItem_Property()
                 {
                     Components = group.Components,
                     Location = propLocation,
@@ -108,48 +116,50 @@ public class ComponentPropertyIterator<T> : ComponentIterator
             // Components, same as parent except that it can return a SubComponentGroupWithSingleProperty
             // in some specific cases
             // prepare subcomponents contents. Group them by same PartType & PN if configured :
-            var subcomponentContents = GroupComponents(group);
+            var subcomponentContents = GetSubcomponentsAsGroup(group);
             foreach (var subgroup in subcomponentContents)
             {
-                var subItemLocation = loc.GetNextSubItem(localCN, localMultiplicity);
+                var subLocation = loc.GetNextSubItem(localCN, localMultiplicity);
 
-                var subgroupMainComponent = subgroup.First();
-                var properties = PropertyIterator(subgroupMainComponent);
+                var subMainComponent = subgroup.First();
+                var subproperties = PropertyIterator(subMainComponent).ToList();
 
-                if(StackPropertiesSingleChildBranches 
-                    && properties.Count() == 1 // Only a single property
-                    && subgroupMainComponent.Instance.Components.Count() == 0) // No other child
+                if (StackPropertiesSingleChildBranches
+                    && subproperties.Count == 1 // Only a single property
+                    && !subMainComponent.Instance.Components.Any()) // No other child
                 {
                     // If this would only have a single property as a child, return
                     // A special item that will compact both the component and the property on a single line
-                    var item = new SubComponentGroupWithSingleProperty()
+                    var item = new IterationItem_GroupWithSingleProperty()
                     {
-                        Location = subItemLocation,
+                        Location = subLocation,
                         Components = subgroup,
-                        Property = properties.Single()
+                        Property = subproperties.Single()
                     };
                     yield return item;
 
-                } else
+                }
+                else
                 {
-                    var item = new SubComponentGroup()
+                    var item = new IterationItem_GroupWithPrecomputedProperties()
                     {
-                        Location = subItemLocation,
+                        Location = subLocation,
                         Components = subgroup,
-                        WriteComponentBranches = WriteBranches
+                        WriteComponentBranches = WriteBranches,
+                        Properties = subproperties,
                     };
                     yield return item;
                 }
             }
         }
-        else if(iterationTarget is SubComponentGroupWithSingleProperty soloSubPropItem
+        else if(iterationTarget is IterationItem_GroupWithSingleProperty soloSubPropItem
             && PropertySubIterator != null)
         {
             var properties = PropertySubIterator(soloSubPropItem.Property);
             foreach(var prop in properties)
             {
                 var propLocation = loc.GetNextSubItem();
-                yield return new SubComponentGroupWithProperty()
+                yield return new IterationItem_Property()
                 {
                     Components = soloSubPropItem.Components,
                     Location = propLocation,
@@ -157,14 +167,14 @@ public class ComponentPropertyIterator<T> : ComponentIterator
                 };
             }
         }
-        else if(iterationTarget is SubComponentGroupWithProperty propItem
+        else if(iterationTarget is IterationItem_Property propItem
             && PropertySubIterator != null)
         {
             var properties = PropertySubIterator(propItem.Property);
             foreach (var prop in properties)
             {
                 var propLocation = loc.GetNextSubItem();
-                yield return new SubComponentGroupWithProperty()
+                yield return new IterationItem_Property()
                 {
                     Components = propItem.Components,
                     Location = propLocation,

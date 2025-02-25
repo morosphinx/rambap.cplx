@@ -226,5 +226,8 @@ public interface IPropertyContent<out T> : IComponentContent
 public interface ILeafContent : IComponentContent
 {
     LeafCause IsLeafBecause { get; }
+}
 
+public interface IBranchContent : IComponentContent
+{
 }

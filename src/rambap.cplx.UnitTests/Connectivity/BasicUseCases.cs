@@ -81,7 +81,7 @@ public class BasicUseCases
     }
 
     [TestMethod]
-    public void SimpleCable() => TestOutputs.WriteConnection<LoopbackConnectorPart>();
+    public void SimpleCable() => TestOutputs.WriteConnection<SimpleCablePart>();
     class SimpleCablePart : Part, IPartConnectable
     {
         public ConnectablePort J01 => C01.MateFace;

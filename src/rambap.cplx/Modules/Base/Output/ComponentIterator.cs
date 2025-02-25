@@ -27,19 +27,19 @@ public class ComponentIterator : IIterator<IComponentContent>
     /// </summary>
     public Func<Component, RecursionLocation, bool>? RecursionCondition { private get; init; }
 
-    protected interface IterationSubChild
+    protected interface IIterationItem
     {
         RecursionLocation Location { get; }
         abstract IEnumerable<IComponentContent> GetRecursionBreakContent();
-        abstract IEnumerable<IComponentContent> GetRecursionContinueContent(List<IterationSubChild> subItems);
+        abstract IEnumerable<IComponentContent> GetRecursionContinueContent(List<IIterationItem> subItems);
     }
 
-    protected interface ComponentIterationSubChild : IterationSubChild
+    protected interface IIterationItem_ComponentGroup : IIterationItem
     {
         IEnumerable<Component> Components { get; }
     }
 
-    protected sealed class SubComponentGroup : ComponentIterationSubChild
+    protected class IterationItem_ComponentGroup : IIterationItem_ComponentGroup
     {
         public required RecursionLocation Location { get; init; }
         public required bool WriteComponentBranches { get ; init; }
@@ -52,7 +52,7 @@ public class ComponentIterator : IIterator<IComponentContent>
             yield return new LeafComponent(Location, Components) {IsLeafBecause = LeafCause.RecursionBreak };
         }
 
-        public IEnumerable<IComponentContent> GetRecursionContinueContent(List<IterationSubChild> subItems)
+        public IEnumerable<IComponentContent> GetRecursionContinueContent(List<IIterationItem> subItems)
         {
             bool isLeafDueToNoChild = subItems.Count() == 0; ;
             if (isLeafDueToNoChild)
@@ -69,9 +69,9 @@ public class ComponentIterator : IIterator<IComponentContent>
     }
 
 
-    protected virtual bool ShouldRecurse(IterationSubChild iterationTarget)
+    protected virtual bool ShouldRecurse(IIterationItem iterationTarget)
     {
-        if (iterationTarget is SubComponentGroup group)
+        if (iterationTarget is IterationItem_ComponentGroup group)
         {
             var mainComponent = group.MainComponent;
             var location = group.Location;
@@ -93,7 +93,7 @@ public class ComponentIterator : IIterator<IComponentContent>
         }
     }
 
-    protected IEnumerable<IEnumerable<Component>> GroupComponents(ComponentIterationSubChild group)
+    protected IEnumerable<IEnumerable<Component>> GetSubcomponentsAsGroup(IIterationItem_ComponentGroup group)
     {
         var subcomponents = group.Components.First().Instance.Components;
         var subcomponentContents = GroupPNsAtSameLocation switch
@@ -103,19 +103,19 @@ public class ComponentIterator : IIterator<IComponentContent>
         };
         return subcomponentContents;
     }
-    protected virtual IEnumerable<IterationSubChild> GetChilds(IterationSubChild iterationTarget, LocationBuilder loc)
+    protected virtual IEnumerable<IIterationItem> GetChilds(IIterationItem iterationTarget, LocationBuilder loc)
     {
-        if (iterationTarget is SubComponentGroup group)
+        if (iterationTarget is IterationItem_ComponentGroup group)
         {
             var localCN = group.MainComponent.CN;
             var localMultiplicity = group.Components.Count();
             // prepare subcomponents contents. Group them by same PartType & PN if configured :
-            var subcomponentContents = GroupComponents(group);
+            var subcomponentContents = GetSubcomponentsAsGroup(group);
             foreach (var i in subcomponentContents)
             {
                 var subItemLocation = loc.GetNextSubItem(localCN, localMultiplicity);
 
-                var item =  new SubComponentGroup()
+                var item =  new IterationItem_ComponentGroup()
                 {
                     Location  = subItemLocation,
                     Components = i ,
@@ -130,7 +130,7 @@ public class ComponentIterator : IIterator<IComponentContent>
     {
         // Generate the contents and subcontent for the group of components
         // The group of components must all be of same PN at the same location
-        IEnumerable<IComponentContent> Recurse(IterationSubChild currentItem, bool tagLevelEnd)
+        IEnumerable<IComponentContent> Recurse(IIterationItem currentItem, bool tagLevelEnd)
         {            
             bool mayRecursePastThis = ShouldRecurse(currentItem);
             bool isLeafDueToRecursionBreak = !mayRecursePastThis;
@@ -198,7 +198,7 @@ public class ComponentIterator : IIterator<IComponentContent>
             LocalItemIndex = 0,
             LocalItemCount = 1,
         };
-        SubComponentGroup rootItem = new()
+        IterationItem_ComponentGroup rootItem = new()
         {
             Components = [rootComponent],
             Location = rootLocation,
