@@ -14,8 +14,7 @@ public static class TaskColumns
             {
                 IPropertyContent<InstanceTasks.NamedTask> lp => lp.Property.Name,
                 LeafComponent lc when lc.IsLeafBecause == LeafCause.RecursionBreak => "unit",
-                LeafComponent lc when lc.IsLeafBecause != LeafCause.RecursionBreak => "",
-                BranchComponent bc => "",
+                IPureComponentContent => "",
                 _ => throw new NotImplementedException()
             });
 
@@ -24,8 +23,7 @@ public static class TaskColumns
             i => i switch
             {
                 IPropertyContent<InstanceTasks.NamedTask> lp => lp.Property.Category,
-                LeafComponent lc => "",
-                BranchComponent bc => "",
+                IPureComponentContent c => "",
                 _ => throw new NotImplementedException()
             });
 
@@ -45,8 +43,7 @@ public static class TaskColumns
             i => i switch
             {
                 IPropertyContent<InstanceTasks.NamedTask> lp => lp.Property.Duration_day.ToString(),
-                LeafComponent lc => "",
-                BranchComponent bc => "",
+                IPureComponentContent c => "",
                 _ => throw new NotImplementedException()
             });
 
@@ -66,8 +63,7 @@ public static class TaskColumns
             {
                 IPropertyContent<InstanceTasks.NamedTask> lp =>
                     lp.Property.IsRecurent ? i.ComponentTotalCount.ToString() : "",
-                LeafComponent lc => "",
-                BranchComponent bc => "",
+                IPureComponentContent c => "",
                 _ => throw new NotImplementedException()
             });
 

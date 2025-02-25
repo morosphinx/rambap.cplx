@@ -35,15 +35,11 @@ public static class CostColumns
             i => i switch
             {
                 IPropertyContent<InstanceCost.NativeCostInfo> lp => lp.Property.value.Price.CostToString(),
-                LeafComponent lc =>
+                BranchComponent bc when !displayBranches => "",
+                IPureComponentContent lc =>
                     lc.AllComponentsMatch(c => c.Instance.Cost()?.Total, out var value)
                         ? (value?.CostToString() ?? "")
                         : "error",
-                BranchComponent bc when displayBranches =>
-                    bc.AllComponentsMatch(c => c.Instance.Cost()?.Total, out var value)
-                        ? (value?.CostToString() ?? "")
-                        : "error",
-                BranchComponent bc when !displayBranches => "",
                 _ => throw new NotImplementedException(),
             });
 
@@ -55,7 +51,7 @@ public static class CostColumns
             {
                 IPropertyContent<InstanceCost.NativeCostInfo> lp =>
                     lp.Property.value.Price.CostToString(), // Do not display multiplicity for properties : this is a local cost representation
-                (LeafComponent or BranchComponent) when i.Component.Instance.Cost() is not null =>
+                IPureComponentContent when i.Component.Instance.Cost() is not null =>
                     i.IsGrouping
                         ? $"{i.ComponentLocalCount}x: {i.Component.Instance.Cost()!.Total.CostToString()}"
                         : i.Component.Instance.Cost()!.Total.CostToString(),

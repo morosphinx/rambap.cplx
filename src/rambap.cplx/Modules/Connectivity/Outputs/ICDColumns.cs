@@ -9,16 +9,15 @@ public static class ICDColumns
     // Port names are displayed as exact strings, no formating
 
     public static DelegateColumn<ICplxContent> TopMostPortPart()
-    => new DelegateColumn<ICplxContent>(
-        "Part",
-        ColumnTypeHint.StringExact,
-        i => i switch
-        {
-            BranchComponent b => b.Component.CN,
-            IPropertyContent<ICDTableContentProperty> p => p.Property.Port.GetTopMostUser().Owner.CN ?? "",
-            LeafComponent c => c.Component.CN,
-            _ => throw new NotImplementedException(),
-        });
+        => new DelegateColumn<ICplxContent>(
+            "Part",
+            ColumnTypeHint.StringExact,
+            i => i switch
+            {
+                IPureComponentContent c => c.Component.CN,
+                IPropertyContent<ICDTableContentProperty> p => p.Property.Port.GetTopMostUser().Owner.CN ?? "",
+                _ => throw new NotImplementedException(),
+            });
 
     public static DelegateColumn<ICplxContent> TopMostPortName()
         => new DelegateColumn<ICplxContent>(
@@ -26,9 +25,8 @@ public static class ICDColumns
             ColumnTypeHint.StringExact,
             i => i switch
             {
-                BranchComponent b => "",
+                IPureComponentContent c => "",
                 IPropertyContent<ICDTableContentProperty> p => p.Property.Port.GetTopMostUser().Label,
-                LeafComponent c => "",
                 _ => throw new NotImplementedException(),
             });
 
@@ -38,9 +36,8 @@ public static class ICDColumns
             ColumnTypeHint.StringExact,
             i => i switch
             {
-                BranchComponent b => "",
+                IPureComponentContent c => "",
                 IPropertyContent<ICDTableContentProperty> p => p.Property.Port.GetTopMostExposition().Label,
-                LeafComponent c => "",
                 _ => throw new NotImplementedException(),
             });
 
@@ -50,9 +47,8 @@ public static class ICDColumns
             ColumnTypeHint.StringExact,
             i => i switch
             {
-                BranchComponent b => "",
+                IPureComponentContent c => "",
                 IPropertyContent<ICDTableContentProperty> p => "",
-                LeafComponent c => "",
                 _ => throw new NotImplementedException(),
             });
 
@@ -62,9 +58,8 @@ public static class ICDColumns
             ColumnTypeHint.StringExact,
             i => i switch
             {
-                BranchComponent b => "",
+                IPureComponentContent c => "",
                 IPropertyContent<ICDTableContentProperty> p => p.Property.Port.Label,
-                LeafComponent c => "",
                 _ => throw new NotImplementedException(),
             });
 }
