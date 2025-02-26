@@ -1,12 +1,18 @@
-﻿WIP - describe the problem space and intended use cases
+﻿## The problem domain
+
+TODO - describe the problem space and intended use cases
+
+
+## The general process
 
 4 phase of dev. Tool they use, their purpose, their input output
 Quotation. Architecture. Development. Integration/Test.
 
 Information sharing required. Different need => living document
 
-Why other existing optiosn don't match :
+## The issues
 
+Why other existing optiosn don't match :
 
 Mudying of Part / Component number when 1 in 1, goign quick => Forcign those to be explciit, different construct, hope it help  deseign to be clean
 
@@ -39,3 +45,14 @@ Why not : Use an [MBSE](https://en.wikipedia.org/wiki/Model-based_systems_engine
 MBSE focuses a lot on modeling behaviors and requirement traçability. CPLX is solely interested in representing the physical structure and properties of systems, somewhat analog to SysML [Block Definition Diagram](https://sysml.org/sysml-faq/what-is-block-definition-diagram.html) and [Internal Block Diagram](https://sysml.org/sysml-faq/what-is-internal-block-diagram.html).
 
 MBSE involves transformation of the entire design process. Its scope is not pertinent for small scale projects. CPLX is intended to be a quick to use tool to improve existing workload, no matter the project size.
+
+
+## Why a C# SDL to define hardware
+- GIT, the history
+- GIT, the colaboration
+- Code structure, multiples files
+- Code-like identifier for PN
+- IDE support for renames
+- The namespaces
+- Dependency management, nuget
+- Versioning

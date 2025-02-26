@@ -8,7 +8,7 @@ Concept could represent
 - General information about a Part, such as Manufacturer or Supplier info.
 - Qualitative information deduced from its composition and properties, such as normative status.
 
-The concept defined in cplx.Core are thereafter enumerated ::
+The concept defined in cplx.Core are thereafter enumerated :
 
 ### Cost Concept
 
