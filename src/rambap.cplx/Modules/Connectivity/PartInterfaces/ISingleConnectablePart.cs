@@ -9,7 +9,7 @@ namespace rambap.cplx.PartInterfaces;
 /// <summary>
 /// Interface indicating that the part only have a single Mateable connector. <br/>
 /// Calls to <see cref="ConnectionBuilder.Mate"/> may omit the connector. <br/>
-/// When creating the Pinstance, the part will raise an error if there is more than one ConnectablePort.
+/// When creating the Pinstance, the part will raise an error if it declares more than one ConnectablePort.
 /// </summary>
 public interface ISingleMateable
 {
@@ -19,7 +19,7 @@ public interface ISingleMateable
 /// <summary>
 /// Interface indicating that the part only have a single Wireable connector. <br/>
 /// Calls to <see cref="ConnectionBuilder.Wire"/> may omit the connector. <br/>
-/// When creating the Pinstance, the part will raise an error if there is more than one WireablePort.
+/// When creating the Pinstance, the part will raise an error if declares more than one WireablePort.
 /// </summary>
 public interface ISingleWireable
 {

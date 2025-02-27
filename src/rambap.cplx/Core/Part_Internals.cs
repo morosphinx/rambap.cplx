@@ -67,6 +67,7 @@ public partial class Part
                     foreach (var part in p)
                         part.CplxImplicitInitialization(initContext);
                 });
+            // Create all IPartProperties, and
             // Assign properties Owners
             ScanObjectContentFor<IPartProperty>(this,
                 (p, i) =>

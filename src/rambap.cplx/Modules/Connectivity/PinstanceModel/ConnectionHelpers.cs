@@ -7,6 +7,10 @@ using TopmostConnectionGroup = (Port LeftTopMost, Port RigthTopMost, IEnumerable
 
 internal static class ConnectionHelpers
 {
+    /// <summary>
+    /// Compare tuples of port, allowing swaps <br/>
+    /// Eg : (A, B) is equal to (B, A)
+    /// </summary>
     class LinkNondirectionalEqualityComparer : EqualityComparer<(Port A, Port B)>
     {
         public override bool Equals((Port A, Port B) x, (Port A, Port B) y)
@@ -16,7 +20,12 @@ internal static class ConnectionHelpers
             => obj.A.GetHashCode() ^ obj.B.GetHashCode();
     }
 
-    public static IEnumerable<TopmostConnectionGroup> GroupConnectionsByTopmostPort(
+    /// <summary>
+    /// Group all connections by the path they take <br/>
+    /// </summary>
+    /// <param name="connections">List of connection</param>
+    /// <returns>Group where all connections have the same topMost (Port from, Port to) path</returns>
+    public static IEnumerable<TopmostConnectionGroup> GroupConnectionsByPath(
         IEnumerable<SignalPortConnection> connections)
     {
         (Port, Port) GetTopMostConnectors(SignalPortConnection con)

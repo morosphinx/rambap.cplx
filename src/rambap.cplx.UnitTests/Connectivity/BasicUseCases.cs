@@ -84,8 +84,8 @@ public class BasicUseCases
     public void SimpleCable() => TestOutputs.WriteConnection<SimpleCablePart>();
     class SimpleCablePart : Part, IPartConnectable
     {
-        public ConnectablePort J01 => C01.MateFace;
-        public ConnectablePort J02 => C02.MateFace;
+        public ConnectablePort P01 => C01.MateFace;
+        public ConnectablePort P02 => C02.MateFace;
 
         ConnectorPart C01;
         ConnectorPart C02;
@@ -94,6 +94,35 @@ public class BasicUseCases
         {
             Do.Wire(C01.Pin(1), C01.Pin(4));
             Do.Wire(C01.Pin(2), C01.Pin(3));
+        }
+    }
+
+    [TestMethod]
+    public void SimpleBlackbox() => TestOutputs.WriteConnection<SimpleBlackboxPart>();
+    class SimpleBlackboxPart : Part
+    {
+        public ConnectablePort J01 => C01.MateFace;
+        public ConnectablePort J02;
+
+        ConnectorPart C01;
+    }
+
+    [TestMethod]
+    public void SimpleAssembly() => TestOutputs.WriteConnection<SimpleAssemblyPart>();
+    class SimpleAssemblyPart : Part, IPartConnectable
+    {
+        SimpleBlackboxPart U01;
+        SimpleBlackboxPart U02;
+        SimpleCablePart W01;
+        SimpleCablePart W02;
+
+        public void Assembly_Connections(ConnectionBuilder Do)
+        {
+            // Cabling
+            Do.CableWith(W01, U01.J01, U02.J01);
+            // Equivalent double Mating
+            Do.Mate(U01.J02, W02.P01);
+            Do.Mate(W02.P02, U02.J02);
         }
     }
 }

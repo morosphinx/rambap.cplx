@@ -18,11 +18,13 @@ public abstract class Connector<T> : Part, IPartConnectable, ISingleMateable
     [CplxIgnore]
     public ConnectablePort SingleMateablePort => MateFace;
 
+    /// Implicit conversion to a ConnectablePort => the single mateFace
     public static implicit operator ConnectablePort(Connector<T> c) => c.SingleMateablePort;
 
-    // This is not public, because everybody identify pin with a 1-based indexed value
-    // Force this convention through the Pin() method
+    // This is not public, because everyone is used tp identify pins with a 1-based indexed value
+    // Force this to identify with a 1-based index through the Pin() method
     ReadOnlyCollection<WireablePort> WireablePorts { get; }
+
     /// <summary>
     /// Return the wireable Port with the *_1-based_* pin index 
     /// </summary>

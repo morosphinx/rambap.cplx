@@ -1,10 +1,15 @@
 ﻿using rambap.cplx.Core;
 using rambap.cplx.Modules.Connectivity.PinstanceModel;
+using rambap.cplx.PartInterfaces;
 
 #pragma warning disable IDE0130 // Namespace does not match folder structure
 namespace rambap.cplx.PartProperties;
 #pragma warning restore IDE0130 // Namespace does not match folder structure
 
+/// <summary>
+/// A port, generaly electrical, that can carry a signal<br/>
+/// Do not declare on a Part, instead declare either a <see cref="ConnectablePort"/> or an <see cref="WireablePort"/>
+/// </summary>
 public abstract class SignalPort : IPartProperty
 {
     internal Stack<Port> Implementations { get; } = new();
@@ -39,4 +44,24 @@ public abstract class SignalPort : IPartProperty
         };
     }
     */
+}
+
+/// <summary>
+/// Define a connectable element, generaly electrical, on a Part. <br/>
+/// To be then used by Parts implementing <see cref="PartInterfaces.IPartConnectable"/> <br/>
+/// Define <see cref="ConnectablePort"/> as public when they can be seen and used from outside the Part.
+/// </summary>
+public class ConnectablePort : SignalPort, ISingleMateable
+{
+    public ConnectablePort SingleMateablePort => this;
+}
+
+/// <summary>
+/// Define a wireable element, generaly electrical, on a Part. <br/>
+/// To be then used by Parts implementing <see cref="PartInterfaces.IPartConnectable"/> <br/>
+/// Define <see cref="ConnectablePort"/> as public when they can be seen and used from outside the Part.
+/// </summary>
+public class WireablePort : SignalPort, ISingleWireable
+{
+    public WireablePort SingleWireablePort => this;
 }

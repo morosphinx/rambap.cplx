@@ -3,6 +3,9 @@ using rambap.cplx.PartProperties;
 
 namespace rambap.cplx.Modules.Connectivity.PinstanceModel;
 
+/// <summary>
+/// A <see cref="Pinstance"/> Port, implementation of a Part's <see cref="SignalPort"/>
+/// </summary>
 public partial class Port
 {    
     public required bool IsPublic { get; init; }
@@ -24,7 +27,7 @@ public partial class Port
         signalPort.Implementations.Push(this);
     }
 
-    // Self Definition
+    // Construction Definition
 
     private PortDefinition definition = new PortDefinition_AdHoc();
     internal PortDefinition Definition

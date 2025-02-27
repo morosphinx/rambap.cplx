@@ -25,7 +25,7 @@ public static class ConnectivityTableIterator
         // TODO / TBD : grouping previously happenned at global level. npt equivalent to grouping in
         // post trandform ?
 
-        var connectionsGrouped = ConnectionHelpers.GroupConnectionsByTopmostPort(connections);
+        var connectionsGrouped = ConnectionHelpers.GroupConnectionsByPath(connections);
 
         foreach (var group in connectionsGrouped)
         {
