@@ -16,8 +16,8 @@ internal class Program
         // Define what kind of files to generate
         var generator = Generators.ConfigureGenerator(
             [
-                Generators.Content.Costing,
                 Generators.Content.SystemView,
+                Generators.Content.Connectivity,
             ]
             , Generators.HierarchyMode.Flat);
 

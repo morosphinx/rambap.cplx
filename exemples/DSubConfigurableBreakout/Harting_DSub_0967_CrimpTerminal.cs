@@ -22,12 +22,12 @@ public enum DIN41652_Genders
 ///     (AKA : Connector shell)
 /// Catalog page 05/26
 /// </summary>
-internal class Harting_09_67_0xx_yy01 : Part
+internal class Harting_DSub_0967_CrimpTerminal : Part
 {
 
-    public Link HartingWebsiteLink;
+    public Link HartingWebsiteLink => $"https://www.harting.com/en-GB/q?query={PN.Replace(" ", "%20")}";
 
-    public static int ToPintCount(DIN41652_PinCounts p)
+    public static int ToPinCount(DIN41652_PinCounts p)
         => p switch
         {
             DIN41652_PinCounts._09 => 9,
@@ -38,7 +38,7 @@ internal class Harting_09_67_0xx_yy01 : Part
             _ => throw new NotImplementedException()
         };
 
-    public Harting_09_67_0xx_yy01(DIN41652_Genders gender, DIN41652_PinCounts pinCount)
+    public Harting_DSub_0967_CrimpTerminal(DIN41652_Genders gender, DIN41652_PinCounts pinCount)
     {
         string strPinCount = pinCount.ToString().Substring(1);
         string strGender = gender switch
@@ -48,7 +48,6 @@ internal class Harting_09_67_0xx_yy01 : Part
             _ => throw new NotImplementedException()
         };
         PN = $"09 67 0{pinCount} {strGender}01";
-        HartingWebsiteLink = $"https://www.harting.com/en-GB/q?query={PN.Replace(" ", "%20")}";
     }
 }
 

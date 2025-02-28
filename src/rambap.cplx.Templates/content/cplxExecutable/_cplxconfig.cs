@@ -4,7 +4,7 @@
 // Global usings
 #pragma warning disable IDE0005 // Remove unnecessary using directives 
 global using rambap.cplx.Core;
-global using rambap.cplx.PartAttributes;
+global using rambap.cplx.Attributes;
 global using rambap.cplx.PartInterfaces;
 global using rambap.cplx.PartProperties;
 global using static rambap.cplx.Helpers;
