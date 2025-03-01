@@ -18,7 +18,7 @@ public partial class Port
     public Signal? AssignedSignal { get; init; }
 
     // Part model implementation
-    public SignalPort? ImplementedPort { get; private set; }
+    public SignalPort? ImplementedPort { get; private set; } // TODO : set internal
     internal void Implement(SignalPort signalPort)
     {
         if (ImplementedPort != null)

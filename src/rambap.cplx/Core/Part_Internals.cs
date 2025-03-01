@@ -73,9 +73,8 @@ public partial class Part
                 (p, i) =>
                 {
                     p.Owner = this;
-                    p.Name = i.Name; // TODO : Why is that here ? Was there an insue with p.Name begin default ?
                     if (p.Name is null || p.Name == "")
-                        p.Name = i.Name;
+                        p.Name = i.Name; // If IPartProperty.name is not set, uses the field name as property name
                     p.IsPublic = i.IsPublicOrAssembly;
                 },
                 AutoContent.ConstructIfNulls);

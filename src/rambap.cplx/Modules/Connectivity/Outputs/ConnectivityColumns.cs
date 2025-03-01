@@ -18,21 +18,28 @@ public static class ConnectivityColumns
         Topmost, // Will traverse the connector hierarchy and return information relative to the uppermost Expose() call
     }
 
-    public static DelegateColumn<ICplxContent> ConnectedPortName(ConnectorSide side, ConnectorIdentity identity, bool fullName = false)
+    public static DelegateColumn<ICplxContent> MakeConnectivityColumn(
+        string columnName, bool format, Func<ConnectivityTableContent, string> getter)
         => new DelegateColumn<ICplxContent>(
-            "Port",
-            ColumnTypeHint.StringExact,
+            columnName,
+            format ? ColumnTypeHint.StringFormatable : ColumnTypeHint.StringExact,
             i => i switch
             {
-                IPropertyContent<ConnectivityTableContent> c => identity switch
-                {
-                    ConnectorIdentity.Immediate when !fullName => c.Property.GetImmediatePort(side).Label,
-                    ConnectorIdentity.Immediate when fullName => c.Property.GetImmediatePort(side).FullDefinitionName(),
-                    ConnectorIdentity.Topmost when !fullName => c.Property.GetTopMostPort(side).Label,
-                    ConnectorIdentity.Topmost when fullName => c.Property.GetTopMostPort(side).FullDefinitionName(),
-                    _ => throw new NotImplementedException(),
-                },
-                _ => "",
+                IPropertyContent<ConnectivityTableContent> c => getter(c.Property),
+                _ => throw new NotImplementedException(),
+            });
+
+    public static DelegateColumn<ICplxContent> ConnectedPortName(ConnectorSide side, ConnectorIdentity identity, bool fullName = false)
+        => MakeConnectivityColumn(
+            "Port",
+            false,
+            c =>  identity switch
+            {
+                ConnectorIdentity.Immediate when !fullName => c.GetImmediatePort(side).Label,
+                ConnectorIdentity.Immediate when fullName => c.GetImmediatePort(side).FullDefinitionName(),
+                ConnectorIdentity.Topmost when !fullName => c.GetTopMostPort(side).Label,
+                ConnectorIdentity.Topmost when fullName => c.GetTopMostPort(side).FullDefinitionName(),
+                _ => throw new NotImplementedException(),
             });
 
     public static DelegateColumn<ICplxContent> ConnectedComponent(
@@ -41,81 +48,74 @@ public static class ConnectivityColumns
             string title,
             Func<Component?,string> getter,
             bool format = false)
-        => new DelegateColumn<ICplxContent>(
+        => MakeConnectivityColumn(
             title,
-            format ? ColumnTypeHint.StringFormatable : ColumnTypeHint.StringExact,
-            i => i switch
+            format,
+            c => getter(identity switch
             {
-                IPropertyContent<ConnectivityTableContent> c => getter.Invoke(identity switch
-                {
-                    ConnectorIdentity.Immediate => c.Property.GetConnectedComponent(side),
-                    ConnectorIdentity.Topmost => c.Property.GetConnectedComponent(side),
-                    _ => throw new NotImplementedException(),
-                }),
-                _ => "",
-            });
+                ConnectorIdentity.Immediate => c.GetConnectedComponent(side),
+                ConnectorIdentity.Topmost => c.GetConnectedComponent(side),
+                _ => throw new NotImplementedException(),
+            }));
 
     public static DelegateColumn<ICplxContent> ConnectedStructuralEquivalenceTopmostComponent(
             ConnectorSide side,
             string title,
             Func<Component?, string> getter,
             bool format = false)
-        => new DelegateColumn<ICplxContent>(
+        => ConnectedStructuralEquivalenceTopmostPort(
+            side,
             title,
-            format ? ColumnTypeHint.StringFormatable : ColumnTypeHint.StringExact,
             i => 
             {
-                switch (i)
-                {
-                    case IPropertyContent<ConnectivityTableContent> c:
-                        var port = c.Property.GetImmediatePort(side);
-                        if (!port.HasStructuralEquivalence) return "-";
-                        var structuralequiv = port.GetShallowestStructuralEquivalence();
-                        var stuctequivtop = structuralequiv.GetTopMostUser();
-                        var comp = stuctequivtop.Owner!.Parent;
-                        return getter(comp);
-                    default:
-                        return "";
-                }
-            });
+                var component = i.Owner!.Parent;
+                return getter(component);
+            },
+            format);
 
     public static DelegateColumn<ICplxContent> ConnectedStructuralEquivalenceTopmostPort(
             ConnectorSide side,
             string title,
             Func<Port, string> getter,
             bool format = false)
-        => new DelegateColumn<ICplxContent>(
+        => MakeConnectivityColumn(
             title,
-            format ? ColumnTypeHint.StringFormatable : ColumnTypeHint.StringExact,
-            i =>
+            format,
+            c =>
             {
-                switch (i)
-                {
-                    case IPropertyContent<ConnectivityTableContent> c:
-                        var port = c.Property.GetImmediatePort(side);
-                        if (!port.HasStructuralEquivalence) return "-";
-                        var structuralequiv = port.GetShallowestStructuralEquivalence();
-                        var stuctequivtop = structuralequiv.GetTopMostUser();
-                        return getter(stuctequivtop);
-                    default:
-                        return "";
-                }
+                var port = c.GetImmediatePort(side);
+                if (!port.HasStructuralEquivalence) return "-";
+                var structuralequiv = port.GetShallowestStructuralEquivalence();
+                var stuctequivtop = structuralequiv.GetTopMostUser();
+                return getter(stuctequivtop);
+            });
+
+    public static DelegateColumn<ICplxContent> ConnectedStructuralEquivalence(
+            ConnectorSide side,
+            string title,
+            Func<Port, string> getter,
+            bool format = false)
+        => MakeConnectivityColumn(
+            title,
+            format ,
+            c =>
+            {
+                var port = c.GetImmediatePort(side);
+                if (!port.HasStructuralEquivalence) return "-";
+                var structuralequiv = port.GetShallowestStructuralEquivalence();
+                return getter(structuralequiv);
             });
 
     public static DelegateColumn<ICplxContent> CablePart(
             string title,
             Func<Component, string> getter,
             bool format = false)
-        => new DelegateColumn<ICplxContent>(
+        => MakeConnectivityColumn(
             title,
-            format ? ColumnTypeHint.StringFormatable : ColumnTypeHint.StringExact,
-            i => i switch
+            format,
+            c => c.Connection switch
             {
-                IPropertyContent<ConnectivityTableContent> c => c.Property.Connection switch
-                {
-                    Cable cable=> getter.Invoke(cable.CableComponent),
-                    _ => "",
-                },
+                Cable cable=> getter.Invoke(cable.CableComponent),
                 _ => "",
             });
 
@@ -124,17 +124,12 @@ public static class ConnectivityColumns
             string title,
             Func<Component, string> getter,
             bool format = false)
-        => new DelegateColumn<ICplxContent>(
+        => MakeConnectivityColumn(
             title,
-            format ? ColumnTypeHint.StringFormatable : ColumnTypeHint.StringExact,
-            i => i switch
+            format,
+            c => c.Connection switch
             {
-                IPropertyContent<ConnectivityTableContent> c =>
-                c.Property.Connection switch
-                {
-                    Cable => getter.Invoke(c.Property.GetCableConnectionComponent(side)!),
-                    _ => "",
-                },
+                Cable => getter.Invoke(c.GetCableConnectionComponent(side)!),
                 _ => "",
             });
 
@@ -143,26 +138,19 @@ public static class ConnectivityColumns
            string title,
            Func<Port, string> getter,
            bool format = false)
-       => new DelegateColumn<ICplxContent>(
+        => MakeConnectivityColumn(
             title,
-            format ? ColumnTypeHint.StringFormatable : ColumnTypeHint.StringExact,
-            i => i switch
+            format,
+            c => c.Connection switch
             {
-                IPropertyContent<ConnectivityTableContent> c => c.Property.Connection switch
-                {
-                    Cable => getter.Invoke(c.Property.GetCableConnectionPort(side)!),
-                    _ => "",
-                },
+                Cable => getter.Invoke(c.GetCableConnectionPort(side)!),
                 _ => "",
             });
 
     public static DelegateColumn<ICplxContent> ConnectionKind()
-        => new DelegateColumn<ICplxContent>(
+        => MakeConnectivityColumn(
             "Kind",
-            ColumnTypeHint.StringFormatable,
-            i => i switch
-            {
-                IPropertyContent<ConnectivityTableContent> c => c.Property.GetConnectionKind.ToString(),
-                _ => "",
-            });
+            true,
+            c => c.GetConnectionKind.ToString()
+            );
 }

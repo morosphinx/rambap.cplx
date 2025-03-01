@@ -82,7 +82,7 @@ public static class FileGroups
                 }),
                 ($"Wirings_{filenamePattern}.csv", new TextTableFile(i)
                 {
-                    Table = Modules.Connectivity.Outputs.ConnectivityTables.WiringTable(),
+                    Table = Modules.Connectivity.Outputs.ConnectivityTables.WiringTable(ConnectorIdentity.Topmost),
                     Formater = new MarkdownTableFormater()
                 }),
                 ($"ICD_{filenamePattern}.csv", new TextTableFile(i)

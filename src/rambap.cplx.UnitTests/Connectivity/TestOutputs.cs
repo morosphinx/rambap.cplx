@@ -47,7 +47,7 @@ internal static class TestOutputs
 
         Console.WriteLine("");
         Console.WriteLine("Wirings");
-        var wiringtable = ConnectivityTables.WiringTable();
+        var wiringtable = ConnectivityTables.WiringTable(ConnectorIdentity.Topmost);
         AddDebugInfoTo(wiringtable);
         var wiringFile = new TextTableFile(instance)
         {

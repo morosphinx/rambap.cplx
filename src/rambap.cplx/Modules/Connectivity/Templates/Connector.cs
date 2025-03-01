@@ -77,7 +77,7 @@ public abstract class Connector<T> : Connector, IPartConnectable, ISingleMateabl
     }
 
     public Connector(List<string> pinNames) :
-        base(pinNames.Select(s => (s, (Pin) new T())))
+        base(pinNames.Select(s => (s, (Pin) new T() { CN = $"C_{s}" })))
     {
     }
 }

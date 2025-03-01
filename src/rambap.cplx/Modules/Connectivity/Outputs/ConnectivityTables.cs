@@ -34,7 +34,7 @@ public class ConnectivityTables
                 ]
         };
 
-    public static TableProducer<ICplxContent> WiringTable()
+    public static TableProducer<ICplxContent> WiringTable(ConnectorIdentity identity)
         => new TableProducer<ICplxContent>()
         {
             Iterator = new ComponentPropertyIterator<ConnectivityTableContent>()
@@ -46,15 +46,15 @@ public class ConnectivityTables
             },
             ContentTransform = cs => cs.Where(c => c is not IPureComponentContent),
             Columns = [
-                    ConnectedComponent(ConnectorSide.Left,ConnectorIdentity.Topmost,"CN", c => c.CN),
+                    ConnectedComponent(ConnectorSide.Left,identity,"CN", c => c.CN),
                     ConnectedStructuralEquivalenceTopmostPort(ConnectorSide.Left,"Connector", c => c.Label),
-                    ConnectedPortName(ConnectorSide.Left,ConnectorIdentity.Topmost),
+                    ConnectedStructuralEquivalence(ConnectorSide.Left,"Pin",p => p.FullDefinitionName()),
                     Dashes("--"),
                     EmptyColumn("Signal"),
                     Dashes("--"),
-                    ConnectedComponent(ConnectorSide.Rigth,ConnectorIdentity.Topmost,"CN", c => c.CN),
+                    ConnectedComponent(ConnectorSide.Rigth,identity,"CN", c => c.CN),
                     ConnectedStructuralEquivalenceTopmostPort(ConnectorSide.Rigth,"Connector", c => c.Label),
-                    ConnectedPortName(ConnectorSide.Rigth,ConnectorIdentity.Topmost,true),
+                    ConnectedStructuralEquivalence(ConnectorSide.Rigth,"Pin",p => p.FullDefinitionName()),
                 ]
         };
 

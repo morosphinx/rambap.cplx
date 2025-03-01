@@ -33,10 +33,10 @@ internal class ConnectionConcept : IConcept<InstanceConnectivity>
 {
     public override InstanceConnectivity? Make(Pinstance instance, Part template)
     {
-        Port? MakePort(SignalPort p, PropertyOrFieldInfo s){
+        Port? MakePort(SignalPort p, PropertyOrFieldInfo s){ // TODO : _Not_ have property or field info used here ? confusion with part property autoconstruction
             var newPort = new Port()
             {
-                Label = s.Name,
+                Label = p.Name ?? s.Name,
                 Owner = instance,
                 IsPublic = s.IsPublicOrAssembly,
             };
