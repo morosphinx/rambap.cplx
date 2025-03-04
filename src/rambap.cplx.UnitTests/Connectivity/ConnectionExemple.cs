@@ -192,47 +192,19 @@ class BoxAAA : Part, IPartConnectable
 public class TestSomeOutputs
 {
     [TestMethod]
-    public void TestConnectionExemple1()
-    {
-        var p = new Box0();
-        TestOutputs.WriteConnection(ConnectorIdentity.Topmost, p);
-    }
+    public void TestConnectionExemple1() => TestOutputs.WriteConnection(new Box0());
 
     [TestMethod]
-    public void TestConnectionExempleE()
-    {
-        var p = new BoxF();
-        TestOutputs.WriteConnection(ConnectorIdentity.Topmost, p);
-    }
+    public void TestConnectionExempleE() => TestOutputs.WriteConnection(new BoxF());
 
     [TestMethod]
-    public void TestConnectionExempleE2()
-    {
-        var p = new BoxF2();
-        TestOutputs.WriteConnection(ConnectorIdentity.Topmost, p);
-    }
+    public void TestConnectionExempleE2() => TestOutputs.WriteConnection(new BoxF2());
     [TestMethod]
-    public void TestConnectionExempleE3()
-    {
-        var p = new BoxF3();
-        TestOutputs.WriteConnection(ConnectorIdentity.Topmost, p);
-    }
+    public void TestConnectionExempleE3() => TestOutputs.WriteConnection(new BoxF3());
     [TestMethod]
-    public void TestConnectionWiringA()
-    {
-        var p = new WiringA();
-        TestOutputs.WriteConnection(ConnectorIdentity.Topmost, p);
-    }
+    public void TestConnectionWiringA() => TestOutputs.WriteConnection(new WiringA());
     [TestMethod]
-    public void TestConnectionWiringB()
-    {
-        var p = new WiringB();
-        TestOutputs.WriteConnection(ConnectorIdentity.Topmost, p);
-    }
+    public void TestConnectionWiringB() => TestOutputs.WriteConnection(new WiringB());
     [TestMethod]
-    public void TestConnectionWiringAAA()
-    {
-        var p = new BoxAAA();
-        TestOutputs.WriteConnection(ConnectorIdentity.Topmost, p);
-    }
+    public void TestConnectionWiringAAA() => TestOutputs.WriteConnection(new BoxAAA());
 }

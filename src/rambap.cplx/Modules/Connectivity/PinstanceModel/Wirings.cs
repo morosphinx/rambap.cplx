@@ -13,9 +13,9 @@ public abstract class WiringAction : SignalPortConnection
     internal static (SignalPort, SignalPort) GetCommonPathOrThrow(IEnumerable<WiringAction> connections)
     {
         // Check that all items share the same path
-        var leftTopMosts = connections.Select(t => t.LeftPort.GetTopMostUser());
+        var leftTopMosts = connections.Select(t => t.LeftPort.GetUpperUsage());
         var leftConnector = leftTopMosts.Distinct().Single();
-        var rigthTopMosts = connections.Select(t => t.RightPort.GetTopMostUser());
+        var rigthTopMosts = connections.Select(t => t.RightPort.GetUpperUsage());
         var rigthConnector = rigthTopMosts.Distinct().Single();
         return (leftConnector.ImplementedPort!, rigthConnector.ImplementedPort!);
     }

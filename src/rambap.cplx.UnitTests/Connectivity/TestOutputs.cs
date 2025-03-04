@@ -14,16 +14,15 @@ internal static class TestOutputs
     {
         var pin = new T();
         var i = new Pinstance(pin);
-        TestOutputs.WriteConnection(ConnectorIdentity.Topmost, i);
-        TestOutputs.WriteConnection(ConnectorIdentity.Immediate, i);
+        WriteConnection(i);
     }
 
-    internal static void WriteConnection(ConnectorIdentity displayIdentity, Part part)
-        => WriteConnection(displayIdentity, new Pinstance(part));
-    internal static void WriteConnection(ConnectorIdentity displayIdentity, Pinstance instance)
+    internal static void WriteConnection(Part part)
+        => WriteConnection(new Pinstance(part));
+    internal static void WriteConnection(Pinstance instance)
     {
         Console.WriteLine("");
-        Console.WriteLine($"{instance.PN} / {displayIdentity}");
+        Console.WriteLine($"{instance.PN}");
 
         void AddDebugInfoTo(TableProducer<ICplxContent> tableProducer)
         {
@@ -36,23 +35,23 @@ internal static class TestOutputs
 
         Console.WriteLine("");
         Console.WriteLine("Connectivity");
-        var connectiontable = ConnectivityTables.ConnectionTable(displayIdentity);
+        var connectiontable = ConnectivityTables.ConnectionTable();
         AddDebugInfoTo(connectiontable);
         var connectionFile = new TextTableFile(instance)
         {
             Table = connectiontable,
-            Formater = new Export.Tables.MarkdownTableFormater()
+            Formater = new MarkdownTableFormater()
         };
         connectionFile.WriteToConsole();
 
         Console.WriteLine("");
         Console.WriteLine("Wirings");
-        var wiringtable = ConnectivityTables.WiringTable(ConnectorIdentity.Topmost);
+        var wiringtable = ConnectivityTables.WiringTable();
         AddDebugInfoTo(wiringtable);
         var wiringFile = new TextTableFile(instance)
         {
             Table = wiringtable,
-            Formater = new Export.Tables.MarkdownTableFormater()
+            Formater = new MarkdownTableFormater()
         };
         wiringFile.WriteToConsole();
 
@@ -66,5 +65,21 @@ internal static class TestOutputs
             Formater = new Export.Tables.MarkdownTableFormater()
         };
         ICDfile.WriteToConsole();
+    }
+
+
+    class HierarchyAbstractParentPart<T> : Part
+        where T : Part
+    {
+        public T Bench;
+    }
+
+    internal static void WriteConnectionInCaseOfParent<T>()
+        where T : Part, new()
+    {
+        var p = new HierarchyAbstractParentPart<T>();
+        var i = new Pinstance(p);
+        var benchInstance = i.Components.First().Instance;
+        WriteConnection(benchInstance);
     }
 }

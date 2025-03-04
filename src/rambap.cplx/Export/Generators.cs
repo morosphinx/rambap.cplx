@@ -77,12 +77,12 @@ public static class FileGroups
         return [
                 ($"Connections_{filenamePattern}.csv", new TextTableFile(i)
                 {
-                    Table = Modules.Connectivity.Outputs.ConnectivityTables.ConnectionTable(ConnectorIdentity.Immediate),
+                    Table = Modules.Connectivity.Outputs.ConnectivityTables.ConnectionTable(),
                     Formater = new MarkdownTableFormater()
                 }),
                 ($"Wirings_{filenamePattern}.csv", new TextTableFile(i)
                 {
-                    Table = Modules.Connectivity.Outputs.ConnectivityTables.WiringTable(ConnectorIdentity.Topmost),
+                    Table = Modules.Connectivity.Outputs.ConnectivityTables.WiringTable(),
                     Formater = new MarkdownTableFormater()
                 }),
                 ($"ICD_{filenamePattern}.csv", new TextTableFile(i)

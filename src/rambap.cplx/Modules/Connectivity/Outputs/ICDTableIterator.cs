@@ -18,7 +18,7 @@ public static class ICDTableIterator
         if (connectivity != null)
         {
             var publicConnectors = connectivity.Connectors.Where(c => c.IsPublic);
-            var publicTopMostConnectors = publicConnectors.Where(c => c.GetTopMostUser() == c);
+            var publicTopMostConnectors = publicConnectors.Where(c => c.GetUpperUsage() == c);
             foreach (var con in publicTopMostConnectors)
             {
                 yield return new ICDTableContentProperty() { Port = con };

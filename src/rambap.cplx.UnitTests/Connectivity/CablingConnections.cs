@@ -80,53 +80,15 @@ class CableTypeB : Part
 [TestClass]
 public class CablingConnectionsTests
 {
-    [TestMethod] public void WriteBench1_IM() => TestOutputs.WriteConnection(ConnectorIdentity.Immediate, new Bench1());
-    [TestMethod] public void WriteBench1_TOP() => TestOutputs.WriteConnection(ConnectorIdentity.Topmost, new Bench1());
-    [TestMethod] public void WriteBench2_IM() => TestOutputs.WriteConnection(ConnectorIdentity.Immediate, new Bench2());
-    [TestMethod] public void WriteBench2_TOP() => TestOutputs.WriteConnection(ConnectorIdentity.Topmost, new Bench2());
-    [TestMethod] public void WriteBench3_IM() => TestOutputs.WriteConnection(ConnectorIdentity.Immediate, new Bench3());
-    [TestMethod] public void WriteBench3_TOP() => TestOutputs.WriteConnection(ConnectorIdentity.Topmost, new Bench3());
+    [TestMethod] public void WriteBench1() => TestOutputs.WriteConnection(new Bench1());
+    [TestMethod] public void WriteBench2() => TestOutputs.WriteConnection(new Bench2());
+    [TestMethod] public void WriteBench3() => TestOutputs.WriteConnection(new Bench3());
 
-
-    class BenchWrapper<T> : Part
-        where T : Part
-    {
-        public T Bench;
-    }
+    [TestMethod] public void WriteRack1() => TestOutputs.WriteConnection(new Rack1());
+    [TestMethod] public void WriteRack2() => TestOutputs.WriteConnection(new Rack2());
 
     [TestMethod]
-    public void WriteWrappedBench3_IM()
-    {
-        var p = new BenchWrapper<Bench3>();
-        var i = new Pinstance(p);
-        var benchInstance = i.Components.First().Instance;
-        TestOutputs.WriteConnection(ConnectorIdentity.Immediate, benchInstance);
-    }
-
-    [TestMethod] 
-    public void WriteWrappedBench3_TOP()
-    {
-        var p = new BenchWrapper<Bench3>();
-        var i = new Pinstance(p);
-        var benchInstance = i.Components.First().Instance;
-        TestOutputs.WriteConnection(ConnectorIdentity.Topmost, benchInstance);
-    }
-
-
-    private void WriteICD(ConnectorIdentity displayIdentity, Part part)
-    => WriteICD(displayIdentity, new Pinstance(part));
-    private void WriteICD(ConnectorIdentity displayIdentity, Pinstance instance)
-    {
-        var table = new TextTableFile(instance)
-        {
-            Table = ConnectivityTables.InterfaceControlDocumentTable(),
-            Formater = new Export.Tables.MarkdownTableFormater()
-        };
-        table.WriteToConsole();
-    }
-
-    [TestMethod] public void WriteRack1_ICD() => WriteICD(ConnectorIdentity.Immediate, new Rack1());
-    [TestMethod] public void WriteRack2_ICD() => WriteICD(ConnectorIdentity.Topmost, new Rack2());
+    public void WriteWrappedBench3() => TestOutputs.WriteConnectionInCaseOfParent<Bench3>();
 }
 
 class Bench4 : Bench3, IPartAdditionalDocuments
@@ -137,7 +99,7 @@ class Bench4 : Bench3, IPartAdditionalDocuments
         {
             var textFile = new TextTableFile(i)
             {
-                Table = ConnectivityTables.ConnectionTable(ConnectorIdentity.Immediate),
+                Table = ConnectivityTables.ConnectionTable(),
                 Formater = new Export.Tables.MarkdownTableFormater()
             };
             return ("TestFilename", textFile);

@@ -44,31 +44,31 @@ public partial class Port
             throw new InvalidOperationException("No Structural equivalence on this port");
     }
 
-    internal Port GetTopMostUser()
+    internal Port GetUpperUsage()
     {
         return Usage switch
         {
-            PortUsage usage => usage.User.GetTopMostUser(),
+            PortUsage usage => usage.User.GetUpperUsage(),
             null => this,
         };
     }
-    internal Port GetTopMostExposition()
+    internal Port GetUpperExposition()
     {
         return Usage switch
         {
-            PortUsage_ExposedAs usage => usage.User.GetTopMostExposition(),
+            PortUsage_ExposedAs usage => usage.User.GetUpperExposition(),
             PortUsage_CombinedInto usage => this,
             null => this,
             _ => throw new NotImplementedException(),
         };
     }
-    internal Port GetDeepestExposition()
+    internal Port GetLowerExposition()
     {
         // = return GetExpositionColumn().First();
         return Definition switch
         {
             PortDefinition_AdHoc def => this,
-            PortDefinition_Exposed def => def.ExposedPort.GetDeepestExposition(),
+            PortDefinition_Exposed def => def.ExposedPort.GetLowerExposition(),
             PortDefinition_Combined def => this,
             null => this,
             _ => throw new NotImplementedException(),

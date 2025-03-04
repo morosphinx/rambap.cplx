@@ -33,21 +33,21 @@ public static class ConnectivityTableIterator
             var groupRightConnector = group.RigthTopMost;
             foreach (var connection in group.Connections)
             {
-                bool shouldReverse = connection.LeftPort.GetTopMostUser() != groupLeftConnector;
+                bool shouldReverse = connection.LeftPort.GetUpperUsage() != groupLeftConnector;
                 if (shouldReverse)
                     yield return new ConnectivityTableContent()
                     {
                         Connection = connection,
                         // Invert left/Rigth of group
-                        LeftTopMostConnector = groupRightConnector,
-                        RigthTopMostConnector = groupLeftConnector
+                        LeftUpperUsagePort = groupRightConnector,
+                        RigthUpperUsagePort = groupLeftConnector
                     };
                 else
                     yield return new ConnectivityTableContent()
                     {
                         Connection = connection,
-                        LeftTopMostConnector = groupLeftConnector,
-                        RigthTopMostConnector = groupRightConnector
+                        LeftUpperUsagePort = groupLeftConnector,
+                        RigthUpperUsagePort = groupRightConnector
                     };
             }
         }

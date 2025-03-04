@@ -8,7 +8,7 @@ namespace rambap.cplx.Modules.Connectivity.Outputs;
 
 public class ConnectivityTables
 {
-    public static TableProducer<ICplxContent> ConnectionTable(ConnectorIdentity identity)
+    public static TableProducer<ICplxContent> ConnectionTable()
         => new TableProducer<ICplxContent>()
         {
             Iterator = new ComponentPropertyIterator<ConnectivityTableContent>()
@@ -20,21 +20,22 @@ public class ConnectivityTables
             },
             ContentTransform = cs => cs.Where(c => c is not IPureComponentContent),
             Columns = [
-                    ConnectedComponent(ConnectorSide.Left,identity,"CID", c => c?.CID(" / ") ?? "."),
-                    ConnectedPortName(ConnectorSide.Left,identity),
+                    ConnectedComponent(PortSide.Left,"CID", c => c?.CID(" / ") ?? "."),
+                    ConnectedPort(PortSide.Left,PortIdentity.Self,"Port", c => c.Label),
                     Dashes("--"),
                     CablePart("Cable",c => c.CN),
                     Dashes("--"),
-                    ConnectedComponent(ConnectorSide.Rigth,identity,"CID", c => c?.CID(" / ") ?? "."),
-                    ConnectedPortName(ConnectorSide.Rigth,identity),
+                    ConnectedComponent(PortSide.Rigth,"CID", c => c?.CID(" / ") ?? "."),
+                    ConnectedPort(PortSide.Rigth,PortIdentity.Self,"Port", c => c.Label),
                     Dashes("--"),
+                    CablePart("Cable",c => c.Instance.PN),
                     CablePart("Description",c => c.Instance.Documentation()?.Descriptions.FirstOrDefault()?.Text ?? ""),
-                    CablePort(ConnectorSide.Left, "L", c => c.GetDeepestExposition().Owner.PN),
-                    CablePort(ConnectorSide.Rigth, "R", c => c.GetDeepestExposition().Owner.PN),
+                    CablePort(PortSide.Left, "L", c => c.GetLowerExposition().Owner.PN),
+                    CablePort(PortSide.Rigth, "R", c => c.GetLowerExposition().Owner.PN),
                 ]
         };
 
-    public static TableProducer<ICplxContent> WiringTable(ConnectorIdentity identity)
+    public static TableProducer<ICplxContent> WiringTable()
         => new TableProducer<ICplxContent>()
         {
             Iterator = new ComponentPropertyIterator<ConnectivityTableContent>()
@@ -46,15 +47,15 @@ public class ConnectivityTables
             },
             ContentTransform = cs => cs.Where(c => c is not IPureComponentContent),
             Columns = [
-                    ConnectedComponent(ConnectorSide.Left,identity,"CN", c => c.CN),
-                    ConnectedStructuralEquivalenceTopmostPort(ConnectorSide.Left,"Connector", c => c.Label),
-                    ConnectedStructuralEquivalence(ConnectorSide.Left,"Pin",p => p.FullDefinitionName()),
+                    ConnectedComponent(PortSide.Left,"CN", c => c.CN),
+                    ConnectedStructuralEquivalenceTopmostPort(PortSide.Left,"Connector", c => c.Label),
+                    ConnectedStructuralEquivalence(PortSide.Left,"Pin",p => p.FullDefinitionName()),
                     Dashes("--"),
                     EmptyColumn("Signal"),
                     Dashes("--"),
-                    ConnectedComponent(ConnectorSide.Rigth,identity,"CN", c => c.CN),
-                    ConnectedStructuralEquivalenceTopmostPort(ConnectorSide.Rigth,"Connector", c => c.Label),
-                    ConnectedStructuralEquivalence(ConnectorSide.Rigth,"Pin",p => p.FullDefinitionName()),
+                    ConnectedComponent(PortSide.Rigth,"CN", c => c.CN),
+                    ConnectedStructuralEquivalenceTopmostPort(PortSide.Rigth,"Connector", c => c.Label),
+                    ConnectedStructuralEquivalence(PortSide.Rigth,"Pin",p => p.FullDefinitionName()),
                 ]
         };
 
@@ -83,7 +84,7 @@ public class ConnectivityTables
                         {
                             var prop = i.Property;
                             if(prop.Port.HasStructuralEquivalence)
-                               return prop.Port.GetShallowestStructuralEquivalence().GetTopMostExposition().Label ?? "";
+                               return prop.Port.GetShallowestStructuralEquivalence().GetUpperExposition().Label ?? "";
                             return prop.Port.Label ?? "";
                         }),
                     ICDColumns.TopMostPortPart(),
