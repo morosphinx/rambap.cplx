@@ -49,13 +49,8 @@ public class ConnectivityTableContent
         return identityPort;
     }
 
-    public Component? GetConnectedComponent(PortSide side)
-        => side switch
-        {
-            PortSide.Left => LeftUpperUsagePort.Owner!.Parent,
-            PortSide.Rigth => RigthUpperUsagePort.Owner!.Parent,
-            _ => throw new NotImplementedException(),
-        };
+    public Component? GetConnectedComponent(PortSide side, PortIdentity identity)
+        => GetConnectedPort(side, identity).Owner!.Parent;
 
     public Component? GetCableConnectionComponent(PortSide side)
     {

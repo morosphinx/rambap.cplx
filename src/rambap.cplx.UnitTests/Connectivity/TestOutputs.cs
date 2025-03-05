@@ -12,8 +12,8 @@ internal static class TestOutputs
     internal static void WriteConnection<T>()
         where T : Part, new()
     {
-        var pin = new T();
-        var i = new Pinstance(pin);
+        var part = new T();
+        var i = new Pinstance(part);
         WriteConnection(i);
     }
 

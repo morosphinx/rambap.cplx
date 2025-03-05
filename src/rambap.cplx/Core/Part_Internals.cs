@@ -85,7 +85,7 @@ public partial class Part
                     {
                         prop.Owner = this;
                         if (prop.Name is null || prop.Name == "")
-                            prop.Name = i.Name;
+                            prop.Name = i.Name; // TBD : construct a specific name for each index ?
                         prop.IsPublic = i.IsPublicOrAssembly;
                     }
                 },

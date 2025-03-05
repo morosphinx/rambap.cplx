@@ -33,13 +33,14 @@ public static class ConnectivityColumns
 
     public static DelegateColumn<ICplxContent> ConnectedComponent(
             PortSide side,
+            PortIdentity identity,
             string title,
             Func<Component?,string> getter,
             bool format = false)
         => MakeConnectivityColumn(
             title,
             format,
-            c => getter(c.GetConnectedComponent(side))
+            c => getter(c.GetConnectedComponent(side, identity))
             );
 
     public static DelegateColumn<ICplxContent> ConnectedStructuralEquivalenceTopmostComponent(

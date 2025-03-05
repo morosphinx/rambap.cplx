@@ -92,8 +92,8 @@ public class BasicUseCases
 
         public void Assembly_Connections(ConnectionBuilder Do)
         {
-            Do.Wire(C01.Pin(1), C01.Pin(4));
-            Do.Wire(C01.Pin(2), C01.Pin(3));
+            Do.Wire(C01.Pin(1), C02.Pin(4));
+            Do.Wire(C01.Pin(2), C02.Pin(3));
         }
     }
 

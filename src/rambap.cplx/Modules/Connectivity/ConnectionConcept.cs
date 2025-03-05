@@ -36,7 +36,8 @@ internal class ConnectionConcept : IConcept<InstanceConnectivity>
         Port? MakePort(SignalPort p, PropertyOrFieldInfo s){ // TODO : _Not_ have property or field info used here ? confusion with part property autoconstruction
             var newPort = new Port()
             {
-                Label = p.Name ?? s.Name,
+                /// Unbacked Property use the property name as the exposed connector name, otherwise default to <see cref="Part.CplxImplicitInitialization"/> method
+                Label = s.Type == PropertyOrFieldType.UnbackedProperty ? s.Name : p.Name ?? s.Name,
                 Owner = instance,
                 IsPublic = s.IsPublicOrAssembly,
             };

@@ -20,13 +20,13 @@ public class ConnectivityTables
             },
             ContentTransform = cs => cs.Where(c => c is not IPureComponentContent),
             Columns = [
-                    ConnectedComponent(PortSide.Left,"CID", c => c?.CID(" / ") ?? "."),
-                    ConnectedPort(PortSide.Left,PortIdentity.Self,"Port", c => c.Label),
+                    ConnectedComponent(PortSide.Left,PortIdentity.UpperUsage,"CID", c => c?.CID(" / ") ?? "."),
+                    ConnectedPort(PortSide.Left,PortIdentity.UpperUsage,"Port", c => c.Label),
                     Dashes("--"),
                     CablePart("Cable",c => c.CN),
                     Dashes("--"),
-                    ConnectedComponent(PortSide.Rigth,"CID", c => c?.CID(" / ") ?? "."),
-                    ConnectedPort(PortSide.Rigth,PortIdentity.Self,"Port", c => c.Label),
+                    ConnectedComponent(PortSide.Rigth,PortIdentity.UpperUsage,"CID", c => c?.CID(" / ") ?? "."),
+                    ConnectedPort(PortSide.Rigth,PortIdentity.UpperUsage,"Port", c => c.Label),
                     Dashes("--"),
                     CablePart("Cable",c => c.Instance.PN),
                     CablePart("Description",c => c.Instance.Documentation()?.Descriptions.FirstOrDefault()?.Text ?? ""),
@@ -47,15 +47,15 @@ public class ConnectivityTables
             },
             ContentTransform = cs => cs.Where(c => c is not IPureComponentContent),
             Columns = [
-                    ConnectedComponent(PortSide.Left,"CN", c => c.CN),
+                    ConnectedComponent(PortSide.Left,PortIdentity.UpperUsage,"CN", c => c.CN),
                     ConnectedStructuralEquivalenceTopmostPort(PortSide.Left,"Connector", c => c.Label),
-                    ConnectedStructuralEquivalence(PortSide.Left,"Pin",p => p.FullDefinitionName()),
+                    ConnectedPort(PortSide.Left,PortIdentity.UpperExposition,"Pin",p => p.FullDefinitionName()),
                     Dashes("--"),
                     EmptyColumn("Signal"),
                     Dashes("--"),
-                    ConnectedComponent(PortSide.Rigth,"CN", c => c.CN),
+                    ConnectedComponent(PortSide.Rigth,PortIdentity.UpperUsage,"CN", c => c.CN),
                     ConnectedStructuralEquivalenceTopmostPort(PortSide.Rigth,"Connector", c => c.Label),
-                    ConnectedStructuralEquivalence(PortSide.Rigth,"Pin",p => p.FullDefinitionName()),
+                    ConnectedPort(PortSide.Left,PortIdentity.UpperExposition,"Pin",p => p.FullDefinitionName()),
                 ]
         };
 
