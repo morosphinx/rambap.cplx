@@ -18,14 +18,19 @@ internal class SlotConcept : IConcept<InstanceMechanicalAssembly>
     {
         List<(string name, MechanicalReceptacle receptacle)> receptacles = new();
         ScanObjectContentFor<MechanicalReceptacle>(template,
-            (p, i) => { receptacles.Add((i.Name, p)); },
-            AutoContent.IgnoreNulls);
+            (p, i) =>
+            {
+                receptacles.Add((i.Name, p));
+            });
 
         bool isModule = false;
         int moduleSize = 0;
         ScanObjectContentFor<MechanicalModule>(template,
-            (p, s) => { isModule = true; moduleSize = p.SlotSize; },
-            AutoContent.IgnoreNulls);
+            (p, s) =>
+            {
+                isModule = true;
+                moduleSize = p.SlotSize;
+            });
 
 
         // Execute the Assembly/Slotting instructions

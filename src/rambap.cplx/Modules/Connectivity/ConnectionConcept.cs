@@ -33,6 +33,9 @@ internal class ConnectionConcept : IConcept<InstanceConnectivity>
 {
     public override InstanceConnectivity? Make(Pinstance instance, Part template)
     {
+        // Take a signalPort and implement it
+        // Note that SignalPorts are do not have 1-1 relation to PropertyOrFieldInfo
+        // For exemple in the case of expression backed properties
         Port? MakePort(SignalPort p, PropertyOrFieldInfo s){ // TODO : _Not_ have property or field info used here ? confusion with part property autoconstruction
             var newPort = new Port()
             {
@@ -48,13 +51,15 @@ internal class ConnectionConcept : IConcept<InstanceConnectivity>
             if (s.Type == PropertyOrFieldType.UnbackedProperty)
             {
                 // Express an exposition, exposed port must be owned by a subcomponent
-                var subPart = template.AssertIsOwnedBySubComponent(p);
-                var subInstance = subPart.ImplementingInstance;
+                template.AssertIsOwnedBySubComponent(p);
                 var subPort = p.Implementations.Peek();
                 newPort.DefineAsAnExpositionOf(subPort);
             } else
             {
                 // Port 
+                // TBD / TODO : add a check that the port is owned by this ? 
+                // The "owner" property may be wrong if someone passed the port as a construction action ?
+                // ... But double PartProperty.Owner set should be forbiden. Is it enougth ?
             }
             // Register as an implementation
             newPort.Implement(p);
@@ -67,17 +72,7 @@ internal class ConnectionConcept : IConcept<InstanceConnectivity>
                 var newPort = MakePort(p, s);
                 if(newPort != null)
                     portsConnectable.Add(newPort);
-            },true);
-        ScanObjectContentFor<IEnumerable<ConnectablePort>>(template,
-            (iep, s) => {
-                foreach(var p in iep)
-                {
-                    var newPort = MakePort(p, s);
-                    if (newPort != null)
-                        portsConnectable.Add(newPort);
-                }
-            }, true);
-
+            }, acceptUnbacked : true);
 
         var portWireable = new List<Port>();
         ScanObjectContentFor<WireablePort>(template,
@@ -85,16 +80,7 @@ internal class ConnectionConcept : IConcept<InstanceConnectivity>
                 var newPort = MakePort(p, s);
                 if (newPort != null)
                     portWireable.Add(newPort);
-            }, true);
-        ScanObjectContentFor<IEnumerable<WireablePort>>(template,
-            (iep, s) => {
-                foreach (var p in iep)
-                {
-                    var newPort = MakePort(p, s);
-                    if (newPort != null)
-                        portWireable.Add(newPort);
-                }
-            }, true);
+            }, acceptUnbacked:  true);
 
         bool hasAnyPort = portsConnectable.Any() || portWireable.Any();
 

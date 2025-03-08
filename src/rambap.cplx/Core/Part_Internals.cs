@@ -53,20 +53,13 @@ public partial class Part
             initContext.StartInitFor(this);
             // Create Part properties/fields if null
             ScanObjectContentFor<Part>(this,
-               (p, i) => {
-                   p.CplxImplicitInitialization(initContext);
-               },
                (t, i) => {
                    var p = CreatePartFromType(t, initContext);
-                   p.CplxImplicitInitialization(initContext);
                    return p;
+               },
+               (p, i) => {
+                   p.CplxImplicitInitialization(initContext);
                });
-            ScanObjectContentFor<IEnumerable<Part>>(this,
-                (p, i) =>
-                {
-                    foreach (var part in p)
-                        part.CplxImplicitInitialization(initContext);
-                });
             // Create all IPartProperties, and
             // Assign properties Owners
             ScanObjectContentFor<IPartProperty>(this,
@@ -76,18 +69,6 @@ public partial class Part
                     if (p.Name is null || p.Name == "")
                         p.Name = i.Name; // If IPartProperty.name is not set, uses the field name as property name
                     p.IsPublic = i.IsPublicOrAssembly;
-                },
-                AutoContent.ConstructIfNulls);
-            ScanObjectContentFor<IEnumerable<IPartProperty>>(this,
-                (p, i) =>
-                {
-                    foreach (var prop in p)
-                    {
-                        prop.Owner = this;
-                        if (prop.Name is null || prop.Name == "")
-                            prop.Name = i.Name; // TBD : construct a specific name for each index ?
-                        prop.IsPublic = i.IsPublicOrAssembly;
-                    }
                 },
                 AutoContent.ConstructIfNulls);
             // Initialisation done, no need to do it again

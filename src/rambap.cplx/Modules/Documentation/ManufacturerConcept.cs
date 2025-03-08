@@ -16,8 +16,9 @@ internal class ManufacturerConcept : IConcept<InstanceManufacturerInformation>
         // TODO : Handle case were multiples manufacturer are declared. Rigth now, multiples manufacturer override each other
         Manufacturer? manufacturer = null;
         ScanObjectContentFor<Manufacturer>(template,
-            (man, s) => manufacturer = man,
-            (t, i) => i.Name); // Call the implicit Manufacturer(string name) constructor
+            (t, i) => i.Name, // Call the implicit Manufacturer(string name) constructor
+            (man, s) => manufacturer = man
+        );
 
         return new InstanceManufacturerInformation
         {

@@ -22,8 +22,8 @@ internal class CostsConcept : IConcept<InstanceCost>
         // Calculate total native cost
         List<InstanceCost.NativeCostInfo> nativeCosts = [];
         ScanObjectContentFor<Cost>(template,
-            (c, i) => nativeCosts.Add(new(i.Name, c)),
-            AutoContent.IgnoreNulls);
+            (c, i) => nativeCosts.Add(new(i.Name, c))
+            );
 
         bool anyComponentHasACost = instance.Components.Where(c => c.Instance.Cost() != null).Any();
         bool hasACost = anyComponentHasACost || (nativeCosts.Count != 0);

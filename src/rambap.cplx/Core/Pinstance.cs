@@ -1,5 +1,9 @@
-﻿using System.Reflection;
+﻿using System.Collections.Generic;
+using System.Reflection;
+using System.Reflection.PortableExecutable;
 using rambap.cplx.Attributes;
+using rambap.cplx.Modules.Connectivity.PinstanceModel;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 using static rambap.cplx.Core.Support;
 
 namespace rambap.cplx.Core;
@@ -185,32 +189,13 @@ public class Pinstance
                 new Component(this)
                 {
                     Instance = new Pinstance(p, conf),
-                    CN = p.CNOverride ?? i.Name,
+                    CN = p.CNOverride ??
+                        (i.IsFromAndEnumerable ? $"{i.Name}_{i.IndexInEnumerable:00}" : i.Name),
                     Comment = MakeCommment(i.Comments),
                     IsPublic = i.IsPublicOrAssembly,
-                }
-                ));
-
-        // Create components from IEnumarable<Parts> properties/field
-        IEnumerable<Component> MakeNumberedParts(IEnumerable<Part> parts, PropertyOrFieldInfo info)
-        {
-            string cn_prefix = info.Name;
-            int i = 1;
-            return parts.Select(
-                p => new Component(this)
-                {
-                    Instance = new Pinstance(p, conf),
-                    CN = p.CNOverride ?? $"{cn_prefix}_{i++:00}",
-                    Comment = MakeCommment(info.Comments),
-                    IsPublic = info.IsPublicOrAssembly,
-                });
-        }
-        ScanObjectContentFor<IEnumerable<Part>>(template,
-            (l, i) =>
-            {
-                if (l is IAlternative) return; // Avoid matching on IAlternative, witch are IEnumerable<Parts>
-                components.AddRange(MakeNumberedParts(l, i));
-            });
+                }),
+            ignoredDerivedTypes : [typeof(IAlternative)] // Avoid matching on alternative, who are Ienumerable<Part>
+            );
 
         // Select and create components from Alternatives properties/fields
         ScanObjectContentFor<IAlternative>(template,
@@ -218,36 +203,15 @@ public class Pinstance
             {
                 var selectedPart = conf.Decide(a)!;
                 components.Add(
-                    new Component(this)
-                    {
-                        Instance = new Pinstance(selectedPart, conf),
-                        CN = selectedPart.CNOverride ?? i.Name,
-                        Comment = MakeCommment(i.Comments),
-                        IsPublic=i.IsPublicOrAssembly,
-                    }
-                    );
-            });
-
-        // Create components for IEnumarable<Alternatives> properties/field
-        IEnumerable<Component> MakeNumberedAlternatives(IEnumerable<IAlternative> alternatives, PropertyOrFieldInfo info)
-        {
-            string cn_prefix = info.Name;
-            int i = 1;
-            return alternatives.Select(
-                a =>
+                new Component(this)
                 {
-                    var selectedPart = conf.Decide(a)!;
-                    return new Component(this)
-                    {
-                        Instance = new Pinstance(selectedPart, conf),
-                        CN = selectedPart.CNOverride ?? $"{cn_prefix}_{i++:00}",
-                        Comment = MakeCommment(info.Comments),
-                        IsPublic = info.IsPublicOrAssembly,
-                    };
+                    Instance = new Pinstance(selectedPart, conf),
+                    CN = selectedPart.CNOverride ??
+                        (i.IsFromAndEnumerable ? $"{i.Name}_{i.IndexInEnumerable:00}" : i.Name),
+                    Comment = MakeCommment(i.Comments),
+                    IsPublic=i.IsPublicOrAssembly,
                 });
-        }
-        ScanObjectContentFor<IEnumerable<IAlternative>>(template,
-            (l, i) => components.AddRange(MakeNumberedAlternatives(l, i)));
+            });
 
         // Calculate Concepts properties
         foreach (var concept in Globals.EvaluatedConcepts)

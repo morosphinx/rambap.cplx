@@ -55,12 +55,12 @@ internal class DocumentationConcept : IConcept<InstanceDocumentation>
         }
         // Add Description defined in properties
         ScanObjectContentFor<Description>(template,
-            (d, i) => descriptions.Add(new NamedText(i.Name, d.Text)), true);
+            (d, i) => descriptions.Add(new NamedText(i.Name, d.Text)), acceptUnbacked : true);
 
         List<NamedText> links = new();
         // Add links defined in properties
         ScanObjectContentFor<Link>(template,
-            (d, i) => links.Add(new NamedText(i.Name, d.Hyperlink)), true);
+            (d, i) => links.Add(new NamedText(i.Name, d.Hyperlink)), acceptUnbacked: true);
 
         Func<Pinstance, IEnumerable<(string, IInstruction)>>? makeAdditionDocuments = null;
         if(template is IPartAdditionalDocuments a)

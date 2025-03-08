@@ -90,6 +90,8 @@ public class BasicUseCases
         ConnectorPart C01;
         ConnectorPart C02;
 
+        // Signal zeze => P01;
+
         public void Assembly_Connections(ConnectionBuilder Do)
         {
             Do.Wire(C01.Pin(1), C02.Pin(4));
