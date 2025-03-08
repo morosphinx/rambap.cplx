@@ -12,8 +12,40 @@ namespace rambap.cplx.PartProperties;
 /// </summary>
 public abstract class SignalPort : IPartProperty
 {
+    /// <summary>
+    /// A stack of Pinstance's <see cref="Port"/> e
+    /// Pinstance initialisation order must guarantee that Implementation are stacked in component order <br/>
+    /// Eg : ports lower in the stack are owned by subcomponent of upper items
+    /// </summary>
     internal Stack<Port> Implementations { get; } = new();
+
+    /// <summary>
+    /// Return the top of the <see cref="Implementations"/> stack, eg : during Pinstance initialisation, <br/>
+    /// this is equivalent to the last (= topmost) implementation of the Port
+    /// </summary>
     internal Port LocalImplementation => Implementations.Peek();
+}
+
+/// <summary>
+/// Define a connectable element, generaly electrical, on a Part. <br/>
+/// To be then used by Parts implementing <see cref="PartInterfaces.IPartConnectable"/> <br/>
+/// Define <see cref="ConnectablePort"/> as public when they can be seen and used from outside the Part.
+/// </summary>
+public class ConnectablePort : SignalPort, ISingleMateable
+{
+    public ConnectablePort SingleMateablePort => this;
+}
+
+/// <summary>
+/// Define a wireable element, generaly electrical, on a Part. <br/>
+/// To be then used by Parts implementing <see cref="PartInterfaces.IPartConnectable"/> <br/>
+/// Define <see cref="ConnectablePort"/> as public when they can be seen and used from outside the Part.
+/// </summary>
+public class WireablePort : SignalPort, ISingleWireable
+{
+    public WireablePort SingleWireablePort => this;
+}
+
 
     /* Dead code moved to Pintance model Port.cs, to clean
     public static bool AreCompatible(SignalPort A, SignalPort B)
@@ -44,24 +76,3 @@ public abstract class SignalPort : IPartProperty
         };
     }
     */
-}
-
-/// <summary>
-/// Define a connectable element, generaly electrical, on a Part. <br/>
-/// To be then used by Parts implementing <see cref="PartInterfaces.IPartConnectable"/> <br/>
-/// Define <see cref="ConnectablePort"/> as public when they can be seen and used from outside the Part.
-/// </summary>
-public class ConnectablePort : SignalPort, ISingleMateable
-{
-    public ConnectablePort SingleMateablePort => this;
-}
-
-/// <summary>
-/// Define a wireable element, generaly electrical, on a Part. <br/>
-/// To be then used by Parts implementing <see cref="PartInterfaces.IPartConnectable"/> <br/>
-/// Define <see cref="ConnectablePort"/> as public when they can be seen and used from outside the Part.
-/// </summary>
-public class WireablePort : SignalPort, ISingleWireable
-{
-    public WireablePort SingleWireablePort => this;
-}

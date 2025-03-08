@@ -125,4 +125,23 @@ public class BasicUseCases
             Do.Mate(W02.P02, U02.J02);
         }
     }
+
+    [TestMethod]
+    public void TwistedCable() => TestOutputs.WriteConnection<TwistedCablePart>();
+    class TwistedCablePart : Part, IPartConnectable
+    {
+        public ConnectablePort P01 => C01.MateFace;
+        public ConnectablePort P02 => C02.MateFace;
+
+        ConnectorPart C01;
+        ConnectorPart C02;
+
+        public void Assembly_Connections(ConnectionBuilder Do)
+        {
+            Do.Twist([
+                Do.Wire(C01.Pin(1), C02.Pin(4)),
+                Do.Wire(C01.Pin(2), C02.Pin(3)),
+            ]);
+        }
+    }
 }

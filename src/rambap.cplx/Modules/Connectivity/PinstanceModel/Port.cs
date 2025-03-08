@@ -6,19 +6,39 @@ namespace rambap.cplx.Modules.Connectivity.PinstanceModel;
 /// <summary>
 /// A <see cref="Pinstance"/> Port, implementation of a Part's <see cref="SignalPort"/>
 /// </summary>
+/// <remarks>
+/// Port are can implement either <see cref="WireablePort"/> or <see cref="ConnectablePort"/>,
+/// those differ only by their use in<see cref="PartInterfaces.ConnectivityBuilder"/>
+/// </remarks>
 public partial class Port
 {    
+    /// <summary>
+    /// True is this port is physicaly visible from outside of the Pinstance
+    /// </summary>
     public required bool IsPublic { get; init; }
+
+    /// <summary>
+    /// Pinstance owning this port
+    /// </summary>
     public required Pinstance Owner { get; init; }
 
     /// <summary>
     /// Identifier of this port, visible from outside this interface
     /// </summary>
     public required string Label { get; init; }
+
+    // TBD :
     public Signal? AssignedSignal { get; init; }
 
-    // Part model implementation
-    public SignalPort? ImplementedPort { get; private set; } // TODO : set internal
+    /// <summary>
+    /// The Part's <see cref="SignalPort"/> this class <see cref="Port"/> implement <br/>
+    /// Multiple <see cref="Port"/>s may implement the same <see cref="SignalPort"/>
+    /// </summary>
+    internal SignalPort? ImplementedPort { get; private set; }
+
+    /// <summary>
+    /// 
+    /// </summary>
     internal void Implement(SignalPort signalPort)
     {
         if (ImplementedPort != null)

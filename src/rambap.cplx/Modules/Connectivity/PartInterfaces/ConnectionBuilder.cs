@@ -1,7 +1,6 @@
 ﻿using rambap.cplx.Core;
 using rambap.cplx.PartProperties;
 using rambap.cplx.Modules.Connectivity.PinstanceModel;
-using rambap.cplx.Modules.Connectivity.Templates;
 
 #pragma warning disable IDE0130 // Namespace does not match folder structure
 namespace rambap.cplx.PartInterfaces;
@@ -52,20 +51,6 @@ public class PortBuilder : ConnectivityBuilder
         ContextPart.AssertIsOwner(target);
         target.LocalImplementation.DefineAsAnExpositionOf(sourcePort.LocalImplementation);
     }
-
-
-    public void ExposeAs(WireablePort source, WireablePort target)
-    {
-        ContextPart.AssertIsOwnedBySubComponent(source);
-        ContextPart.AssertIsOwner(target);
-        target.LocalImplementation.DefineAsAnExpositionOf(source.LocalImplementation);
-    }
-    // Helper methods
-    // The second connectable port CANNOT be an ISingleWireablePart,
-    // Because it is owned by the part, checked by AssertIsOwner()
-    public void ExposeAs(ISingleWireable sourcePart, WireablePort target)
-    => ExposeAs(sourcePart.SingleWireablePort, target);
-
     /// <summary>
     /// Same as <see cref="ExposeAs(ConnectablePort, ConnectablePort)"/>, but instead multiplesubcomponent connectors
     /// are combined into a single connection points
@@ -79,6 +64,19 @@ public class PortBuilder : ConnectivityBuilder
         ContextPart.AssertIsOwner(target);
         target.LocalImplementation.DefineAsAnExpositionOf(sources.Select(s => s.LocalImplementation));
     }
+
+
+    public void ExposeAs(WireablePort source, WireablePort target)
+    {
+        ContextPart.AssertIsOwnedBySubComponent(source);
+        ContextPart.AssertIsOwner(target);
+        target.LocalImplementation.DefineAsAnExpositionOf(source.LocalImplementation);
+    }
+    // Helper methods
+    // The second connectable port CANNOT be an ISingleWireablePart,
+    // Because it must be owned by the part, checked by AssertIsOwner()
+    public void ExposeAs(ISingleWireable sourcePart, WireablePort target)
+    => ExposeAs(sourcePart.SingleWireablePort, target);
 }
 
 

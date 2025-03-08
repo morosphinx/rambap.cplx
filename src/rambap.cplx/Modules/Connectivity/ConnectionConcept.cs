@@ -47,11 +47,14 @@ internal class ConnectionConcept : IConcept<InstanceConnectivity>
                     return null; // Port is already implemented, ignore it
             if (s.Type == PropertyOrFieldType.UnbackedProperty)
             {
-                // Express an exposition
+                // Express an exposition, exposed port must be owned by a subcomponent
                 var subPart = template.AssertIsOwnedBySubComponent(p);
                 var subInstance = subPart.ImplementingInstance;
                 var subPort = p.Implementations.Peek();
                 newPort.DefineAsAnExpositionOf(subPort);
+            } else
+            {
+                // Port 
             }
             // Register as an implementation
             newPort.Implement(p);
