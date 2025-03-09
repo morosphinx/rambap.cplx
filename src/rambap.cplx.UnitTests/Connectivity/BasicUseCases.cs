@@ -67,16 +67,26 @@ public class BasicUseCases
 
     [TestMethod]
     public void LoopbackConnector() => TestOutputs.WriteConnection<LoopbackConnectorPart>();
-    class LoopbackConnectorPart : Part, IPartConnectable
+    class LoopbackConnectorPart : Part, IPartConnectable, IPartSignalDefining
     {
         public ConnectablePort J01 => C01.MateFace;
 
         ConnectorPart C01;
 
+        Signal GND;
+        [Rename("3v3")]
+        Signal _3V3;
+
         public void Assembly_Connections(ConnectionBuilder Do)
         {
             Do.Wire(C01.Pin(1), C01.Pin(4));
             Do.Wire(C01.Pin(2), C01.Pin(3));
+        }
+
+        public void Assembly_Signals(SignalBuilder Do)
+        {
+            Do.Assign(GND, C01.Pin(1));
+            Do.Assign(_3V3, C01.Pin(2));
         }
     }
 

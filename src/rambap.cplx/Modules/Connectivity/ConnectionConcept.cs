@@ -97,33 +97,15 @@ internal class ConnectionConcept : IConcept<InstanceConnectivity>
             var connectionBuilder = new ConnectionBuilder(instance, template);
             a.Assembly_Connections(connectionBuilder);
 
+            // Run Signal assignation, if declared
+            if(template is IPartSignalDefining sd)
+            {
+                var signalBuilder = new SignalBuilder(instance, template);
+                sd.Assembly_Signals(signalBuilder);
+            }
+            //
             var selfDefinedConnection = connectionBuilder!.Connections;
             var selfDefinedWirings = connectionBuilder!.Wirings;
-            // 
-            // var groups = ConnectionHelpers.GroupConnectionsByTopmostPort(selfDefinedWirings);
-            // var wireGroupedConnections = groups.SelectMany(g =>
-            //     g.Connections.All(c => c is WiringAction)
-            //         ? [new Bundle(g.Connections.OfType<WiringAction>())]
-            //         : g.Connections);
-
-            // All Components that have a Connectivity definition are used as black boxes
-            //void AbstractConnectionDueToCable(List<Connection> /cablings, /       IEnumerable<Connector> cableConnectors)
-            //{
-            //
-            //}
-            // foreach (var c in instance.Components)
-            // {
-            //     var connectivity = c.Instance.Connectivity();
-            //     if(connectivity != null)
-            //     {
-            //         if (connectivity.IsACable)
-            //         {
-            //             var cableConnectors = // connectivity.PublicConnectors;
-            //             AbstractConnectionDueToCable// (selfDefinedConnection, cableConnectors);
-            //         }
-            //     }
-            // }
-
             var connectivity = new InstanceConnectivity()
             {
                 Connectors = portsConnectable,
@@ -136,6 +118,13 @@ internal class ConnectionConcept : IConcept<InstanceConnectivity>
         }
         else if (hasAnyPort)
         {
+            // Some port may have been defined / exposed, but no connection
+            // Run Signal assignation, if declared
+            if (template is IPartSignalDefining sd)
+            {
+                var signalBuilder = new SignalBuilder(instance, template);
+                sd.Assembly_Signals(signalBuilder);
+            }
             var connectivity = new InstanceConnectivity()
             {
                 Connectors = portsConnectable,
@@ -157,5 +146,10 @@ internal class ConnectionConcept : IConcept<InstanceConnectivity>
         if (part is ISingleWireable)
             if (connectivity.Wireables.Count > 1)
                 throw new InvalidDataException($"{part} implement {nameof(ISingleWireable)} but has more than one {nameof(WireablePort)}");
+    }
+
+    private void RunSignalAssignation(Part template)
+    {
+
     }
 }

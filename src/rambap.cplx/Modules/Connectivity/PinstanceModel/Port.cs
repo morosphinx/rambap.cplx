@@ -27,7 +27,6 @@ public partial class Port
     /// </summary>
     public bool IsPublic { get; internal set; }
 
-
     internal Port(string label, Pinstance owner, bool isPublic)
     {
         Label = label;
@@ -35,8 +34,17 @@ public partial class Port
         IsPublic = isPublic;
     }
 
-    // TBD :
-    public Signal? AssignedSignal { get; init; }
+    private Signal? assignedSignal;
+    public Signal? AssignedSignal
+    {
+        get => assignedSignal;
+        internal set
+        {
+            if (assignedSignal != null)
+                throw new InvalidOperationException("A signal is already assigned to this port");
+            assignedSignal = value;
+        }
+    }
 
     /// <summary>
     /// The Part's <see cref="SignalPort"/> this class <see cref="Port"/> implement <br/>
