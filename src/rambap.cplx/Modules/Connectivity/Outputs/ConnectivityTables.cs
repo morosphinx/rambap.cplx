@@ -55,7 +55,7 @@ public class ConnectivityTables
                     Dashes("--"),
                     ConnectedComponent(PortSide.Rigth,PortIdentity.UpperUsage,"CN", c => c.CN),
                     ConnectedStructuralEquivalenceTopmostPort(PortSide.Rigth,"Connector", c => c.Label),
-                    ConnectedPort(PortSide.Left,PortIdentity.UpperExposition,"Pin",p => p.FullDefinitionName()),
+                    ConnectedPort(PortSide.Rigth,PortIdentity.UpperExposition,"Pin",p => p.FullDefinitionName()),
                 ]
         };
 

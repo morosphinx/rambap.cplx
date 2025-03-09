@@ -37,29 +37,29 @@ internal class ConnectionConcept : IConcept<InstanceConnectivity>
         // Note that SignalPorts are do not have 1-1 relation to PropertyOrFieldInfo
         // For exemple in the case of expression backed properties
         Port? MakePort(SignalPort p, PropertyOrFieldInfo s){ // TODO : _Not_ have property or field info used here ? confusion with part property autoconstruction
-            var newPort = new Port()
-            {
+            var newPort = new Port(
                 /// Unbacked Property use the property name as the exposed connector name, otherwise default to <see cref="Part.CplxImplicitInitialization"/> method
-                Label = s.Type == PropertyOrFieldType.UnbackedProperty ? s.Name : p.Name ?? s.Name,
-                Owner = instance,
-                IsPublic = s.IsPublicOrAssembly,
-            };
-            // Prevent double implementation of local ports
+                label : s.Type == PropertyOrFieldType.UnbackedProperty ? s.Name : p.Name ?? s.Name,
+                owner : instance,
+                isPublic : s.IsPublicOrAssembly
+            );
             if (p.Implementations.TryPeek(out var partPort))
+            {
+                // There is an implementation, check that it's not on this part already
                 if (p.LocalImplementation.Owner == instance)
-                    return null; // Port is already implemented, ignore it
+                {
+                    // Double definition of a port from the same part => Override name instead
+                    p.LocalImplementation.Label = newPort.Label;
+                    p.IsPublic |= newPort.IsPublic;
+                    return null;
+                }
+            }
             if (s.Type == PropertyOrFieldType.UnbackedProperty)
             {
                 // Express an exposition, exposed port must be owned by a subcomponent
                 template.AssertIsOwnedBySubComponent(p);
                 var subPort = p.Implementations.Peek();
                 newPort.DefineAsAnExpositionOf(subPort);
-            } else
-            {
-                // Port 
-                // TBD / TODO : add a check that the port is owned by this ? 
-                // The "owner" property may be wrong if someone passed the port as a construction action ?
-                // ... But double PartProperty.Owner set should be forbiden. Is it enougth ?
             }
             // Register as an implementation
             newPort.Implement(p);

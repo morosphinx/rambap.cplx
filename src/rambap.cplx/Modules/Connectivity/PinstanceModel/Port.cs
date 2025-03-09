@@ -13,19 +13,27 @@ namespace rambap.cplx.Modules.Connectivity.PinstanceModel;
 public partial class Port
 {    
     /// <summary>
-    /// True is this port is physicaly visible from outside of the Pinstance
+    /// Identifier of this port, visible from outside this interface
     /// </summary>
-    public required bool IsPublic { get; init; }
+    public string Label { get; internal set ; }
 
     /// <summary>
     /// Pinstance owning this port
     /// </summary>
-    public required Pinstance Owner { get; init; }
+    public Pinstance Owner { get; }
 
     /// <summary>
-    /// Identifier of this port, visible from outside this interface
+    /// True is this port is physicaly visible from outside of the Pinstance
     /// </summary>
-    public required string Label { get; init; }
+    public bool IsPublic { get; internal set; }
+
+
+    internal Port(string label, Pinstance owner, bool isPublic)
+    {
+        Label = label;
+        Owner = owner;
+        IsPublic = isPublic;
+    }
 
     // TBD :
     public Signal? AssignedSignal { get; init; }
