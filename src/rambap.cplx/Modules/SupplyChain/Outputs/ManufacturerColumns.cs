@@ -1,7 +1,7 @@
 ﻿using rambap.cplx.Export.Tables;
 using rambap.cplx.Modules.Base.Output;
 
-namespace rambap.cplx.Modules.Documentation.Outputs;
+namespace rambap.cplx.Modules.SupplyChain.Outputs;
 
 public static class ManufacturerColumns
 {

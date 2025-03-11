@@ -12,7 +12,7 @@ public static class Globals
     public static List<IConcept> EvaluatedConcepts =
         [
             new Modules.Documentation.DocumentationConcept(),
-            new Modules.Documentation.ManufacturerConcept(),
+            new Modules.SupplyChain.ManufacturerConcept(),
             new Modules.Costing.CostsConcept(),
             new Modules.Costing.TasksConcept(),
             new Modules.Racking.SlotConcept(),

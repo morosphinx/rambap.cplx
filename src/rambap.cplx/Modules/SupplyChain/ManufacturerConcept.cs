@@ -2,11 +2,11 @@
 using rambap.cplx.PartProperties;
 using static rambap.cplx.Core.Support;
 
-namespace rambap.cplx.Modules.Documentation;
+namespace rambap.cplx.Modules.SupplyChain;
 
 public class InstanceManufacturerInformation : IInstanceConceptProperty
 {
-    public Company? Company { get; set; }
+    public Entity? Company { get; set; }
 }
 
 internal class ManufacturerConcept : IConcept<InstanceManufacturerInformation>

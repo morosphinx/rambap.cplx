@@ -60,7 +60,7 @@ public static class CostTables
         {
             Iterator = new ComponentPropertyIterator<InstanceCost.NativeCostInfo>()
             {
-                PropertyIterator = (c) => c.Instance.Cost()?.NativeCosts ?? new(),
+                PropertyIterator = (c) => c.Instance.Cost()?.NativeCosts.AsEnumerable() ?? [],
                 GroupPNsAtSameLocation = true,
                 StackPropertiesSingleChildBranches = true,
             },
