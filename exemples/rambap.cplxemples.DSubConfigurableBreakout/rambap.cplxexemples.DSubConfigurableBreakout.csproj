@@ -15,4 +15,8 @@
     <PackageReference Include="rambap.cplx.Core" Version="0.1.0-alphb.16" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\rambap.cplxemples.CableLibrary\rambap.cplxexemples.CableLibrary.csproj" />
+  </ItemGroup>
+
 </Project>

@@ -4,7 +4,7 @@ using rambap.cplx.Export.TextFiles;
 using rambap.cplx.Modules.Connectivity.Outputs;
 using System.Diagnostics;
 
-namespace rambap.cplxexemple.DSubConfigurableBreakout;
+namespace rambap.cplxexemples.DSubConfigurableBreakout;
 
 internal class Program
 {

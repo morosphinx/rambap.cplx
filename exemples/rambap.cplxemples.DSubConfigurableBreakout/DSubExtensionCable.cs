@@ -1,4 +1,5 @@
-﻿namespace rambap.cplxexemple.DSubConfigurableBreakout; 
+﻿using rambap.cplxexemples.CableLibrary;
+namespace rambap.cplxexemples.DSubConfigurableBreakout; 
 
 public class DSubExtensionCable : Part, IPartConnectable
 {
@@ -31,6 +32,7 @@ public class Wire : Part
 
 public class CableBundle : Part
 {
+    cplxexemples.CableLibrary.MyPart mypart;
     DSubExtensionCable W01 = new DSubExtensionCable(DIN41652_PinCounts._09);
     DSubExtensionCable W02 = new DSubExtensionCable(DIN41652_PinCounts._15);
 }

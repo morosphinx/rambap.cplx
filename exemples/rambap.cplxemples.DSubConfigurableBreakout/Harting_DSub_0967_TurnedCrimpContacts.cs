@@ -1,6 +1,6 @@
 ﻿using rambap.cplx.Modules.Connectivity.Templates;
 
-namespace rambap.cplxexemple.DSubConfigurableBreakout;
+namespace rambap.cplxexemples.DSubConfigurableBreakout;
 
 /// <summary>
 /// Parametric part for Harting D-Sub DIN 41 652 · CECC 75 301-802 

@@ -1,9 +1,9 @@
 ﻿using rambap.cplx.Modules.Connectivity.Templates;
-using static rambap.cplxexemple.DSubConfigurableBreakout.Harting_DSub_0967_TurnedCrimpContacts;
-using static rambap.cplxexemple.DSubConfigurableBreakout.Harting_DSub_0967_CrimpTerminal;
+using static rambap.cplxexemples.DSubConfigurableBreakout.Harting_DSub_0967_TurnedCrimpContacts;
+using static rambap.cplxexemples.DSubConfigurableBreakout.Harting_DSub_0967_CrimpTerminal;
 
 
-namespace rambap.cplxexemple.DSubConfigurableBreakout;
+namespace rambap.cplxexemples.DSubConfigurableBreakout;
 
 internal class Harting_DSub_0967_CrimpAssembly : Connector
 {

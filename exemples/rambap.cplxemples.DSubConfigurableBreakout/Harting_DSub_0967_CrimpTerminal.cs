@@ -1,4 +1,4 @@
-﻿namespace rambap.cplxexemple.DSubConfigurableBreakout;
+﻿namespace rambap.cplxexemples.DSubConfigurableBreakout;
 
 
 public enum DIN41652_PinCounts
