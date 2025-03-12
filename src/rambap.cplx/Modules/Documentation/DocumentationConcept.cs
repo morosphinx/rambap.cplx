@@ -35,7 +35,7 @@ public class InstanceDocumentation : IInstanceConceptProperty
         else return firstDesc;
     }
 
-    // 
+    // TBD : method to have each part define localy some kind of output it wants
     public Func<Pinstance, IEnumerable<(string, IInstruction)>>? MakeAdditionalDocuments { get; init; }
 }
 
@@ -61,6 +61,19 @@ internal class DocumentationConcept : IConcept<InstanceDocumentation>
         // Add links defined in properties
         ScanObjectContentFor<Link>(template,
             (d, i) => links.Add(new NamedText(i.Name, d.Hyperlink)), acceptUnbacked: true);
+
+        // Add links defined in supplier info
+        void AddSupplierLinkIfPresent(SupplierOffer offer)
+        {
+            if(offer.Link != null)
+            {
+                var linkName = $"{offer.Supplier}";
+                links.Add(new NamedText(linkName, offer.Link));
+            }
+        }
+        ScanObjectContentFor<SupplierOffer>(template,
+            (c, i) => AddSupplierLinkIfPresent(c));
+
 
         Func<Pinstance, IEnumerable<(string, IInstruction)>>? makeAdditionDocuments = null;
         if(template is IPartAdditionalDocuments a)

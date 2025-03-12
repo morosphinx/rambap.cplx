@@ -50,5 +50,23 @@ public static class SystemViewTables
                 DescriptionColumns.PartLink(),
             ],
         };
+
+    public static TableProducer<ICplxContent> BillOfMaterials()
+    => new()
+    {
+        Iterator = new PartTypesIterator<object>()
+        {
+            WriteBranches = true,
+        },
+        Columns = [
+            CommonColumns.LineTypeNumber(),
+            IDColumns.PartNumber(),
+            DescriptionColumns.PartCommonName(hideIfEqualPN : true),
+            CommonColumns.ComponentTotalCount(),
+            SupplyChain.Outputs.SupplierColumns.SupplierName(),
+            SupplyChain.Outputs.SupplierColumns.SupplierPN(),
+            SupplyChain.Outputs.SupplierColumns.SupplierLink(),
+        ],
+    };
 }
 

@@ -1,7 +1,6 @@
 ﻿using rambap.cplx.Attributes;
 using System.Reflection;
 using System.Runtime.CompilerServices;
-using System.Xml.Linq;
 
 // Unit testing access some internal properties : 
 [assembly: InternalsVisibleTo("rambap.cplx.UnitTests")]
@@ -118,7 +117,7 @@ internal static class Support
 
         bool constructNulls = contentMode == AutoContent.ConstructIfNulls;
         bool acceptNulls = contentMode == AutoContent.AcceptNulls;
-        bool acceptEnumerables = true;
+        bool acceptEnumerables = true; // TODO / TBD : make this a parameter ?
 
         // Object's field and properties are evaluated, starting with the parent classes.
         foreach (var evalType in typeStack)
