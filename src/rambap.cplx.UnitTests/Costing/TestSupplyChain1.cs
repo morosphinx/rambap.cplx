@@ -6,14 +6,14 @@ internal class PartWithSupplier1 : Part
 {
     SupplierOffer Offer1 = new()
     {
-        Price = 45,
+        Cost = 45,
         Supplier = "RS",
         Link = "www.rs.com",
     };
 
     SupplierOffer UnselectedOffer = new()
     {
-        Price = 52,
+        Cost = 52,
         Supplier = "RP",
         Link = "www.rp.com",
     };

@@ -10,7 +10,7 @@ public abstract class Entity
 /// <summary>
 /// Helper class that serves as a placeholder during part construction to specify an Entity by string
 /// </summary>
-internal sealed class UnspecifiedCompanyKey : Entity
+internal sealed class UnspecifiedEntityKey : Entity
 {
     public override required string Name { get; init; }
 }

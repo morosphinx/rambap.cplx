@@ -11,7 +11,13 @@ public class InstanceCost : IInstanceConceptProperty
     public record NativeCostInfo(string name, Cost value);
 
     public required ReadOnlyCollection<NativeCostInfo> NativeCosts { get; init; }
-    public required ReadOnlyCollection<SupplierOffer> AvailableOffers { get; init; }
+
+    /// <summary>
+    /// List of offers to this part.<br/>
+    /// Mutable, as offers may be added after instantiation through <see cref="Modules.SupplyChain.WorldModel.Quotation"/>
+    /// </summary>
+    public required List<SupplierOffer> AvailableOffers { get; init; }
+
     private SupplierOffer? selectedOffer;
     public SupplierOffer? SelectedOffer
     {
@@ -24,7 +30,7 @@ public class InstanceCost : IInstanceConceptProperty
             else selectedOffer = value;
         }
     }
-    public Cost SupplierCost()
+    public Cost SupplierPrice()
     {
         if (AvailableOffers.Count() == 0) return 0; // Part may not use supplier, it's ok to not have any offer defined
         else if (selectedOffer == null)
@@ -34,7 +40,12 @@ public class InstanceCost : IInstanceConceptProperty
 
     public required decimal Native { get; init; }
     public required decimal Composed { get; init; }
-    public decimal Total => Native + Composed + SupplierCost().Price;
+
+    public static bool SupplierCostIsReplacement { get; set; } = true;
+    public decimal Total =>
+        AvailableOffers.Count() > 0 && SupplierCostIsReplacement // There ar offer, and we are using offers only
+        ? SupplierPrice().Price // Only the offer Price
+        : Native + Composed + SupplierPrice().Price;
 }
 
 internal class CostsConcept : IConcept<InstanceCost>
@@ -61,7 +72,7 @@ internal class CostsConcept : IConcept<InstanceCost>
         return new InstanceCost()
         {
             NativeCosts = nativeCosts.AsReadOnly(),
-            AvailableOffers = offers.AsReadOnly(),
+            AvailableOffers = offers,
             SelectedOffer = offers.FirstOrDefault(),
             Native = totalnativeCost,
             Composed = composedCost

@@ -8,6 +8,6 @@ public sealed class Manufacturer
 
     public static implicit operator Manufacturer(Entity company) => new Manufacturer() { Company = company };
 
-    public static implicit operator Manufacturer(string name) => new UnspecifiedCompanyKey() { Name = name };
+    public static implicit operator Manufacturer(string name) => new UnspecifiedEntityKey() { Name = name };
 }
 

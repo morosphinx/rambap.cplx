@@ -8,5 +8,5 @@ public sealed class Supplier
 
     public static implicit operator Supplier(Entity company) => new Supplier() { Company = company };
 
-    public static implicit operator Supplier(string name) => new UnspecifiedCompanyKey() { Name = name };
+    public static implicit operator Supplier(string name) => new UnspecifiedEntityKey() { Name = name };
 }
