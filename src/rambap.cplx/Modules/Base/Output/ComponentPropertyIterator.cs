@@ -2,18 +2,18 @@
 
 namespace rambap.cplx.Modules.Base.Output;
 
-public class ComponentPropertyIterator<T> : ComponentIterator
+public class ComponentPropertyIterator<P> : ComponentIterator
 {
     protected sealed class IterationItem_Property : IIterationItem
     {
         public required RecursionLocation Location { get; init; }
 
         public required IEnumerable<Component> Components { get; init; }
-        public required T Property { get; init; }
+        public required P Property { get; init; }
 
         public IEnumerable<ICplxContent> GetRecursionBreakContent()
         {
-            yield return new LeafProperty<T>(Location, Components)
+            yield return new LeafProperty<P>(Location, Components)
             {
                 Property = Property,
                 IsLeafBecause = LeafCause.RecursionBreak
@@ -25,7 +25,7 @@ public class ComponentPropertyIterator<T> : ComponentIterator
             bool isLeafDueToNoChild = subItems.Count() == 0; ;
             if (isLeafDueToNoChild)
             {
-                yield return new LeafProperty<T>(Location, Components)
+                yield return new LeafProperty<P>(Location, Components)
                 {
                     Property = Property,
                     IsLeafBecause = LeafCause.NoChild
@@ -33,7 +33,7 @@ public class ComponentPropertyIterator<T> : ComponentIterator
             }
             else
             {
-                yield return new BranchProperty<T>(Location, Components)
+                yield return new BranchProperty<P>(Location, Components)
                 {
                     Property = Property,
                 };
@@ -45,7 +45,7 @@ public class ComponentPropertyIterator<T> : ComponentIterator
     {
         public required RecursionLocation Location { get; init; }
         public required IEnumerable<Component> Components { get; init; }
-        public required T Property { get; init; }
+        public required P Property { get; init; }
 
         public IEnumerable<ICplxContent> GetRecursionBreakContent()
         {
@@ -57,14 +57,14 @@ public class ComponentPropertyIterator<T> : ComponentIterator
             bool isLeafDueToNoChild = subItems.Count() == 0; ;
             if (isLeafDueToNoChild)
             {
-                yield return new LeafProperty<T>(Location, Components)
+                yield return new LeafProperty<P>(Location, Components)
                 {
                     Property = Property,
                     IsLeafBecause = LeafCause.SingleStackedPropertyChild
                 };
             } else
             {
-                yield return new BranchProperty<T>(Location, Components)
+                yield return new BranchProperty<P>(Location, Components)
                 {
                     Property = Property,
                 };
@@ -73,7 +73,7 @@ public class ComponentPropertyIterator<T> : ComponentIterator
     }
     protected sealed class IterationItem_GroupWithPrecomputedProperties : IterationItem_ComponentGroup
     {
-        public required List<T> Properties { get; init; }
+        public required List<P> Properties { get; init; }
     }
 
 
@@ -81,11 +81,11 @@ public class ComponentPropertyIterator<T> : ComponentIterator
     /// Define a final level of iteration on of components
     /// Leave this empty to return no properties items
     /// </summary>
-    public required Func<Component, IEnumerable<T>> PropertyIterator { private get; init; }
+    public required Func<Component, IEnumerable<P>> PropertyIterator { private get; init; }
 
     public bool StackPropertiesSingleChildBranches { private get; init; } = true;
 
-    public Func<T, IEnumerable<T>>? PropertySubIterator { private get; init; }
+    public Func<P, IEnumerable<P>>? PropertySubIterator { private get; init; }
 
     protected override IEnumerable<IIterationItem> GetChilds(IIterationItem iterationTarget, LocationBuilder loc)
     {

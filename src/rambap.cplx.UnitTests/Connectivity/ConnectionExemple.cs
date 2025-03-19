@@ -1,5 +1,5 @@
 ﻿using rambap.cplx.Modules.Connectivity.Templates;
-using static rambap.cplx.Modules.Connectivity.Outputs.ConnectivityColumns;
+using static rambap.cplx.Modules.Connectivity.Outputs.ConnectionColumns;
 
 namespace rambap.cplx.UnitTests.Connectivity;
 

@@ -1,5 +1,6 @@
-﻿using rambap.cplx.Modules.Connectivity.Templates;
-using static rambap.cplx.Modules.Connectivity.Outputs.ConnectivityColumns;
+﻿using rambap.cplx.Modules.Connectivity.PinstanceModel;
+using rambap.cplx.Modules.Connectivity.Templates;
+using static rambap.cplx.Modules.Connectivity.Outputs.ConnectionColumns;
 
 namespace rambap.cplx.UnitTests.Connectivity;
 
@@ -92,7 +93,7 @@ public class BasicUseCases
 
     [TestMethod]
     public void SimpleCable() => TestOutputs.WriteConnection<SimpleCablePart>();
-    class SimpleCablePart : Part, IPartConnectable
+    class SimpleCablePart : Part, IPartConnectable, IPartSignalDefining
     {
         public ConnectablePort P01 => C01.MateFace;
         public ConnectablePort P02 => C02.MateFace;
@@ -100,12 +101,19 @@ public class BasicUseCases
         ConnectorPart C01;
         ConnectorPart C02;
 
-        // Signal zeze => P01;
+        Signal TX;
+        Signal RX;
 
         public void Assembly_Connections(ConnectionBuilder Do)
         {
             Do.Wire(C01.Pin(1), C02.Pin(4));
             Do.Wire(C01.Pin(2), C02.Pin(3));
+        }
+
+        public void Assembly_Signals(SignalBuilder Do)
+        {
+            Do.Assign(TX, C01.Pin(1));
+            Do.Assign(RX, C01.Pin(2));
         }
     }
 
@@ -154,6 +162,48 @@ public class BasicUseCases
                 Do.Wire(C01.Pin(1), C02.Pin(4)),
                 Do.Wire(C01.Pin(2), C02.Pin(3)),
             ]);
+        }
+    }
+
+    [TestMethod]
+    public void PredefinedSignalConnector() => TestOutputs.WriteConnection<PredefinedSignalConnectorPart>();
+    class PredefinedSignalConnectorPart : Connector<PinPart>, IPartSignalDefining
+    {
+        public PredefinedSignalConnectorPart() : base(9){}
+
+        Signal DCD, RxD, TxD, DTR, GND, DSR, RTS, CTS, RI;
+
+        public void Assembly_Signals(SignalBuilder Do)
+        {
+            Do.Assign(DCD, Pin(1));
+            Do.Assign(RxD, Pin(2));
+            Do.Assign(TxD, Pin(3));
+            Do.Assign(DTR, Pin(4));
+            Do.Assign(GND, Pin(5));
+            Do.Assign(DSR, Pin(6));
+            Do.Assign(RTS, Pin(7));
+            Do.Assign(CTS, Pin(8));
+            Do.Assign(RI,  Pin(9));
+        }
+    }
+
+    [TestMethod]
+    public void PredefinedPortBlackbox() => TestOutputs.WriteConnection<PredefinedPortBlackboxPart>();
+    class PredefinedPortBlackboxPart : Part, IPartConnectable
+    {
+        PredefinedSignalConnectorPart C01;
+        PredefinedSignalConnectorPart C02;
+        PredefinedSignalConnectorPart C03;
+
+        public ConnectablePort P01 => C01;
+        public ConnectablePort P02 => C02;
+
+        public void Assembly_Connections(ConnectionBuilder Do)
+        {
+            foreach(var i in Enumerable.Range(1, C01.PinCount))
+            {
+                Do.Wire(C01.Pin(i), C02.Pin(i));
+            }
         }
     }
 }

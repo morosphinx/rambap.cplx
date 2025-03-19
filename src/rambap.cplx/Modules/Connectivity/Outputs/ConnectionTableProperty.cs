@@ -1,10 +1,11 @@
 ﻿using rambap.cplx.PartProperties;
 using rambap.cplx.Modules.Connectivity.PinstanceModel;
 using rambap.cplx.Core;
+using rambap.cplx.Modules.Base.Output;
 
 namespace rambap.cplx.Modules.Connectivity.Outputs;
 
-public class ConnectivityTableContent
+public class ConnectionTableProperty
 {
     public enum PortSide
     {
@@ -65,7 +66,7 @@ public class ConnectivityTableContent
 
         } else return null;
     }
-    public PinstanceModel.Port? GetCableConnectionPort(PortSide side)
+    public Port? GetCableConnectionPort(PortSide side)
     {
         if (Connection is Cable c)
         {
@@ -103,4 +104,22 @@ public class ConnectivityTableContent
             Shield => ConnectionKind.Shield,
             _ => throw new NotImplementedException(),
         };
+
+    public Signal? GetUpperSignal(PortSide side)
+    {
+        return side switch
+        {
+            PortSide.Left => Connection.LeftPort.GetUpperSignal(),
+            PortSide.Rigth => Connection.RightPort.GetUpperSignal(),
+            _ => throw new NotImplementedException(),
+        };
+    }
+    public string GetLikelySignal(string separator = " / ")
+    {
+        IEnumerable<Signal?> signals = [GetUpperSignal(PortSide.Left), GetUpperSignal(PortSide.Rigth)];
+        var signalNames = signals.Where(s => s != null)
+            .Select(s => s!.Name)
+            .Distinct();
+        return string.Join(separator, signalNames);
+    }
 }

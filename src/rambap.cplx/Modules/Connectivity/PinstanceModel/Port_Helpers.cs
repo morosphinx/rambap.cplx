@@ -44,6 +44,12 @@ public partial class Port
             throw new InvalidOperationException("No Structural equivalence on this port");
     }
 
+    public Signal? GetUpperSignal()
+        => GetExpositionColumn()
+            .Select(p => p.AssignedSignal)
+            .Where(s => s != null)
+            .FirstOrDefault();
+
     internal Port GetUpperUsage()
     {
         return Usage switch

@@ -3,7 +3,7 @@ using rambap.cplx.Export.TextFiles;
 using rambap.cplx.Export.Tables;
 using rambap.cplx.Modules.Base.Output;
 using rambap.cplx.Modules.Costing.Outputs;
-using static rambap.cplx.Modules.Connectivity.Outputs.ConnectivityColumns;
+using static rambap.cplx.Modules.Connectivity.Outputs.ConnectionColumns;
 
 namespace rambap.cplx.Export;
 

@@ -93,7 +93,7 @@ public class TestSimpleCableContainer
         //Assert.AreEqual(expectedBoxConnectionCount, connectivity!.Connections.Count);
 
         // TODO : change to use an iterator here, does not recurse by itself anymore (used to have a parameter for it here)
-        var connections = ConnectivityTableIterator.GetAllConnections(instance, ConnectivityTableIterator.ConnectionKind.Assembly);
+        var connections = ConnectivityTables.GetAllConnections(instance, ConnectivityTables.ConnectionKind.Assembly);
         Assert.AreEqual(expectedBoxConnectionCount, connections.Count());
         
         // TODO : Assert End To end Link

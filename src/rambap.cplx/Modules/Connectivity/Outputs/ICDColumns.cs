@@ -15,7 +15,7 @@ public static class ICDColumns
             i => i switch
             {
                 IPureComponentContent c => c.Component.CN,
-                IPropertyContent<ICDTableContentProperty> p => p.Property.Port.GetUpperUsage().Owner.CN ?? "",
+                IPropertyContent<ICDTableProperty> p => p.Property.Port.GetUpperUsage().Owner.CN ?? "",
                 _ => throw new NotImplementedException(),
             });
 
@@ -26,7 +26,7 @@ public static class ICDColumns
             i => i switch
             {
                 IPureComponentContent c => "",
-                IPropertyContent<ICDTableContentProperty> p => p.Property.Port.GetUpperUsage().Label,
+                IPropertyContent<ICDTableProperty> p => p.Property.Port.GetUpperUsage().Label,
                 _ => throw new NotImplementedException(),
             });
 
@@ -37,7 +37,7 @@ public static class ICDColumns
             i => i switch
             {
                 IPureComponentContent c => "",
-                IPropertyContent<ICDTableContentProperty> p => p.Property.Port.GetUpperExposition().Label,
+                IPropertyContent<ICDTableProperty> p => p.Property.Port.GetUpperExposition().Label,
                 _ => throw new NotImplementedException(),
             });
 
@@ -48,7 +48,7 @@ public static class ICDColumns
             i => i switch
             {
                 IPureComponentContent c => "",
-                IPropertyContent<ICDTableContentProperty> p => "",
+                IPropertyContent<ICDTableProperty> p => "",
                 _ => throw new NotImplementedException(),
             });
 
@@ -59,7 +59,7 @@ public static class ICDColumns
             i => i switch
             {
                 IPureComponentContent c => "",
-                IPropertyContent<ICDTableContentProperty> p => p.Property.Port.Label,
+                IPropertyContent<ICDTableProperty> p => p.Property.Port.Label,
                 _ => throw new NotImplementedException(),
             });
 }

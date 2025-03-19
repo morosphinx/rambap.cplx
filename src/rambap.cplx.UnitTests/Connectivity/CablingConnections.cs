@@ -1,7 +1,7 @@
 ﻿using rambap.cplx.Export.TextFiles;
 using rambap.cplx.Modules.Connectivity.Outputs;
 using rambap.cplx.UnitTests.Connectivity;
-using static rambap.cplx.Modules.Connectivity.Outputs.ConnectivityColumns;
+using static rambap.cplx.Modules.Connectivity.Outputs.ConnectionColumns;
 
 namespace rambap.cplx.UnitTests.Connectivity;
 

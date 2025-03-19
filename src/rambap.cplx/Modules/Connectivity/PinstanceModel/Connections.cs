@@ -1,7 +1,5 @@
 ﻿using rambap.cplx.Core;
-using rambap.cplx.Modules.Connectivity.Templates;
 using rambap.cplx.PartProperties;
-using System.Runtime.CompilerServices;
 
 namespace rambap.cplx.Modules.Connectivity.PinstanceModel;
 

@@ -1,25 +1,94 @@
 ﻿using rambap.cplx.Export.Tables;
 using rambap.cplx.Modules.Base.Output;
 using static rambap.cplx.Modules.Base.Output.CommonColumns;
-using static rambap.cplx.Modules.Connectivity.Outputs.ConnectivityTableContent;
-using static rambap.cplx.Modules.Connectivity.Outputs.ConnectivityColumns;
+using static rambap.cplx.Modules.Connectivity.Outputs.ConnectionTableProperty;
+using static rambap.cplx.Modules.Connectivity.Outputs.ConnectionColumns;
+using rambap.cplx.Core;
+using rambap.cplx.Modules.Connectivity.PinstanceModel;
+using static rambap.cplx.Modules.Connectivity.Outputs.ICDTableIterator;
 
 namespace rambap.cplx.Modules.Connectivity.Outputs;
 
 public class ConnectivityTables
 {
+    // Connection tables
+
+    public enum ConnectionKind
+    {
+        Assembly,
+        Wiring
+    }
+
+    private static IEnumerable<ConnectionTableProperty> GetConnectivityTableProperties(
+        Component c,
+        ConnectionKind iteratedConnectionKind)
+    {
+        var instance = c.Instance;
+        var connectivity = instance.Connectivity()!; // Throw if no connectivity definition
+        var connections = GetAllConnections(instance, iteratedConnectionKind);
+        // var connectionsFlattened = connections.SelectMany(c => c.Connections);
+
+        // TODO / TBD : grouping previously happenned at global level. npt equivalent to grouping in
+        // post trandform ?
+
+        var connectionsGrouped = ConnectionHelpers.GroupConnectionsByPath(connections);
+
+        foreach (var group in connectionsGrouped)
+        {
+            var groupLeftConnector = group.LeftTopMost;
+            var groupRightConnector = group.RigthTopMost;
+            foreach (var connection in group.Connections)
+            {
+                bool shouldReverse = connection.LeftPort.GetUpperUsage() != groupLeftConnector;
+                if (shouldReverse)
+                    yield return new ConnectionTableProperty()
+                    {
+                        Connection = connection,
+                        // Invert left/Rigth of group
+                        LeftUpperUsagePort = groupRightConnector,
+                        RigthUpperUsagePort = groupLeftConnector
+                    };
+                else
+                    yield return new ConnectionTableProperty()
+                    {
+                        Connection = connection,
+                        LeftUpperUsagePort = groupLeftConnector,
+                        RigthUpperUsagePort = groupRightConnector
+                    };
+            }
+        }
+    }
+
+    public static IEnumerable<SignalPortConnection> GetAllConnections(Pinstance instance, ConnectionKind connectionKind)
+    {
+        // Return all connection, NOT flattening grouped ones (Twisting / Sielding)
+        switch (connectionKind)
+        {
+            case ConnectionKind.Assembly:
+                foreach (var c in instance.Connectivity()?.Connections ?? [])
+                    yield return c;
+                break;
+            case ConnectionKind.Wiring:
+                foreach (var c in instance.Connectivity()?.Wirings ?? [])
+                    yield return c;
+                break;
+        }
+    }
+
     public static TableProducer<ICplxContent> ConnectionTable()
         => new TableProducer<ICplxContent>()
         {
-            Iterator = new ComponentPropertyIterator<ConnectivityTableContent>()
+            Iterator = new ComponentPropertyIterator<ConnectionTableProperty>()
             {
-                PropertyIterator = c => ConnectivityTableIterator.MakeConnectivityTableContent(
-                    c, ConnectivityTableIterator.ConnectionKind.Assembly),
+                PropertyIterator = c => GetConnectivityTableProperties(
+                    c, ConnectionKind.Assembly),
                 WriteBranches = false,
                 RecursionCondition = (c, l) => true,
             },
             ContentTransform = cs => cs.Where(c => c is not IPureComponentContent),
             Columns = [
+                    MakeConnectivityColumn("Signal", false, c => c.GetLikelySignal()),
+                    Dashes("--"),
                     ConnectedComponent(PortSide.Left,PortIdentity.UpperUsage,"CID", c => c?.CID(" / ") ?? "."),
                     ConnectedPort(PortSide.Left,PortIdentity.UpperUsage,"Port", c => c.Label),
                     Dashes("--"),
@@ -38,10 +107,10 @@ public class ConnectivityTables
     public static TableProducer<ICplxContent> WiringTable()
         => new TableProducer<ICplxContent>()
         {
-            Iterator = new ComponentPropertyIterator<ConnectivityTableContent>()
+            Iterator = new ComponentPropertyIterator<ConnectionTableProperty>()
             {
-                PropertyIterator = c => ConnectivityTableIterator.MakeConnectivityTableContent(
-                    c, ConnectivityTableIterator.ConnectionKind.Wiring),
+                PropertyIterator = c => GetConnectivityTableProperties(
+                    c, ConnectionKind.Wiring),
                 WriteBranches = false,
                 RecursionCondition = (c,l) => true,
             },
@@ -51,23 +120,49 @@ public class ConnectivityTables
                     ConnectedStructuralEquivalenceTopmostPort(PortSide.Left,"Connector", c => c.Label),
                     ConnectedPort(PortSide.Left,PortIdentity.UpperExposition,"Pin",p => p.FullDefinitionName()),
                     Dashes("--"),
-                    ConnectedPort(PortSide.Left,PortIdentity.Self,"Signal_L", p => p.AssignedSignal?.Name ?? ""),
-                    ConnectedPort(PortSide.Rigth,PortIdentity.Self,"Signal_R", p => p.AssignedSignal?.Name ?? ""),
-                    Dashes("--"),
                     ConnectedComponent(PortSide.Rigth,PortIdentity.UpperUsage,"CN", c => c.CN),
                     ConnectedStructuralEquivalenceTopmostPort(PortSide.Rigth,"Connector", c => c.Label),
                     ConnectedPort(PortSide.Rigth,PortIdentity.UpperExposition,"Pin",p => p.FullDefinitionName()),
+                    Dashes("--"),
+                    MakeConnectivityColumn("Signal", false, c => c.GetLikelySignal()),
                 ]
         };
+
+    // ICD Table
+
+    private static IEnumerable<ICDTableProperty> SelectPublicTopmostConnectors(Component component)
+    {
+        var connectivity = component.Instance.Connectivity();
+        if (connectivity != null)
+        {
+            var publicConnectors = connectivity.Connectors.Where(c => c.IsPublic);
+            var publicTopMostConnectors = publicConnectors.Where(c => c.GetUpperUsage() == c);
+            foreach (var con in publicTopMostConnectors)
+            {
+                yield return new ICDTableProperty() { Port = con };
+            }
+        }
+    }
+    private static IEnumerable<ICDTableProperty> SelectConnectorSubs(ICDTableProperty content)
+    {
+        var port = content.Port;
+        // if (port.Definition is PortDefinition_Combined def)
+        {
+            var subConnectors = port.Definition!.SubPorts;
+            foreach (var con in subConnectors)
+            {
+                yield return new ICDTableProperty() { Port = con };
+            }
+        }
+    }
 
     public static TableProducer<ICplxContent> InterfaceControlDocumentTable()
         => new TableProducer<ICplxContent>()
         {
-            Iterator = new ComponentPropertyIterator<ICDTableIterator.ICDTableContentProperty>()
+            Iterator = new ComponentPropertyIterator<ICDTableIterator.ICDTableProperty>()
             {
-
-                PropertyIterator = ICDTableIterator.SelectPublicTopmostConnectors,
-                PropertySubIterator = ICDTableIterator.SelectConnectorSubs,
+                PropertyIterator = SelectPublicTopmostConnectors,
+                PropertySubIterator = SelectConnectorSubs,
                 RecursionCondition = (c, l) => c.IsPublic,
                 WriteBranches = true,
                 GroupPNsAtSameLocation = false,
@@ -76,11 +171,11 @@ public class ConnectivityTables
             ContentTransform = contents => contents.Where(c =>
                 c switch
                 {
-                    IPropertyContent<ICDTableIterator.ICDTableContentProperty> lp => true,
+                    IPropertyContent<ICDTableIterator.ICDTableProperty> lp => true,
                     _ => c.Component.IsPublic, // Private part are still present as leaf, we remove them
                 }),
             Columns = [
-                    IDColumns.ComponentNumberPrettyTree<ICDTableIterator.ICDTableContentProperty>(
+                    IDColumns.ComponentNumberPrettyTree<ICDTableIterator.ICDTableProperty>(
                         i =>
                         {
                             var prop = i.Property;

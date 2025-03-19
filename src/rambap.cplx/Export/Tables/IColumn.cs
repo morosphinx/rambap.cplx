@@ -61,7 +61,7 @@ public static class IColumnExtensions
 /// <summary>
 /// Define the content, and construction, of a table Column
 /// </summary>
-public interface IColumn<T> : IColumn
+public interface IColumn<in T> : IColumn
 {
     /// <summary>
     /// Return text to be written in each line's cell

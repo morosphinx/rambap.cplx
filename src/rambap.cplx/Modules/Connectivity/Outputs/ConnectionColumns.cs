@@ -2,20 +2,20 @@
 using rambap.cplx.Export.Tables;
 using rambap.cplx.Modules.Base.Output;
 using rambap.cplx.Modules.Connectivity.PinstanceModel;
-using static rambap.cplx.Modules.Connectivity.Outputs.ConnectivityTableContent;
+using static rambap.cplx.Modules.Connectivity.Outputs.ConnectionTableProperty;
 
 namespace rambap.cplx.Modules.Connectivity.Outputs;
 
-public static class ConnectivityColumns
+public static class ConnectionColumns
 {
     public static DelegateColumn<ICplxContent> MakeConnectivityColumn(
-        string columnName, bool format, Func<ConnectivityTableContent, string> getter)
+        string columnName, bool format, Func<ConnectionTableProperty, string> getter)
         => new DelegateColumn<ICplxContent>(
             columnName,
             format ? ColumnTypeHint.StringFormatable : ColumnTypeHint.StringExact,
             i => i switch
             {
-                IPropertyContent<ConnectivityTableContent> c => getter(c.Property),
+                IPropertyContent<ConnectionTableProperty> c => getter(c.Property),
                 _ => throw new NotImplementedException(),
             });
 
