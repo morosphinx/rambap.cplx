@@ -137,8 +137,8 @@ public class ConnectionBuilder : ConnectivityBuilder
         // TODO : Test here that both connector are compatible
         var connection = new Mate(connectorA, connectorB)
         {
-            LeftPortInstance = connectorA.Owner!.ImplementingInstance,
-            RigthPortInstance = connectorB.Owner!.ImplementingInstance,
+            LeftPortInstance = connectorA.Owner!.ImplementingInstance!,
+            RigthPortInstance = connectorB.Owner!.ImplementingInstance!,
             DeclaringInstance = ContextInstance
         };
         Connections.Add(connection);
@@ -189,7 +189,7 @@ public class ConnectionBuilder : ConnectivityBuilder
         Connections.Remove(leftMate);
         Connections.Remove(rigthMate);
 
-        var cableComponent = cablePart.ImplementingInstance.Parent!;
+        var cableComponent = cablePart.ImplementingInstance!.Parent!;
         var cable = new Cable(cableComponent, leftMate, rigthMate)
         {
             LeftPortInstance = leftMate.LeftPortInstance,
@@ -218,8 +218,8 @@ public class ConnectionBuilder : ConnectivityBuilder
         ContextPart.AssertIsOwnerOrParent(wireablePortB);
         var connection = new Wire(wireablePortA, wireablePortB)
         {
-            LeftPortInstance = wireablePortA.Owner!.ImplementingInstance,
-            RigthPortInstance = wireablePortB.Owner!.ImplementingInstance,
+            LeftPortInstance = wireablePortA.Owner!.ImplementingInstance!,
+            RigthPortInstance = wireablePortB.Owner!.ImplementingInstance!,
             DeclaringInstance = ContextInstance
         };
         Wirings.Add(connection);
@@ -249,8 +249,8 @@ public class ConnectionBuilder : ConnectivityBuilder
             Wirings.Remove(c);
         var twist = new Twist(twistedCablings)
         {
-            LeftPortInstance = path.Item1.Owner!.ImplementingInstance,
-            RigthPortInstance = path.Item2.Owner!.ImplementingInstance,
+            LeftPortInstance = path.Item1.Owner!.ImplementingInstance!,
+            RigthPortInstance = path.Item2.Owner!.ImplementingInstance!,
             DeclaringInstance = ContextInstance
         };
         Wirings.Add(twist);
@@ -266,8 +266,8 @@ public class ConnectionBuilder : ConnectivityBuilder
             Wirings.Remove(c);
         var twist = new Shield(twistedCablings)
         {
-            LeftPortInstance = path.Item1.Owner!.ImplementingInstance,
-            RigthPortInstance = path.Item2.Owner!.ImplementingInstance,
+            LeftPortInstance = path.Item1.Owner!.ImplementingInstance!,
+            RigthPortInstance = path.Item2.Owner!.ImplementingInstance!,
             DeclaringInstance = ContextInstance
         };
         Wirings.Add(twist);

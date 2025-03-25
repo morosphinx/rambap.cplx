@@ -9,8 +9,8 @@ public partial class Part
 
     internal class InitialisationContext
     {
-        private Stack<Part> ClassStack = new Stack<Part>();
-        private Stack<Type> TypeStack = new Stack<Type>();
+        private Stack<Part> ClassStack = [];
+        private Stack<Type> TypeStack = [];
         public void StartInitFor(Part newPart)
         {
             var newType = newPart.GetType();
@@ -54,7 +54,7 @@ public partial class Part
             // Create Part properties/fields if null
             ScanObjectContentFor<Part>(this,
                (t, i) => {
-                   var p = CreatePartFromType(t, initContext);
+                   var p = CreatePartFromType(t);
                    return p;
                },
                (p, i) => {
@@ -93,7 +93,7 @@ public partial class Part
     // Is there a way to reuse parts (not including those created with new() non-default constructors) ?
     // When parts are referenced to etablish relation (eg : connection, slotting),
     // Object instance identity is used
-    private static Part CreatePartFromType(Type type, InitialisationContext context)
+    private static Part CreatePartFromType(Type type)
     {
         if (!type.IsAssignableTo(typeof(Part)))
             throw new InvalidOperationException();

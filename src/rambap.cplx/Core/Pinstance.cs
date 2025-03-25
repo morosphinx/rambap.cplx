@@ -44,7 +44,7 @@ public class Component
         if (Parent == null)
             return CN;
         else
-            return Parent!.CID() + Core.CID.Separator + CN;
+            return Parent!.CID() + separator + CN;
     }
 
     /// <summary>
@@ -131,7 +131,7 @@ public class Pinstance
         PartType = template.GetType();
         if (template.ImplementingInstance != null)
             throw new InvalidOperationException("A Pinstance has already been created with this part");
-        template.ImplementingInstance = this; // Temporary, some concepts need to know instance from the part
+        template.ImplementingInstance = this;
         template.CplxImplicitInitialization(); // run the implicit init on this part and all subparts
 
         // Select part PN
@@ -190,7 +190,7 @@ public class Pinstance
                     Comment = MakeCommment(i.Comments),
                     IsPublic = i.IsPublicOrAssembly,
                 }),
-            ignoredDerivedTypes : [typeof(IAlternative)] // Avoid matching on alternative, who are Ienumerable<Part>
+            ignoredDerivedTypes : [typeof(IAlternative)] // Avoid matching on alternative, who are IEnumerable<Part>
             );
 
         // Select and create components from Alternatives properties/fields

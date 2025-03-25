@@ -18,9 +18,9 @@ internal class PartWithSupplier1 : Part
         Link = "www.rp.com",
     };
 
-    Cost handling = 10;
+    Cost handling = 10; // Offers replace costs, should be ignored
 
-    public static decimal ExpectedCost = 45 + 10;
+    public static decimal ExpectedCost = 45 ; 
 }
 
 [TestClass]
