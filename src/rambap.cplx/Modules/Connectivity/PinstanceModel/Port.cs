@@ -34,8 +34,8 @@ public partial class Port
         IsPublic = isPublic;
     }
 
-    private Signal? assignedSignal;
-    public Signal? AssignedSignal
+    private PSignal? assignedSignal;
+    public PSignal? AssignedSignal
     {
         get => assignedSignal;
         internal set

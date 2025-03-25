@@ -226,6 +226,20 @@ public class ConnectionBuilder : ConnectivityBuilder
         return connection;
     }
 
+    public List<Wire> Wire(Signal signalA, Signal signalB)
+    {
+        List<Wire> wires = [];
+        // TODO : behavior when wiring signal defined targetting / from other subparts ?
+        foreach(var wireableA in signalA.Assignations)
+        {
+            foreach (var wireableB in signalB.Assignations)
+            {
+                wires.Add(Wire(wireableA,wireableB));
+            }
+        }
+        return wires;
+    }
+
     public Twist Twist(IEnumerable<WiringAction> twistedCablings)
     {
         foreach (var c in twistedCablings)

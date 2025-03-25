@@ -105,7 +105,7 @@ public class ConnectionTableProperty
             _ => throw new NotImplementedException(),
         };
 
-    public Signal? GetUpperSignal(PortSide side)
+    public PSignal? GetUpperSignal(PortSide side)
     {
         return side switch
         {
@@ -116,9 +116,9 @@ public class ConnectionTableProperty
     }
     public string GetLikelySignal(string separator = " / ")
     {
-        IEnumerable<Signal?> signals = [GetUpperSignal(PortSide.Left), GetUpperSignal(PortSide.Rigth)];
+        IEnumerable<PSignal?> signals = [GetUpperSignal(PortSide.Left), GetUpperSignal(PortSide.Rigth)];
         var signalNames = signals.Where(s => s != null)
-            .Select(s => s!.Name)
+            .Select(s => s!.Label)
             .Distinct();
         return string.Join(separator, signalNames);
     }

@@ -101,7 +101,7 @@ public class BasicUseCases
         ConnectorPart C01;
         ConnectorPart C02;
 
-        Signal TX;
+        Signal TX => (Signal)C01.Pin(1);
         Signal RX;
 
         public void Assembly_Connections(ConnectionBuilder Do)
@@ -112,7 +112,7 @@ public class BasicUseCases
 
         public void Assembly_Signals(SignalBuilder Do)
         {
-            Do.Assign(TX, C01.Pin(1));
+            // Do.Assign(TX, C01.Pin(1));
             Do.Assign(RX, C01.Pin(2));
         }
     }
@@ -171,7 +171,7 @@ public class BasicUseCases
     {
         public PredefinedSignalConnectorPart() : base(9){}
 
-        Signal DCD, RxD, TxD, DTR, GND, DSR, RTS, CTS, RI;
+        public Signal DCD, RxD, TxD, DTR, GND, DSR, RTS, CTS, RI;
 
         public void Assembly_Signals(SignalBuilder Do)
         {
@@ -185,6 +185,23 @@ public class BasicUseCases
             Do.Assign(CTS, Pin(8));
             Do.Assign(RI,  Pin(9));
         }
+    }
+
+    [TestMethod]
+    public void PredefinedSignalConnector2() => TestOutputs.WriteConnection<PredefinedSignalConnector2Part>();
+    class PredefinedSignalConnector2Part : Connector<PinPart>
+    {
+        public PredefinedSignalConnector2Part() : base(9) { }
+
+        public Signal DCD => (Signal)Pin(1);
+        public Signal RxD => (Signal)Pin(2);
+        public Signal TxD => (Signal)Pin(3);
+        public Signal DTR => (Signal)Pin(4);
+        public Signal GND => (Signal)Pin(5);
+        public Signal DSR => (Signal)Pin(6);
+        public Signal RTS => (Signal)Pin(7);
+        public Signal CTS => (Signal)Pin(8);
+        public Signal RI  => (Signal)Pin(9);
     }
 
     [TestMethod]
@@ -204,6 +221,25 @@ public class BasicUseCases
             {
                 Do.Wire(C01.Pin(i), C02.Pin(i));
             }
+        }
+    }
+
+    [TestMethod]
+    public void PredefinedPortBlackbox2() => TestOutputs.WriteConnection<PredefinedPortBlackbox2Part>();
+    class PredefinedPortBlackbox2Part : Part, IPartConnectable
+    {
+        PredefinedSignalConnector2Part C01;
+        PredefinedSignalConnector2Part C02;
+
+        public ConnectablePort P01 => C01;
+        public ConnectablePort P02 => C02;
+
+        public void Assembly_Connections(ConnectionBuilder Do)
+        {
+
+            Do.Wire(C01.TxD, C02.RxD);
+            Do.Wire(C01.RxD, C02.TxD);
+            Do.Wire(C01.GND, C02.GND);
         }
     }
 }

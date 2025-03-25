@@ -21,8 +21,17 @@ public class SignalBuilder
         ContextInstance = instance;
     }
 
-    public void Assign(Signal signal, SignalPort to)
+    public void Assign(Signal signal, WireablePort to)
     {
-        to.LocalImplementation.AssignedSignal = signal;
+        AssignBase(signal, to);
+    }
+
+    internal static void AssignBase(Signal signal, WireablePort to)
+    {
+        if (!signal.Assignations.Contains(to))
+        {
+            to.LocalImplementation.AssignedSignal = signal.Implementation;
+            signal.Assignations.Add(to);
+        }
     }
 }

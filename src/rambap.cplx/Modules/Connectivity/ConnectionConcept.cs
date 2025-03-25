@@ -74,63 +74,72 @@ internal class ConnectionConcept : IConcept<InstanceConnectivity>
                     portsConnectable.Add(newPort);
             }, acceptUnbacked : true);
 
-        var portWireable = new List<Port>();
+        var portsWireable = new List<Port>();
         ScanObjectContentFor<WireablePort>(template,
             (p, s) => {
                 var newPort = MakePort(p, s);
                 if (newPort != null)
-                    portWireable.Add(newPort);
+                    portsWireable.Add(newPort);
             }, acceptUnbacked:  true);
 
-        bool hasAnyPort = portsConnectable.Any() || portWireable.Any();
+        var signals = new List<Signal>();
+        ScanObjectContentFor<Signal>(template,
+            (p, s) =>
+            {
+                if(p.Owner == null)
+                {
+                    // localy created Signal with implicit signal => Workaround for now
+                    Part.InitPartProperty(template, p, s);
+                }
+                if(p.Implementation == null)
+                    p.MakeImplementation(s.Name,instance,s.IsPublicOrAssembly);
+                signals.Add(p);
+            }, acceptUnbacked: true);
 
-        // At this point no connector in the selfConnectorList has a definition
-        if (template is IPartConnectable a)
+        // Apply port construction, defined in IPartConnectable
+        if (template is IPartConnectable a1)
         {
-            // All signalport should have an implementing port at this point
-            
             // User defined exposition are created from here
             var portBuilder = new PortBuilder(instance, template);
-            a.Assembly_Ports(portBuilder);
+            a1.Assembly_Ports(portBuilder);
+        }
 
+        foreach(var s in signals
+            .Where(i => i.Owner == template)
+            .OfType<ImplicitAssignedSignal>())
+        {
+            foreach(var p in s.AssignedPorts)
+                SignalBuilder.AssignBase(s, p.SingleWireablePort);
+        }
+
+        // Apply Signal assignation, if declared in IPartSignalDefining
+        if (template is IPartSignalDefining a2)
+        {
+            var signalBuilder = new SignalBuilder(instance, template);
+            a2.Assembly_Signals(signalBuilder);
+        }
+        // Apply wiring and connection construction, defined in IPartConnectable
+        List<AssemblingConnection> selfDefinedConnection = [];
+        List<WiringAction> selfDefinedWirings = [];
+        if (template is IPartConnectable a3)
+        {
             // User defined connections are created from here
             var connectionBuilder = new ConnectionBuilder(instance, template);
-            a.Assembly_Connections(connectionBuilder);
+            a3.Assembly_Connections(connectionBuilder);
 
-            // Run Signal assignation, if declared
-            if(template is IPartSignalDefining sd)
-            {
-                var signalBuilder = new SignalBuilder(instance, template);
-                sd.Assembly_Signals(signalBuilder);
-            }
-            //
-            var selfDefinedConnection = connectionBuilder!.Connections;
-            var selfDefinedWirings = connectionBuilder!.Wirings;
-            var connectivity = new InstanceConnectivity()
-            {
-                Connectors = portsConnectable,
-                Wireables = portWireable,
-                Connections = selfDefinedConnection.ToList(),
-                Wirings = selfDefinedWirings.ToList(),
-            };
-            CheckInterfaceContracts(template, connectivity);
-            return connectivity;
+            selfDefinedConnection = connectionBuilder.Connections;
+            selfDefinedWirings = connectionBuilder.Wirings;
         }
-        else if (hasAnyPort)
+        bool hasAnyPortProperty = portsConnectable.Count != 0 || portsWireable.Count != 0;
+        bool hasAnySignalProperty= signals.Count != 0;
+        if (hasAnyPortProperty || hasAnySignalProperty || template is IPartConnectable || template is IPartSignalDefining)
         {
-            // Some port may have been defined / exposed, but no connection
-            // Run Signal assignation, if declared
-            if (template is IPartSignalDefining sd)
-            {
-                var signalBuilder = new SignalBuilder(instance, template);
-                sd.Assembly_Signals(signalBuilder);
-            }
             var connectivity = new InstanceConnectivity()
             {
                 Connectors = portsConnectable,
-                Wireables = portWireable,
-                Connections = [],
-                Wirings = [],
+                Wireables = portsWireable,
+                Connections = selfDefinedConnection,
+                Wirings = selfDefinedWirings,
             };
             CheckInterfaceContracts(template, connectivity);
             return connectivity;

@@ -22,7 +22,7 @@ public class ComponentPropertyIterator<P> : ComponentIterator
 
         public IEnumerable<ICplxContent> GetRecursionContinueContent(List<IIterationItem> subItems)
         {
-            bool isLeafDueToNoChild = subItems.Count() == 0; ;
+            bool isLeafDueToNoChild = subItems.Count == 0; ;
             if (isLeafDueToNoChild)
             {
                 yield return new LeafProperty<P>(Location, Components)
@@ -54,7 +54,7 @@ public class ComponentPropertyIterator<P> : ComponentIterator
 
         public IEnumerable<ICplxContent> GetRecursionContinueContent(List<IIterationItem> subItems)
         {
-            bool isLeafDueToNoChild = subItems.Count() == 0; ;
+            bool isLeafDueToNoChild = subItems.Count == 0; ;
             if (isLeafDueToNoChild)
             {
                 yield return new LeafProperty<P>(Location, Components)

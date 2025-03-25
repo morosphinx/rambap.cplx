@@ -27,7 +27,7 @@ public partial class Part
         }
 
         public Part? CurrentLocationPart()
-            => ClassStack.Count() > 0 ? ClassStack.Peek() : null;
+            => ClassStack.Count > 0 ? ClassStack.Peek() : null;
 
         public void EndedInit()
         {
@@ -65,10 +65,7 @@ public partial class Part
             ScanObjectContentFor<IPartProperty>(this,
                 (p, i) =>
                 {
-                    p.Owner = this;
-                    if (p.Name is null || p.Name == "")
-                        p.Name = i.Name; // If IPartProperty.name is not set, uses the field name as property name
-                    p.IsPublic = i.IsPublicOrAssembly;
+                    InitPartProperty(this,p, i);
                 },
                 AutoContent.ConstructIfNulls);
             // Initialisation done, no need to do it again
@@ -76,6 +73,20 @@ public partial class Part
             //
             initContext.EndedInit();
         }
+    }
+
+    /// <summary>
+    /// Initialise fields of a <see cref="IPartProperty"/> with part & name information
+    /// </summary>
+    internal static void InitPartProperty(
+        Part owner,
+        IPartProperty p,
+        PropertyOrFieldInfo i)
+    {
+        p.Owner = owner;
+        if (p.Name is null || p.Name == "")
+            p.Name = i.Name; // If IPartProperty.name is not set, uses the field name as property name
+        p.IsPublic = i.IsPublicOrAssembly;
     }
 
     // TODO / TBD : each part is rigth now created unique.

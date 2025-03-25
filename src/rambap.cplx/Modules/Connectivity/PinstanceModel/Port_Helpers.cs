@@ -44,7 +44,7 @@ public partial class Port
             throw new InvalidOperationException("No Structural equivalence on this port");
     }
 
-    public Signal? GetUpperSignal()
+    public PSignal? GetUpperSignal()
         => GetExpositionColumn()
             .Select(p => p.AssignedSignal)
             .Where(s => s != null)
