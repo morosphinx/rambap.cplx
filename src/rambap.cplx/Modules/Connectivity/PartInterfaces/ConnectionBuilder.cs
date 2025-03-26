@@ -228,6 +228,8 @@ public class ConnectionBuilder : ConnectivityBuilder
 
     public List<Wire> Wire(Signal signalA, Signal signalB)
     {
+        ContextPart.AssertIsOwnerOrParent(signalA);
+        ContextPart.AssertIsOwnerOrParent(signalB);
         List<Wire> wires = [];
         // All port assigned to the signals must be wireable
         var leftPorts = signalA.Assignations.Cast<ISingleWireable>();
