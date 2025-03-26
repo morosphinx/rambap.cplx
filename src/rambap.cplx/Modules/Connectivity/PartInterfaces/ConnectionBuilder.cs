@@ -229,10 +229,13 @@ public class ConnectionBuilder : ConnectivityBuilder
     public List<Wire> Wire(Signal signalA, Signal signalB)
     {
         List<Wire> wires = [];
+        // All port assigned to the signals must be wireable
+        var leftPorts = signalA.Assignations.Cast<ISingleWireable>();
+        var rigthPorts = signalB.Assignations.Cast<ISingleWireable>();
         // TODO : behavior when wiring signal defined targetting / from other subparts ?
-        foreach(var wireableA in signalA.Assignations)
+        foreach (var wireableA in leftPorts)
         {
-            foreach (var wireableB in signalB.Assignations)
+            foreach (var wireableB in rigthPorts)
             {
                 wires.Add(Wire(wireableA,wireableB));
             }

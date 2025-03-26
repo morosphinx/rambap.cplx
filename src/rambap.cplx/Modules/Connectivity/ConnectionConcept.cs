@@ -16,6 +16,8 @@ public class InstanceConnectivity : IInstanceConceptProperty
     public required List<AssemblingConnection> Connections { get; init; }
     public required List<WiringAction> Wirings { get; init; }
 
+    public required List<PSignal> Signals { get; init; }
+
     public enum DisplaySide
     {
         Left,
@@ -92,7 +94,7 @@ internal class ConnectionConcept : IConcept<InstanceConnectivity>
                     Part.InitPartProperty(template, p, s);
                 }
                 if(p.Implementation == null)
-                    p.MakeImplementation(s.Name,instance,s.IsPublicOrAssembly);
+                    p.MakeImplementation(p.Name ?? s.Name,instance,s.IsPublicOrAssembly);
                 signals.Add(p);
             }, acceptUnbacked: true);
 
@@ -140,6 +142,7 @@ internal class ConnectionConcept : IConcept<InstanceConnectivity>
                 Wireables = portsWireable,
                 Connections = selfDefinedConnection,
                 Wirings = selfDefinedWirings,
+                Signals = signals.Select(s => s.Implementation!).ToList(),
             };
             CheckInterfaceContracts(template, connectivity);
             return connectivity;

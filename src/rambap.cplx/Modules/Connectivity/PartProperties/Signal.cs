@@ -15,7 +15,7 @@ public class Signal : IPartProperty
         Implementation = new(label, owner, isPublic);
     }
 
-    internal List<WireablePort> Assignations { get; } = [];
+    internal List<SignalPort> Assignations { get; } = [];
 
     // Is unbacked property support ("=>") with implicit conversion a good idea ?
     // Would cause confusion with two different cases, => Signal ; and => SignalPort ; both valid
