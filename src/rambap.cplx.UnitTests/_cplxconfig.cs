@@ -14,7 +14,7 @@ global using static rambap.cplx.Helpers;
 // TODO : find a way to disable those from this file
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
 #pragma warning disable CS0169 // The Field is never used
-#pragma warning disable CS0649 //Field 'field' is never assigned to, and will always have its default value 'value'
+#pragma warning disable CS0649 // Field 'field' is never assigned to, and will always have its default value 'value'
 
 // Global suppressions
 // This file is used by Code Analysis to maintain SuppressMessage attributes that are applied to this project.
