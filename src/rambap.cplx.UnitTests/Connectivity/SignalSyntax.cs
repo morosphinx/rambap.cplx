@@ -1,4 +1,4 @@
-﻿using static rambap.cplx.UnitTests.Connectivity.ExtensionTest;
+﻿using rambap.cplx.Modules.Connectivity;
 
 namespace rambap.cplx.UnitTests.Connectivity;
 
@@ -97,7 +97,7 @@ public class WiredSignalSyntaxExemples
     }
     public class B : Part
     {
-        Signal SignalName => (Signal) PortA;
+        Signal SignalName => this.SignalOf(PortA);
 
         WireablePort PortA;
     }
@@ -110,22 +110,15 @@ public class WiredSignalSyntaxExemples
 
         public C()
         {
-            SignalName = (Signal) PortA;
+            SignalName = this.SignalOf(PortA);
         }
     }
     public class D : Part
     {
-        Signal SignalName => this.WireSignalAsExtensionMethod(PortA);
+        Signal SignalName => this.SignalOf(PortA);
 
         WireablePort PortA;
     }
-}
-
-public static class ExtensionTest
-{
-    //TBD : a way to have information on declaring class at the call site ?
-    public static Signal WireSignalAsExtensionMethod(this Part a, WireablePort port)
-        => new ImplicitAssignedSignal() { AssignedPorts = [port] };
 }
 
 [TestClass]
@@ -193,7 +186,7 @@ public class WiredComposedSignalSyntaxExemples
         // 3 - find a way to work around it during part construction
         //        (UID using the port ?)
         //        (Keep an internal implementation stack, like the port expositions?)
-        public Signal Signal => (Signal)Port;
+        public Signal Signal => this.SignalOf(Port);
         public WireablePort Port;
     }
     public class B1 : Part, IPartConnectable

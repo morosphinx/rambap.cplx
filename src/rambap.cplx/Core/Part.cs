@@ -119,6 +119,19 @@ public partial class Part
     internal Pinstance? ImplementingInstance { get; set; }
 
     /// <summary>
+    /// Data dynamicaly filled by concepts for instantiation purposes <br/>
+    /// </summary>
+    [CplxIgnore]
+    private List<object> ConceptInitialisationData { get; } = new();
+    internal T GetConteptInitialisationData<T>()
+        where T : new()
+    {
+        if(! ConceptInitialisationData.OfType<T>().Any())
+            ConceptInitialisationData.Add(new T());
+        return ConceptInitialisationData.OfType<T>().First();
+    }
+
+    /// <summary>
     /// You can override the Part() constructor to implement some custom logic. <br/>
     /// Otherwise keep a parameterless constructor.
     /// </summary>

@@ -25,6 +25,7 @@
 Improvements to think about
 - Should a Component Type be exposed as the primary result of a Part Instantiation ?
     - Would clarify root component naming
+    - No instance would be without a Parent Component => Better null correctness
     - Make sense with bellow :
 - Should some properties be moved to the Component type, instead of the Instance Type ?
     - Would separates properties that are component locale (ex : usage in Connectivity) from those that are common for all Instance

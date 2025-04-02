@@ -1,4 +1,5 @@
-﻿using rambap.cplx.Modules.Connectivity.PinstanceModel;
+﻿using rambap.cplx.Modules.Connectivity;
+using rambap.cplx.Modules.Connectivity.PinstanceModel;
 using rambap.cplx.Modules.Connectivity.Templates;
 using static rambap.cplx.Modules.Connectivity.Outputs.ConnectionColumns;
 
@@ -101,7 +102,7 @@ public class BasicUseCases
         ConnectorPart C01;
         ConnectorPart C02;
 
-        Signal TX => (Signal)C01.Pin(1);
+        Signal TX => this.SignalOf(C01.Pin(1));
         Signal RX;
 
         public void Assembly_Connections(ConnectionBuilder Do)
@@ -193,15 +194,15 @@ public class BasicUseCases
     {
         public PredefinedSignalConnector2Part() : base(9) { }
 
-        public Signal DCD => (Signal)Pin(1);
-        public Signal RxD => (Signal)Pin(2);
-        public Signal TxD => (Signal)Pin(3);
-        public Signal DTR => (Signal)Pin(4);
-        public Signal GND => (Signal)Pin(5);
-        public Signal DSR => (Signal)Pin(6);
-        public Signal RTS => (Signal)Pin(7);
-        public Signal CTS => (Signal)Pin(8);
-        public Signal RI  => (Signal)Pin(9);
+        public Signal DCD => this.SignalOf(Pin(1));
+        public Signal RxD => this.SignalOf(Pin(2));
+        public Signal TxD => this.SignalOf(Pin(3));
+        public Signal DTR => this.SignalOf(Pin(4));
+        public Signal GND => this.SignalOf(Pin(5));
+        public Signal DSR => this.SignalOf(Pin(6));
+        public Signal RTS => this.SignalOf(Pin(7));
+        public Signal CTS => this.SignalOf(Pin(8));
+        public Signal RI  => this.SignalOf(Pin(9));
     }
 
     [TestMethod]

@@ -164,4 +164,20 @@ internal class ConnectionConcept : IConcept<InstanceConnectivity>
     {
 
     }
+
+
+    internal class ImplicitSignalDirectory : List<ImplicitAssignedSignal>;
+    internal static ImplicitAssignedSignal GetSignalFromLocalDir(Part part, IEnumerable<ISingleWireable> ports)
+    {
+        var localDir = GetPartConceptInitialisationData<ImplicitSignalDirectory>(part);
+        // Look for an already assigned signal with this port sequence
+        var alreadyAssigned = localDir.FirstOrDefault(i => i.AssignedPorts.SequenceEqual(ports));
+        if(alreadyAssigned != null) return alreadyAssigned;
+        else
+        {
+            var newItem = new ImplicitAssignedSignal() { AssignedPorts = [.. ports] };
+            localDir.Add(newItem);
+            return newItem;
+        }
+    }
 }
