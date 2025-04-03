@@ -5,7 +5,7 @@ namespace rambap.cplx.Modules.Documentation.Outputs;
 
 public static class SystemViewTables
 {
-    public static TableProducer<IComponentContent> ComponentTree_Detailled()
+    public static TableProducer<ICplxContent> ComponentTree_Detailled()
         => new()
         {
             Iterator = new ComponentIterator(),
@@ -17,7 +17,7 @@ public static class SystemViewTables
             ],
         };
 
-    public static TableProducer<IComponentContent> ComponentTree_Stacked()
+    public static TableProducer<ICplxContent> ComponentTree_Stacked()
        => new()
        {
            Iterator = new ComponentIterator()
@@ -33,10 +33,10 @@ public static class SystemViewTables
            ],
        };
 
-    public static TableProducer<IComponentContent> ComponentInventory()
+    public static TableProducer<ICplxContent> ComponentInventory()
         => new()
         {
-            Iterator = new PartTypesIterator()
+            Iterator = new PartTypesIterator<object>()
             {
                 WriteBranches = true,
             },
@@ -50,5 +50,23 @@ public static class SystemViewTables
                 DescriptionColumns.PartLink(),
             ],
         };
+
+    public static TableProducer<ICplxContent> BillOfMaterials()
+    => new()
+    {
+        Iterator = new PartTypesIterator<object>()
+        {
+            WriteBranches = true,
+        },
+        Columns = [
+            CommonColumns.LineTypeNumber(),
+            IDColumns.PartNumber(),
+            DescriptionColumns.PartCommonName(hideIfEqualPN : true),
+            CommonColumns.ComponentTotalCount(),
+            SupplyChain.Outputs.SupplierColumns.SupplierName(),
+            SupplyChain.Outputs.SupplierColumns.SupplierPN(),
+            SupplyChain.Outputs.SupplierColumns.SupplierLink(),
+        ],
+    };
 }
 

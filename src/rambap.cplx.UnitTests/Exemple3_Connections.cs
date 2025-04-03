@@ -1,7 +1,8 @@
 ﻿namespace rambap.cplx.UnitTests;
 
+using DocumentFormat.OpenXml.Packaging;
 using rambap.cplx.Export.TextFiles;
-using rambap.cplx.Modules.Connectivity.Model;
+using rambap.cplx.Modules.Connectivity.PinstanceModel;
 using rambap.cplx.Modules.Connectivity.Templates;
 
 class RackConnected1 : Part, IPartConnectable, IPartAdditionalDocuments
@@ -10,12 +11,16 @@ class RackConnected1 : Part, IPartConnectable, IPartAdditionalDocuments
 
     public ConnectablePort J11, J12, J21, J22;
 
-    public void Assembly_Connections(ConnectionBuilder Do)
+    public void Assembly_Ports(PortBuilder Do)
     {
         Do.ExposeAs(Cable1.J01, J11);
         Do.ExposeAs(Cable1.J02, J12);
         Do.ExposeAs(Cable2.J01, J21);
         Do.ExposeAs(Cable2.J02, J22);
+    }
+
+    public void Assembly_Connections(ConnectionBuilder Do)
+    {
     }
 
     public void Additional_Documentation(DocumentationBuilder Do)
@@ -47,6 +52,15 @@ class InternalCable1 : Part, IPartConnectable
     public ConnectablePort PWR_P;
     public ConnectablePort PWR_N;
 
+    public void Assembly_Ports(PortBuilder Do)
+    {
+        // Exposed connection
+        Do.ExposeAs(C01.Face, J01);
+        Do.ExposeAs(C02.MateFace, J02);
+        Do.ExposeAs(C04.TestPlug4mmMale, PWR_P);
+        Do.ExposeAs(C05.TestPlug4mmMale, PWR_N);
+    }
+
     public void Assembly_Connections(ConnectionBuilder Do)
     {
         // D38 to D38 connection
@@ -60,11 +74,6 @@ class InternalCable1 : Part, IPartConnectable
         // Power
         Do.Wire(C01.J, C04.SolderPoint);
         Do.Wire(C01.K, C05.SolderPoint);
-        // Exposed connection
-        Do.ExposeAs(C01.Face, J01);
-        Do.ExposeAs(C02.MateFace, J02);
-        Do.ExposeAs(C04.TestPlug4mmMale, PWR_P);
-        Do.ExposeAs(C05.TestPlug4mmMale, PWR_N);
     }
 
     Cost Assembly = 200;
@@ -80,8 +89,7 @@ class ComplexeConnectorDeclarationKind1 : Part, IPartConnectable
     public WireablePort A, B, C, D, E, F, G, H, I, J, K;
 
     Size24pin pA, pB, pC, pD, pE, pF, pG, pH, pI, pJ, pK;
-
-    public void Assembly_Connections(ConnectionBuilder Do)
+    public void Assembly_Ports(PortBuilder Do)
     {
         // Expose mating face
         Do.ExposeAs(
@@ -97,7 +105,7 @@ class ComplexeConnectorDeclarationKind1 : Part, IPartConnectable
             pI.Contact,
             pJ.Contact,
             pK.Contact,
-        ],Face);
+        ], Face);
         // Expose wireable pins
         Do.ExposeAs(pA.Receptacle, A);
         Do.ExposeAs(pB.Receptacle, B);
@@ -110,6 +118,10 @@ class ComplexeConnectorDeclarationKind1 : Part, IPartConnectable
         Do.ExposeAs(pI.Receptacle, I);
         Do.ExposeAs(pJ.Receptacle, J);
         Do.ExposeAs(pK.Receptacle, K);
+    }
+    public void Assembly_Connections(ConnectionBuilder Do)
+    {
+
     }
 }
 

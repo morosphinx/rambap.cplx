@@ -5,31 +5,37 @@ namespace rambap.cplx.Modules.Base.Output;
 
 public static class CommonColumns
 {
-    public static IColumn<IComponentContent> EmptyColumn(string title = "")
-        => new DelegateColumn<IComponentContent>(title, ColumnTypeHint.StringFormatable,
+    public static DelegateColumn<ICplxContent> Dashes(string title)
+        => new DelegateColumn<ICplxContent>(
+            title,
+            ColumnTypeHint.StringExact,
+            i => new string('-', title.Length));
+
+    public static IColumn<ICplxContent> EmptyColumn(string title = "")
+        => new DelegateColumn<ICplxContent>(title, ColumnTypeHint.StringFormatable,
             i => "");
 
-    public static IColumn<IComponentContent> LineNumber()
-        => new LineNumberColumn<IComponentContent>();
+    public static IColumn<ICplxContent> LineNumber()
+        => new LineNumberColumn<ICplxContent>();
 
-    public static IColumn<IComponentContent> LineTypeNumber()
-        => new LineNumberColumnWithContinuation<IComponentContent>()
+    public static IColumn<ICplxContent> LineTypeNumber()
+        => new LineNumberColumnWithContinuation<ICplxContent>()
             { ContinuationCondition = (i, j) => i == null || i.Component != j.Component };
 
-    public static DelegateColumn<IComponentContent> ComponentDepth()
-        => new DelegateColumn<IComponentContent>("Depth", ColumnTypeHint.Numeric,
+    public static DelegateColumn<ICplxContent> ComponentDepth()
+        => new DelegateColumn<ICplxContent>("Depth", ColumnTypeHint.Numeric,
             i => i.Location.Depth.ToString());
 
-    public static DelegateColumn<IComponentContent> ComponentTotalCount(bool displayBranches = false)
-        => new DelegateColumn<IComponentContent>("Count", ColumnTypeHint.Numeric,
+    public static DelegateColumn<ICplxContent> ComponentTotalCount(bool displayBranches = false)
+        => new DelegateColumn<ICplxContent>("Count", ColumnTypeHint.Numeric,
             i => i switch
             {
                 BranchComponent bc when !displayBranches => "",
                 _ => i.ComponentTotalCount.ToString(),
             });
 
-    public static DelegateColumn<IComponentContent> ComponentComment() =>
-        new DelegateColumn<IComponentContent>("Component description", ColumnTypeHint.StringFormatable,
+    public static DelegateColumn<ICplxContent> ComponentComment() =>
+        new DelegateColumn<ICplxContent>("Component description", ColumnTypeHint.StringFormatable,
             i => i switch
             {
                 // In case of a group of component, only display if the components have the same comment
@@ -38,21 +44,21 @@ public static class CommonColumns
             });
 
 
-    public class ComponentPrettyTreeColumn : IColumn<IComponentContent>
+    public class ComponentPrettyTreeColumn : IColumn<ICplxContent>
     {
-        public required string Title { get; init; }
+        public required string Title { get; set; }
         public bool CanFormat = false;
         public ColumnTypeHint TypeHint =>
             CanFormat ? ColumnTypeHint.StringFormatable : ColumnTypeHint.StringExact ;
 
         private List<bool> LevelDone { get; } = [];
-        public string CellFor(IComponentContent item)
+        public string CellFor(ICplxContent item)
         {
             while (LevelDone.Count <= item.Location.Depth) LevelDone.Add(false);
             LevelDone[item.Location.Depth] = false;
             //
             string ver = " │ "; // That's an Alt+179, and not an Alt+124 '|', this latter is reserved for markdown 
-            bool isEnd = item.Location.LocalItemIndex == item.Location.LocalItemCount - 1;
+            bool isEnd = item.Location.IsEnd; //item.Location.LocalItemIndex == item.Location.LocalItemCount - 1;
             string end = isEnd ? " └─" : " ├─";
             if (item.Location.Depth > 0)
                 LevelDone[item.Location.Depth - 1] = isEnd;
@@ -72,7 +78,7 @@ public static class CommonColumns
         public void Reset() => LevelDone.Clear();
         public string TotalFor(Pinstance root) => "";
 
-        public required Func<IComponentContent, string> GetLocationText { get; init; }
+        public required Func<ICplxContent, string> GetLocationText { get; init; }
     }
 }
 

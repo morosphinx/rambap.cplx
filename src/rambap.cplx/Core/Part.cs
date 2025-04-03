@@ -1,4 +1,4 @@
-﻿using rambap.cplx.PartAttributes;
+﻿using rambap.cplx.Attributes;
 
 namespace rambap.cplx.Core;
 
@@ -93,13 +93,13 @@ public partial class Part
     /// List of component that can be completed by a part constructor to implement custom logic<br/>
     /// IF YOU USE THIS, YOU NEED TO DEFINE A UNIQUE PN USING THE PN PROPERTY
     /// </summary>
-    protected List<Part> AdditionalComponents { get; } = new();
+    protected List<Part> AdditionalComponents { get; } = [];
 
     /// <summary>
     /// If True, this part has been modified in his constructor, and should have a unique PN to reflect this
     /// </summary>
     internal bool RequirePNOverride
-        => AdditionalComponents.Count() > 0;
+        => AdditionalComponents.Count > 0;
 
 
     /// <summary>
@@ -111,11 +111,25 @@ public partial class Part
     internal Part? Parent  = null;
 
     /// <summary>
-    /// TODO : Usage ?
-    /// TBD : Instance implementing this Part
+    /// Instance that implement this part.
+    /// Required during Instante Property construction by some concepts,
+    /// Such as ones that declare relationship PartProperties, taking Part as Parameters
     /// </summary>
     [CplxIgnore]
-    public Pinstance ImplementingInstance { get; set; }
+    internal Pinstance? ImplementingInstance { get; set; }
+
+    /// <summary>
+    /// Data dynamicaly filled by concepts for instantiation purposes <br/>
+    /// </summary>
+    [CplxIgnore]
+    private List<object> ConceptInitialisationData { get; } = new();
+    internal T GetConteptInitialisationData<T>()
+        where T : new()
+    {
+        if(! ConceptInitialisationData.OfType<T>().Any())
+            ConceptInitialisationData.Add(new T());
+        return ConceptInitialisationData.OfType<T>().First();
+    }
 
     /// <summary>
     /// You can override the Part() constructor to implement some custom logic. <br/>

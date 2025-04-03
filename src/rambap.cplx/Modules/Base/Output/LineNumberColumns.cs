@@ -5,7 +5,7 @@ namespace rambap.cplx.Modules.Base.Output;
 
 public class LineNumberColumn<T> : IColumn<T>
 {
-    public string Title => "#";
+    public string Title { get; set; } = "#";
     public ColumnTypeHint TypeHint => ColumnTypeHint.Numeric;
 
     int index = 1;
@@ -21,7 +21,7 @@ public class LineNumberColumn<T> : IColumn<T>
 
 public class LineNumberColumnWithContinuation<T> : IColumn<T>
 {
-    public string Title => "#";
+    public string Title { get; set; } = "#";
     public ColumnTypeHint TypeHint => ColumnTypeHint.Numeric;
 
     int index = 0;

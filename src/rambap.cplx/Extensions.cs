@@ -4,6 +4,7 @@ using rambap.cplx.Modules.Documentation;
 using rambap.cplx.Modules.Costing;
 using rambap.cplx.Modules.Connectivity;
 using rambap.cplx.Modules.Racking;
+using rambap.cplx.Modules.SupplyChain;
 
 namespace rambap.cplx;
 

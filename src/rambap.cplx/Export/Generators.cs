@@ -3,7 +3,7 @@ using rambap.cplx.Export.TextFiles;
 using rambap.cplx.Export.Tables;
 using rambap.cplx.Modules.Base.Output;
 using rambap.cplx.Modules.Costing.Outputs;
-using static rambap.cplx.Modules.Connectivity.Outputs.ConnectivityColumns;
+using static rambap.cplx.Modules.Connectivity.Outputs.ConnectionColumns;
 
 namespace rambap.cplx.Export;
 
@@ -14,34 +14,38 @@ public static class FileGroups
         return [
                 ($"BOMR_{filenamePattern}.csv", new TextTableFile(i)
                 {
-                    Table = CostTables.BillOfMaterial(),
-                    Formater = new MarkdownTableFormater(){
+                    Table = CostTables.BillOfMaterial() with
+                    {
                         WriteTotalLine = true,
                         TotalLineOnTop = true,
-                    }
+                    },
+                    Formater = new MarkdownTableFormater()
                 }),
                 ($"RecurentCosts_{filenamePattern}.csv", new TextTableFile(i)
                 {
-                    Table = CostTables.CostBreakdown(),
-                    Formater = new MarkdownTableFormater(){
+                    Table = CostTables.CostBreakdown() with
+                    {
                         WriteTotalLine = true,
                         TotalLineOnTop = true,
-                    }
+                    },
+                    Formater = new MarkdownTableFormater(),
                 }),
                 ($"BOTR_{filenamePattern}.csv", new TextTableFile(i)
                 {
-                    Table = TaskTables.BillOfTasks(),
-                    Formater = new MarkdownTableFormater(){
+                    Table = TaskTables.BillOfTasks() with
+                    {
                         WriteTotalLine = true,
                         TotalLineOnTop = true,
-                    }
+                    },
+                    Formater = new MarkdownTableFormater(),
                 }),
                 ($"RecurentTasks_{filenamePattern}.csv", new TextTableFile(i) {
-                    Table = TaskTables.TaskBreakdown(),
-                    Formater = new MarkdownTableFormater(){
+                    Table = TaskTables.TaskBreakdown() with
+                    {
                         WriteTotalLine = true,
                         TotalLineOnTop = true,
-                    }
+                    },
+                    Formater = new MarkdownTableFormater(),
                 }),
                 ];
     }
@@ -73,7 +77,7 @@ public static class FileGroups
         return [
                 ($"Connections_{filenamePattern}.csv", new TextTableFile(i)
                 {
-                    Table = Modules.Connectivity.Outputs.ConnectivityTables.ConnectionTable(ConnectorIdentity.Immediate),
+                    Table = Modules.Connectivity.Outputs.ConnectivityTables.ConnectionTable(),
                     Formater = new MarkdownTableFormater()
                 }),
                 ($"Wirings_{filenamePattern}.csv", new TextTableFile(i)
@@ -205,7 +209,7 @@ public class FlattenedDocumentationTreeGenerator : IGenerator
 
     public override IInstruction PrepareInstruction(Pinstance i)
     {
-        var partTree= new PartTypesIterator()
+        var partTree= new PartTypesIterator<object>()
         {
             RecursionCondition = (c, l) => this.SubComponentInclusionCondition?.Invoke(c) ?? false
         };

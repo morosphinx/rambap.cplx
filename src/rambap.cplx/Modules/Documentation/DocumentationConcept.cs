@@ -1,5 +1,5 @@
 ﻿using rambap.cplx.Core;
-using rambap.cplx.PartAttributes;
+using rambap.cplx.Attributes;
 using rambap.cplx.PartProperties;
 using System.Reflection;
 using static rambap.cplx.Modules.Documentation.InstanceDocumentation;
@@ -35,7 +35,7 @@ public class InstanceDocumentation : IInstanceConceptProperty
         else return firstDesc;
     }
 
-    // 
+    // TBD : method to have each part define localy some kind of output it wants
     public Func<Pinstance, IEnumerable<(string, IInstruction)>>? MakeAdditionalDocuments { get; init; }
 }
 
@@ -55,12 +55,25 @@ internal class DocumentationConcept : IConcept<InstanceDocumentation>
         }
         // Add Description defined in properties
         ScanObjectContentFor<Description>(template,
-            (d, i) => descriptions.Add(new NamedText(i.Name, d.Text)), true);
+            (d, i) => descriptions.Add(new NamedText(i.Name, d.Text)), acceptUnbacked : true);
 
         List<NamedText> links = new();
         // Add links defined in properties
         ScanObjectContentFor<Link>(template,
-            (d, i) => links.Add(new NamedText(i.Name, d.Hyperlink)), true);
+            (d, i) => links.Add(new NamedText(i.Name, d.Hyperlink)), acceptUnbacked: true);
+
+        // Add links defined in supplier info
+        void AddSupplierLinkIfPresent(SupplierOffer offer)
+        {
+            if(offer.Link != null)
+            {
+                var linkName = $"{offer.Supplier}";
+                links.Add(new NamedText(linkName, offer.Link));
+            }
+        }
+        ScanObjectContentFor<SupplierOffer>(template,
+            (c, i) => AddSupplierLinkIfPresent(c));
+
 
         Func<Pinstance, IEnumerable<(string, IInstruction)>>? makeAdditionDocuments = null;
         if(template is IPartAdditionalDocuments a)

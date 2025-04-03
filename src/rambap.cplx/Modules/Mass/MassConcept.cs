@@ -21,8 +21,8 @@ internal class MassConcept : IConcept<InstanceMass>
         // Calculate total native mass
         List<InstanceMass.NativeMassInfo> nativeMasses = [];
         ScanObjectContentFor<Mass_kg>(template,
-            (c, i) => nativeMasses.Add(new(i.Name, c)),
-            AutoContent.IgnoreNulls);
+            (c, i) => nativeMasses.Add(new(i.Name, c))
+            );
         decimal totalnativeMass = nativeMasses.Sum(c => c.value.mass_kg);
 
         return new InstanceMass()

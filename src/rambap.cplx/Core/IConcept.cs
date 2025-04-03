@@ -33,4 +33,11 @@ public abstract class IConcept<T> : IConcept
 
     /// <summary>Typed implementation of <see cref="IConcept.MakeBase(Pinstance)"/></summary>
     public abstract T? Make(Pinstance instance, Part template);
+
+    /// <summary>
+    /// Expose GetPartConceptInitialisationData as a non-internal method, for concepts defined outside of this assembly
+    /// </summary>
+    protected static PCD GetPartConceptInitialisationData<PCD>(Part part)
+        where PCD : new()
+        => part.GetConteptInitialisationData<PCD>();
 }

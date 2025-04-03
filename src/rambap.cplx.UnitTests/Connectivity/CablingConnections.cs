@@ -1,7 +1,7 @@
 ﻿using rambap.cplx.Export.TextFiles;
 using rambap.cplx.Modules.Connectivity.Outputs;
 using rambap.cplx.UnitTests.Connectivity;
-using static rambap.cplx.Modules.Connectivity.Outputs.ConnectivityColumns;
+using static rambap.cplx.Modules.Connectivity.Outputs.ConnectionColumns;
 
 namespace rambap.cplx.UnitTests.Connectivity;
 
@@ -51,17 +51,13 @@ class Rack1 : Part
     public Equipement1 EQ_PB;
 }
 
-class Rack2 : Part, IPartConnectable
+class Rack2 : Part
 {
     Equipement1 eqA;
     Equipement1 eqB;
-    public ConnectablePort InterfaceA;
-    public ConnectablePort InterfaceB;
-    public void Assembly_Connections(ConnectionBuilder Do)
-    {
-        Do.ExposeAs(eqA.Port, InterfaceA);
-        Do.ExposeAs(eqB.Port, InterfaceB);
-    }
+
+    public ConnectablePort InterfaceA => eqA.Port;
+    public ConnectablePort InterfaceB => eqB.Port;
 }
 
 class Equipement1 : Part
@@ -84,84 +80,15 @@ class CableTypeB : Part
 [TestClass]
 public class CablingConnectionsTests
 {
-    internal static void WriteConnection(ConnectorIdentity displayIdentity, Part part)
-        => WriteConnection(displayIdentity, new Pinstance(part));
-    internal static void WriteConnection(ConnectorIdentity displayIdentity, Pinstance instance)
-    {
-        Console.WriteLine("Connectivity");
-        var table1 = new TextTableFile(instance)
-        {
-            Table = ConnectivityTables.ConnectionTable(displayIdentity),
-            Formater = new Export.Tables.MarkdownTableFormater()
-        };
-        table1.WriteToConsole();
+    [TestMethod] public void WriteBench1() => TestOutputs.WriteConnection(new Bench1());
+    [TestMethod] public void WriteBench2() => TestOutputs.WriteConnection(new Bench2());
+    [TestMethod] public void WriteBench3() => TestOutputs.WriteConnection(new Bench3());
 
-        Console.WriteLine("");
-        Console.WriteLine("Wirings");
-        var table2 = new TextTableFile(instance)
-        {
-            Table = ConnectivityTables.WiringTable(),
-            Formater = new Export.Tables.MarkdownTableFormater()
-        };
-        table2.WriteToConsole();
-
-        Console.WriteLine("");
-        Console.WriteLine("ICD");
-        var table3 = new TextTableFile(instance)
-        {
-            Table = ConnectivityTables.InterfaceControlDocumentTable(),
-            Formater = new Export.Tables.MarkdownTableFormater()
-        };
-        table3.WriteToConsole();
-    }
-
-    [TestMethod] public void WriteBench1_IM() => WriteConnection(ConnectorIdentity.Immediate, new Bench1());
-    [TestMethod] public void WriteBench1_TOP() => WriteConnection(ConnectorIdentity.Topmost, new Bench1());
-    [TestMethod] public void WriteBench2_IM() => WriteConnection(ConnectorIdentity.Immediate, new Bench2());
-    [TestMethod] public void WriteBench2_TOP() => WriteConnection(ConnectorIdentity.Topmost, new Bench2());
-    [TestMethod] public void WriteBench3_IM() => WriteConnection(ConnectorIdentity.Immediate, new Bench3());
-    [TestMethod] public void WriteBench3_TOP() => WriteConnection(ConnectorIdentity.Topmost, new Bench3());
-
-
-    class BenchWrapper<T> : Part
-        where T : Part
-    {
-        public T Bench;
-    }
+    [TestMethod] public void WriteRack1() => TestOutputs.WriteConnection(new Rack1());
+    [TestMethod] public void WriteRack2() => TestOutputs.WriteConnection(new Rack2());
 
     [TestMethod]
-    public void WriteWrappedBench3_IM()
-    {
-        var p = new BenchWrapper<Bench3>();
-        var i = new Pinstance(p);
-        var benchInstance = i.Components.First().Instance;
-        WriteConnection(ConnectorIdentity.Immediate, benchInstance);
-    }
-
-    [TestMethod] 
-    public void WriteWrappedBench3_TOP()
-    {
-        var p = new BenchWrapper<Bench3>();
-        var i = new Pinstance(p);
-        var benchInstance = i.Components.First().Instance;
-        WriteConnection(ConnectorIdentity.Topmost, benchInstance);
-    }
-
-
-    private void WriteICD(ConnectorIdentity displayIdentity, Part part)
-    => WriteICD(displayIdentity, new Pinstance(part));
-    private void WriteICD(ConnectorIdentity displayIdentity, Pinstance instance)
-    {
-        var table = new TextTableFile(instance)
-        {
-            Table = ConnectivityTables.InterfaceControlDocumentTable(),
-            Formater = new Export.Tables.MarkdownTableFormater()
-        };
-        table.WriteToConsole();
-    }
-
-    [TestMethod] public void WriteRack1_ICD() => WriteICD(ConnectorIdentity.Immediate, new Rack1());
-    [TestMethod] public void WriteRack2_ICD() => WriteICD(ConnectorIdentity.Topmost, new Rack2());
+    public void WriteWrappedBench3() => TestOutputs.WriteConnectionInCaseOfParent<Bench3>();
 }
 
 class Bench4 : Bench3, IPartAdditionalDocuments
@@ -172,7 +99,7 @@ class Bench4 : Bench3, IPartAdditionalDocuments
         {
             var textFile = new TextTableFile(i)
             {
-                Table = ConnectivityTables.ConnectionTable(ConnectorIdentity.Immediate),
+                Table = ConnectivityTables.ConnectionTable(),
                 Formater = new Export.Tables.MarkdownTableFormater()
             };
             return ("TestFilename", textFile);

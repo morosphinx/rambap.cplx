@@ -1,4 +1,4 @@
-﻿namespace rambap.cplx.PartAttributes;
+﻿namespace rambap.cplx.Attributes;
 
 /// <summary>
 /// Apply this attribute to a <see cref="Part"> class to set its Revision.

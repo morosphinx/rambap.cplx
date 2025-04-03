@@ -9,8 +9,8 @@ public partial class Part
 
     internal class InitialisationContext
     {
-        private Stack<Part> ClassStack = new Stack<Part>();
-        private Stack<Type> TypeStack = new Stack<Type>();
+        private Stack<Part> ClassStack = [];
+        private Stack<Type> TypeStack = [];
         public void StartInitFor(Part newPart)
         {
             var newType = newPart.GetType();
@@ -27,7 +27,7 @@ public partial class Part
         }
 
         public Part? CurrentLocationPart()
-            => ClassStack.Count() > 0 ? ClassStack.Peek() : null;
+            => ClassStack.Count > 0 ? ClassStack.Peek() : null;
 
         public void EndedInit()
         {
@@ -53,41 +53,19 @@ public partial class Part
             initContext.StartInitFor(this);
             // Create Part properties/fields if null
             ScanObjectContentFor<Part>(this,
+               (t, i) => {
+                   var p = CreatePartFromType(t);
+                   return p;
+               },
                (p, i) => {
                    p.CplxImplicitInitialization(initContext);
-               },
-               (t, i) => {
-                   var p = CreatePartFromType(t, initContext);
-                   p.CplxImplicitInitialization(initContext);
-                   return p;
                });
-            ScanObjectContentFor<IEnumerable<Part>>(this,
-                (p, i) =>
-                {
-                    foreach (var part in p)
-                        part.CplxImplicitInitialization(initContext);
-                });
+            // Create all IPartProperties, and
             // Assign properties Owners
             ScanObjectContentFor<IPartProperty>(this,
                 (p, i) =>
                 {
-                    p.Owner = this;
-                    p.Name = i.Name; // TODO : Why is that here ? Was there an insue with p.Name begin default ?
-                    if (p.Name is null || p.Name == "")
-                        p.Name = i.Name;
-                    p.IsPublic = i.IsPublicOrAssembly;
-                },
-                AutoContent.ConstructIfNulls);
-            ScanObjectContentFor<IEnumerable<IPartProperty>>(this,
-                (p, i) =>
-                {
-                    foreach (var prop in p)
-                    {
-                        prop.Owner = this;
-                        if (prop.Name is null || prop.Name == "")
-                            prop.Name = i.Name;
-                        prop.IsPublic = i.IsPublicOrAssembly;
-                    }
+                    InitPartProperty(this,p, i);
                 },
                 AutoContent.ConstructIfNulls);
             // Initialisation done, no need to do it again
@@ -97,11 +75,25 @@ public partial class Part
         }
     }
 
+    /// <summary>
+    /// Initialise fields of a <see cref="IPartProperty"/> with part & name information
+    /// </summary>
+    internal static void InitPartProperty(
+        Part owner,
+        IPartProperty p,
+        PropertyOrFieldInfo i)
+    {
+        p.Owner = owner;
+        if (p.Name is null || p.Name == "")
+            p.Name = i.Name; // If IPartProperty.name is not set, uses the field name as property name
+        p.IsPublic = i.IsPublicOrAssembly;
+    }
+
     // TODO / TBD : each part is rigth now created unique.
     // Is there a way to reuse parts (not including those created with new() non-default constructors) ?
     // When parts are referenced to etablish relation (eg : connection, slotting),
     // Object instance identity is used
-    private static Part CreatePartFromType(Type type, InitialisationContext context)
+    private static Part CreatePartFromType(Type type)
     {
         if (!type.IsAssignableTo(typeof(Part)))
             throw new InvalidOperationException();

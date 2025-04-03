@@ -20,12 +20,13 @@ public partial class Part
     /// Check that the property is owned by this part or one of its subcomponents
     /// </summary>
     /// <param name="property">Property whose owner we want to assert</param>
+    /// <returns>Property owner</returns>
     /// <exception cref="InvalidOperationException">Throw if the assertion is false</exception>
-    public void AssertIsOwnerOrParent(IPartProperty property)
+    public Part AssertIsOwnerOrParent(IPartProperty property)
     {
         if (!HasDoneCplxImplicitInitialisation)
             throw new InvalidOperationException("Part is not initialised. Create an Instance with this part first");
-        AssertIsSelfOrSubComponent(property.Owner!,"Property must be owned by this part or one of its subcomponents");
+        return AssertIsSelfOrSubComponent(property.Owner!,"Property must be owned by this part or one of its subcomponents");
     }
 
 
@@ -33,14 +34,15 @@ public partial class Part
     /// Check that the property is owned by one of this part subcomponents
     /// </summary>
     /// <param name="property">Property whose owner we want to assert</param>
+    /// <returns>Property owner</returns>
     /// <exception cref="InvalidOperationException">Throw if the assertion is false</exception>
-    public void AssertIsOwnedBySubComponent(IPartProperty property)
+    public Part AssertIsOwnedBySubComponent(IPartProperty property)
     {
         if (!HasDoneCplxImplicitInitialisation)
             throw new InvalidOperationException("Part is not initialised. Create an Instance with this part first");
         if(property.Owner == this)
             throw new InvalidOperationException("Property must be owned by a subcomponent");
-        AssertIsSelfOrSubComponent(property.Owner!);
+        return AssertIsSelfOrSubComponent(property.Owner!);
     }
 
     public void AssertIsASubComponent(Part part)
@@ -52,16 +54,16 @@ public partial class Part
         AssertIsSelfOrSubComponent(part);
     }
 
-    private void AssertIsSelfOrSubComponent(Part seekPart, string? customMessage = null)
+    private Part AssertIsSelfOrSubComponent(Part seekPart, string? customMessage = null)
     {
         if (seekPart == this)
-            return; // We are in self component tree, all is good
+            return this; // We are in self component tree, all is good
         else if (seekPart.Parent == null)
         {
             var message = customMessage ?? "Part must be a component or subcomponent of this";
             throw new InvalidOperationException(message);
         }
         else
-            AssertIsSelfOrSubComponent(seekPart.Parent);
+            return AssertIsSelfOrSubComponent(seekPart.Parent);
     }
 }

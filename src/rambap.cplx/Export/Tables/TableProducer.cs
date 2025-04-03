@@ -2,26 +2,29 @@
 
 namespace rambap.cplx.Export.Tables;
 
-using Line = List<string>;
-
 /// <summary>
 /// Definition of a Table to be displayed in a file
 /// Output 2D string array
 /// </summary>
 /// <typeparam name="T">The type of all line of the table. This may be abstract</typeparam>
-public record TableProducer<T> : ITableProducer
+public record TableProducer<T> : TableProducer
 {
     /// <summary> Iterator that select that lines content </summary>
     public required IIterator<T> Iterator { get; init; }
 
     /// <summary> Definition of the columns of the table </summary>
     public required List<IColumn<T>> Columns { get; init; }
+    public override IEnumerable<IColumn> IColumns => Columns;
 
     /// <summary>
     /// Enumerable transformation applied while running <see cref="MakeContentLines(Pinstance)"/> </br>
     /// Can be used to add filtering to the table data.
     /// </summary>
     public Func<IEnumerable<T>, IEnumerable<T>>? ContentTransform { get; init; } = null;
+
+    public Func<T, T, bool>? AddSpacerCondition { get; init; } = null;
+    public Func<T, T, bool>? AddTableBreakCondition { get; init; } = null;
+
 
     /// <summary>
     /// If true, all text are converted from CamelCase to normal case. Exemple : <br/>
@@ -53,44 +56,93 @@ public record TableProducer<T> : ITableProducer
             _ => throw new NotImplementedException()
         };
 
-    public IEnumerable<IColumn> IColumns => Columns;
 
-    public Line MakeHeaderLine()
-        => IColumns.Select(col => col.Title).ToList();
+    public override Line MakeHeaderLine()
+        => new ()
+        {
+            Type = Line.LineType.Header,
+            Cells = IColumns.Select(col => col.Title).ToList(),
+        };
+        
     private Line MakeContentLine(T item)
     {
         if (RemoveCamelCase)
         {
-            return Columns.Select(col =>
+            return new()
             {
-                var text = col.CellFor(item);
-                if (CamelCasePossible(col.TypeHint))
-                    return CamelCaseToNormalCase(text);
-                else
-                    return text;
-            }).ToList();
+                Type = Line.LineType.Content,
+                Cells = Columns.Select(col =>
+                {
+                    var text = col.CellFor(item);
+                    if (CamelCasePossible(col.TypeHint))
+                        return CamelCaseToNormalCase(text);
+                    else
+                        return text;
+                }).ToList()
+            };
         }
         else
-            return Columns.Select(col => col.CellFor(item)).ToList();
+        {
+            return new()
+            {
+                Type = Line.LineType.Content,
+                Cells = Columns.Select(col => col.CellFor(item)).ToList(),
+            };
+        }
     }
 
-    public IEnumerable<Line> MakeContentLines(Pinstance rootComponent)
+
+    private Line MakeBreakLine()
     {
-        if (ContentTransform is null)
+        return new()
         {
-            foreach (var c in Iterator.MakeContent(rootComponent))
-                yield return MakeContentLine(c);
-        }
-        else
+            Type = Line.LineType.TableBreak,
+            Cells = Columns.Select(c => "").ToList()
+        };
+    }
+    private Line MakeSpacerLine()
+    {
+        return new()
         {
-            var content = Iterator.MakeContent(rootComponent);
-            content = ContentTransform(content);
-            foreach (var c in content)
+            Type = Line.LineType.Spacer,
+            Cells = Columns.Select(c => "").ToList()
+        };
+    }
+    public override IEnumerable<Line> MakeContentLines(Pinstance rootComponent)
+    {
+        var contents = Iterator.MakeContent(rootComponent);
+        // Apply content transform
+        if(ContentTransform is not null)
+            contents = ContentTransform(contents);
+        // Add additional breaks f required
+        T? previousContent = default;
+        foreach (var c in contents)
+        {
+            if (previousContent is null)
+            {
+                // First iteration
                 yield return MakeContentLine(c);
+            } else
+            {
+                // Add spacers if required
+                bool doSpace = AddSpacerCondition?.Invoke(previousContent,c) ?? false;
+                bool doBreak = AddTableBreakCondition?.Invoke(previousContent, c) ?? false;
+                if (doBreak)
+                    yield return MakeBreakLine();
+                else if (doSpace)
+                    yield return MakeSpacerLine();
+                // Content Line
+                yield return MakeContentLine(c);
+            }
+            previousContent = c;
         }
     }
 
-    public Line MakeTotalLine(Pinstance rootComponent)
-        => IColumns.Select(col => col.TotalFor(rootComponent)).ToList();
+    public override Line MakeTotalLine(Pinstance rootComponent)
+        => new()
+        {
+            Type = Line.LineType.Total,
+            Cells = IColumns.Select(col => col.TotalFor(rootComponent)).ToList(),
+        };
 }
 

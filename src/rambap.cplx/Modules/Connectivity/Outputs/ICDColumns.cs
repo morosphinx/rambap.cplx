@@ -8,63 +8,58 @@ public static class ICDColumns
 {
     // Port names are displayed as exact strings, no formating
 
-    public static DelegateColumn<IComponentContent> TopMostPortPart()
-    => new DelegateColumn<IComponentContent>(
-        "Part",
-        ColumnTypeHint.StringExact,
-        i => i switch
-        {
-            BranchComponent b => b.Component.CN,
-            IPropertyContent { Property: ICDTableContentProperty prop } p => prop.Port.GetTopMostUser().Owner?.ImplementingInstance.CN ?? "",
-            LeafComponent c => c.Component.CN,
-            _ => throw new NotImplementedException(),
-        });
+    public static DelegateColumn<ICplxContent> TopMostPortPart()
+        => new DelegateColumn<ICplxContent>(
+            "Part",
+            ColumnTypeHint.StringExact,
+            i => i switch
+            {
+                IPureComponentContent c => c.Component.CN,
+                IPropertyContent<ICDTableProperty> p => p.Property.Port.GetUpperUsage().Owner.CN ?? "",
+                _ => throw new NotImplementedException(),
+            });
 
-    public static DelegateColumn<IComponentContent> TopMostPortName()
-        => new DelegateColumn<IComponentContent>(
+    public static DelegateColumn<ICplxContent> TopMostPortName()
+        => new DelegateColumn<ICplxContent>(
             "TopMostPort",
             ColumnTypeHint.StringExact,
             i => i switch
             {
-                BranchComponent b => "",
-                IPropertyContent { Property : ICDTableContentProperty prop} p => prop.Port.GetTopMostUser().Name,
-                LeafComponent c => "",
+                IPureComponentContent c => "",
+                IPropertyContent<ICDTableProperty> p => p.Property.Port.GetUpperUsage().Label,
                 _ => throw new NotImplementedException(),
             });
 
-    public static DelegateColumn<IComponentContent> MostRelevantPortName()
-        => new DelegateColumn<IComponentContent>(
+    public static DelegateColumn<ICplxContent> MostRelevantPortName()
+        => new DelegateColumn<ICplxContent>(
             "PortEXP",
             ColumnTypeHint.StringExact,
             i => i switch
             {
-                BranchComponent b => "",
-                IPropertyContent { Property: ICDTableContentProperty prop } p => prop.Port.GetTopMostExposition().Name,
-                LeafComponent c => "",
+                IPureComponentContent c => "",
+                IPropertyContent<ICDTableProperty> p => p.Property.Port.GetUpperExposition().Label,
                 _ => throw new NotImplementedException(),
             });
 
-    public static DelegateColumn<IComponentContent> MostRelevantPortName_Regard()
-        => new DelegateColumn<IComponentContent>(
+    public static DelegateColumn<ICplxContent> MostRelevantPortName_Regard()
+        => new DelegateColumn<ICplxContent>(
             "ColEXP",
             ColumnTypeHint.StringExact,
             i => i switch
             {
-                BranchComponent b => "",
-                IPropertyContent { Property: ICDTableContentProperty prop } p => "",
-                LeafComponent c => "",
+                IPureComponentContent c => "",
+                IPropertyContent<ICDTableProperty> p => "",
                 _ => throw new NotImplementedException(),
             });
 
-    public static DelegateColumn<IComponentContent> SelfPortName()
-        => new DelegateColumn<IComponentContent>(
+    public static DelegateColumn<ICplxContent> SelfPortName()
+        => new DelegateColumn<ICplxContent>(
             "PortSelf",
             ColumnTypeHint.StringExact,
             i => i switch
             {
-                BranchComponent b => "",
-                IPropertyContent { Property: ICDTableContentProperty prop } p => prop.Port.Name,
-                LeafComponent c => "",
+                IPureComponentContent c => "",
+                IPropertyContent<ICDTableProperty> p => p.Property.Port.Label,
                 _ => throw new NotImplementedException(),
             });
 }

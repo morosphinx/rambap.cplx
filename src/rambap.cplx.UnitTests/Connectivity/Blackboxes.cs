@@ -7,7 +7,7 @@ namespace rambap.cplx.UnitTests.Connectivity;
 
 interface IBlackboxes
 {
-    ConnectablePort PortA { get; set; }
+    ConnectablePort PortA { get; }
 }
 
 class BlackBox_Pin : Pin { }
@@ -57,13 +57,26 @@ class BlackBox_Type6 : Part, IBlackboxes, IPartConnectable
     public void Assembly_Connections(ConnectionBuilder Do) { }
 }
 #endif
-class BlackBox_Type7 : Part, IBlackboxes, IPartConnectable
+class BlackBox_Type7A : Part, IBlackboxes, IPartConnectable
 {
     BlackBox_Connector Connector;
     public ConnectablePort PortA { get; set; }
-    public void Assembly_Connections(ConnectionBuilder Do)
+
+    public void Assembly_Ports(PortBuilder Do)
     {
         Do.ExposeAs(Connector.MateFace, PortA);
+    }
+
+    public void Assembly_Connections(ConnectionBuilder Do)
+    {
+    }
+}
+class BlackBox_Type7B : Part, IBlackboxes, IPartConnectable
+{
+    BlackBox_Connector Connector;
+    public ConnectablePort PortA => Connector.MateFace;
+    public void Assembly_Connections(ConnectionBuilder Do)
+    {
     }
 }
 
@@ -71,7 +84,7 @@ class BlackBox_Type8 : Part
 {
     public ConnectablePort AbstractPort;
 
-    public BlackBox_Type7 SubBox;
+    public BlackBox_Type7A SubBox;
 
     Part AbstractPrivatePart;
     public Part AbstractPublicPart;
@@ -110,6 +123,7 @@ public class TestBlackBoxesICDs
     [TestMethod] public void BB5() => TestBlackBoxICD(new BlackBox_Type5());
     [TestMethod] public void BB6() => TestBlackBoxICD(new BlackBox_Type6());
 #endif
-    [TestMethod] public void BB7() => TestBlackBoxICD(new BlackBox_Type7());
+    [TestMethod] public void BB7A() => TestBlackBoxICD(new BlackBox_Type7A());
+    [TestMethod] public void BB7B() => TestBlackBoxICD(new BlackBox_Type7B());
     [TestMethod] public void BB8() => TestBlackBoxICD(new BlackBox_Type8());
 }

@@ -139,12 +139,12 @@ public class ExcelTableFile_FromTemplate : IInstruction
         {
             var headerLine = instruction.Table.MakeHeaderLine();
             FillInLineContent(sheetData,
-                headerLine,
-                Enumerable.Range(0, headerLine.Count).Select(c => ColumnTypeHint.StringFormatable).ToList(),
+                headerLine.Cells,
+                Enumerable.Range(0, headerLine.Cells.Count).Select(c => ColumnTypeHint.StringFormatable).ToList(),
                 currentRow++, firstColl);
         }
         FillInTableContents(sheetData,
-            instruction.Table.MakeContentLines(Content),
+            instruction.Table.MakeContentLines(Content).Select(l => l.Cells),
             instruction.Table.IColumns.Select(c => c.TypeHint).ToList(),
             currentRow, firstColl, columnStyles);
 
