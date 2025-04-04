@@ -3,7 +3,7 @@
 TODO - describe the problem space and intended use cases
 
 
-## The general process
+## The general process of hardware dev
 
 4 phase of dev. Tool they use, their purpose, their input output
 Quotation. Architecture. Development. Integration/Test.
@@ -12,7 +12,7 @@ Information sharing required. Different need => living document
 
 ## The issues
 
-Why other existing optiosn don't match :
+Why other existing options don't match :
 
 Mudying of Part / Component number when 1 in 1, goign quick => Forcign those to be explciit, different construct, hope it help  deseign to be clean
 
