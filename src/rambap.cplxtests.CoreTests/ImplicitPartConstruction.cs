@@ -1,4 +1,4 @@
-﻿namespace rambap.cplxtests.CoreTests.CoreTests;
+﻿namespace rambap.cplxtests.CoreTests;
 
 [TestClass]
 public class ImplicitPartConstruction
@@ -138,7 +138,7 @@ public class ImplicitPartConstruction
     {
         var p = new TopLvlPart_ListMode();
         var i = new Pinstance(p);
-        foreach(var c in i.Components) Console.WriteLine(c.CN);
+        foreach (var c in i.Components) Console.WriteLine(c.CN);
         // Number of subcomponent is valid
         Assert.AreEqual(TopLvlPart_ListMode.ExpectedTotalPartCount, i.Components.Count());
         // All SubComponents havz a distinct CN
