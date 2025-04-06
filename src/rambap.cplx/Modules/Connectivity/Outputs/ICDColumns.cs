@@ -1,6 +1,5 @@
 ﻿using rambap.cplx.Export.Tables;
 using rambap.cplx.Modules.Base.Output;
-using static rambap.cplx.Modules.Connectivity.Outputs.ICDTableIterator;
 
 namespace rambap.cplx.Modules.Connectivity.Outputs;
 

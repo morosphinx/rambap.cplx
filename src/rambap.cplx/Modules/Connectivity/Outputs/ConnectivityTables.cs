@@ -5,7 +5,6 @@ using static rambap.cplx.Modules.Connectivity.Outputs.ConnectionTableProperty;
 using static rambap.cplx.Modules.Connectivity.Outputs.ConnectionColumns;
 using rambap.cplx.Core;
 using rambap.cplx.Modules.Connectivity.PinstanceModel;
-using static rambap.cplx.Modules.Connectivity.Outputs.ICDTableIterator;
 
 namespace rambap.cplx.Modules.Connectivity.Outputs;
 
@@ -75,7 +74,7 @@ public class ConnectivityTables
         }
     }
 
-    public static TableProducer<ICplxContent> ConnectionTable()
+    public static TableProducer<ICplxContent> ConnectionTable(bool recurse = true)
         => new TableProducer<ICplxContent>()
         {
             Iterator = new ComponentPropertyIterator<ConnectionTableProperty>()
@@ -83,7 +82,7 @@ public class ConnectivityTables
                 PropertyIterator = c => GetConnectivityTableProperties(
                     c, ConnectionKind.Assembly),
                 WriteBranches = false,
-                RecursionCondition = (c, l) => true,
+                RecursionCondition = (c, l) => recurse,
             },
             ContentTransform = cs => cs.Where(c => c is not IPureComponentContent),
             Columns = [
@@ -104,7 +103,7 @@ public class ConnectivityTables
                 ]
         };
 
-    public static TableProducer<ICplxContent> WiringTable()
+    public static TableProducer<ICplxContent> WiringTable(bool recurse = true)
         => new TableProducer<ICplxContent>()
         {
             Iterator = new ComponentPropertyIterator<ConnectionTableProperty>()
@@ -112,7 +111,7 @@ public class ConnectivityTables
                 PropertyIterator = c => GetConnectivityTableProperties(
                     c, ConnectionKind.Wiring),
                 WriteBranches = false,
-                RecursionCondition = (c,l) => true,
+                RecursionCondition = (c,l) => recurse,
             },
             ContentTransform = cs => cs.Where(c => c is not IPureComponentContent),
             Columns = [
@@ -159,7 +158,7 @@ public class ConnectivityTables
     public static TableProducer<ICplxContent> InterfaceControlDocumentTable()
         => new TableProducer<ICplxContent>()
         {
-            Iterator = new ComponentPropertyIterator<ICDTableIterator.ICDTableProperty>()
+            Iterator = new ComponentPropertyIterator<ICDTableProperty>()
             {
                 PropertyIterator = SelectPublicTopmostConnectors,
                 PropertySubIterator = SelectConnectorSubs,
@@ -171,11 +170,11 @@ public class ConnectivityTables
             ContentTransform = contents => contents.Where(c =>
                 c switch
                 {
-                    IPropertyContent<ICDTableIterator.ICDTableProperty> lp => true,
+                    IPropertyContent<ICDTableProperty> lp => true,
                     _ => c.Component.IsPublic, // Private part are still present as leaf, we remove them
                 }),
             Columns = [
-                    IDColumns.ComponentNumberPrettyTree<ICDTableIterator.ICDTableProperty>(
+                    IDColumns.ComponentNumberPrettyTree<ICDTableProperty>(
                         i =>
                         {
                             var prop = i.Property;
