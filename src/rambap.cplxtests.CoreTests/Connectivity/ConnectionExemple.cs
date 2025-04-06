@@ -1,6 +1,6 @@
 ﻿using rambap.cplx.Modules.Connectivity.Templates;
 
-namespace rambap.cplx.UnitTests.Connectivity;
+namespace rambap.cplxtests.CoreTests.Connectivity;
 
 class Box0 : Part, IPartConnectable
 {

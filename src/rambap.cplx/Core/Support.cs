@@ -3,7 +3,7 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 
 // Unit testing access some internal properties : 
-[assembly: InternalsVisibleTo("rambap.cplx.UnitTests")]
+[assembly: InternalsVisibleTo("rambap.cplxtests.CoreTests")]
 
 namespace rambap.cplx.Core;
 

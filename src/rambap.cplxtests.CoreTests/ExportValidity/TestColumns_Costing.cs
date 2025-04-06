@@ -1,9 +1,10 @@
-﻿using rambap.cplx.Export.Tables;
+﻿using rambap.cplx;
+using rambap.cplx.Export.Tables;
 using rambap.cplx.Modules.Base.Output;
 using rambap.cplx.Modules.Costing.Outputs;
 using rambap.cplx.Modules.Costing;
 
-namespace rambap.cplx.UnitTests.ExportValidity;
+namespace rambap.cplxtests.CoreTests.ExportValidity;
 
 
 [TestClass]

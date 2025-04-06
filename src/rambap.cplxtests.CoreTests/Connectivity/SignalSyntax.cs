@@ -1,6 +1,7 @@
-﻿using rambap.cplx.Modules.Connectivity;
+﻿using rambap.cplx;
+using rambap.cplx.Modules.Connectivity;
 
-namespace rambap.cplx.UnitTests.Connectivity;
+namespace rambap.cplxtests.CoreTests.Connectivity;
 
 [TestClass]
 public class SingleSignalSyntax

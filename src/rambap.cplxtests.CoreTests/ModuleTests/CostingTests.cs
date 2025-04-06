@@ -1,4 +1,4 @@
-﻿namespace rambap.cplx.UnitTests.ModuleTests;
+﻿namespace rambap.cplxtests.CoreTests.ModuleTests;
 
 [TestClass]
 public class CostingTests

@@ -1,8 +1,8 @@
 ﻿using rambap.cplx.Export.Tables;
 using rambap.cplx.Modules.Base.Output;
-using static rambap.cplx.UnitTests.ExportValidity.TestColumn_Support;
+using static rambap.cplxtests.CoreTests.ExportValidity.TestColumn_Support;
 
-namespace rambap.cplx.UnitTests.ExportValidity;
+namespace rambap.cplxtests.CoreTests.ExportValidity;
 
 /// <summary>
 /// Test that a column representing an extensive property has a valid sum, no matter the iteration mode specified by the user

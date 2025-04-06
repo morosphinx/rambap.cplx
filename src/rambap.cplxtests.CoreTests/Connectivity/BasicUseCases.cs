@@ -3,7 +3,7 @@ using rambap.cplx.Modules.Connectivity.PinstanceModel;
 using rambap.cplx.Modules.Connectivity.Templates;
 using static rambap.cplx.Modules.Connectivity.Outputs.ConnectionColumns;
 
-namespace rambap.cplx.UnitTests.Connectivity;
+namespace rambap.cplxtests.CoreTests.Connectivity;
 
 [TestClass]
 public class BasicUseCases

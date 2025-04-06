@@ -1,6 +1,6 @@
-﻿
-namespace rambap.cplx.UnitTests.Costing;
+﻿using rambap.cplx;
 
+namespace rambap.cplxtests.CoreTests.Costing;
 
 internal class PartWithSupplier1 : Part
 {

@@ -3,7 +3,7 @@ using rambap.cplx.Export.TextFiles;
 using rambap.cplx.Modules.Base.Output;
 using rambap.cplx.Modules.Connectivity.Outputs;
 
-namespace rambap.cplx.UnitTests.Connectivity;
+namespace rambap.cplxtests.CoreTests.Connectivity;
 
 internal static class TestOutputs
 {
@@ -60,7 +60,7 @@ internal static class TestOutputs
         var ICDfile = new TextTableFile(instance)
         {
             Table = ICDtable,
-            Formater = new Export.Tables.MarkdownTableFormater()
+            Formater = new cplx.Export.Tables.MarkdownTableFormater()
         };
         ICDfile.WriteToConsole();
     }

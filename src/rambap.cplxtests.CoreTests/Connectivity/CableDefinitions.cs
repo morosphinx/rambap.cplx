@@ -1,8 +1,9 @@
-﻿using rambap.cplx.Export.TextFiles;
+﻿using rambap.cplx;
+using rambap.cplx.Export.TextFiles;
 using rambap.cplx.Modules.Connectivity.Outputs;
-using static rambap.cplx.UnitTests.Connectivity.ConnectionAction;
+using static rambap.cplxtests.CoreTests.Connectivity.ConnectionAction;
 
-namespace rambap.cplx.UnitTests.Connectivity;
+namespace rambap.cplxtests.CoreTests.Connectivity;
 
 internal class Part_InternalCable(bool internalConnected) : Part, IPartConnectable
 {
@@ -85,7 +86,7 @@ public class TestSimpleCableContainer
         var table = new TextTableFile(instance)
         {
             Table = ConnectivityTables.ConnectionTable(),
-            Formater = new Export.Tables.MarkdownTableFormater()
+            Formater = new cplx.Export.Tables.MarkdownTableFormater()
         };
         table.WriteToConsole();
         // Test Connectivity property value

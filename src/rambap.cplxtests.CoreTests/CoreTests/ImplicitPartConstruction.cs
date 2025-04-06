@@ -1,6 +1,4 @@
-﻿using System.Xml.Serialization;
-
-namespace rambap.cplx.UnitTests.CoreTests;
+﻿namespace rambap.cplxtests.CoreTests.CoreTests;
 
 [TestClass]
 public class ImplicitPartConstruction

@@ -1,4 +1,4 @@
-﻿namespace rambap.cplx.UnitTests.ExportValidity;
+﻿namespace rambap.cplxtests.CoreTests.ExportValidity;
 
 internal static class DecimalPropertyPartExemple
 {

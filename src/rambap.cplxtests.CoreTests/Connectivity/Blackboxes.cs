@@ -3,7 +3,7 @@ using rambap.cplx.Export.TextFiles;
 using rambap.cplx.Modules.Connectivity.Outputs;
 using rambap.cplx.Modules.Connectivity.Templates;
 
-namespace rambap.cplx.UnitTests.Connectivity;
+namespace rambap.cplxtests.CoreTests.Connectivity;
 
 interface IBlackboxes
 {

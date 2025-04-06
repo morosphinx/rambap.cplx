@@ -7,7 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "rambap.cplx", "rambap.cplx\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "rambap.cplx.Import.CSV", "rambap.cplx.Import.CSV\rambap.cplx.Import.CSV.csproj", "{33FC800A-1F4F-478E-8FAB-C9C6E84272B5}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "rambap.cplx.UnitTests", "rambap.cplx.UnitTests\rambap.cplx.UnitTests.csproj", "{D49D0E56-1403-422F-8850-79CAB12F90CF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "rambap.cplxtests.CoreTests", "rambap.cplxtests.CoreTests\rambap.cplxtests.CoreTests.csproj", "{D49D0E56-1403-422F-8850-79CAB12F90CF}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{9EF744C3-CB25-4565-8D23-A2CEFE132F8B}"
 	ProjectSection(SolutionItems) = preProject

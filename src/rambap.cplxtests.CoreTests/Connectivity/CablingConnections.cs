@@ -1,9 +1,9 @@
 ﻿using rambap.cplx.Export.TextFiles;
 using rambap.cplx.Modules.Connectivity.Outputs;
-using rambap.cplx.UnitTests.Connectivity;
+using rambap.cplxtests.CoreTests.Connectivity;
 using static rambap.cplx.Modules.Connectivity.Outputs.ConnectionColumns;
 
-namespace rambap.cplx.UnitTests.Connectivity;
+namespace rambap.cplxtests.CoreTests.Connectivity;
 
 class CablingConnections : Part
 {

@@ -3,7 +3,7 @@ using rambap.cplx.Export.Tables;
 using rambap.cplx.Export.TextFiles;
 using rambap.cplx.Modules.Base.Output;
 
-namespace rambap.cplx.UnitTests.ExportValidity;
+namespace rambap.cplxtests.CoreTests.ExportValidity;
 
 [TestClass]
 public class TestComponentIterator

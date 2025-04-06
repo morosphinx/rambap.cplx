@@ -2,7 +2,7 @@
 using rambap.cplx.Export.TextFiles;
 using rambap.cplx.Modules.Base.Output;
 
-namespace rambap.cplx.UnitTests.ExportValidity;
+namespace rambap.cplxtests.CoreTests.ExportValidity;
 
 internal static class TestColumn_Support
 {
