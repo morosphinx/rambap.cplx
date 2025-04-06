@@ -54,6 +54,12 @@ Low Priority
 - Columns
 - Tests
 
+### Connectivity Module
+- A Tree like Signal definition hierarcy, like port exposition ?
+- Signal auto rename when exposed from a subpart
+- Signal propagation on wires for documentation
+- A signal flow system table
+
 ### Mechanical occupation Module
 Racking and the like
 - Generation of mechanical occupation diagrams => In another lib ?

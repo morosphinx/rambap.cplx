@@ -90,19 +90,3 @@ public class CablingConnectionsTests
     [TestMethod]
     public void WriteWrappedBench3() => TestOutputs.WriteConnectionInCaseOfParent<Bench3>();
 }
-
-class Bench4 : Bench3, IPartAdditionalDocuments
-{
-    public void Additional_Documentation(DocumentationBuilder Do)
-    {
-        Do.AddInstruction(i =>
-        {
-            var textFile = new TextTableFile(i)
-            {
-                Table = ConnectivityTables.ConnectionTable(),
-                Formater = new Export.Tables.MarkdownTableFormater()
-            };
-            return ("TestFilename", textFile);
-        });
-    }
-}

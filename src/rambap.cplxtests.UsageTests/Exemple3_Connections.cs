@@ -1,4 +1,4 @@
-﻿namespace rambap.cplx.UnitTests;
+﻿namespace rambap.cplxtests.UsageTests;
 
 using DocumentFormat.OpenXml.Packaging;
 using rambap.cplx.Export.TextFiles;
@@ -25,7 +25,7 @@ class RackConnected1 : Part, IPartConnectable, IPartAdditionalDocuments
 
     public void Additional_Documentation(DocumentationBuilder Do)
     {
-        Do.AdditionalInstructions.Add(("CustomFile.txt", new CustomDoc()));
+        Do.AddInstruction("CustomFile.txt", new CustomDoc());
     }
 
     Cost Rack = 500;

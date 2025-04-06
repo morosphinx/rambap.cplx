@@ -2,9 +2,10 @@
 using rambap.cplx.Export.Tables;
 using rambap.cplx.Export.TextFiles;
 using rambap.cplx.Modules.Costing.Outputs;
+using rambap.cplx.Modules.Documentation.Outputs;
 using System.Runtime.CompilerServices;
 
-namespace rambap.cplx.UnitTests;
+namespace rambap.cplxtests.UsageTests;
 
  internal class MakeCplxRepoReadmeInstruction : TextCustomFile
 {
@@ -53,7 +54,7 @@ CPLX generate files assisting multiples aspects of the design process :
 ```
 {string.Join("\r\n",
     new FixedWidthTableFormater().Format(
-        Modules.Documentation.Outputs.SystemViewTables.ComponentTree_Detailled(),
+        SystemViewTables.ComponentTree_Detailled(),
         Content))
 }
 ```
@@ -94,7 +95,14 @@ dotnet new cplxExecutable --name MyProjectName
 3 - Edit the MyPart.cs file
 
 4 - Run the project
-""";
+
+## Documentation
+
+[On github](https://github.com/morosphinx/rambap.cplx/tree/main/doc)
+
+"""
+
+;
 
     }
 }

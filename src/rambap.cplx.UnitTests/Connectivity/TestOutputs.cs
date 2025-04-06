@@ -1,9 +1,7 @@
-﻿using DocumentFormat.OpenXml.Drawing;
-using rambap.cplx.Export.Tables;
+﻿using rambap.cplx.Export.Tables;
 using rambap.cplx.Export.TextFiles;
 using rambap.cplx.Modules.Base.Output;
 using rambap.cplx.Modules.Connectivity.Outputs;
-using static rambap.cplx.Modules.Connectivity.Outputs.ConnectionColumns;
 
 namespace rambap.cplx.UnitTests.Connectivity;
 

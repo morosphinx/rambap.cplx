@@ -119,3 +119,7 @@ dotnet new cplxExecutable --name MyProjectName
 3 - Edit the MyPart.cs file
 
 4 - Run the project
+
+## Documentation
+
+[On github](https://github.com/morosphinx/rambap.cplx/tree/main/doc)

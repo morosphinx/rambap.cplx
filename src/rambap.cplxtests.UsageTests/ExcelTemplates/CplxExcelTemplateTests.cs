@@ -6,7 +6,7 @@ using rambap.cplx.Modules.Base.Output;
 using rambap.cplx.Modules.Costing;
 using rambap.cplx.Export.Tables;
 
-namespace rambap.cplx.UnitTests.ExcelTemplates;
+namespace rambap.cplxtests.UsageTests.ExcelTemplates;
 
 [TestClass]
 public class CplxExcelTemplateTests

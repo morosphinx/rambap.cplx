@@ -11,9 +11,15 @@ Step by step guides to learn to use cplx
 
 Cplx design and model description. For developpers or users that prefer to learn by top-down view.
 
+### The cplx data model
+
 1. [Main data model overview](./design/DataModel_Overview.md)
 2. [Properties kinds](./design/DataModel_Properties.md)
 3. [Data concepts modules](./design/DataModel_TheConceptsModules.md)
+
+### The language implementation
+
+1. [Language Overview](./design/Language_Overview.md)
 
 ## Appendix
 

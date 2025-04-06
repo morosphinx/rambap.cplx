@@ -1,4 +1,4 @@
-﻿namespace rambap.cplx.UnitTests;
+﻿namespace rambap.cplxtests.UsageTests;
 
 class Exemple4_Programatic : Part
 {

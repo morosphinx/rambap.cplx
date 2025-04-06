@@ -1,8 +1,6 @@
 ﻿using rambap.cplx.Modules.Connectivity.Templates;
-using static rambap.cplx.Modules.Connectivity.Outputs.ConnectionColumns;
 
 namespace rambap.cplx.UnitTests.Connectivity;
-
 
 class Box0 : Part, IPartConnectable
 {
@@ -161,10 +159,18 @@ class ConnectorA : Connector<PinA>
 }
 class PinA : Pin { }
 
+class ConnectorB : Connector<PinA>
+{
+    public WireablePort A => Pin(1);
+    public WireablePort B => Pin(2);
+    public WireablePort C => Pin(3);
+    public WireablePort D => Pin(4);
+    public ConnectorB() : base(9) { }
+}
 class WiringB : Part, IPartConnectable
 {
-    ComplexConnectorDeclarationKind3 C01;
-    ComplexConnectorDeclarationKind3 C02;
+    ConnectorB C01;
+    ConnectorB C02;
 
     public void Assembly_Connections(ConnectionBuilder Do)
     {
