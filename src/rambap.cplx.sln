@@ -22,7 +22,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "rambap.cplx.Templates", "ra
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "rambap.cplxtests.UsageTests", "rambap.cplxtests.UsageTests\rambap.cplxtests.UsageTests.csproj", "{1799A2C4-4B96-4099-AD20-3175D28F74CE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "rambap.cplx.Export.ProductionDoc", "rambap.cplx.Export.ProductionDoc\rambap.cplx.Export.ProductionDoc.csproj", "{D2F7C41B-F786-48FE-A945-6358F7B1AC76}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "rambap.cplx.Export.Prodocs", "rambap.cplx.Export.Prodocs\rambap.cplx.Export.Prodocs.csproj", "{D2F7C41B-F786-48FE-A945-6358F7B1AC76}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

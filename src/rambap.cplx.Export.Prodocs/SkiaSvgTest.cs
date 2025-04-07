@@ -1,6 +1,6 @@
 ﻿using SkiaSharp;
 
-namespace rambap.cplx.Export.ProductionDoc;
+namespace rambap.cplx.Export.Prodocs;
 
 public class SkiaSvgTest
 {

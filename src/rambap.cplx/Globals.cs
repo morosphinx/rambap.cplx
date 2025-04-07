@@ -18,4 +18,17 @@ public static class Globals
             new Modules.Racking.SlotConcept(),
             new Modules.Connectivity.ConnectionConcept(),
         ];
+
+    /// <summary>
+    /// Global cplx file generation info : execution Date. Is auto set on Assembly load <br/>
+    /// All generated files should use this parameter as date info. <br/>
+    /// Users may edit it.
+    /// </summary>
+    public static DateTimeOffset GenerationDate = DateTimeOffset.Now;
+
+    /// <summary>
+    /// Global cplx file generation info : executing machine name. Is auto set on Assembly load <br/>
+    /// Users may edit it.
+    /// </summary>
+    public static string GenerationMachine = System.Environment.MachineName;
 }

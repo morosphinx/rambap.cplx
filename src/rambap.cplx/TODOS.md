@@ -7,8 +7,17 @@
 ## Framework
 - Clarify naming of Modules, Outputs, and Export utilies
     - What is the respondability split between Export vs Modules.[ModuleName].Output ?
+		- Export are what define & create files. Output are how to data get out of the model
+		- Concepts module define (only ? mostly ?) outputs. How the file look is and Export's job
 - Clarify namespace of common types used by multiples modules (eg : Entities/Companies)
-
+- Some kind of validation engine, that process the instance tree and return error / warnings in a file. Possible errors
+    - A PN include a character that can be confused for a CSV separator (eg : '.' ';' ':', any whitespace other than '\s')
+    - Two part share a PN but are not equivalent
+        - Eg : a parametered constructor return same PN for different input values
+    - Multiple properties / Component with the same (post instantiation, specified with attributes) name 
+    - Costing : A cost is 0
+    - Connectivity : A mate is made between two uncompatible connectors
+    - Connectivity : Signal compatibility ?
 
 ## Core
 - Definie UN Component / Instance ambiguity solution
@@ -100,4 +109,7 @@ Low Prio
     - Localisation , . when attempty to writte double values ... due to IColumn.CellFor() passing the data through a string type, with formating that may not match what excel expect
 
 ## Stuff
+- Some form of companion app to 
+	- Help discoverability of part properties
+	- Navigate a cplx dll lib, search parts in it based on some criteria, and copy / paste its type to the editor
 - ✅🔳
