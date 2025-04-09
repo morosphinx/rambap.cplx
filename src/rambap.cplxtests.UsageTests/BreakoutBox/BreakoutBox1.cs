@@ -1,4 +1,4 @@
-﻿namespace rambap.cplxtests.UsageTests;
+﻿namespace rambap.cplxtests.UsageTests.BreakoutBox;
 
 [PN("456_123_456")]
 [PartDescription("Eclateur SubD9 vers fiches banane 4mm")]

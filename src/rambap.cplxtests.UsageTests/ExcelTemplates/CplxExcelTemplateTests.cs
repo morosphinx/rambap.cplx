@@ -60,7 +60,7 @@ public class CplxExcelTemplateTests
     [TestMethod]
     public void TestCplxCostingGenerator()
     {
-        var p = new BreakoutBox1();
+        var p = new BreakoutBox.BreakoutBox1();
         var i = new Pinstance(p);
         var generator = CplxCostingGenerator();
         generator.Do(i, "C:\\TestFolder\\Breakout9_Costing");
@@ -164,7 +164,7 @@ public class CplxExcelTemplateTests
     [TestMethod]
     public void TestCustomCostingGenerator()
     {
-        var p = new BreakoutBox1();
+        var p = new BreakoutBox.BreakoutBox1();
         var i = new Pinstance(p);
         var generator = CustomCostingGenerator();
         generator.Do(i, "C:\\TestFolder\\Breakout9_CustomCosting");

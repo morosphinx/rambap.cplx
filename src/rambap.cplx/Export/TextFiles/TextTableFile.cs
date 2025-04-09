@@ -17,6 +17,9 @@ public class TextTableFile : IInstruction
     /// </summary>
     public Pinstance Content { get; init; }
 
+    public IEnumerable<string> GetAllLines()
+        => Formater.Format(Table, Content);
+
     public TextTableFile(Pinstance content)
     {
         Content = content;
@@ -24,7 +27,7 @@ public class TextTableFile : IInstruction
 
     public void Do(string path)
     {
-        var lines = Formater.Format(Table, Content);
+        var lines = GetAllLines();
         File.WriteAllLines(path, lines);
     }
 

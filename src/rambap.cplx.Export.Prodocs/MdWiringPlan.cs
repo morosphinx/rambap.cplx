@@ -4,18 +4,25 @@ using rambap.cplx.Export.TextFiles;
 
 namespace rambap.cplx.Export.Prodocs;
 
-public class MdSystemView : IInstruction
+public class MdWiringPlan : IInstruction
 {
     private Pinstance DocumentedPart { get; init; }
 
-    private TextTableFile ComponentTree
+    private TextTableFile ComponentsTable
         => new TextTableFile(DocumentedPart)
         {
             Formater = new MarkdownTableFormater(),
-            Table = Modules.Documentation.Outputs.SystemViewTables.ComponentTree_Stacked()
+            Table = Modules.Documentation.Outputs.SystemViewTables.ComponentInventory(false),
         };
 
-    public MdSystemView(Pinstance Target)
+    private TextTableFile WiringTable
+        => new TextTableFile(DocumentedPart)
+        {
+            Formater = new MarkdownTableFormater(),
+            Table = Modules.Connectivity.Outputs.ConnectivityTables.WiringTable(false),
+        };
+
+    public MdWiringPlan(Pinstance Target)
     {
         DocumentedPart = Target;
     }
@@ -30,14 +37,18 @@ public class MdSystemView : IInstruction
 
     private string FileContents =>
 $"""
-# SYSTEM VIEW : {DocumentedPart.PN}
+# WIRING PLAN : {DocumentedPart.PN}
 
 ## Identification
 {CommonSections.CommonHeader(DocumentedPart)}
 
-## Component Tree :
-{ComponentTree.GetAllLines().GetText()}
+## Components :
+
+{ComponentsTable.GetAllLines().GetText()}
+
+## Wirings :
+
+{WiringTable.GetAllLines().GetText()}
 
 """;
-    
 }

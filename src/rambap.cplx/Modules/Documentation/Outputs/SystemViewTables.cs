@@ -33,12 +33,13 @@ public static class SystemViewTables
            ],
        };
 
-    public static TableProducer<ICplxContent> ComponentInventory()
+    public static TableProducer<ICplxContent> ComponentInventory(bool recurse = true)
         => new()
         {
             Iterator = new PartTypesIterator<object>()
             {
                 WriteBranches = true,
+                RecursionCondition = (c,l) => recurse,
             },
             Columns = [
                 CommonColumns.LineTypeNumber(),

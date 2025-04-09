@@ -1,4 +1,5 @@
 ﻿using rambap.cplx.Core;
+using System.Text;
 
 namespace rambap.cplx.Export.Prodocs;
 
@@ -6,7 +7,6 @@ internal static class CommonSections
 {
     public static string CommonHeader(Pinstance instance) =>
  $"""
- # Identification
  |#|Value|
  |-|-----|
  |PN|{instance.PN}|
@@ -14,4 +14,7 @@ internal static class CommonSections
  |Ver|{instance.Version}|
  |Date|{cplx.Globals.GenerationDate}|
  """;
+
+    public static string GetText(this IEnumerable<string> lines, string separator = "\r\n")
+        => string.Join(separator, lines);
 }
