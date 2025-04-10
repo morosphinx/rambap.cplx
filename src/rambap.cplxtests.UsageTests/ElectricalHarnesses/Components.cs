@@ -7,12 +7,17 @@ using System.Threading.Tasks;
 
 namespace rambap.cplxtests.UsageTests.ElectricalHarnesses;
 
-class TestLead_4mm : Part
+class TestLead_4mm : Part, IPartConnectable
 {
     public WireablePort SolderPoint;
     public ConnectablePort TestLead4mmMale;
 
     Cost Buy = 10;
+
+    public void Assembly_Connections(ConnectionBuilder Do)
+    {
+        Do.StructuralConnection(TestLead4mmMale, SolderPoint);
+    }
 }
 
 class SubD9Connector_M : Connector<Size24pin>

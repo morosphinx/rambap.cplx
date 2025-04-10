@@ -1,7 +1,11 @@
-﻿namespace rambap.cplx.Export.TextFiles;
+﻿using rambap.cplx.Core;
 
-public abstract class TextCustomFile : IInstruction
+namespace rambap.cplx.Export.TextFiles;
+
+public abstract class SinglePInstanceCustomFile : IInstruction
 {
+    public required Pinstance Content { get; init; }
+
     public abstract string GetText();
 
     public void Do(string path)

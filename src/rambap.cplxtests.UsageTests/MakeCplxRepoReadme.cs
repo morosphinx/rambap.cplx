@@ -7,14 +7,13 @@ using System.Runtime.CompilerServices;
 
 namespace rambap.cplxtests.UsageTests;
 
- internal class MakeCplxRepoReadmeInstruction : TextCustomFile
+ internal class MakeCplxRepoReadmeInstruction : SinglePInstanceCustomFile
 {
     /// <summary>
     /// File to be included used as exemple.
     /// Must contains the <see cref="Content"/>, and be marked as CopyToOutputDirectory=Always
     /// </summary>
     public required string ContentFilename { get; init; }
-    public required Pinstance Content { get; init; }
 
     /// <summary>
     /// 

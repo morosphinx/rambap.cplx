@@ -2,6 +2,7 @@
 
 using DocumentFormat.OpenXml.Packaging;
 using rambap.cplx.Export.TextFiles;
+using rambap.cplx.Modules.Connectivity;
 using rambap.cplx.Modules.Connectivity.PinstanceModel;
 using rambap.cplx.Modules.Connectivity.Templates;
 
@@ -19,6 +20,8 @@ class BoxAssembly1 : Part, IPartConnectable
 
 class InternalHarness1 : Part, IPartConnectable, IPartAdditionalDocuments
 {
+    Description Usage = "Internal SubD To SubD to test lead harness, to be integrated in a rack";
+        
     SubD9Connector_M C01;
     SubD_Backshell C11;
 
@@ -32,6 +35,10 @@ class InternalHarness1 : Part, IPartConnectable, IPartAdditionalDocuments
     public ConnectablePort J02 => C02;
     public ConnectablePort PWR_P => C04.TestLead4mmMale;
     public ConnectablePort PWR_N => C05.TestLead4mmMale;
+
+    [Rename("12V")]
+    Signal _12V => this.SignalOf(C04.SolderPoint);
+    Signal GND => this.SignalOf(C01.Pin(9));
 
     public void Additional_Documentation(DocumentationBuilder Do)
     {

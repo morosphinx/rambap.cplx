@@ -1,4 +1,5 @@
 ﻿using rambap.cplx.Core;
+using rambap.cplx.Modules.Documentation;
 using System.Text;
 
 namespace rambap.cplx.Export.Prodocs;
@@ -15,6 +16,36 @@ internal static class CommonSections
  |Date|{cplx.Globals.GenerationDate}|
  """;
 
-    public static string GetText(this IEnumerable<string> lines, string separator = "\r\n")
+    public static string JoinStrings(this IEnumerable<string> lines, string separator = "\r\n")
         => string.Join(separator, lines);
+
+
+    public static IEnumerable<string> MarkdownDocLines(Pinstance instance,
+        IEnumerable<string> titles,
+        bool titleAreAccepted = true,
+        string sectionHeader = "###")
+    {
+        Func<InstanceDocumentation.NamedText, bool> titleAccept = (t) => titles.Contains(t.Title);
+        Func<InstanceDocumentation.NamedText, bool> titleReject = (t) => ! titles.Contains(t.Title);
+        return MarkdownDocLines(instance,
+            titleAreAccepted ? titleAccept : titleReject,
+            sectionHeader);
+    }
+
+    public static IEnumerable<string> MarkdownDocLines(Pinstance instance,
+        Func<InstanceDocumentation.NamedText,bool>? selector = null,
+        string sectionHeader = "###")
+    {
+        if (selector == null) selector = (t) => true;
+        if(instance.Documentation() is var docu and not null)
+        {
+            var selectDescs = docu.Descriptions.Where(d => selector(d));
+            foreach(var desc in selectDescs)
+            {
+                yield return $"{sectionHeader} {desc.Title} :";
+                yield return desc.Text;
+                yield return "";
+            }
+        }
+    }
 }

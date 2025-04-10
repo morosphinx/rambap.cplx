@@ -22,4 +22,7 @@ The concept defined in cplx.Core are thereafter enumerated :
 
 ### Task Concept
 
+### Conenctivity Concept
+
+WiringPort NOT begin combine-able => implying the structural equivalent (connection port) they are assigned to is their path endpoint identity
 

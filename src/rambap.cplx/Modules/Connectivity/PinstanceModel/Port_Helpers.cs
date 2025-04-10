@@ -50,7 +50,8 @@ public partial class Port
             .Where(s => s != null)
             .FirstOrDefault();
 
-    internal Port GetUpperUsage()
+    // TBD : make public ?
+    public Port GetUpperUsage()
     {
         return Usage switch
         {

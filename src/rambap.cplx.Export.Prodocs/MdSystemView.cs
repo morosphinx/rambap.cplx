@@ -4,39 +4,27 @@ using rambap.cplx.Export.TextFiles;
 
 namespace rambap.cplx.Export.Prodocs;
 
-public class MdSystemView : IInstruction
+public class MdSystemView : SinglePInstanceCustomFile
 {
-    private Pinstance DocumentedPart { get; init; }
-
     private TextTableFile ComponentTree
-        => new TextTableFile(DocumentedPart)
+        => new TextTableFile(Content)
         {
             Formater = new MarkdownTableFormater(),
             Table = Modules.Documentation.Outputs.SystemViewTables.ComponentTree_Stacked()
         };
 
-    public MdSystemView(Pinstance Target)
-    {
-        DocumentedPart = Target;
-    }
-
-    public void Do(string path)
-    {
-        using (var file = File.CreateText(path))
-        {
-            file.Write(FileContents);
-        }
-    }
-
-    private string FileContents =>
+    public override string GetText() =>
 $"""
-# SYSTEM VIEW : {DocumentedPart.PN}
+# SYSTEM VIEW : {Content.PN}
 
 ## Identification
-{CommonSections.CommonHeader(DocumentedPart)}
+{CommonSections.CommonHeader(Content)}
 
 ## Component Tree :
-{ComponentTree.GetAllLines().GetText()}
+{ComponentTree.GetAllLines().JoinStrings()}
+
+## Descriptions :
+{CommonSections.MarkdownDocLines(Content).JoinStrings()}
 
 """;
     
