@@ -24,8 +24,6 @@ public class BreakoutBox1 : Part
 
     [ComponentDescription("R Identification")]
     ASticker SecondSticker;
-
-    Part Sticket2;
 }
 
 [CommonName("PCB")]

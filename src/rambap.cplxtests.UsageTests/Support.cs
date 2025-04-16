@@ -25,6 +25,7 @@ internal class Support
         return Generators.ConfigureGenerator(
             i => [
                 ("MdSystemView.md", new cplx.Export.Prodocs.MdSystemView() {Content = i}),
+                ("SvgSystemTree.svg", new cplx.Export.Prodocs.SvgSystemTree() {Content = i}),
                 ("MdWiringPlan.md", new cplx.Export.Prodocs.MdWiringPlan() {Content = i}),
                 ]
             , HierarchyMode.Flat, c => fileContentRecursion);

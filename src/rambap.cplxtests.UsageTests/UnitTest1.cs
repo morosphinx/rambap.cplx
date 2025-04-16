@@ -1,4 +1,5 @@
 using rambap.cplx.Export;
+using rambap.cplx.Export.Prodocs;
 using rambap.cplx.Export.TextFiles;
 using rambap.cplx.Modules.Connectivity.Outputs;
 using static rambap.cplxtests.UsageTests.Support;
@@ -25,6 +26,12 @@ public class UnitTest1
         var i = new Pinstance(p);
         var generator = GetDemoGenerator_AllCoreTables();
         generator.Do(i, "C:\\TestFolder\\Exemple4");
+    }
+
+    [TestMethod]
+    public void SkiaSandbox()
+    {
+        SkiaSvgTest.Test1();
     }
 
     //[TestMethod]

@@ -10,6 +10,8 @@ namespace rambap.cplx.Export.Prodocs;
 
 public class MdWiringPlan : SinglePInstanceCustomFile
 {
+    public List<string> WiringDescriptionTitles = ["Wirings"];
+
     private TextTableFile ComponentsTable
         => new TextTableFile(Content)
         {
@@ -50,6 +52,10 @@ $"""
 ## Wirings :
 
 {WiringTable.GetAllLines().JoinStrings()}
+
+## Notes :
+
+{CommonSections.MarkdownDocLines(Content, WiringDescriptionTitles).JoinStrings()}
 
 """;
 }
