@@ -12,9 +12,9 @@ namespace rambap.cplx.Export.Spreadsheet;
 public class ExcelTableFile_CreatedNew : IInstruction
 {
     public required ITableProducer Table { protected get; init; }
-    public Pinstance Content { get; init; }
+    public Component Content { get; init; }
 
-    public ExcelTableFile_CreatedNew(Pinstance content)
+    public ExcelTableFile_CreatedNew(Component content)
     {
         Content = content;
     }

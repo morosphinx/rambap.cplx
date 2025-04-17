@@ -8,7 +8,7 @@ namespace rambap.cplx.Export.Tables;
 /// <typeparam name="T">Type of item produced during iteration</typeparam>
 public interface IIterator<out T>
 {
-    public IEnumerable<T> MakeContent(Pinstance instance);
+    public IEnumerable<T> MakeContent(Component component);
 }
 
 

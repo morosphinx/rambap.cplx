@@ -18,10 +18,10 @@ public class TestComponentIterator
         };
 
         var part = new DecimalPropertyPartExemple<Cost>.Part_A();
-        var pinstance = new Pinstance(part);
-        var res = iterator.MakeContent(pinstance);
+        var component = part.Instantiate();
+        var res = iterator.MakeContent(component);
 
-        var debugTable = new TxtTableFile(pinstance)
+        var debugTable = new TxtTableFile(component)
         {
             Table = new TableProducer<ICplxContent>()
             {

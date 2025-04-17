@@ -11,11 +11,11 @@ namespace rambap.cplxtests.UsageTests.ExcelTemplates;
 [TestClass]
 public class CplxExcelTemplateTests
 {
-    public static IInstruction CplxCostingTemplate(Pinstance i)
+    public static IInstruction CplxCostingTemplate(Component c)
     {
         var a = CostTables.BillOfMaterial();
         var b = a with { Columns = [] };
-        return new ExcelTableFile_FromTemplate(i)
+        return new ExcelTableFile_FromTemplate(c)
         {
             TemplatePath = "ExcelTemplates\\CplxCostingTemplate.xlsx",
             InstanceContents = [
@@ -61,13 +61,13 @@ public class CplxExcelTemplateTests
     public void TestCplxCostingGenerator()
     {
         var p = new BreakoutBox.BreakoutBox1();
-        var i = new Pinstance(p);
+        var c = p.Instantiate();
         var generator = CplxCostingGenerator();
-        generator.Do(i, "C:\\TestFolder\\Breakout9_Costing");
+        generator.Do(c, "C:\\TestFolder\\Breakout9_Costing");
     }
 
 
-    public static IInstruction CustomCostingTemplate(Pinstance i)
+    public static IInstruction CustomCostingTemplate(Component c)
     {
         var CustomPartTable = CostTables.BillOfMaterial() with
         {
@@ -112,7 +112,7 @@ public class CplxExcelTemplateTests
             })
         };
 
-        return new ExcelTableFile_FromTemplate(i)
+        return new ExcelTableFile_FromTemplate(c)
         {
             TemplatePath = "ExcelTemplates\\CustomCostingTemplate.xlsx",
             InstanceContents = [
@@ -165,9 +165,9 @@ public class CplxExcelTemplateTests
     public void TestCustomCostingGenerator()
     {
         var p = new BreakoutBox.BreakoutBox1();
-        var i = new Pinstance(p);
+        var c = p.Instantiate();
         var generator = CustomCostingGenerator();
-        generator.Do(i, "C:\\TestFolder\\Breakout9_CustomCosting");
+        generator.Do(c, "C:\\TestFolder\\Breakout9_CustomCosting");
     }
 }
 

@@ -139,4 +139,14 @@ public partial class Part
     public Part()
     {
     }
+
+    public Component Instantiate()
+        => Instantiate(new PartConfiguration());
+    public Component Instantiate(PartConfiguration partConfiguration)
+        => new Component(new Pinstance(this, partConfiguration))
+        {
+            CN = "*",
+            Comment = $"ROOT COMPONENT",
+            IsPublic = true,
+        };
 }

@@ -8,10 +8,10 @@ namespace rambap.cplx.Export;
 
 public static class FileGroups
 {
-    public static IEnumerable<(string, IInstruction)> CostingFiles(Pinstance i, string filenamePattern)
+    public static IEnumerable<(string, IInstruction)> CostingFiles(Component c, string filenamePattern)
     {
         return [
-                ($"BOMR_{filenamePattern}.csv", new TxtTableFile(i)
+                ($"BOMR_{filenamePattern}.csv", new TxtTableFile(c)
                 {
                     Table = CostTables.BillOfMaterial() with
                     {
@@ -20,7 +20,7 @@ public static class FileGroups
                     },
                     Formater = new MarkdownTableFormater()
                 }),
-                ($"RecurentCosts_{filenamePattern}.csv", new TxtTableFile(i)
+                ($"RecurentCosts_{filenamePattern}.csv", new TxtTableFile(c)
                 {
                     Table = CostTables.CostBreakdown() with
                     {
@@ -29,7 +29,7 @@ public static class FileGroups
                     },
                     Formater = new MarkdownTableFormater(),
                 }),
-                ($"BOTR_{filenamePattern}.csv", new TxtTableFile(i)
+                ($"BOTR_{filenamePattern}.csv", new TxtTableFile(c)
                 {
                     Table = TaskTables.BillOfTasks() with
                     {
@@ -38,7 +38,7 @@ public static class FileGroups
                     },
                     Formater = new MarkdownTableFormater(),
                 }),
-                ($"RecurentTasks_{filenamePattern}.csv", new TxtTableFile(i) {
+                ($"RecurentTasks_{filenamePattern}.csv", new TxtTableFile(c) {
                     Table = TaskTables.TaskBreakdown() with
                     {
                         WriteTotalLine = true,
@@ -49,21 +49,21 @@ public static class FileGroups
                 ];
     }
 
-    public static IEnumerable<(string, IInstruction)> SystemViewTables(Pinstance i, string filenamePattern)
+    public static IEnumerable<(string, IInstruction)> SystemViewTables(Component c, string filenamePattern)
     {
         return [
-                ($"Tree_Detailled_{filenamePattern}.csv", new TxtTableFile(i)
+                ($"Tree_Detailled_{filenamePattern}.csv", new TxtTableFile(c)
                 {
                     Table = Modules.Documentation.Outputs.SystemViewTables.ComponentTree_Detailled(),
                     Formater = new FixedWidthTableFormater()
                 }),
-                ($"Tree_Stacked_{filenamePattern}.csv", new TxtTableFile(i)
+                ($"Tree_Stacked_{filenamePattern}.csv", new TxtTableFile(c)
                 {
                     Table = Modules.Documentation.Outputs.SystemViewTables.ComponentTree_Stacked(),
                     Formater = new FixedWidthTableFormater()
                 }),
                 // TODO : Fix performance issue when generating this file on the 1000x parts exemple
-                ($"Inventory_{filenamePattern}.csv", new TxtTableFile(i)
+                ($"Inventory_{filenamePattern}.csv", new TxtTableFile(c)
                 {
                     Table = Modules.Documentation.Outputs.SystemViewTables.ComponentInventory(),
                     Formater = new MarkdownTableFormater()
@@ -71,20 +71,20 @@ public static class FileGroups
                 ];
     }
 
-    public static IEnumerable<(string, IInstruction)> ConnectivityTables(Pinstance i, string filenamePattern)
+    public static IEnumerable<(string, IInstruction)> ConnectivityTables(Component c, string filenamePattern)
     {
         return [
-                ($"Connections_{filenamePattern}.csv", new TxtTableFile(i)
+                ($"Connections_{filenamePattern}.csv", new TxtTableFile(c)
                 {
                     Table = Modules.Connectivity.Outputs.ConnectivityTables.ConnectionTable(),
                     Formater = new MarkdownTableFormater()
                 }),
-                ($"Wirings_{filenamePattern}.csv", new TxtTableFile(i)
+                ($"Wirings_{filenamePattern}.csv", new TxtTableFile(c)
                 {
                     Table = Modules.Connectivity.Outputs.ConnectivityTables.WiringTable(),
                     Formater = new MarkdownTableFormater()
                 }),
-                ($"ICD_{filenamePattern}.csv", new TxtTableFile(i)
+                ($"ICD_{filenamePattern}.csv", new TxtTableFile(c)
                 {
                     Table = Modules.Connectivity.Outputs.ConnectivityTables.InterfaceControlDocumentTable(),
                     Formater = new MarkdownTableFormater()
@@ -92,12 +92,12 @@ public static class FileGroups
                 ];
     }
 
-    public static IEnumerable<(string, IInstruction)> DocumentationAdditionalInstructions(Pinstance i)
+    public static IEnumerable<(string, IInstruction)> DocumentationAdditionalInstructions(Component c)
     {
-        var documentation = i.Documentation();
+        var documentation = c.Instance.Documentation();
         if (documentation?.MakeAdditionalDocuments != null)
         {
-            foreach(var d in documentation.MakeAdditionalDocuments(i))
+            foreach(var d in documentation.MakeAdditionalDocuments(c))
             {
                 yield return (d.Item1, d.Item2);
             }
@@ -139,20 +139,20 @@ public static class Generators
         HierarchyMode hierarchyMode,
         Func<Component, bool>? subComponentInclusionCondition = null)
     {
-        Func<Pinstance, IEnumerable<(string, IInstruction)>> makeInstanceFiles =
-            (i) =>
+        Func<Component, IEnumerable<(string, IInstruction)>> makeInstanceFiles =
+            (c) =>
             [
-                .. (contents.Contains(Content.Connectivity) ? FileGroups.ConnectivityTables(i, IGenerator.SimplefileNameFor(i)) : []),
-                .. (contents.Contains(Content.Costing) ? FileGroups.CostingFiles(i, IGenerator.SimplefileNameFor(i)) : []),
-                .. (contents.Contains(Content.SystemView) ? FileGroups.SystemViewTables(i, IGenerator.SimplefileNameFor(i)) : []),
+                .. (contents.Contains(Content.Connectivity) ? FileGroups.ConnectivityTables(c, IGenerator.SimplefileNameFor(c)) : []),
+                .. (contents.Contains(Content.Costing) ? FileGroups.CostingFiles(c, IGenerator.SimplefileNameFor(c)) : []),
+                .. (contents.Contains(Content.SystemView) ? FileGroups.SystemViewTables(c, IGenerator.SimplefileNameFor(c)) : []),
                 .. (contents.Contains(Content.DocumentationAdditionalFiles)
-                    ? FileGroups.DocumentationAdditionalInstructions(i) : []),
+                    ? FileGroups.DocumentationAdditionalInstructions(c) : []),
             ];
         return ConfigureGenerator(makeInstanceFiles, hierarchyMode, subComponentInclusionCondition);
     }
 
     public static IGenerator ConfigureGenerator(
-        Func<Pinstance, IEnumerable<(string, IInstruction)>> makeInstanceFiles,
+        Func<Component, IEnumerable<(string, IInstruction)>> makeInstanceFiles,
         HierarchyMode hierarchyMode,
         Func<Component, bool>? subComponentInclusionCondition = null)
     {
@@ -176,27 +176,27 @@ public static class Generators
 public class HierarchicalDocumentationTreeGenerator : IGenerator
 {
     public Func<Component, bool>? SubComponentInclusionCondition { private get; init; }
-    public required Func<Pinstance, IEnumerable<(string, IInstruction)>> MakeInstanceFiles { private get; init; }
+    public required Func<Component, IEnumerable<(string, IInstruction)>> MakeInstanceFiles { private get; init; }
 
     public virtual IEnumerable<(string, IInstruction)> MakeFolderForComponent(Component c)
-        => [ (FileNamePatternFor(c.Instance), MakeRecursiveContentForInstance(c.Instance))];
+        => [ (FileNamePatternFor(c), MakeRecursiveContentForInstance(c))];
 
-    private Folder MakeRecursiveContentForInstance(Pinstance i)
+    private Folder MakeRecursiveContentForInstance(Component c)
     {
 
         var iteratedComponents = SubComponentInclusionCondition != null ?
-            i.Components.Where(c => SubComponentInclusionCondition(c)) : [];
+            c.Instance.Components.Where(subc => SubComponentInclusionCondition(subc)) : [];
         return new Folder([
-                .. MakeInstanceFiles(i),
+                .. MakeInstanceFiles(c),
                 .. iteratedComponents.SelectMany(MakeFolderForComponent)
             ]);
     }
 
-    public override IInstruction PrepareInstruction(Pinstance i)
+    public override IInstruction PrepareInstruction(Component c)
     {
-        var rootFolder = FileNamePatternFor(i);
+        var rootFolder = FileNamePatternFor(c);
         return new Folder([
-                (rootFolder, MakeRecursiveContentForInstance(i))
+                (rootFolder, MakeRecursiveContentForInstance(c))
             ]);
     }
 }
@@ -204,9 +204,9 @@ public class HierarchicalDocumentationTreeGenerator : IGenerator
 public class FlattenedDocumentationTreeGenerator : IGenerator
 {
     public Func<Component, bool>? SubComponentInclusionCondition { private get; init; }
-    public required Func<Pinstance, IEnumerable<(string, IInstruction)>> MakeInstanceFiles { private get; init; }
+    public required Func<Component, IEnumerable<(string, IInstruction)>> MakeInstanceFiles { private get; init; }
 
-    public override IInstruction PrepareInstruction(Pinstance i)
+    public override IInstruction PrepareInstruction(Component i)
     {
         var partTree= new PartTypesIterator<object>()
         {

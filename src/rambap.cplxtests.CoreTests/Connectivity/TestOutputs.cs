@@ -11,16 +11,15 @@ internal static class TestOutputs
         where T : Part, new()
     {
         var part = new T();
-        var i = new Pinstance(part);
-        WriteConnection(i);
+        WriteConnection(part.Instantiate());
     }
 
     internal static void WriteConnection(Part part)
-        => WriteConnection(new Pinstance(part));
-    internal static void WriteConnection(Pinstance instance)
+        => WriteConnection(part.Instantiate());
+    internal static void WriteConnection(Component component)
     {
         Console.WriteLine("");
-        Console.WriteLine($"{instance.PN}");
+        Console.WriteLine($"{component.Instance.PN}");
 
         void AddDebugInfoTo(TableProducer<ICplxContent> tableProducer)
         {
@@ -35,7 +34,7 @@ internal static class TestOutputs
         Console.WriteLine("Connectivity");
         var connectiontable = ConnectivityTables.ConnectionTable();
         AddDebugInfoTo(connectiontable);
-        var connectionFile = new TxtTableFile(instance)
+        var connectionFile = new TxtTableFile(component)
         {
             Table = connectiontable,
             Formater = new MarkdownTableFormater()
@@ -46,7 +45,7 @@ internal static class TestOutputs
         Console.WriteLine("Wirings");
         var wiringtable = ConnectivityTables.WiringTable();
         AddDebugInfoTo(wiringtable);
-        var wiringFile = new TxtTableFile(instance)
+        var wiringFile = new TxtTableFile(component)
         {
             Table = wiringtable,
             Formater = new MarkdownTableFormater()
@@ -57,7 +56,7 @@ internal static class TestOutputs
         Console.WriteLine("ICD");
         var ICDtable = ConnectivityTables.InterfaceControlDocumentTable();
         AddDebugInfoTo(ICDtable);
-        var ICDfile = new TxtTableFile(instance)
+        var ICDfile = new TxtTableFile(component)
         {
             Table = ICDtable,
             Formater = new MarkdownTableFormater()
@@ -76,8 +75,8 @@ internal static class TestOutputs
         where T : Part, new()
     {
         var p = new HierarchyAbstractParentPart<T>();
-        var i = new Pinstance(p);
-        var benchInstance = i.Components.First().Instance;
-        WriteConnection(benchInstance);
+        var c = p.Instantiate();
+        var benchComponent = c.Instance.Components.First();
+        WriteConnection(benchComponent);
     }
 }

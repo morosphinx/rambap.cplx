@@ -41,9 +41,9 @@ public abstract class TestColumn_ExtensiveProperty<PART,ITER>
     private void Test_SelfTotal()
     {
         var part = GetTestPart();
-        var instance = new Pinstance(part);
+        var component = part.Instantiate();
         TestDecimalColumn_SelfTotal(
-            instance,
+            component,
             DecimalPropertyPartExemple.ExpectedTotal_ExtensiveT,
             GetTestedColumn());
     }
@@ -70,9 +70,9 @@ public abstract class TestColumn_ExtensiveProperty<PART,ITER>
     private void TestSumCoherence_Iterator(IIterator<ICplxContent> iterator)
     {
         var part = GetTestPart();
-        var instance = new Pinstance(part);
+        var component = part.Instantiate();
         TestColumn_Support.TestDecimalColumn_SumCoherence<ITER>(
-            instance,
+            component,
             iterator,
             DecimalPropertyPartExemple.ExpectedTotal_ExtensiveT,
             GetTestedColumn(),

@@ -34,7 +34,7 @@ public class MarkdownTableFormater : ITableFormater
         }
     }
 
-    public IEnumerable<string> Format(ITableProducer table, Pinstance content)
+    public IEnumerable<string> Format(ITableProducer table, Component content)
     {
         var lines = table.MakeAllLines(content);
         if (!lines.Any()) return [];

@@ -1,18 +1,17 @@
 ﻿using rambap.cplx.Core;
 using rambap.cplx.Modules.Documentation;
-using System.Text;
 
 namespace rambap.cplx.Export.Prodocs;
 
 internal static class CommonSections
 {
-    public static string CommonHeader(Pinstance instance) =>
+    public static string CommonHeader(Component component) =>
  $"""
  |#|Value|
  |-|-----|
- |PN|{instance.PN}|
- |Rev|{instance.Revision}|
- |Ver|{instance.Version}|
+ |PN|{component.Instance.PN}|
+ |Rev|{component.Instance.Revision}|
+ |Ver|{component.Instance.Version}|
  |Date|{cplx.Globals.GenerationDate}|
  """;
 
@@ -20,24 +19,24 @@ internal static class CommonSections
         => string.Join(separator, lines);
 
 
-    public static IEnumerable<string> MarkdownDocLines(Pinstance instance,
+    public static IEnumerable<string> MarkdownDocLines(Component component,
         IEnumerable<string> titles,
         bool titleAreAccepted = true,
         string sectionHeader = "###")
     {
         Func<InstanceDocumentation.NamedText, bool> titleAccept = (t) => titles.Contains(t.Title);
         Func<InstanceDocumentation.NamedText, bool> titleReject = (t) => ! titles.Contains(t.Title);
-        return MarkdownDocLines(instance,
+        return MarkdownDocLines(component,
             titleAreAccepted ? titleAccept : titleReject,
             sectionHeader);
     }
 
-    public static IEnumerable<string> MarkdownDocLines(Pinstance instance,
+    public static IEnumerable<string> MarkdownDocLines(Component Component,
         Func<InstanceDocumentation.NamedText,bool>? selector = null,
         string sectionHeader = "###")
     {
         if (selector == null) selector = (t) => true;
-        if(instance.Documentation() is var docu and not null)
+        if(Component.Instance.Documentation() is var docu and not null)
         {
             var selectDescs = docu.Descriptions.Where(d => selector(d));
             foreach(var desc in selectDescs)

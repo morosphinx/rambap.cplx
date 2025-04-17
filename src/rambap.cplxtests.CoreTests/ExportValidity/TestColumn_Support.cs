@@ -7,19 +7,19 @@ namespace rambap.cplxtests.CoreTests.ExportValidity;
 internal static class TestColumn_Support
 {
     public static void TestDecimalColumn_SumCoherence<T>(
-        Pinstance pinstance,
+        Component component,
         IIterator<ICplxContent> iterator,
         decimal expectedTotal,
         IColumn<ICplxContent> testedColumn,
         Func<IPropertyContent<T>, string> propertyNaming,
         IEnumerable<IColumn<ICplxContent>> debugDataColumns)
     {
-        var res = iterator.MakeContent(pinstance);
+        var res = iterator.MakeContent(component);
         var values = res.Select(testedColumn.CellFor);
         var total = values.Select(s => (s != "") ? Convert.ToDecimal(s) : 0M).Sum();
 
         // Write table in console for debug
-        var debugTable = new TxtTableFile(pinstance)
+        var debugTable = new TxtTableFile(component)
         {
             Table = new TableProducer<ICplxContent>()
             {
@@ -44,11 +44,11 @@ internal static class TestColumn_Support
     }
 
     public static void TestDecimalColumn_SelfTotal(
-        Pinstance pinstance,
+        Component component,
         decimal expectedTotal,
         IColumn<ICplxContent> testedColumn)
     {
-        var columnTotal = Convert.ToDecimal(testedColumn.TotalFor(pinstance));
+        var columnTotal = Convert.ToDecimal(testedColumn.TotalFor(component.Instance));
         Assert.AreEqual(expectedTotal, columnTotal, $"Incoherent column autocalculated sum");
     }
 }

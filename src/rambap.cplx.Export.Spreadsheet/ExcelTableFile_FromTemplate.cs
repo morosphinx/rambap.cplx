@@ -31,10 +31,10 @@ public record TableWriteInstruction : SpreadsheetFillInstruction
 
 public class ExcelTableFile_FromTemplate : IInstruction
 {
-    public Pinstance Content { get; init; }
+    public Component Content { get; init; }
     public string TemplatePath { get; init; }
 
-    public ExcelTableFile_FromTemplate(Pinstance content)
+    public ExcelTableFile_FromTemplate(Component content)
     {
         TemplatePath = "templates/cplx_base1.xlsx";
         Content = content;
@@ -111,7 +111,7 @@ public class ExcelTableFile_FromTemplate : IInstruction
     private void ApplyInstanceContentInstruction(WorksheetPart worksheetPart, InstanceContentInstruction instruction)
     {
         var sheetData = worksheetPart.Worksheet.GetFirstChild<SheetData>()!;
-        List<string> Lines = instruction.Lines.Select(l => l.Invoke(Content)).ToList();
+        List<string> Lines = instruction.Lines.Select(l => l.Invoke(Content.Instance)).ToList();
 
         switch (instruction.Direction)
         {

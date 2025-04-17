@@ -81,7 +81,7 @@ public static class TaskColumns
                         var instanceTasks = c.Instance.Tasks();
                         if (instanceTasks  == null) return 0M;
                         var totalRecurentDuration = instanceTasks.TotalRecurentTaskDuration * lc.ComponentTotalCount;
-                        var totalNonRecurentDuration = InstanceTasks.GetTotalNonRecurentTaskDurations(c.Instance);
+                        var totalNonRecurentDuration = InstanceTasks.GetTotalNonRecurentTaskDurations(c);
                         return includeNonRecurent
                             ? totalRecurentDuration + totalNonRecurentDuration
                             : totalRecurentDuration;
@@ -126,7 +126,7 @@ public static class TaskColumns
                     lp.Property.Duration_day.ToString(), // Do not display multiplicity for properties : this is a local duration representation
                 BranchComponent =>
                     i.Location.Depth == 0  || i.Component.Instance.Tasks() != null 
-                        ? InstanceTasks.GetTotalNonRecurentTaskDurations(i.Component.Instance).ToString()
+                        ? InstanceTasks.GetTotalNonRecurentTaskDurations(i.Component).ToString()
                         : "",
                 _ => ""
             }

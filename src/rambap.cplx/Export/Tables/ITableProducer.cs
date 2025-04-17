@@ -50,11 +50,11 @@ public interface ITableProducer
     /// </summary>
     public IEnumerable<IColumn> IColumns { get; }
 
-    public IEnumerable<Line> MakeAllLines(Pinstance rootComponent);
+    public IEnumerable<Line> MakeAllLines(Component rootComponent);
 
     public Line MakeHeaderLine();
-    public IEnumerable<Line> MakeContentLines(Pinstance rootComponent);
-    public Line MakeTotalLine(Pinstance rootComponent);
+    public IEnumerable<Line> MakeContentLines(Component rootComponent);
+    public Line MakeTotalLine(Component rootComponent);
 }
 
 /// <summary>
@@ -68,7 +68,7 @@ public abstract record TableProducer : ITableProducer
     public bool WriteTotalLine { get; set; } = false;
     public bool TotalLineOnTop { get; set; } = false;
 
-    public IEnumerable<Line> MakeAllLines(Pinstance rootComponent)
+    public IEnumerable<Line> MakeAllLines(Component rootComponent)
     {
         if (WriteHeaderLine)
             yield return MakeHeaderLine();
@@ -81,6 +81,6 @@ public abstract record TableProducer : ITableProducer
     }
 
     public abstract Line MakeHeaderLine();
-    public abstract IEnumerable<Line> MakeContentLines(Pinstance rootComponent);
-    public abstract Line MakeTotalLine(Pinstance rootComponent);
+    public abstract IEnumerable<Line> MakeContentLines(Component rootComponent);
+    public abstract Line MakeTotalLine(Component rootComponent);
 }

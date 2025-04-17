@@ -57,7 +57,7 @@ CPLX generate files assisting multiples aspects of the design process :
 
 ```
 CN          	PN              	Component description    	Part Description       
- *          	ServerAssembly  	                         	                       
+ *          	ServerAssembly  	ROOT COMPONENT           	                       
  ├─ CAB     	ServerCabinet36U	                         	19' Rack cabinet 36U   
  ├─ R01     	RackTypeA       	Main workload server     	                       
  │  ├─ GPU01	RTX999          	                         	9nth Gen GPU ; 9Go DRAM

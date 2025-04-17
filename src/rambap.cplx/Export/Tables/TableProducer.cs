@@ -108,7 +108,7 @@ public record TableProducer<T> : TableProducer
             Cells = Columns.Select(c => "").ToList()
         };
     }
-    public override IEnumerable<Line> MakeContentLines(Pinstance rootComponent)
+    public override IEnumerable<Line> MakeContentLines(Component rootComponent)
     {
         var contents = Iterator.MakeContent(rootComponent);
         // Apply content transform
@@ -138,11 +138,11 @@ public record TableProducer<T> : TableProducer
         }
     }
 
-    public override Line MakeTotalLine(Pinstance rootComponent)
+    public override Line MakeTotalLine(Component rootComponent)
         => new()
         {
             Type = Line.LineType.Total,
-            Cells = IColumns.Select(col => col.TotalFor(rootComponent)).ToList(),
+            Cells = IColumns.Select(col => col.TotalFor(rootComponent.Instance)).ToList(),
         };
 }
 

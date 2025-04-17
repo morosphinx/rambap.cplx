@@ -11,7 +11,7 @@ public class SingleSignalSyntax
         => TestSingleSignalPartSyntax(new P());
     private void TestSingleSignalPartSyntax(Part part)
     {
-        var instance = new Pinstance(part);
+        var instance = part.Instantiate().Instance;
         var connectivity = instance.Connectivity();
         Assert.IsNotNull(connectivity);
         Assert.IsTrue(connectivity.Signals.Count() == 1);
@@ -64,7 +64,7 @@ public class WiredSignalSyntax
         => TestWiredSignalPartSyntax(new P());
     private void TestWiredSignalPartSyntax(Part part)
     {
-        var instance = new Pinstance(part);
+        var instance = part.Instantiate().Instance;
         var connectivity = instance.Connectivity();
         Assert.IsNotNull(connectivity);
         Assert.IsTrue(connectivity.Signals.Count() == 1);
@@ -130,7 +130,7 @@ public class WiredComposedSignalSyntax
         => TestWiredComposedSignalSyntaxPartSyntax(new P());
     private void TestWiredComposedSignalSyntaxPartSyntax(Part part)
     {
-        var instance = new Pinstance(part);
+        var instance = part.Instantiate().Instance;
         var connectivity = instance.Connectivity();
         Assert.IsNotNull(connectivity);
 

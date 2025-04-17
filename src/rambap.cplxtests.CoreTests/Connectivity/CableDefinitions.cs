@@ -81,9 +81,10 @@ public class TestSimpleCableContainer
         int expectedBoxConnectionCount, bool expectedEndToEndLink)
     {
         var part = new Part_ContainerBox(actionOnL, actionOnR, internalConnected);
-        var instance = new Pinstance(part);
+        var component = part.Instantiate();
+        var instance = component.Instance;
         // Write the output table for reference
-        var table = new TxtTableFile(instance)
+        var table = new TxtTableFile(component)
         {
             Table = ConnectivityTables.ConnectionTable(),
             Formater = new MarkdownTableFormater()

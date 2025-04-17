@@ -36,7 +36,7 @@ public class InstanceDocumentation : IInstanceConceptProperty
     }
 
     // TBD : method to have each part define localy some kind of output it wants
-    public Func<Pinstance, IEnumerable<(string, IInstruction)>>? MakeAdditionalDocuments { get; init; }
+    public Func<Component, IEnumerable<(string, IInstruction)>>? MakeAdditionalDocuments { get; init; }
 }
 
 internal class DocumentationConcept : IConcept<InstanceDocumentation>
@@ -75,7 +75,7 @@ internal class DocumentationConcept : IConcept<InstanceDocumentation>
             (c, i) => AddSupplierLinkIfPresent(c));
 
 
-        Func<Pinstance, IEnumerable<(string, IInstruction)>>? makeAdditionDocuments = null;
+        Func<Component, IEnumerable<(string, IInstruction)>>? makeAdditionDocuments = null;
         if(template is IPartAdditionalDocuments a)
         {
             var documentationBuilder = new DocumentationBuilder(instance, template);

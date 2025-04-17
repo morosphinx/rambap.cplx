@@ -15,7 +15,7 @@ public class MdSystemView : TxtPInstanceFile
 
     public override string GetText() =>
 $"""
-# SYSTEM VIEW : {Content.PN}
+# SYSTEM VIEW : {Content.Instance.PN}
 
 ## Identification
 {CommonSections.CommonHeader(Content)}

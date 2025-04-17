@@ -6,7 +6,7 @@ namespace rambap.cplx.Export.Prodocs;
 
 public class SvgSystemTree : IInstruction
 {
-    public required Pinstance Content { get; init; }
+    public required Component Content { get; init; }
 
     public void Do(string path)
     {
@@ -25,19 +25,21 @@ public class SvgSystemTree : IInstruction
 
     private void DrawSystemTree(SKCanvas canvas, out SKRect boundingRect)
     {
+        var instance = Content.Instance;
+
         // Draw Main box
         var rootboxPos = new SKPoint(10, 10);
         var rootBox = new PartBox()
         {
-            PN = Content.PN,
-            PNSubDesc = Content.CommonName,
+            PN = instance.PN,
+            PNSubDesc = instance.CommonName,
             CN = "*"
         };
         canvas.DrawPartBox(rootBox, rootboxPos);
         var llinkanchor = rootBox.DrawLinkAnchor_R + rootboxPos;
         // Draw Subcomponent boxes
         float vcursor = 20;
-        foreach (var c in Content.Components)
+        foreach (var c in instance.Components)
         {
             // Draw SubBox
             var subcompBoxPos = new SKPoint(300, vcursor);

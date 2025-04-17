@@ -35,7 +35,7 @@ public class PartTypesIterator<P> : IIterator<ICplxContent>
     static (Type, string, Type) ComponentTemplateUnicityIdentifier(ICplxContent c)
         => (c.Component.Instance.PartType, c.Component.Instance.PN, c.GetType());
 
-    public IEnumerable<ICplxContent> MakeContent(Pinstance instance)
+    public IEnumerable<ICplxContent> MakeContent(Component component)
     {
         // Produce a tree table of All Components, stopping on recursing condition.
         var ComponentTable = new ComponentIterator()
@@ -45,10 +45,10 @@ public class PartTypesIterator<P> : IIterator<ICplxContent>
             // No property iteration when iterating the component tree
             // => Will return only LeafComponent or BranchComponent
         };
-        var componentsItems = ComponentTable.MakeContent(instance);
+        var componentsItems = ComponentTable.MakeContent(component);
         // All returned items of the tree table represent components (eg : No LeafProperty)
         // Group the components by Identity (PN & Type & content kind)
-        var grouping_by_pn = componentsItems.GroupBy(c => ComponentTemplateUnicityIdentifier(c));
+        var grouping_by_pn = componentsItems.GroupBy(ComponentTemplateUnicityIdentifier);
         // For each group, produce a PartTreeItem
         foreach (var group in grouping_by_pn)
         {

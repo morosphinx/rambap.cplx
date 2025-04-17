@@ -7,40 +7,40 @@ namespace rambap.cplx.Export;
 
 public class ExcelGenerators
 {
-    public static IEnumerable<(string, IInstruction)> CostingFiles(Pinstance i, string filenamePattern)
+    public static IEnumerable<(string, IInstruction)> CostingFiles(Component c, string filenamePattern)
     {
         return [
-                ($"BOMR_{filenamePattern}.xlsx", new ExcelTableFile_CreatedNew(i)
+                ($"BOMR_{filenamePattern}.xlsx", new ExcelTableFile_CreatedNew(c)
                 {
                     Table = CostTables.BillOfMaterial()
                 }),
-                ($"RecurentCosts_{filenamePattern}.xlsx", new ExcelTableFile_CreatedNew(i)
+                ($"RecurentCosts_{filenamePattern}.xlsx", new ExcelTableFile_CreatedNew(c)
                 {
                     Table = CostTables.CostBreakdown()
                 }),
-                ($"BOTR_{filenamePattern}.xlsx", new ExcelTableFile_CreatedNew(i)
+                ($"BOTR_{filenamePattern}.xlsx", new ExcelTableFile_CreatedNew(c)
                 { 
                     Table = TaskTables.BillOfTasks()
                 }),
-                ($"Tasks_{filenamePattern}.xlsx", new ExcelTableFile_CreatedNew(i)
+                ($"Tasks_{filenamePattern}.xlsx", new ExcelTableFile_CreatedNew(c)
                 {
                     Table = TaskTables.TaskBreakdown()
                 }),
                 ];
     }
 
-    public static IEnumerable<(string, IInstruction)> SystemViewTables(Pinstance i, string filenamePattern)
+    public static IEnumerable<(string, IInstruction)> SystemViewTables(Component c, string filenamePattern)
     {
         return [
-                ($"Tree_Detailled_{filenamePattern}.csv", new ExcelTableFile_CreatedNew(i)
+                ($"Tree_Detailled_{filenamePattern}.csv", new ExcelTableFile_CreatedNew(c)
                 {
                     Table = Modules.Documentation.Outputs.SystemViewTables.ComponentTree_Detailled()
                 }),
-                ($"Tree_Stacked_{filenamePattern}.xlsx", new ExcelTableFile_CreatedNew(i)
+                ($"Tree_Stacked_{filenamePattern}.xlsx", new ExcelTableFile_CreatedNew(c)
                 {
                     Table = Modules.Documentation.Outputs.SystemViewTables.ComponentTree_Stacked()
                 }),
-                ($"Inventory_{filenamePattern}.xlsx", new ExcelTableFile_CreatedNew(i)
+                ($"Inventory_{filenamePattern}.xlsx", new ExcelTableFile_CreatedNew(c)
                 {
                     Table = Modules.Documentation.Outputs.SystemViewTables.ComponentInventory()
                 }),

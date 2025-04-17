@@ -7,18 +7,19 @@ namespace rambap.cplx.Export;
 /// </summary>
 public abstract class IGenerator
 {
-    public void Do(Pinstance instance, string path)
+    public void Do(Component component, string path)
     {
-        PrepareInstruction(instance).Do(path);
+        PrepareInstruction(component).Do(path);
     }
 
-    public abstract IInstruction PrepareInstruction(Pinstance instance);
+    public abstract IInstruction PrepareInstruction(Component component);
 
-    protected virtual string FileNamePatternFor(Pinstance i)
-        => SimplefileNameFor(i);
+    protected virtual string FileNamePatternFor(Component c)
+        => SimplefileNameFor(c);
 
-    public static string SimplefileNameFor(Pinstance i)
+    public static string SimplefileNameFor(Component c)
     {
+        var i = c.Instance;
         string PN = i.PN;
         string revision = i.Revision;
         if (revision != "") return $"{PN}_{revision}";

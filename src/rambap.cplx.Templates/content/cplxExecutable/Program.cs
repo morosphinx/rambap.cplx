@@ -11,7 +11,7 @@ internal class Program
         var part = new MyPart();
 
         // Calculate component tree and properties
-        var part_instance = new Pinstance(part);
+        var part_instance = part.Instantiate();
 
         // Define what kind of files to generate
         var generator = Generators.ConfigureGenerator(Generators.Content.Costing, Generators.HierarchyMode.Flat);

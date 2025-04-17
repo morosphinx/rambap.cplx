@@ -15,11 +15,11 @@ public class InstanceTasks : IInstanceConceptProperty
 
     public decimal NativeNonRecurentTaskDuration => nonRecurentTasks.Select(t => t.Duration_day).Sum();
 
-    public static decimal GetTotalNonRecurentTaskDurations(Pinstance instance)
+    public static decimal GetTotalNonRecurentTaskDurations(Component component)
     {
         decimal total = 0;
         var tree = new PartTypesIterator<object>();
-        foreach (var i in tree.MakeContent(instance))
+        foreach (var i in tree.MakeContent(component))
         {
             var tasks = i.Component.Instance.Tasks();
             if (tasks != null)
@@ -46,12 +46,12 @@ internal class TasksConcept : IConcept<InstanceTasks>
     {
         List<NamedTask> nonRecurrentTasks = [];
         ScanObjectContentFor<NonRecurrentTask>(template,
-            (t, i) => nonRecurrentTasks.Add(new(false, i.Name, t.Duration_day, t.Category))
+            (t, p) => nonRecurrentTasks.Add(new(false, p.Name, t.Duration_day, t.Category))
             );
 
         List<NamedTask> recurrentTasks = [];
         ScanObjectContentFor<RecurrentTask>(template,
-            (t, i) => recurrentTasks.Add(new(true, i.Name, t.Duration_day, t.Category))
+            (t, p) => recurrentTasks.Add(new(true, p.Name, t.Duration_day, t.Category))
             );
 
         decimal totalComposedRecurentTask = i.Components.Select(c => c.Instance.Tasks()?.TotalRecurentTaskDuration ?? 0).Sum();

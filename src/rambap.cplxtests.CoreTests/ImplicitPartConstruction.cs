@@ -1,4 +1,7 @@
-﻿namespace rambap.cplxtests.CoreTests;
+﻿using rambap.cplx.Core;
+using rambap.cplx.Modules.Connectivity.PinstanceModel;
+
+namespace rambap.cplxtests.CoreTests;
 
 [TestClass]
 public class ImplicitPartConstruction
@@ -114,20 +117,20 @@ public class ImplicitPartConstruction
     public void TestSingleComponentCreation()
     {
         var p = new TopLvlPart();
-        var i = new Pinstance(p);
+        var i = p.Instantiate();
         foreach (var cn in TopLvlPart.ExpectedComponents)
         {
-            Assert.IsTrue(i.Components.Any(c => c.CN == cn));
+            Assert.IsTrue(i.Instance.Components.Any(c => c.CN == cn));
         }
-        Assert.AreEqual(TopLvlPart.ExpectedComponents.Count, i.Components.Count());
+        Assert.AreEqual(TopLvlPart.ExpectedComponents.Count, i.Instance.Components.Count());
     }
 
     [TestMethod]
     public void TestInheritanceomponentCreation()
     {
         var p = new ChildPart();
-        var i = new Pinstance(p);
-        Assert.AreEqual(ChildPart.ExpectedComponentCount, i.Components.Count());
+        var i = p.Instantiate();
+        Assert.AreEqual(ChildPart.ExpectedComponentCount, i.Instance.Components.Count());
     }
 
     /// <summary>
@@ -137,7 +140,7 @@ public class ImplicitPartConstruction
     public void TestEnumerableComponentCreation()
     {
         var p = new TopLvlPart_ListMode();
-        var i = new Pinstance(p);
+        var i = p.Instantiate().Instance;
         foreach (var c in i.Components) Console.WriteLine(c.CN);
         // Number of subcomponent is valid
         Assert.AreEqual(TopLvlPart_ListMode.ExpectedTotalPartCount, i.Components.Count());
@@ -153,7 +156,7 @@ public class ImplicitPartConstruction
     public void TestCplxIgnore()
     {
         var p = new TopLvlPart();
-        var i = new Pinstance(p);
+        var i = p.Instantiate().Instance;
         foreach (var cn in TopLvlPart.NotExpectedComponents)
         {
             Assert.IsFalse(i.Components.Any(c => c.CN == cn));
@@ -168,7 +171,7 @@ public class ImplicitPartConstruction
     {
         var p = new TopLvlPart();
         /// <see cref="Part.CplxImplicitInitialization"/> is run during instance construction
-        var i = new Pinstance(p);
+        var i = p.Instantiate().Instance;
         // Test that Parents information has been properly set
         Assert.IsTrue(p.Mid_null_field.Parent == p);
         Assert.IsTrue(p.Mid_null_property.Parent == p);

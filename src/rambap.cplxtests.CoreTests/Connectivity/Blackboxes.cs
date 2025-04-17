@@ -106,7 +106,7 @@ public class TestBlackBoxesICDs
 {
     private void TestBlackBoxICD(Part b)
     {
-        var i = new Pinstance(b);
+        var i = b.Instantiate();
         var file = new TxtTableFile(i)
         {
             Formater = new FixedWidthTableFormater(),

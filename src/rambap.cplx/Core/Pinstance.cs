@@ -1,5 +1,7 @@
-﻿using System.Reflection;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Reflection;
 using rambap.cplx.Attributes;
+using rambap.cplx.Modules.Connectivity.PinstanceModel;
 using static rambap.cplx.Core.Support;
 
 namespace rambap.cplx.Core;
@@ -9,9 +11,10 @@ namespace rambap.cplx.Core;
 /// </summary>
 public class Component
 {
-    internal Component(Pinstance parent)
+    internal Component(Pinstance instance)
     {
-        Parent = parent;
+        Instance = instance;
+        Instance.Parent = this;
     }
 
     /// <summary>
@@ -21,23 +24,13 @@ public class Component
     /// as unique instances of the Part class, even when reused identicaly in diferent contexts.
     /// This is wastefull, and could one day be optimised to allow components to share Pinstance class instances.
     /// Therefore a Component IS NOT a Pinstance itself, but point to one.
-    public required Pinstance Instance
-    {
-        get => instance!;
-        set
-        {
-            value.Parent = this;
-            instance = value;
-        }
-    }
-    Pinstance? instance;
-
-    internal Pinstance? Parent;
+    public Pinstance Instance { get; }
+    internal Pinstance? Parent { get; init; } = null;
 
     /// <summary>
     /// Component Number : Identifier of this component in its owner
     /// </summary>
-    public required string CN { get; init; } // 
+    public required string CN { get; init; }
 
     public string CID(string separator = Core.CID.Separator)
     {
@@ -100,12 +93,6 @@ public class Pinstance
     public IEnumerable<IInstanceConceptProperty> Properties => properties;
     private List<IInstanceConceptProperty> properties { get; } = new();
 
-
-    /// <summary> Use <see cref="System.Reflection"/> to analyse <see cref="Part"/> types and produces <see cref="Pinstance"/> </summary>
-    /// <param name="template">The instantiated Part</param>
-    public Pinstance(Part template) : this(template, new PartConfiguration()) { }
-
-
     /// <summary>
     /// Component, if any, where this instance is used
     /// </summary>
@@ -126,7 +113,7 @@ public class Pinstance
     /// <summary> Use <see cref="System.Reflection"/> to analyse <see cref="Part"/> types and produces <see cref="Pinstance"/> </summary>
     /// <param name="template">The instantiated Part</param>
     /// <param name="conf">Configuration used to decide the component to use when encountering <see cref="IAlternative"/>s </param>
-    public Pinstance(Part template, PartConfiguration conf)
+    internal Pinstance(Part template, PartConfiguration conf)
     {
         PartType = template.GetType();
         if (template.ImplementingInstance != null)
@@ -182,13 +169,13 @@ public class Pinstance
         // Create components from Parts properties/fields
         ScanObjectContentFor<Part>(template,
             (p, i) => components.Add(
-                new Component(this)
+                new Component(new Pinstance(p, conf))
                 {
-                    Instance = new Pinstance(p, conf),
                     CN = p.CNOverride ??
                         (i.IsFromAndEnumerable ? $"{i.Name}_{i.IndexInEnumerable:00}" : i.Name),
                     Comment = MakeCommment(i.Comments),
                     IsPublic = i.IsPublicOrAssembly,
+                    Parent = this,
                 }),
             ignoredDerivedTypes : [typeof(IAlternative)] // Avoid matching on alternative, who are IEnumerable<Part>
             );
@@ -199,13 +186,13 @@ public class Pinstance
             {
                 var selectedPart = conf.Decide(a)!;
                 components.Add(
-                new Component(this)
+                new Component(new Pinstance(selectedPart, conf))
                 {
-                    Instance = new Pinstance(selectedPart, conf),
                     CN = selectedPart.CNOverride ??
                         (i.IsFromAndEnumerable ? $"{i.Name}_{i.IndexInEnumerable:00}" : i.Name),
                     Comment = MakeCommment(i.Comments),
                     IsPublic=i.IsPublicOrAssembly,
+                    Parent = this,
                 });
             });
 

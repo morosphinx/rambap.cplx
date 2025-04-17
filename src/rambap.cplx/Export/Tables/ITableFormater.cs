@@ -7,7 +7,7 @@ namespace rambap.cplx.Export.Tables;
 /// </summary>
 public interface ITableFormater
 {
-    IEnumerable<string> Format(ITableProducer table, Pinstance content);
+    IEnumerable<string> Format(ITableProducer table, Component content);
 }
 
 

@@ -126,7 +126,7 @@ public class ComponentIterator : IIterator<ICplxContent>
         }
     }
 
-    public IEnumerable<ICplxContent> MakeContent(Pinstance instance)
+    public IEnumerable<ICplxContent> MakeContent(Component rootComponent)
     {
         // Generate the contents and subcontent for the group of components
         // The group of components must all be of same PN at the same location
@@ -183,13 +183,6 @@ public class ComponentIterator : IIterator<ICplxContent>
             }
         }
 
-        // Create a dummy component to start recuring
-        Component rootComponent = new(null)
-        {
-            CN = $"*",
-            Instance = instance,
-            IsPublic = true,
-        };
         RecursionLocation rootLocation = new()
         {
             CIN = $"",

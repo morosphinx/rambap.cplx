@@ -40,7 +40,7 @@ public class MdWiringPlan : TxtPInstanceFile
 
     public override string GetText() =>
 $"""
-# WIRING PLAN : {Content.PN}
+# WIRING PLAN : {Content.Instance.PN}
 
 ## Identification
 {CommonSections.CommonHeader(Content)}

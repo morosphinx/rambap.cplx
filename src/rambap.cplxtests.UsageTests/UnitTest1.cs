@@ -13,9 +13,9 @@ public class UnitTest1
     public void TestGeneration_ReadmeExample()
     {
         var p = new ServerAssembly();
-        var i = new Pinstance(p);
+        var c = p.Instantiate();
         var generator = GetDemoGenerator_AllCoreTables(true); ;
-        generator.Do(i, Path.Combine("C:\\TestFolder\\ReadmeExemple"));
+        generator.Do(c, Path.Combine("C:\\TestFolder\\ReadmeExemple"));
     }
 
 
@@ -23,9 +23,9 @@ public class UnitTest1
     public void TestGeneration_Exemple4()
     {
         var p = new Exemple4_Programatic();
-        var i = new Pinstance(p);
+        var c = p.Instantiate();
         var generator = GetDemoGenerator_AllCoreTables();
-        generator.Do(i, "C:\\TestFolder\\Exemple4");
+        generator.Do(c, "C:\\TestFolder\\Exemple4");
     }
 
     [TestMethod]

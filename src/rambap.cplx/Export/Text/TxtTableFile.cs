@@ -15,12 +15,12 @@ public class TxtTableFile : IInstruction
     /// Instance whose properties and component are written to the file
     /// CID of the file are relative to this component
     /// </summary>
-    public Pinstance Content { get; init; }
+    public Component Content { get; init; }
 
     public IEnumerable<string> GetAllLines()
         => Formater.Format(Table, Content);
 
-    public TxtTableFile(Pinstance content)
+    public TxtTableFile(Component content)
     {
         Content = content;
     }

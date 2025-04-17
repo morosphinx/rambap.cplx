@@ -113,7 +113,7 @@ public class MakeCplxRepoReadme
     public void RemakeCplxRepoReadme()
     {
         var p = new ServerAssembly();
-        var i = new Pinstance(p);
+        var i = p.Instantiate();
         var MakeReadmeInstruction = new MakeCplxRepoReadmeInstruction() { Content = i, ContentFilename = "ReadmeExemple.cs" };
 
         var generatedFilePath = "C:\\TestFolder\\ReadmeExemple\\README.md";

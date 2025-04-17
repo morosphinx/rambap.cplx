@@ -4,7 +4,7 @@ namespace rambap.cplx.Export.Text;
 
 public abstract class TxtPInstanceFile : IInstruction
 {
-    public required Pinstance Content { get; init; }
+    public required Component Content { get; init; }
 
     public abstract string GetText();
 
