@@ -1,7 +1,7 @@
 ﻿using rambap.cplx.Modules.Costing.Outputs;
 using rambap.cplx.Core;
 using rambap.cplx.Export.Spreadsheet;
-using rambap.cplx.Export.TextFiles;
+using rambap.cplx.Export.Text;
 
 namespace rambap.cplx.Export;
 

@@ -1,5 +1,5 @@
 ﻿using rambap.cplx.Core;
-using rambap.cplx.Export.TextFiles;
+using rambap.cplx.Export.Text;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Spreadsheet;

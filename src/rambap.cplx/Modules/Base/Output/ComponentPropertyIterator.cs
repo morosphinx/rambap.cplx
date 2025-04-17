@@ -2,6 +2,12 @@
 
 namespace rambap.cplx.Modules.Base.Output;
 
+/// <summary>
+/// Enumerate component trees like a <see cref="ComponentIterator"/>, plus, on each component, iterate properties with <br/>
+/// 1 - <see cref="PropertyIterator"/> <br/>
+/// 2 (Optional) - <see cref="PropertySubIterator"/> <br/>
+/// </summary>
+/// <typeparam name="P">Enumerated property Type.</typeparam>
 public class ComponentPropertyIterator<P> : ComponentIterator
 {
     protected sealed class IterationItem_Property : IIterationItem

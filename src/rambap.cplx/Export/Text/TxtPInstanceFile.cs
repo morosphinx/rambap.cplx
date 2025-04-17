@@ -1,8 +1,8 @@
 ﻿using rambap.cplx.Core;
 
-namespace rambap.cplx.Export.TextFiles;
+namespace rambap.cplx.Export.Text;
 
-public abstract class SinglePInstanceCustomFile : IInstruction
+public abstract class TxtPInstanceFile : IInstruction
 {
     public required Pinstance Content { get; init; }
 

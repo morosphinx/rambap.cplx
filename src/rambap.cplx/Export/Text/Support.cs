@@ -1,4 +1,4 @@
-﻿namespace rambap.cplx.Export.Tables;
+﻿namespace rambap.cplx.Export.Text;
 
 using Line = List<string>;
 
@@ -19,7 +19,7 @@ internal static class Support
         return string.Join(separator, cellTexts);
     }
 
-    public static List<int> CalculateColumnWidths(IEnumerable<List<string>> cells)
+    public static List<int> CalculateColumnWidths(IEnumerable<Line> cells)
     {
         // Calculate each column max size
         int columnCount = cells.First().Count();

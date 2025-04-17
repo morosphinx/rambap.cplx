@@ -1,6 +1,7 @@
 ﻿using rambap.cplx.Core;
+using rambap.cplx.Export.Tables;
 
-namespace rambap.cplx.Export.Tables;
+namespace rambap.cplx.Export.Text;
 
 public class MarkdownTableFormater : ITableFormater
 {

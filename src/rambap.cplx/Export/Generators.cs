@@ -1,6 +1,5 @@
 ﻿using rambap.cplx.Core;
-using rambap.cplx.Export.TextFiles;
-using rambap.cplx.Export.Tables;
+using rambap.cplx.Export.Text;
 using rambap.cplx.Modules.Base.Output;
 using rambap.cplx.Modules.Costing.Outputs;
 using static rambap.cplx.Modules.Connectivity.Outputs.ConnectionColumns;
@@ -12,7 +11,7 @@ public static class FileGroups
     public static IEnumerable<(string, IInstruction)> CostingFiles(Pinstance i, string filenamePattern)
     {
         return [
-                ($"BOMR_{filenamePattern}.csv", new TextTableFile(i)
+                ($"BOMR_{filenamePattern}.csv", new TxtTableFile(i)
                 {
                     Table = CostTables.BillOfMaterial() with
                     {
@@ -21,7 +20,7 @@ public static class FileGroups
                     },
                     Formater = new MarkdownTableFormater()
                 }),
-                ($"RecurentCosts_{filenamePattern}.csv", new TextTableFile(i)
+                ($"RecurentCosts_{filenamePattern}.csv", new TxtTableFile(i)
                 {
                     Table = CostTables.CostBreakdown() with
                     {
@@ -30,7 +29,7 @@ public static class FileGroups
                     },
                     Formater = new MarkdownTableFormater(),
                 }),
-                ($"BOTR_{filenamePattern}.csv", new TextTableFile(i)
+                ($"BOTR_{filenamePattern}.csv", new TxtTableFile(i)
                 {
                     Table = TaskTables.BillOfTasks() with
                     {
@@ -39,7 +38,7 @@ public static class FileGroups
                     },
                     Formater = new MarkdownTableFormater(),
                 }),
-                ($"RecurentTasks_{filenamePattern}.csv", new TextTableFile(i) {
+                ($"RecurentTasks_{filenamePattern}.csv", new TxtTableFile(i) {
                     Table = TaskTables.TaskBreakdown() with
                     {
                         WriteTotalLine = true,
@@ -53,18 +52,18 @@ public static class FileGroups
     public static IEnumerable<(string, IInstruction)> SystemViewTables(Pinstance i, string filenamePattern)
     {
         return [
-                ($"Tree_Detailled_{filenamePattern}.csv", new TextTableFile(i)
+                ($"Tree_Detailled_{filenamePattern}.csv", new TxtTableFile(i)
                 {
                     Table = Modules.Documentation.Outputs.SystemViewTables.ComponentTree_Detailled(),
                     Formater = new FixedWidthTableFormater()
                 }),
-                ($"Tree_Stacked_{filenamePattern}.csv", new TextTableFile(i)
+                ($"Tree_Stacked_{filenamePattern}.csv", new TxtTableFile(i)
                 {
                     Table = Modules.Documentation.Outputs.SystemViewTables.ComponentTree_Stacked(),
                     Formater = new FixedWidthTableFormater()
                 }),
                 // TODO : Fix performance issue when generating this file on the 1000x parts exemple
-                ($"Inventory_{filenamePattern}.csv", new TextTableFile(i)
+                ($"Inventory_{filenamePattern}.csv", new TxtTableFile(i)
                 {
                     Table = Modules.Documentation.Outputs.SystemViewTables.ComponentInventory(),
                     Formater = new MarkdownTableFormater()
@@ -75,17 +74,17 @@ public static class FileGroups
     public static IEnumerable<(string, IInstruction)> ConnectivityTables(Pinstance i, string filenamePattern)
     {
         return [
-                ($"Connections_{filenamePattern}.csv", new TextTableFile(i)
+                ($"Connections_{filenamePattern}.csv", new TxtTableFile(i)
                 {
                     Table = Modules.Connectivity.Outputs.ConnectivityTables.ConnectionTable(),
                     Formater = new MarkdownTableFormater()
                 }),
-                ($"Wirings_{filenamePattern}.csv", new TextTableFile(i)
+                ($"Wirings_{filenamePattern}.csv", new TxtTableFile(i)
                 {
                     Table = Modules.Connectivity.Outputs.ConnectivityTables.WiringTable(),
                     Formater = new MarkdownTableFormater()
                 }),
-                ($"ICD_{filenamePattern}.csv", new TextTableFile(i)
+                ($"ICD_{filenamePattern}.csv", new TxtTableFile(i)
                 {
                     Table = Modules.Connectivity.Outputs.ConnectivityTables.InterfaceControlDocumentTable(),
                     Formater = new MarkdownTableFormater()

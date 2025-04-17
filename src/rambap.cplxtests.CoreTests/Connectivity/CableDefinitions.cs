@@ -1,5 +1,5 @@
 ﻿using rambap.cplx;
-using rambap.cplx.Export.TextFiles;
+using rambap.cplx.Export.Text;
 using rambap.cplx.Modules.Connectivity.Outputs;
 using static rambap.cplxtests.CoreTests.Connectivity.ConnectionAction;
 
@@ -83,10 +83,10 @@ public class TestSimpleCableContainer
         var part = new Part_ContainerBox(actionOnL, actionOnR, internalConnected);
         var instance = new Pinstance(part);
         // Write the output table for reference
-        var table = new TextTableFile(instance)
+        var table = new TxtTableFile(instance)
         {
             Table = ConnectivityTables.ConnectionTable(),
-            Formater = new cplx.Export.Tables.MarkdownTableFormater()
+            Formater = new MarkdownTableFormater()
         };
         table.WriteToConsole();
         // Test Connectivity property value

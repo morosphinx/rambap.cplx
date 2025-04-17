@@ -1,13 +1,13 @@
 ﻿using rambap.cplx.Core;
 using rambap.cplx.Export.Tables;
-using rambap.cplx.Export.TextFiles;
+using rambap.cplx.Export.Text;
 
 namespace rambap.cplx.Export.Prodocs;
 
-public class MdSystemView : SinglePInstanceCustomFile
+public class MdSystemView : TxtPInstanceFile
 {
-    private TextTableFile ComponentTree
-        => new TextTableFile(Content)
+    private TxtTableFile ComponentTree
+        => new TxtTableFile(Content)
         {
             Formater = new MarkdownTableFormater(),
             Table = Modules.Documentation.Outputs.SystemViewTables.ComponentTree_Stacked()

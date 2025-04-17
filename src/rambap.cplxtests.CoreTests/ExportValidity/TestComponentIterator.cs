@@ -1,6 +1,6 @@
 ﻿using rambap.cplx.Core;
 using rambap.cplx.Export.Tables;
-using rambap.cplx.Export.TextFiles;
+using rambap.cplx.Export.Text;
 using rambap.cplx.Modules.Base.Output;
 
 namespace rambap.cplxtests.CoreTests.ExportValidity;
@@ -21,7 +21,7 @@ public class TestComponentIterator
         var pinstance = new Pinstance(part);
         var res = iterator.MakeContent(pinstance);
 
-        var debugTable = new TextTableFile(pinstance)
+        var debugTable = new TxtTableFile(pinstance)
         {
             Table = new TableProducer<ICplxContent>()
             {

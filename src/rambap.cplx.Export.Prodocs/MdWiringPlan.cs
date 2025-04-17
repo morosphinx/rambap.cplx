@@ -1,6 +1,6 @@
 ﻿using rambap.cplx.Core;
 using rambap.cplx.Export.Tables;
-using rambap.cplx.Export.TextFiles;
+using rambap.cplx.Export.Text;
 using rambap.cplx.Modules.Base.Output;
 using rambap.cplx.Modules.Connectivity.Outputs;
 using rambap.cplx.Modules.Documentation.Outputs;
@@ -8,12 +8,12 @@ using static rambap.cplx.Modules.Connectivity.Outputs.ConnectionTableProperty;
 
 namespace rambap.cplx.Export.Prodocs;
 
-public class MdWiringPlan : SinglePInstanceCustomFile
+public class MdWiringPlan : TxtPInstanceFile
 {
     public List<string> WiringDescriptionTitles = ["Wirings"];
 
-    private TextTableFile ComponentsTable
-        => new TextTableFile(Content)
+    private TxtTableFile ComponentsTable
+        => new TxtTableFile(Content)
         {
             Formater = new MarkdownTableFormater(),
             Table = SystemViewTables.ComponentInventory(false)
@@ -25,8 +25,8 @@ public class MdWiringPlan : SinglePInstanceCustomFile
         || p1.RigthUpperUsagePort.GetShallowestStructuralEquivalence().GetUpperUsage()
             != p2.RigthUpperUsagePort.GetShallowestStructuralEquivalence().GetUpperUsage();
 
-    private TextTableFile WiringTable
-        => new TextTableFile(Content)
+    private TxtTableFile WiringTable
+        => new TxtTableFile(Content)
         {
             Formater = new MarkdownTableFormater(),
             Table = ConnectivityTables.WiringTable(false)

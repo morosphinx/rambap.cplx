@@ -1,13 +1,13 @@
 ﻿using rambap.cplx.Export;
 using rambap.cplx.Export.Tables;
-using rambap.cplx.Export.TextFiles;
+using rambap.cplx.Export.Text;
 using rambap.cplx.Modules.Costing.Outputs;
 using rambap.cplx.Modules.Documentation.Outputs;
 using System.Runtime.CompilerServices;
 
 namespace rambap.cplxtests.UsageTests;
 
- internal class MakeCplxRepoReadmeInstruction : SinglePInstanceCustomFile
+ internal class MakeCplxRepoReadmeInstruction : TxtPInstanceFile
 {
     /// <summary>
     /// File to be included used as exemple.

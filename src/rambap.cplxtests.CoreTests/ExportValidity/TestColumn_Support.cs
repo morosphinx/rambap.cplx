@@ -1,5 +1,5 @@
 ﻿using rambap.cplx.Export.Tables;
-using rambap.cplx.Export.TextFiles;
+using rambap.cplx.Export.Text;
 using rambap.cplx.Modules.Base.Output;
 
 namespace rambap.cplxtests.CoreTests.ExportValidity;
@@ -19,7 +19,7 @@ internal static class TestColumn_Support
         var total = values.Select(s => (s != "") ? Convert.ToDecimal(s) : 0M).Sum();
 
         // Write table in console for debug
-        var debugTable = new TextTableFile(pinstance)
+        var debugTable = new TxtTableFile(pinstance)
         {
             Table = new TableProducer<ICplxContent>()
             {

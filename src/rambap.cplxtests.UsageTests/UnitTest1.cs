@@ -1,6 +1,6 @@
 using rambap.cplx.Export;
 using rambap.cplx.Export.Prodocs;
-using rambap.cplx.Export.TextFiles;
+using rambap.cplx.Export.Text;
 using rambap.cplx.Modules.Connectivity.Outputs;
 using static rambap.cplxtests.UsageTests.Support;
 

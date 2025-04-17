@@ -1,9 +1,9 @@
 ﻿using rambap.cplx.Core;
 using rambap.cplx.Export.Tables;
 
-namespace rambap.cplx.Export.TextFiles;
+namespace rambap.cplx.Export.Text;
 
-public class TextTableFile : IInstruction
+public class TxtTableFile : IInstruction
 {
     /// <summary> Definition of the table written to the file </summary>
     public required ITableProducer Table { protected get; init; }
@@ -20,7 +20,7 @@ public class TextTableFile : IInstruction
     public IEnumerable<string> GetAllLines()
         => Formater.Format(Table, Content);
 
-    public TextTableFile(Pinstance content)
+    public TxtTableFile(Pinstance content)
     {
         Content = content;
     }

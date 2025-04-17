@@ -1,5 +1,5 @@
 ﻿using rambap.cplx.Export.Tables;
-using rambap.cplx.Export.TextFiles;
+using rambap.cplx.Export.Text;
 using rambap.cplx.Modules.Connectivity.Outputs;
 using rambap.cplx.Modules.Connectivity.Templates;
 
@@ -107,7 +107,7 @@ public class TestBlackBoxesICDs
     private void TestBlackBoxICD(Part b)
     {
         var i = new Pinstance(b);
-        var file = new TextTableFile(i)
+        var file = new TxtTableFile(i)
         {
             Formater = new FixedWidthTableFormater(),
             Table = ConnectivityTables.InterfaceControlDocumentTable(),

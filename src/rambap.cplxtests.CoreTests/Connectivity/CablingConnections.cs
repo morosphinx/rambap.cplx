@@ -1,4 +1,4 @@
-﻿using rambap.cplx.Export.TextFiles;
+﻿using rambap.cplx.Export.Text;
 using rambap.cplx.Modules.Connectivity.Outputs;
 using rambap.cplxtests.CoreTests.Connectivity;
 using static rambap.cplx.Modules.Connectivity.Outputs.ConnectionColumns;

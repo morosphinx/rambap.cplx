@@ -1,7 +1,7 @@
 ﻿namespace rambap.cplxtests.UsageTests.ElectricalHarnesses;
 
 using DocumentFormat.OpenXml.Packaging;
-using rambap.cplx.Export.TextFiles;
+using rambap.cplx.Export.Text;
 using rambap.cplx.Modules.Connectivity;
 using rambap.cplx.Modules.Connectivity.PinstanceModel;
 using rambap.cplx.Modules.Connectivity.Templates;
