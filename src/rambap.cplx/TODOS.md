@@ -1,6 +1,5 @@
 ﻿# TODOS
-- Better / cleaner generation call process
-- Table with part, splitted, for task content
+
 
 # Code
 
@@ -20,7 +19,9 @@
     - Connectivity : Signal compatibility ?
 
 ## Core
-- Definie UN Component / Instance ambiguity solution
+- Better / cleaner generation call process
+    - Generators are Instruction that take their Content delayed ? so generator can be defined (eg : Documentation Concept Properties) / prepared before instantiation ?
+- Clarify the way CommonName is build and used : shouldn't have to check CommonName != PN when generating output
 - Better default implementation of Outputs, with
     - Some better basic files
         - Differentiate component list (system view, include comments) from BOM (costing, include chosen suppliers & cost)
@@ -32,10 +33,12 @@
     - Way to include / cross reference document between each others (eg : plot integrated in a markdown)
 
 Improvements to think about
-- Should a Component Type be exposed as the primary result of a Part Instantiation ?
+- ✅ ~~Should a Component Type be exposed as the primary result of a Part Instantiation~~ ?
     - Would clarify root component naming
     - No instance would be without a Parent Component => Better null correctness
-    - Make sense with bellow :
+    - Make sense with bellow:
+- Done, now : Rename the Component class to something that imply it's a Component Instance, and rename "Component" to "Subcomponent" in applicalbe instances
+- Should the Subcomponent / PN / other core instance properies be stored (or just accessed) on the component instead of the Pinstance ?
 - Should some properties be moved to the Component type, instead of the Instance Type ?
     - Would separates properties that are component locale (ex : usage in Connectivity) from those that are common for all Instance
     - Would sligthy improve external readbility
