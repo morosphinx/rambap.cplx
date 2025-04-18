@@ -2,6 +2,7 @@
 using rambap.cplx.Export.Text;
 using rambap.cplx.Modules.Base.Output;
 using rambap.cplx.Modules.Costing.Outputs;
+using System.Linq;
 using static rambap.cplx.Modules.Connectivity.Outputs.ConnectionColumns;
 
 namespace rambap.cplx.Export;
@@ -160,7 +161,7 @@ public static class Generators
         {
             HierarchyMode.Flat => new FlattenedDocumentationTreeGenerator()
             {
-                MakeInstanceFiles = makeInstanceFiles,
+                MakeComponentDocumentInstructions = makeInstanceFiles,
                 SubComponentInclusionCondition = subComponentInclusionCondition
             },
             HierarchyMode.Hierarchical => new HierarchicalDocumentationTreeGenerator()
@@ -178,25 +179,23 @@ public class HierarchicalDocumentationTreeGenerator : IGenerator
     public Func<Component, bool>? SubComponentInclusionCondition { private get; init; }
     public required Func<Component, IEnumerable<(string, IInstruction)>> MakeInstanceFiles { private get; init; }
 
-    public virtual IEnumerable<(string, IInstruction)> MakeFolderForComponent(Component c)
-        => [ (FileNamePatternFor(c), MakeRecursiveContentForInstance(c))];
-
-    private Folder MakeRecursiveContentForInstance(Component c)
+    private Folder MakeRecursiveContentForComponent(Component c)
     {
-
-        var iteratedComponents = SubComponentInclusionCondition != null ?
+        var iteratedSubcomponents = SubComponentInclusionCondition != null ?
             c.Instance.Components.Where(subc => SubComponentInclusionCondition(subc)) : [];
+        var subcomponentFolders = iteratedSubcomponents.Select(subcomponent =>
+            (FileNamePatternFor(subcomponent), MakeRecursiveContentForComponent(subcomponent)) );
         return new Folder([
                 .. MakeInstanceFiles(c),
-                .. iteratedComponents.SelectMany(MakeFolderForComponent)
+                .. subcomponentFolders
             ]);
     }
 
-    public override IInstruction PrepareInstruction(Component c)
+    public override IInstruction PrepareInstruction(Component rootComponent)
     {
-        var rootFolder = FileNamePatternFor(c);
+        var rootFolder = FileNamePatternFor(rootComponent);
         return new Folder([
-                (rootFolder, MakeRecursiveContentForInstance(c))
+                (rootFolder, MakeRecursiveContentForComponent(rootComponent))
             ]);
     }
 }
@@ -204,20 +203,20 @@ public class HierarchicalDocumentationTreeGenerator : IGenerator
 public class FlattenedDocumentationTreeGenerator : IGenerator
 {
     public Func<Component, bool>? SubComponentInclusionCondition { private get; init; }
-    public required Func<Component, IEnumerable<(string, IInstruction)>> MakeInstanceFiles { private get; init; }
+    public required Func<Component, IEnumerable<(string, IInstruction)>> MakeComponentDocumentInstructions { private get; init; }
 
-    public override IInstruction PrepareInstruction(Component i)
+    public override IInstruction PrepareInstruction(Component rootComponent)
     {
         var partTree= new PartTypesIterator<object>()
         {
             RecursionCondition = (c, l) => this.SubComponentInclusionCondition?.Invoke(c) ?? false
         };
-        var content = partTree.MakeContent(i);
-        var partFolders = content.Select(c => c.Component.Instance)
-                                 .Select(p => 
-                                 (FileNamePatternFor(i),new Folder(
+        var content = partTree.MakeContent(rootComponent);
+        var partFolders = content.Select(c => c.Component)
+                                 .Select(c => 
+                                 (FileNamePatternFor(c),new Folder(
                                      [
-                                     .. MakeInstanceFiles(i)
+                                     .. MakeComponentDocumentInstructions(c)
                                      ]
                                  )));
         return new Folder([.. partFolders]);

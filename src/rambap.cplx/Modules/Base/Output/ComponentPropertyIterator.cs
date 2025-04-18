@@ -127,12 +127,12 @@ public class ComponentPropertyIterator<P> : ComponentIterator
             {
                 var subLocation = loc.GetNextSubItem(localCN, localMultiplicity);
 
-                var subMainComponent = subgroup.First();
-                var subproperties = PropertyIterator(subMainComponent).ToList();
+                var subgroupMainComponent = subgroup.First();
+                var subproperties = PropertyIterator(subgroupMainComponent).ToList();
 
                 if (StackPropertiesSingleChildBranches
                     && subproperties.Count == 1 // Only a single property
-                    && !subMainComponent.Instance.Components.Any()) // No other child
+                    && !subgroupMainComponent.SubComponents.Any()) // No other child
                 {
                     // If this would only have a single property as a child, return
                     // A special item that will compact both the component and the property on a single line

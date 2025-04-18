@@ -53,7 +53,7 @@ public static class ConnectionColumns
             title,
             i => 
             {
-                var component = i.Owner!.Parent;
+                var component = i.Owner.Parent;
                 return getter(component);
             },
             format);

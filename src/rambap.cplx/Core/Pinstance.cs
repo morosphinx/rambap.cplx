@@ -1,13 +1,12 @@
-﻿using System.Diagnostics.CodeAnalysis;
-using System.Reflection;
+﻿using System.Reflection;
 using rambap.cplx.Attributes;
-using rambap.cplx.Modules.Connectivity.PinstanceModel;
+using rambap.cplx.PartProperties;
 using static rambap.cplx.Core.Support;
 
 namespace rambap.cplx.Core;
 
 /// <summary>
-/// Component of Instance
+/// Instantiated Component
 /// </summary>
 public class Component
 {
@@ -49,7 +48,19 @@ public class Component
     /// True if this component is public or internal from this part : eg, it is visible from outside the containing Part,
     /// and therefore may be condidered to be part or the public interface of the Part.
     /// </summary>
-    public required bool IsPublic { get; init; } 
+    public required bool IsPublic { get; init; }
+
+    /// <summary>
+    /// Wrapper for <see cref="Pinstance.PN"/> <br/>
+    /// <inheritdoc cref="Pinstance.PN"/> 
+    /// </summary>
+    public string PN => Instance.PN;
+
+    /// <summary>
+    /// Wrapper for <see cref="Pinstance.Components"/> <br/>
+    /// <inheritdoc cref="Pinstance.Components"/> 
+    /// </summary>
+    public IEnumerable<Component> SubComponents => Instance.Components;
 }
 
 /// <summary>
@@ -97,15 +108,10 @@ public class Pinstance
     /// Component, if any, where this instance is used
     /// </summary>
     /// TODO : Using this imply Pinstance instance are unique,
-    public Component? Parent { get; internal set; }
-    public string CN => Parent?.CN ?? "*";
+    public Component Parent { get; internal set; }
+    public string CN => Parent.CN ;
     public string CID(string separator = Core.CID.Separator)
-    {
-        if (Parent != null)
-            return Parent.CID(separator);
-        else
-            return "*";
-    }
+        => Parent.CID(separator);
 
     private static string MakeCommment(IEnumerable<ComponentDescriptionAttribute> commentAttributes)
         => string.Join("", commentAttributes.Select(c => c.Text));
@@ -113,7 +119,10 @@ public class Pinstance
     /// <summary> Use <see cref="System.Reflection"/> to analyse <see cref="Part"/> types and produces <see cref="Pinstance"/> </summary>
     /// <param name="template">The instantiated Part</param>
     /// <param name="conf">Configuration used to decide the component to use when encountering <see cref="IAlternative"/>s </param>
+#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
     internal Pinstance(Part template, PartConfiguration conf)
+    // Parent Property is set when constructing the Component containing class. TODO : clean in some way
+#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
     {
         PartType = template.GetType();
         if (template.ImplementingInstance != null)

@@ -51,7 +51,7 @@ public class ConnectionTableProperty
     }
 
     public Component? GetConnectedComponent(PortSide side, PortIdentity identity)
-        => GetConnectedPort(side, identity).Owner!.Parent;
+        => GetConnectedPort(side, identity).Owner.Parent;
 
     public Component? GetCableConnectionComponent(PortSide side)
     {
@@ -59,8 +59,8 @@ public class ConnectionTableProperty
         {
             return side switch
             {
-                PortSide.Left => c.LeftMate.RightPort.Owner!.Parent,
-                PortSide.Rigth => c.RigthMate.LeftPort.Owner!.Parent,
+                PortSide.Left => c.LeftMate.RightPort.Owner.Parent,
+                PortSide.Rigth => c.RigthMate.LeftPort.Owner.Parent,
                 _ => throw new NotImplementedException(),
             };
 

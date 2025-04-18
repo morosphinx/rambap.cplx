@@ -95,7 +95,7 @@ public class ComponentIterator : IIterator<ICplxContent>
 
     protected IEnumerable<IEnumerable<Component>> GetSubcomponentsAsGroup(IIterationItem_ComponentGroup group)
     {
-        var subcomponents = group.Components.First().Instance.Components;
+        var subcomponents = group.Components.First().SubComponents;
         var subcomponentContents = GroupPNsAtSameLocation switch
         {
             false => subcomponents.Select<Component, IEnumerable<Component>>(c => [c]),
