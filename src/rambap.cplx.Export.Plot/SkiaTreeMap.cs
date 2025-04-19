@@ -7,26 +7,27 @@ namespace rambap.cplx.Export.Plot;
 // https://swharden.com/blog/2023-03-07-treemapping/
 public class SkiaTreeMap : IInstruction
 {
-    private Pinstance Instance;
-    private static List<(string CN, decimal cost)> ListNativeCosts(string CN, Pinstance i)
+    private Component Content;
+    private static List<(string CN, decimal cost)> ListNativeCosts(string CN, Component compo)
     {
+        var i = compo.Instance; 
         List<(string, decimal)> costs = new();
         if (i.Cost()?.Native > 0)
             costs.Add(($"{CN}\n{i.PN}", i.Cost()?.Native ?? 0));
-        foreach(var c in i.Components)
+        foreach(var c in compo.SubComponents)
             if(c.Instance.Cost()?.Total > 0)
-                costs.AddRange(ListNativeCosts(c.CN, c.Instance));
+                costs.AddRange(ListNativeCosts(c.CN, compo));
         return costs;
     }
 
-    public SkiaTreeMap(Pinstance instance)
+    public SkiaTreeMap(Component content)
     {
-        Instance = instance ;
+        Content = content ;
     }
 
     public void Do(string path)
     {
-        var list = ListNativeCosts("Root", Instance).OrderByDescending(i => i.cost).ToList();
+        var list = ListNativeCosts("Root", Content).OrderByDescending(i => i.cost).ToList();
         double[] sortedValues = list.Select(i => Decimal.ToDouble(i.cost)).ToArray();
         string[] labels = list.Select(i => i.CN).ToArray();
 

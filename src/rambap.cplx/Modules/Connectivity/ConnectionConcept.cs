@@ -33,7 +33,7 @@ public class InstanceConnectivity : IInstanceConceptProperty
 
 internal class ConnectionConcept : IConcept<InstanceConnectivity>
 {
-    public override InstanceConnectivity? Make(Pinstance instance, Part template)
+    public override InstanceConnectivity? Make(Pinstance instance, IEnumerable<Component> subcomponents, Part template)
     {
         // Take a signalPort and implement it
         // Note that SignalPorts are do not have 1-1 relation to PropertyOrFieldInfo

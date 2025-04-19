@@ -5,7 +5,7 @@ namespace rambap.cplx.Modules.SupplyChain.WorldModel;
 
 public abstract class QuotationItems
 {
-    internal abstract void TryApplyTo(Pinstance pinstance, Supplier supplier, TimeSpan deliveryDelay);
+    internal abstract void TryApplyTo(Component component, Supplier supplier, TimeSpan deliveryDelay);
 }
 
 public class QuotationItem<P> : QuotationItems
@@ -23,17 +23,17 @@ public class QuotationItem<P> : QuotationItems
     public string? Link { get; init; }
 
 
-    private bool CanApplyTo(Pinstance pinstance)
+    private bool CanApplyTo(Component component)
     {
         // TODO : this will break if Part Type is not an identity, such as the part having been instantiated
         // with a parametered constructor
-        return pinstance.PartType == typeof(P); 
+        return component.Instance.PartType == typeof(P); 
     }
-    internal override void TryApplyTo(Pinstance pinstance, Supplier supplier, TimeSpan deliveryDelay)
+    internal override void TryApplyTo(Component component, Supplier supplier, TimeSpan deliveryDelay)
     {
-        if (CanApplyTo(pinstance))
+        if (CanApplyTo(component))
         {
-            pinstance.Cost()?.AvailableOffers.Add(
+            component.Instance.Cost()?.AvailableOffers.Add(
                 new SupplierOffer
                 {
                     Supplier = supplier,
@@ -55,15 +55,15 @@ public class Quotation
 
     public required List<QuotationItems> Items { get; init; } = new() ;
 
-    public void ApplyTo(Pinstance pinstance)
+    public void ApplyTo(Component component)
     {
         foreach(var item in Items)
         {
-            item.TryApplyTo(pinstance, Supplier, DeliveryDelay);
+            item.TryApplyTo(component, Supplier, DeliveryDelay);
         }
-        foreach(var component in pinstance.Components)
+        foreach(var subcomponent in component.SubComponents)
         {
-            this.ApplyTo(component.Instance);
+            this.ApplyTo(subcomponent);
         }
     }
 }

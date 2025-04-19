@@ -76,7 +76,7 @@ internal static class TestOutputs
     {
         var p = new HierarchyAbstractParentPart<T>();
         var c = p.Instantiate();
-        var benchComponent = c.Instance.Components.First();
+        var benchComponent = c.SubComponents.First();
         WriteConnection(benchComponent);
     }
 }

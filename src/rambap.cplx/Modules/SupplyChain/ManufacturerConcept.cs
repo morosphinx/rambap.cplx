@@ -11,7 +11,7 @@ public class InstanceManufacturerInformation : IInstanceConceptProperty
 
 internal class ManufacturerConcept : IConcept<InstanceManufacturerInformation>
 {
-    public override InstanceManufacturerInformation? Make(Pinstance i, Part template)
+    public override InstanceManufacturerInformation? Make(Pinstance i, IEnumerable<Component> subcomponents, Part template)
     {
         // TODO : Handle case were multiples manufacturer are declared. Rigth now, multiples manufacturer override each other
         Manufacturer? manufacturer = null;

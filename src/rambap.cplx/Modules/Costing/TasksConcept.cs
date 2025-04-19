@@ -42,7 +42,7 @@ public class InstanceTasks : IInstanceConceptProperty
 
 internal class TasksConcept : IConcept<InstanceTasks>
 {
-    public override InstanceTasks? Make(Pinstance i, Part template)
+    public override InstanceTasks? Make(Pinstance instance, IEnumerable<Component> subcomponents, Part template)
     {
         List<NamedTask> nonRecurrentTasks = [];
         ScanObjectContentFor<NonRecurrentTask>(template,
@@ -54,7 +54,7 @@ internal class TasksConcept : IConcept<InstanceTasks>
             (t, p) => recurrentTasks.Add(new(true, p.Name, t.Duration_day, t.Category))
             );
 
-        decimal totalComposedRecurentTask = i.Components.Select(c => c.Instance.Tasks()?.TotalRecurentTaskDuration ?? 0).Sum();
+        decimal totalComposedRecurentTask = subcomponents.Select(c => c.Instance.Tasks()?.TotalRecurentTaskDuration ?? 0).Sum();
 
         bool hasAnyTask = nonRecurrentTasks.Count > 0
             || recurrentTasks.Count > 0

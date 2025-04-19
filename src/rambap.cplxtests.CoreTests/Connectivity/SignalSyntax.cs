@@ -130,14 +130,14 @@ public class WiredComposedSignalSyntax
         => TestWiredComposedSignalSyntaxPartSyntax(new P());
     private void TestWiredComposedSignalSyntaxPartSyntax(Part part)
     {
-        var instance = part.Instantiate().Instance;
-        var connectivity = instance.Connectivity();
+        var component = part.Instantiate();
+        var connectivity = component.Instance.Connectivity();
         Assert.IsNotNull(connectivity);
 
         Assert.IsTrue(connectivity.Wirings.Count() == 1);
         var wiring = connectivity.Wirings.Single();
-        var lcomponent = instance.Components.ElementAt(0).Instance;
-        var rcomponent = instance.Components.ElementAt(1).Instance;
+        var lcomponent = component.SubComponents.ElementAt(0).Instance;
+        var rcomponent = component.SubComponents.ElementAt(1).Instance;
 
         Assert.IsNotNull(wiring.LeftPort.AssignedSignal);
         Assert.ReferenceEquals(wiring.LeftPort.AssignedSignal,lcomponent.Connectivity()!.Signals.Single());

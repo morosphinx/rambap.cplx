@@ -39,7 +39,7 @@ public class SvgSystemTree : IInstruction
         var llinkanchor = rootBox.DrawLinkAnchor_R + rootboxPos;
         // Draw Subcomponent boxes
         float vcursor = 20;
-        foreach (var c in instance.Components)
+        foreach (var c in Content.SubComponents)
         {
             // Draw SubBox
             var subcompBoxPos = new SKPoint(300, vcursor);

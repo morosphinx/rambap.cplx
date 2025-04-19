@@ -116,21 +116,21 @@ public class ImplicitPartConstruction
     [TestMethod]
     public void TestSingleComponentCreation()
     {
-        var p = new TopLvlPart();
-        var i = p.Instantiate();
-        foreach (var cn in TopLvlPart.ExpectedComponents)
+        var part = new TopLvlPart();
+        var component = part.Instantiate();
+        foreach (var subcomp_cn in TopLvlPart.ExpectedComponents)
         {
-            Assert.IsTrue(i.Instance.Components.Any(c => c.CN == cn));
+            Assert.IsTrue(component.SubComponents.Any(c => c.CN == subcomp_cn));
         }
-        Assert.AreEqual(TopLvlPart.ExpectedComponents.Count, i.Instance.Components.Count());
+        Assert.AreEqual(TopLvlPart.ExpectedComponents.Count, component.SubComponents.Count());
     }
 
     [TestMethod]
     public void TestInheritanceomponentCreation()
     {
-        var p = new ChildPart();
-        var i = p.Instantiate();
-        Assert.AreEqual(ChildPart.ExpectedComponentCount, i.Instance.Components.Count());
+        var part = new ChildPart();
+        var component = part.Instantiate();
+        Assert.AreEqual(ChildPart.ExpectedComponentCount, component.SubComponents.Count());
     }
 
     /// <summary>
@@ -139,13 +139,13 @@ public class ImplicitPartConstruction
     [TestMethod]
     public void TestEnumerableComponentCreation()
     {
-        var p = new TopLvlPart_ListMode();
-        var i = p.Instantiate().Instance;
-        foreach (var c in i.Components) Console.WriteLine(c.CN);
+        var part = new TopLvlPart_ListMode();
+        var component = part.Instantiate();
+        foreach (var subcomp in component.SubComponents) Console.WriteLine(subcomp.CN);
         // Number of subcomponent is valid
-        Assert.AreEqual(TopLvlPart_ListMode.ExpectedTotalPartCount, i.Components.Count());
+        Assert.AreEqual(TopLvlPart_ListMode.ExpectedTotalPartCount, component.SubComponents.Count());
         // All SubComponents havz a distinct CN
-        Assert.AreEqual(TopLvlPart_ListMode.ExpectedTotalPartCount, i.Components.Select(c => c.CN).Distinct().Count());
+        Assert.AreEqual(TopLvlPart_ListMode.ExpectedTotalPartCount, component.SubComponents.Select(c => c.CN).Distinct().Count());
     }
 
 
@@ -155,11 +155,11 @@ public class ImplicitPartConstruction
     [TestMethod]
     public void TestCplxIgnore()
     {
-        var p = new TopLvlPart();
-        var i = p.Instantiate().Instance;
+        var part = new TopLvlPart();
+        var component = part.Instantiate();
         foreach (var cn in TopLvlPart.NotExpectedComponents)
         {
-            Assert.IsFalse(i.Components.Any(c => c.CN == cn));
+            Assert.IsFalse(component.SubComponents.Any(c => c.CN == cn));
         }
     }
 
@@ -169,15 +169,15 @@ public class ImplicitPartConstruction
     [TestMethod]
     public void TestParentRelation()
     {
-        var p = new TopLvlPart();
+        var part = new TopLvlPart();
         /// <see cref="Part.CplxImplicitInitialization"/> is run during instance construction
-        var i = p.Instantiate().Instance;
+        var instance = part.Instantiate().Instance;
         // Test that Parents information has been properly set
-        Assert.IsTrue(p.Mid_null_field.Parent == p);
-        Assert.IsTrue(p.Mid_null_property.Parent == p);
-        Assert.IsTrue(p.Mid_auto_field.Parent == p);
-        Assert.IsTrue(p.Mid_auto_property.Parent == p);
-        Assert.IsTrue(p.Mid_constructed_field.Parent == p);
-        Assert.IsTrue(p.Mid_constructed_property.Parent == p);
+        Assert.IsTrue(part.Mid_null_field.Parent == part);
+        Assert.IsTrue(part.Mid_null_property.Parent == part);
+        Assert.IsTrue(part.Mid_auto_field.Parent == part);
+        Assert.IsTrue(part.Mid_auto_property.Parent == part);
+        Assert.IsTrue(part.Mid_constructed_field.Parent == part);
+        Assert.IsTrue(part.Mid_constructed_property.Parent == part);
     }
 }

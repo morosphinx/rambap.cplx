@@ -182,7 +182,7 @@ public class HierarchicalDocumentationTreeGenerator : IGenerator
     private Folder MakeRecursiveContentForComponent(Component c)
     {
         var iteratedSubcomponents = SubComponentInclusionCondition != null ?
-            c.Instance.Components.Where(subc => SubComponentInclusionCondition(subc)) : [];
+            c.SubComponents.Where(subc => SubComponentInclusionCondition(subc)) : [];
         var subcomponentFolders = iteratedSubcomponents.Select(subcomponent =>
             (FileNamePatternFor(subcomponent), MakeRecursiveContentForComponent(subcomponent)) );
         return new Folder([

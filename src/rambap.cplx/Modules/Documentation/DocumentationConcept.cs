@@ -41,7 +41,7 @@ public class InstanceDocumentation : IInstanceConceptProperty
 
 internal class DocumentationConcept : IConcept<InstanceDocumentation>
 {
-    public override InstanceDocumentation? Make(Pinstance instance, Part template)
+    public override InstanceDocumentation? Make(Pinstance instance, IEnumerable<Component> subcomponents, Part template)
     {
         List<NamedText> descriptions = new();
         // Add description defined in attributes
