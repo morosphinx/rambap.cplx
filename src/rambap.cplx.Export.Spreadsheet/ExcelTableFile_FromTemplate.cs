@@ -16,11 +16,11 @@ public record SpreadsheetFillInstruction
     public uint RowStart { get; init; } = 2;
 }
 
-public record InstanceContentInstruction : SpreadsheetFillInstruction
+public record ComponentContentInstruction : SpreadsheetFillInstruction
 {
     public enum WriteDirection { Line, Column }
     public WriteDirection Direction { get; init; } = WriteDirection.Column;
-    public required List<Func<Pinstance, string>> Lines { get; init; }
+    public required List<Func<Component, string>> Lines { get; init; }
 }
 
 public record TableWriteInstruction : SpreadsheetFillInstruction
@@ -41,7 +41,7 @@ public class ExcelTableFile_FromTemplate : IInstruction
     }
 
 
-    public List<InstanceContentInstruction> InstanceContents{ get; init; } = new();
+    public List<ComponentContentInstruction> InstanceContents{ get; init; } = new();
     public List<TableWriteInstruction> Tables { get; init; } = new();
 
 
@@ -108,18 +108,18 @@ public class ExcelTableFile_FromTemplate : IInstruction
         return styleKeys;
     }
 
-    private void ApplyInstanceContentInstruction(WorksheetPart worksheetPart, InstanceContentInstruction instruction)
+    private void ApplyInstanceContentInstruction(WorksheetPart worksheetPart, ComponentContentInstruction instruction)
     {
         var sheetData = worksheetPart.Worksheet.GetFirstChild<SheetData>()!;
-        List<string> Lines = instruction.Lines.Select(l => l.Invoke(Content.Instance)).ToList();
+        List<string> Lines = instruction.Lines.Select(l => l.Invoke(Content)).ToList();
 
         switch (instruction.Direction)
         {
-            case InstanceContentInstruction.WriteDirection.Line:
+            case ComponentContentInstruction.WriteDirection.Line:
                 var typeHints = Lines.Select(c => ColumnTypeHint.StringFormatable).ToList();
                 FillInLineContent(sheetData, Lines, typeHints, instruction.RowStart, instruction.ColStart);
                 break;
-            case InstanceContentInstruction.WriteDirection.Column:
+            case ComponentContentInstruction.WriteDirection.Column:
                 FillInColumnContent(sheetData, Lines, instruction.RowStart, instruction.ColStart);
                 break;
             default:throw new NotImplementedException();

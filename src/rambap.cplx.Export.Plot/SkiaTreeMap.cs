@@ -10,10 +10,9 @@ public class SkiaTreeMap : IInstruction
     private Component Content;
     private static List<(string CN, decimal cost)> ListNativeCosts(string CN, Component compo)
     {
-        var i = compo.Instance; 
         List<(string, decimal)> costs = new();
         if (i.Cost()?.Native > 0)
-            costs.Add(($"{CN}\n{i.PN}", i.Cost()?.Native ?? 0));
+            costs.Add(($"{CN}\n{compo.PN}", compo.Instance.Cost()?.Native ?? 0));
         foreach(var c in compo.SubComponents)
             if(c.Instance.Cost()?.Total > 0)
                 costs.AddRange(ListNativeCosts(c.CN, compo));

@@ -44,6 +44,10 @@ public class LocationBuilder()
     }
 }
 
+/// <summary>
+/// Main abstraction used to represent data contained in a cplx table line <br/>
+/// Is a data of single component, or a data of a group of component whose relevant characteristics are all equal.
+/// </summary>
 public interface ICplxContent
 {
     RecursionLocation Location { get; }

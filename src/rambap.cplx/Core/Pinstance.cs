@@ -56,6 +56,7 @@ public class Component
     /// </summary>
     public string PN => Instance.PN;
 
+
     /// <summary>
     /// Immediate sub-Components of this component. All are owned by this component.
     /// </summary>
@@ -159,7 +160,7 @@ public class Pinstance
         }
         else
         {
-            CommonName = PN; // Otherwise the Common Name is the PN
+            CommonName = ""; // Otherwise the Common Name is empty
         }
 
         // Select part Revision

@@ -12,13 +12,13 @@ public static class DescriptionColumns
                 ? i.Component.Instance.Documentation()?.GetAllLineDescription() ?? ""
                 : i.Component.Instance.Documentation()?.GetSingleLineDescription() ?? "");
 
-    public static DelegateColumn<ICplxContent> PartCommonName(bool hideIfEqualPN =false) =>
+    public static DelegateColumn<ICplxContent> PartCommonName(bool usePnAsBackup = false) =>
         new DelegateColumn<ICplxContent>("Part Common Name", ColumnTypeHint.StringFormatable,
             i =>
             {
                 var instance = i.Component.Instance;
-                if(hideIfEqualPN)
-                    return instance.CommonName == instance.PN ? "" : instance.CommonName;
+                if(usePnAsBackup)
+                    return instance.CommonName != "" ? instance.CommonName : instance.PN;
                 else return instance.CommonName;
             });
 

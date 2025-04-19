@@ -19,14 +19,14 @@ public class CplxExcelTemplateTests
         {
             TemplatePath = "ExcelTemplates\\CplxCostingTemplate.xlsx",
             InstanceContents = [
-                    new InstanceContentInstruction(){
+                    new ComponentContentInstruction(){
                         SheetName = "Overview",
                         ColStart = 2,
                         RowStart = 2,
                         Lines =[
                                 i => i.PN,
-                                i => i.Revision,
-                                i => i.Version,
+                                i => i.Instance.Revision,
+                                i => i.Instance.Version,
                                 i => DateTime.Now.ToString()
                             ]
                     }
@@ -116,14 +116,14 @@ public class CplxExcelTemplateTests
         {
             TemplatePath = "ExcelTemplates\\CustomCostingTemplate.xlsx",
             InstanceContents = [
-                    new InstanceContentInstruction(){
+                    new ComponentContentInstruction(){
                         SheetName = "Overview",
                         ColStart = 2,
                         RowStart = 2,
                         Lines =[
                                 i => i.PN,
-                                i => i.Revision,
-                                i => i.Version,
+                                i => i.Instance.Revision,
+                                i => i.Instance.Version,
                                 i => DateTime.Now.ToString()
                             ]
                     }

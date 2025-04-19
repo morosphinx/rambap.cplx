@@ -43,7 +43,7 @@ public static class SystemViewTables
             },
             Columns = [
                 CommonColumns.LineTypeNumber(),
-                DescriptionColumns.PartCommonName(hideIfEqualPN : true),
+                DescriptionColumns.PartCommonName(usePnAsBackup : false),
                 IDColumns.PartNumber(),
                 DescriptionColumns.PartDescription(),
                 CommonColumns.ComponentTotalCount(),
@@ -62,7 +62,7 @@ public static class SystemViewTables
         Columns = [
             CommonColumns.LineTypeNumber(),
             IDColumns.PartNumber(),
-            DescriptionColumns.PartCommonName(hideIfEqualPN : true),
+            DescriptionColumns.PartCommonName(usePnAsBackup : false),
             CommonColumns.ComponentTotalCount(),
             SupplyChain.Outputs.SupplierColumns.SupplierName(),
             SupplyChain.Outputs.SupplierColumns.SupplierPN(),

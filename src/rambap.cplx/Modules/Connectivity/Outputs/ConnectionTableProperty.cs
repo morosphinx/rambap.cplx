@@ -50,7 +50,7 @@ public class ConnectionTableProperty
         return identityPort;
     }
 
-    public Component? GetConnectedComponent(PortSide side, PortIdentity identity)
+    public Component GetConnectedComponent(PortSide side, PortIdentity identity)
         => GetConnectedPort(side, identity).Owner.Parent;
 
     public Component? GetCableConnectionComponent(PortSide side)

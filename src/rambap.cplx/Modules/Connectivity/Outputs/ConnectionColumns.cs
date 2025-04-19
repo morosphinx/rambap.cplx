@@ -35,7 +35,7 @@ public static class ConnectionColumns
             PortSide side,
             PortIdentity identity,
             string title,
-            Func<Component?,string> getter,
+            Func<Component, string> getter,
             bool format = false)
         => MakeConnectivityColumn(
             title,

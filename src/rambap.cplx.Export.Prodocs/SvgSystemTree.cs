@@ -25,15 +25,13 @@ public class SvgSystemTree : IInstruction
 
     private void DrawSystemTree(SKCanvas canvas, out SKRect boundingRect)
     {
-        var instance = Content.Instance;
-
         // Draw Main box
         var rootboxPos = new SKPoint(10, 10);
         var rootBox = new PartBox()
         {
-            PN = instance.PN,
-            PNSubDesc = instance.CommonName,
-            CN = "*"
+            PN = Content.PN,
+            PNSubDesc = Content.Instance.CommonName,
+            CN = Content.CN,
         };
         canvas.DrawPartBox(rootBox, rootboxPos);
         var llinkanchor = rootBox.DrawLinkAnchor_R + rootboxPos;
@@ -45,7 +43,7 @@ public class SvgSystemTree : IInstruction
             var subcompBoxPos = new SKPoint(300, vcursor);
             var subcompBox = new PartBox()
             {
-                PN = c.Instance.PN,
+                PN = c.PN,
                 PNSubDesc = c.Instance.CommonName,
                 CN = c.CN,
             };

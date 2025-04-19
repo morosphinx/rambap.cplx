@@ -9,7 +9,7 @@ internal static class CommonSections
  $"""
  |#|Value|
  |-|-----|
- |PN|{component.Instance.PN}|
+ |PN|{component.PN}|
  |Rev|{component.Instance.Revision}|
  |Ver|{component.Instance.Version}|
  |Date|{cplx.Globals.GenerationDate}|

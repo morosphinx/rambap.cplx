@@ -19,7 +19,7 @@ internal static class TestOutputs
     internal static void WriteConnection(Component component)
     {
         Console.WriteLine("");
-        Console.WriteLine($"{component.Instance.PN}");
+        Console.WriteLine($"{component.PN}");
 
         void AddDebugInfoTo(TableProducer<ICplxContent> tableProducer)
         {
