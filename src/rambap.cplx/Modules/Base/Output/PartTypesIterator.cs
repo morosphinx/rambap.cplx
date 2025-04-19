@@ -42,6 +42,7 @@ public class PartTypesIterator<P> : IIterator<ICplxContent>
         {
             WriteBranches = true, // We want information about all tree components
             RecursionCondition = RecursionCondition,
+            AlwaysRecurseDepth0 = false
             // No property iteration when iterating the component tree
             // => Will return only LeafComponent or BranchComponent
         };

@@ -26,6 +26,7 @@ public class ComponentIterator : IIterator<ICplxContent>
     /// If null, always recurse
     /// </summary>
     public Func<Component, RecursionLocation, bool>? RecursionCondition { private get; init; }
+    public bool AlwaysRecurseDepth0 { get; set; } = true;
 
     protected interface IIterationItem
     {
@@ -68,7 +69,6 @@ public class ComponentIterator : IIterator<ICplxContent>
         }
     }
 
-
     protected virtual bool ShouldRecurse(IIterationItem iterationTarget)
     {
         if (iterationTarget is IterationItem_ComponentGroup group)
@@ -79,7 +79,7 @@ public class ComponentIterator : IIterator<ICplxContent>
             // Test wether we should recurse inside this component's subcomponents
             var stopRecurseAttrib = mainComponent.Instance.PartType.GetCustomAttribute(typeof(CplxHideContentsAttribute));
             bool mayRecursePastThis =
-                location.Depth == 0 || // Always recurse the first iteration (root node), no mater the recursion condition
+                (location.Depth == 0 && AlwaysRecurseDepth0) || // Always recurse the first iteration (root node), no mater the recursion condition
                 (
                     stopRecurseAttrib == null && // CplxHideContentsAttribute must not be present
                     (RecursionCondition == null || RecursionCondition(mainComponent, location))
