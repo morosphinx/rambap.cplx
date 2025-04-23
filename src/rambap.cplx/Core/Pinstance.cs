@@ -1,6 +1,5 @@
 ﻿using System.Reflection;
 using rambap.cplx.Attributes;
-using rambap.cplx.PartProperties;
 using static rambap.cplx.Core.Support;
 
 namespace rambap.cplx.Core;
@@ -37,6 +36,38 @@ public class Component
             return CN;
         else
             return Parent!.CID() + separator + CN;
+    }
+
+    /// <summary>
+    /// Bubble to the topmost component, creating a stack of components with the root-most on top
+    /// </summary>
+    private Stack<Component> GetHierarchy()
+    {
+        Stack<Component> hierarchy = new();
+        var currentComponent = this;
+        do
+        {
+            hierarchy.Push(currentComponent);
+            currentComponent = currentComponent?.Parent?.Parent;
+        } while (currentComponent != null);
+        return hierarchy;
+    }
+
+    /// <summary>
+    /// Return the CID of the current component, removing all identifier not in the documentation perimeter from the CID
+    /// </summary>
+    public string CID(DocumentationPerimeter perimeter, string separator = Core.CID.Separator)
+    {
+        var hierarchy = GetHierarchy();
+        var currentComponent = hierarchy.Pop();
+        var CID = currentComponent.CN;
+        while (hierarchy.Count > 0
+            && perimeter.ShouldThisComponentInternalsBeSeen(currentComponent))
+        {
+            currentComponent = hierarchy.Pop();
+            CID += separator + currentComponent.CN;
+        }
+        return CID;
     }
 
     /// <summary>

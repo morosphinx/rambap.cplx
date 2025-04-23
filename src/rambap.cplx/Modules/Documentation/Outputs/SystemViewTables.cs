@@ -1,5 +1,6 @@
 ﻿using rambap.cplx.Modules.Base.Output;
 using rambap.cplx.Export.Tables;
+using rambap.cplx.Core;
 
 namespace rambap.cplx.Modules.Documentation.Outputs;
 
@@ -33,13 +34,13 @@ public static class SystemViewTables
            ],
        };
 
-    public static TableProducer<ICplxContent> ComponentInventory(bool recurse = true)
+    public static TableProducer<ICplxContent> ComponentInventory(DocumentationPerimeter? perimeter = null)
         => new()
         {
             Iterator = new PartTypesIterator<object>()
             {
                 WriteBranches = true,
-                RecursionCondition = (c,l) => recurse,
+                DocumentationPerimeter = perimeter ?? new(),
             },
             Columns = [
                 CommonColumns.LineTypeNumber(),

@@ -16,7 +16,7 @@ public class TestPartTypesIterator
     {
         var iterator = new PartTypesIterator<object>()
         {
-            RecursionCondition = (c, l) => recursive,
+            DocumentationPerimeter = new DocumentationPerimeter_WithInclusion() { InclusionCondition = c => recursive },
             WriteBranches = writeBranches,
         };
 

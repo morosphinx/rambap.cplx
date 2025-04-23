@@ -25,7 +25,7 @@ public class ComponentIterator : IIterator<ICplxContent>
     /// Define when to recurse on components (will return properties items and subcomponents items) and when not to (will only return the component item)
     /// If null, always recurse
     /// </summary>
-    public Func<Component, RecursionLocation, bool>? RecursionCondition { private get; init; }
+    public DocumentationPerimeter DocumentationPerimeter { private get; init; } = new();
     public bool AlwaysRecurseDepth0 { get; set; } = true;
 
     protected interface IIterationItem
@@ -76,14 +76,9 @@ public class ComponentIterator : IIterator<ICplxContent>
             var mainComponent = group.MainComponent;
             var location = group.Location;
 
-            // Test wether we should recurse inside this component's subcomponents
-            var stopRecurseAttrib = mainComponent.Instance.PartType.GetCustomAttribute(typeof(CplxHideContentsAttribute));
             bool mayRecursePastThis =
                 (location.Depth == 0 && AlwaysRecurseDepth0) || // Always recurse the first iteration (root node), no mater the recursion condition
-                (
-                    stopRecurseAttrib == null && // CplxHideContentsAttribute must not be present
-                    (RecursionCondition == null || RecursionCondition(mainComponent, location))
-                );
+                DocumentationPerimeter.ShouldThisComponentInternalsBeSeen(mainComponent) ;
             return mayRecursePastThis;
         }
         else
@@ -128,6 +123,9 @@ public class ComponentIterator : IIterator<ICplxContent>
 
     public IEnumerable<ICplxContent> MakeContent(Component rootComponent)
     {
+        // Set the current documentation pertimeter params
+        DocumentationPerimeter.CurrentRootPartType = rootComponent.Instance.PartType;
+
         // Generate the contents and subcontent for the group of components
         // The group of components must all be of same PN at the same location
         IEnumerable<ICplxContent> Recurse(IIterationItem currentItem, bool tagLevelEnd)

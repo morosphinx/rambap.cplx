@@ -18,7 +18,7 @@ public class PartTypesIterator<P> : IIterator<ICplxContent>
     /// Define when to recurse on components (will return properties items and subcomponents items) and when not to (will only return the component item)
     /// If null, always recurse
     /// </summary>
-    public Func<Component, RecursionLocation, bool>? RecursionCondition { private get; init; }
+    public DocumentationPerimeter DocumentationPerimeter { private get; init; } = new();
 
     /// <summary>
     /// Define a final level of iteration on of parts that return properties
@@ -41,7 +41,7 @@ public class PartTypesIterator<P> : IIterator<ICplxContent>
         var ComponentTable = new ComponentIterator()
         {
             WriteBranches = true, // We want information about all tree components
-            RecursionCondition = RecursionCondition,
+            DocumentationPerimeter = DocumentationPerimeter,
             AlwaysRecurseDepth0 = false
             // No property iteration when iterating the component tree
             // => Will return only LeafComponent or BranchComponent

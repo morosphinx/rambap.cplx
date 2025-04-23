@@ -74,7 +74,7 @@ public class ConnectivityTables
         }
     }
 
-    public static TableProducer<ICplxContent> ConnectionTable(bool recurse = true)
+    public static TableProducer<ICplxContent> ConnectionTable(DocumentationPerimeter? perimeter = null)
         => new TableProducer<ICplxContent>()
         {
             Iterator = new ComponentPropertyIterator<ConnectionTableProperty>()
@@ -82,7 +82,7 @@ public class ConnectivityTables
                 PropertyIterator = c => GetConnectivityTableProperties(
                     c, ConnectionKind.Assembly),
                 WriteBranches = false,
-                RecursionCondition = (c, l) => recurse,
+                DocumentationPerimeter = perimeter ?? new(),
             },
             ContentTransform = cs => cs.Where(c => c is not IPureComponentContent),
             Columns = [
@@ -103,7 +103,7 @@ public class ConnectivityTables
                 ]
         };
 
-    public static TableProducer<ICplxContent> WiringTable(bool recurse = true)
+    public static TableProducer<ICplxContent> WiringTable(DocumentationPerimeter? perimeter = null)
         => new TableProducer<ICplxContent>()
         {
             Iterator = new ComponentPropertyIterator<ConnectionTableProperty>()
@@ -111,7 +111,7 @@ public class ConnectivityTables
                 PropertyIterator = c => GetConnectivityTableProperties(
                     c, ConnectionKind.Wiring),
                 WriteBranches = false,
-                RecursionCondition = (c,l) => recurse,
+                DocumentationPerimeter = perimeter ?? new(),
             },
             ContentTransform = cs => cs.Where(c => c is not IPureComponentContent),
             Columns = [
@@ -162,7 +162,10 @@ public class ConnectivityTables
             {
                 PropertyIterator = SelectPublicTopmostConnectors,
                 PropertySubIterator = SelectConnectorSubs,
-                RecursionCondition = (c, l) => c.IsPublic,
+                DocumentationPerimeter = new DocumentationPerimeter_WithInclusion()
+                {
+                    InclusionCondition = c => c.IsPublic
+                },
                 WriteBranches = true,
                 GroupPNsAtSameLocation = false,
                 StackPropertiesSingleChildBranches = false,

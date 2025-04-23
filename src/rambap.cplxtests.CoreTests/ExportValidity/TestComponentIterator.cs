@@ -12,7 +12,7 @@ public class TestComponentIterator
     {
         var iterator = new ComponentIterator()
         {
-            RecursionCondition = (c, l) => recursive,
+            DocumentationPerimeter = new DocumentationPerimeter_WithInclusion() { InclusionCondition = c => recursive },
             WriteBranches = writeBranches,
             GroupPNsAtSameLocation = groupAtSameLocation,
         };

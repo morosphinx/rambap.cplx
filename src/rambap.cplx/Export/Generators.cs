@@ -209,7 +209,10 @@ public class FlattenedDocumentationTreeGenerator : IGenerator
     {
         var partTree= new PartTypesIterator<object>()
         {
-            RecursionCondition = (c, l) => this.SubComponentInclusionCondition?.Invoke(c) ?? false
+            DocumentationPerimeter = new DocumentationPerimeter_WithInclusion()
+            {
+                InclusionCondition = c => SubComponentInclusionCondition?.Invoke(c) ?? false
+            },
         };
         var content = partTree.MakeContent(rootComponent);
         var partFolders = content.Select(c => c.Component)

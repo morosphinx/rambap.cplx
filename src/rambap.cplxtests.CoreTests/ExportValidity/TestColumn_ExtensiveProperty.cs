@@ -52,7 +52,7 @@ public abstract class TestColumn_ExtensiveProperty<PART,ITER>
         => TestSumCoherence_Iterator(
             new ComponentPropertyIterator<ITER>()
             {
-                RecursionCondition = (c, l) => recursive,
+                DocumentationPerimeter = new DocumentationPerimeter_WithInclusion() { InclusionCondition = c => recursive},
                 WriteBranches = writeBranches,
                 PropertyIterator = PropertyIterator,
                 GroupPNsAtSameLocation = groupPNsAtSameLocation,
@@ -62,7 +62,7 @@ public abstract class TestColumn_ExtensiveProperty<PART,ITER>
         => TestSumCoherence_Iterator(
             new PartTypesIterator<ITER>()
             {
-                RecursionCondition = (c, l) => recursive,
+                DocumentationPerimeter = new DocumentationPerimeter_WithInclusion() { InclusionCondition = c => recursive },
                 WriteBranches = writeBranches,
                 PropertyIterator = PropertyIterator,
             });

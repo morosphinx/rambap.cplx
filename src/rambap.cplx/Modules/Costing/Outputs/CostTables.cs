@@ -1,6 +1,7 @@
 ﻿using rambap.cplx.Modules.Base.Output;
 using rambap.cplx.Modules.Documentation.Outputs;
 using rambap.cplx.Export.Tables;
+using rambap.cplx.Core;
 
 namespace rambap.cplx.Modules.Costing.Outputs;
 
@@ -32,13 +33,13 @@ public static class CostTables
     /// </summary>
     /// <param name="recurse">If true, the entire component tree is returned. <br/>
     /// If false, only the immediate components are returned.</param>
-    public static TableProducer<ICplxContent> BillOfMaterial(bool recurse = true)
+    public static TableProducer<ICplxContent> BillOfMaterial(DocumentationPerimeter? perimeter = null)
         => new()
         {
             Iterator = new PartTypesIterator<InstanceCost.NativeCostInfo>()
             {
                 WriteBranches = false,
-                RecursionCondition = recurse ? null : (c, l) => false, // null = always recurse
+                DocumentationPerimeter = perimeter ?? new(),
                 PropertyIterator = ListCostOr0
             },
             Columns = [
