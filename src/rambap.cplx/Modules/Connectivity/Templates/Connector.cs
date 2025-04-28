@@ -6,6 +6,10 @@ using System.Collections.ObjectModel;
 
 namespace rambap.cplx.Modules.Connectivity.Templates;
 
+/// <summary>
+/// Template part defining a basic
+/// <see href="https://en.wikipedia.org/wiki/Electrical_connector">electrical connector</see>
+/// </summary>
 public abstract class Connector : Part, IPartConnectable, ISingleMateable
 {
     // ISingleMateablePart contract implementation
@@ -21,6 +25,12 @@ public abstract class Connector : Part, IPartConnectable, ISingleMateable
     ReadOnlyCollection<WireablePort> WireablePorts { get; set; }
 
 #pragma warning disable CS8618
+    protected Connector(int pinCount, Func<Pin> pinMake)
+        : this(Enumerable.Range(1, pinCount).Select(i => ($"{i}",pinMake()))) { }
+    // TODO : Doc, is from 1-indexed port
+    protected Connector(int pinCount, Func<int, (string, Pin)> pinMake)
+        : this(Enumerable.Range(1, pinCount).Select(i => pinMake(i))) { }
+
     protected Connector(IEnumerable<(string,Pin)> pinAndNames)
     {
         PinParts = pinAndNames.Select(t => t.Item2).ToList().AsReadOnly();
@@ -68,6 +78,10 @@ public abstract class Connector : Part, IPartConnectable, ISingleMateable
     }
 }
 
+/// <summary>
+/// Template part for an electrical connector w
+/// </summary>
+/// <typeparam name="T"></typeparam>
 public abstract class Connector<T> : Connector, IPartConnectable, ISingleMateable
     where T : Pin, new()
 {
