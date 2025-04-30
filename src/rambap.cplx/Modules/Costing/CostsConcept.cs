@@ -35,7 +35,7 @@ public class InstanceCost : IInstanceConceptProperty
         if (AvailableOffers.Count() == 0) return 0; // Part may not use supplier, it's ok to not have any offer defined
         else if (selectedOffer == null)
             throw new InvalidOperationException($"Offers are avaiable for this part but none has been selected");
-        else return SelectedOffer!.UnitPrice;
+        else return SelectedOffer!.Price.UnitPrice;
     }
 
     public required decimal Native { get; init; }
@@ -58,8 +58,17 @@ internal class CostsConcept : IConcept<InstanceCost>
             (c, i) => nativeCosts.Add(new(i.Name, c))
             );
 
-        List<SupplierOffer> offers = [];
-        ScanObjectContentFor<SupplierOffer>(template, (c, i) => offers.Add(c));
+        List<(string propName, Offer offer)> offers = [];
+        ScanObjectContentFor<Offer>(template, (c, i) => offers.Add((i.Name, c)));
+
+        List<SupplierOffer> supplierOffers = offers.Select(
+            o => new SupplierOffer()
+            {
+                Supplier = o.offer.Supplier ?? o.propName,
+                SKU = o.offer.SKU ?? instance.PN,
+                Link = o.offer.Link,
+                Price = o.offer.Price,
+            }).ToList();
 
         bool anyComponentHasACost = subcomponents.Where(c => c.Instance.Cost() != null).Any();
         bool hasNativeCosts = nativeCosts.Count() > 0;
@@ -72,8 +81,8 @@ internal class CostsConcept : IConcept<InstanceCost>
         return new InstanceCost()
         {
             NativeCosts = nativeCosts.AsReadOnly(),
-            AvailableOffers = offers,
-            SelectedOffer = offers.FirstOrDefault(),
+            AvailableOffers = supplierOffers,
+            SelectedOffer = supplierOffers.FirstOrDefault(),
             Native = totalnativeCost,
             Composed = composedCost
         };

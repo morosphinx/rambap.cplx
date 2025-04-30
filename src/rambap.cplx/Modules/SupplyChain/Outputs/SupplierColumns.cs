@@ -10,7 +10,7 @@ public static class SupplierColumns
             i => i.Component.Instance.Cost()?.SelectedOffer?.Supplier.Company.Name ?? "");
     public static DelegateColumn<ICplxContent> SupplierPN() =>
         new DelegateColumn<ICplxContent>("SupplierPN", ColumnTypeHint.StringFormatable,
-            i => i.Component.Instance.Cost()?.SelectedOffer?.SupplierSKU ?? "");
+            i => i.Component.Instance.Cost()?.SelectedOffer?.SKU ?? "");
     public static DelegateColumn<ICplxContent> SupplierLink() =>
         new DelegateColumn<ICplxContent>("SupplierLink", ColumnTypeHint.StringFormatable,
             i => i.Component.Instance.Cost()?.SelectedOffer?.Link ?? "");

@@ -11,7 +11,7 @@ namespace rambap.cplx.PartProperties;
 /// </param>
 public record Cost(decimal Price, string Currency = "")
 {
-    public static implicit operator Cost(decimal price) => new (price);
-    public static implicit operator Cost(double price) => new ((decimal) price);
-    public static implicit operator Cost(int price) => new (price);
+    public static implicit operator Cost(decimal price) => new (price, "");
+    public static implicit operator Cost(double price) => new ((decimal) price, "");
+    public static implicit operator Cost(int price) => new (price, "");
 }

@@ -6,6 +6,7 @@ using static rambap.cplx.Modules.Documentation.InstanceDocumentation;
 using static rambap.cplx.Core.Support;
 using rambap.cplx.PartInterfaces;
 using rambap.cplx.Export;
+using rambap.cplx.Modules.Costing;
 
 namespace rambap.cplx.Modules.Documentation;
 

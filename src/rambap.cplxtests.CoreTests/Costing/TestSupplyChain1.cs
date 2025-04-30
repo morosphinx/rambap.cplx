@@ -1,22 +1,18 @@
 ﻿using rambap.cplx;
+using rambap.cplx.Modules.Costing;
 
 namespace rambap.cplxtests.CoreTests.Costing;
 
 internal class PartWithSupplier1 : Part
 {
-    SupplierOffer Offer1 = new()
+    Offer RS = new()
     {
-        Cost = 45,
-        Supplier = "RS",
+        Price = 45,
+        SKU = "456-789",
         Link = "www.rs.com",
     };
-
-    SupplierOffer UnselectedOffer = new()
-    {
-        Cost = 52,
-        Supplier = "RP",
-        Link = "www.rp.com",
-    };
+    
+    Offer RP = 52;
 
     Cost handling = 10; // Offers replace costs, should be ignored
 

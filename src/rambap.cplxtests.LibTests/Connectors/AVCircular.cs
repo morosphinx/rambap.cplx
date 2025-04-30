@@ -1,11 +1,11 @@
 ﻿using rambap.cplx.Modules.Connectivity.Templates;
 
-using static rambap.cplxtests.LibTests.AVCircular.ShellSize;
-using static rambap.cplxtests.LibTests.AVCircular.ContactSize;
-using static rambap.cplxtests.LibTests.AVCircular.Layout;
-using static rambap.cplxtests.LibTests.AVCircular.InsertNumberingScheme;
+using static rambap.cplxtests.LibTests.Connectors.AVCircular.ShellSize;
+using static rambap.cplxtests.LibTests.Connectors.AVCircular.ContactSize;
+using static rambap.cplxtests.LibTests.Connectors.AVCircular.Layout;
+using static rambap.cplxtests.LibTests.Connectors.AVCircular.InsertNumberingScheme;
 
-namespace rambap.cplxtests.LibTests;
+namespace rambap.cplxtests.LibTests.Connectors;
 
 /// <summary>
 /// A fake, abstract avionic circular series of connector with removable contact <br/>

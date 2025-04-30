@@ -1,11 +1,12 @@
 ﻿using rambap.cplx.Core;
+using rambap.cplx.Modules.Costing;
 using rambap.cplx.PartProperties;
 
 namespace rambap.cplx.Modules.SupplyChain.WorldModel;
 
 public abstract class QuotationItems
 {
-    internal abstract void TryApplyTo(Component component, Supplier supplier, TimeSpan deliveryDelay);
+    internal abstract void TryApplyTo(Component component, Supplier supplier);
 }
 
 public class QuotationItem<P> : QuotationItems
@@ -15,13 +16,9 @@ public class QuotationItem<P> : QuotationItems
     /// <summary>
     /// Supplier stock keeping unit, if null or empty, the part PN is assumed to be the SKU
     /// </summary>
-    public string? SupplierSKU { get; init; }
-    public uint Amount { get; init; } = 1;
-    public required Cost Cost { get; init; }
-    public Cost UnitPrice => Cost.Price / Amount;
-
+    public string? SKU { get; init; }
     public string? Link { get; init; }
-
+    public required PriceTag Price { get; init; }
 
     private bool CanApplyTo(Component component)
     {
@@ -29,7 +26,7 @@ public class QuotationItem<P> : QuotationItems
         // with a parametered constructor
         return component.Instance.PartType == typeof(P); 
     }
-    internal override void TryApplyTo(Component component, Supplier supplier, TimeSpan deliveryDelay)
+    internal override void TryApplyTo(Component component, Supplier supplier)
     {
         if (CanApplyTo(component))
         {
@@ -37,11 +34,9 @@ public class QuotationItem<P> : QuotationItems
                 new SupplierOffer
                 {
                     Supplier = supplier,
-                    Amount = Amount,
-                    Cost = Cost,
-                    SupplierSKU = SupplierSKU,
-                    DeliveryDelay = deliveryDelay,
+                    SKU = SKU ?? component.PN,
                     Link = Link,
+                    Price = Price,
                 });
         }
     }
@@ -50,8 +45,6 @@ public class QuotationItem<P> : QuotationItems
 public class Quotation
 {
     public required Supplier Supplier { get; init; }
-    public TimeSpan DeliveryDelay { get; init; }
-
 
     public required List<QuotationItems> Items { get; init; } = new() ;
 
@@ -59,7 +52,7 @@ public class Quotation
     {
         foreach(var item in Items)
         {
-            item.TryApplyTo(component, Supplier, DeliveryDelay);
+            item.TryApplyTo(component, Supplier);
         }
         foreach(var subcomponent in component.SubComponents)
         {

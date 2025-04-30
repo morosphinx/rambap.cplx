@@ -1,9 +1,9 @@
 ﻿using rambap.cplx.Modules.Connectivity.Templates;
 
-using static rambap.cplxtests.LibTests.DSub.ContactType;
-using static rambap.cplxtests.LibTests.DSub.ContactCounts;
+using static rambap.cplxtests.LibTests.Connectors.DSub.ContactType;
+using static rambap.cplxtests.LibTests.Connectors.DSub.ContactCounts;
 
-namespace rambap.cplxtests.LibTests; 
+namespace rambap.cplxtests.LibTests.Connectors; 
 
 /// <summary>
 /// A fake, abstract DSub series of connector <br/>
@@ -28,8 +28,8 @@ public static class DSub
     public static Pin GetPin(ContactType type, bool removable)
         => type switch
         { 
-            ContactType.Male => removable ? new RemContactM() : new NonremContactM(),
-            ContactType.Female => removable ? new RemContactF() : new NonremContactF(),
+            Male => removable ? new RemContactM() : new NonremContactM(),
+            Female => removable ? new RemContactF() : new NonremContactF(),
             _ => throw new NotSupportedException()
         };
 
