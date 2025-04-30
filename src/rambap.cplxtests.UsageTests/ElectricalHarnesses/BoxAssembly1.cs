@@ -1,11 +1,6 @@
-﻿namespace rambap.cplxtests.UsageTests.ElectricalHarnesses;
+﻿using rambap.cplx.Modules.Connectivity;
 
-using DocumentFormat.OpenXml.Packaging;
-using rambap.cplx.Export.Text;
-using rambap.cplx.Modules.Connectivity;
-using rambap.cplx.Modules.Connectivity.PinstanceModel;
-using rambap.cplx.Modules.Connectivity.Templates;
-
+namespace rambap.cplxtests.UsageTests.ElectricalHarnesses;
 class BoxAssembly1 : Part, IPartConnectable
 {
     InternalHarness1 U01, U02;

@@ -10,9 +10,6 @@ public class UnitTests
     {
         var p = new BoxAssembly1();
         var c = p.Instantiate();
-
-        // IInstruction WiringDescription = new WiringDescriptionGenerator<RackConnected1>(
-        //     p, r => r.J11, r.J12);
         var generator = GetDemoGenerator_AllProdocs();
         generator.Do(c, "C:\\TestFolder\\ElectricalHarnesses");
     }
@@ -21,11 +18,23 @@ public class UnitTests
     {
         var p = new InternalHarness1();
         var c = p.Instantiate();
-
-        // IInstruction WiringDescription = new WiringDescriptionGenerator<RackConnected1>(
-        //     p, r => r.J11, r.J12);
         var generator = GetDemoGenerator_AllProdocs();
         generator.Do(c, "C:\\TestFolder\\ElectricalHarnesses");
     }
-
+    [TestMethod]
+    public void TestGeneration_BoxAssembly2_Prodocs()
+    {
+        var p = new BoxAssembly2();
+        var c = p.Instantiate();
+        var generator = GetDemoGenerator_AllProdocs();
+        generator.Do(c, "C:\\TestFolder\\ElectricalHarnesses");
+    }
+    [TestMethod]
+    public void TestGeneration_InternalHarness2_Prodocs()
+    {
+        var p = new InternalHarness2();
+        var c = p.Instantiate();
+        var generator = GetDemoGenerator_AllProdocs();
+        generator.Do(c, "C:\\TestFolder\\ElectricalHarnesses");
+    }
 }

@@ -23,6 +23,7 @@
   <ItemGroup>
     <ProjectReference Include="..\rambap.cplx.Export.Prodocs\rambap.cplx.Export.Prodocs.csproj" />
     <ProjectReference Include="..\rambap.cplx.Export.Spreadsheet\rambap.cplx.Export.Spreadsheet.csproj" />
+    <ProjectReference Include="..\rambap.cplxtests.LibTests\rambap.cplxtests.LibTests.csproj" />
     <ProjectReference Include="..\rambap.cplx\rambap.cplx.csproj" />
   </ItemGroup>
 

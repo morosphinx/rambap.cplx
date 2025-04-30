@@ -1,5 +1,6 @@
 ﻿using rambap.cplx.Core;
 using rambap.cplx.Modules.SupplyChain.WorldModel;
+using rambap.cplx.PartProperties;
 using static rambap.cplx.Core.Support;
 
 namespace rambap.cplx.Modules.SupplyChain;

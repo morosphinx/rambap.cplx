@@ -5,7 +5,11 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
   </PropertyGroup>
-
+  
+  <PropertyGroup>
+    <NoWarn>$(NoWarn);1701;1702;CS8618;CS0169,CS0649</NoWarn>
+  </PropertyGroup>
+  
   <ItemGroup>
     <ProjectReference Include="..\rambap.cplx\rambap.cplx.csproj" />
   </ItemGroup>

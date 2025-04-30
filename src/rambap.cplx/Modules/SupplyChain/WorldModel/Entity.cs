@@ -8,7 +8,7 @@ public abstract class Entity
 /// <summary>
 /// Helper class that serves as a placeholder during part construction to specify an Entity by string
 /// </summary>
-internal sealed class StringTypedEntiryKey : Entity
+internal sealed class StringTypedEntityKey : Entity
 {
     public override required string Name { get; init; }
 }

@@ -6,5 +6,5 @@ public sealed class Supplier
 
     public static implicit operator Supplier(Entity company) => new Supplier() { Company = company };
 
-    public static implicit operator Supplier(string name) => new StringTypedEntiryKey() { Name = name };
+    public static implicit operator Supplier(string name) => new StringTypedEntityKey() { Name = name };
 }
