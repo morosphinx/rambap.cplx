@@ -11,13 +11,13 @@ class Exemple4_Programatic : Part
 
 class OctopusNthDegree : Part
 {
-
+    List<OctopusLeg> Legs = new ();
     public OctopusNthDegree(int legcount)
     {
         this.PN = $"OctopusNthDegree{legcount}";
         for(int i = 0; i < legcount; i++)
         {
-            AdditionalComponents.Add(new OctopusLeg() { CN = $"Leg{i}"});
+            Legs.Add(new OctopusLeg() { CN = $"Leg{i}"});
         }
     }
 }

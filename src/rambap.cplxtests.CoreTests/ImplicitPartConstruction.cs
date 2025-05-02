@@ -94,6 +94,8 @@ public class ImplicitPartConstruction
         public List<MidLvlPart> MidParts_constructed_field;
         public List<MidLvlPart> MidParts_constructed_property;
 
+        public List<Part> AdditionalComponents = new();
+
         public TopLvlPart_ListMode()
         {
             MidParts_constructed_field = [new MidLvlPart(), new MidLvlPart()];

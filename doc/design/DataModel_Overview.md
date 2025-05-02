@@ -18,7 +18,7 @@ TODO : Diagram here, a component inside the same part
 ```
 
 ## Properties 
-Parts have properties. Properties of the part and its components are used by [**Concepts**](2_DataConcepts) to calculate the overall properties of each part instance. These instances properties are then used to generate documentation.
+Parts have properties. Properties of the part and its components are used by [**Concepts**](DataModel_TheConceptsModules.md) to calculate the overall properties of each part instance. These instances properties are then used to generate documentation.
 
 ```
 TODO : Diagram here, a component inside the same part

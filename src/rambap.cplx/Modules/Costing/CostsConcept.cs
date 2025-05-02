@@ -42,10 +42,12 @@ public class InstanceCost : IInstanceConceptProperty
     public required decimal Composed { get; init; }
 
     public static bool SupplierCostIsReplacement { get; set; } = true;
-    public decimal Total =>
-        AvailableOffers.Count() > 0 && SupplierCostIsReplacement // There ar offer, and we are using offers only
-        ? SupplierPrice().Price // Only the offer Price
-        : Native + Composed + SupplierPrice().Price;
+    
+    /// <summary>
+    /// Return the total cost of this PInstance, that is, the selected supplier offer,
+    /// plus its other Costs and the Total Cost of its components
+    /// </summary>
+    public decimal Total =>  Native + Composed + SupplierPrice().Price;
 }
 
 internal class CostsConcept : IConcept<InstanceCost>

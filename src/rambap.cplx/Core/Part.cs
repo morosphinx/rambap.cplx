@@ -81,26 +81,12 @@ public partial class Part
     /// </remarks>
     public string CommonName { get; init; } = "";
 
-
     /// <summary>
     /// Overide of the default CN of this part when used as a component <br/>
     /// This take priority over <see cref="RenameAttribute"/>
     /// </summary>
     public string? CN { init => CNOverride = value; }
     internal string? CNOverride { get; private set; } = null;
-
-    /// <summary>
-    /// List of component that can be completed by a part constructor to implement custom logic<br/>
-    /// IF YOU USE THIS, YOU NEED TO DEFINE A UNIQUE PN USING THE PN PROPERTY
-    /// </summary>
-    protected List<Part> AdditionalComponents { get; } = [];
-
-    /// <summary>
-    /// If True, this part has been modified in his constructor, and should have a unique PN to reflect this
-    /// </summary>
-    internal bool RequirePNOverride
-        => AdditionalComponents.Count > 0;
-
 
     /// <summary>
     /// TODO : Usage ?

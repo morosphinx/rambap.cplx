@@ -14,9 +14,9 @@ internal class PartWithSupplier1 : Part
     
     Offer RP = 52;
 
-    Cost handling = 10; // Offers replace costs, should be ignored
+    Cost handling = 10; // Cost are Additional to the selected offer
 
-    public static decimal ExpectedCost = 45 ; 
+    public static decimal ExpectedCost = 55 ; 
 }
 
 [TestClass]
