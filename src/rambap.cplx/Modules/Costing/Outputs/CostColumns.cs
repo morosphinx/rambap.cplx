@@ -59,4 +59,14 @@ public static class CostColumns
             }
         };
 
+    public static DelegateColumn<ICplxContent> SelectedOfferSupplier()
+        => new DelegateColumn<ICplxContent>("Supplier", ColumnTypeHint.StringFormatable,
+            i => i.Component.Instance.Cost()?.SelectedOffer?.Supplier.Company.Name ?? "" );
+    public static DelegateColumn<ICplxContent> SelectedOfferSKU()
+        => new DelegateColumn<ICplxContent>("SKU", ColumnTypeHint.StringFormatable,
+            i => i.Component.Instance.Cost()?.SelectedOffer?.SKU ?? "");
+    public static DelegateColumn<ICplxContent> SelectedOfferLink()
+    => new DelegateColumn<ICplxContent>("Supplier Link", ColumnTypeHint.StringFormatable,
+        i => i.Component.Instance.Cost()?.SelectedOffer?.Link ?? "");
+
 }

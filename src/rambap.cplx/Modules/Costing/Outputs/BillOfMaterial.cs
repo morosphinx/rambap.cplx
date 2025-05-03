@@ -2,6 +2,7 @@
 using rambap.cplx.Modules.Documentation.Outputs;
 using rambap.cplx.Export.Tables;
 using rambap.cplx.Core;
+using rambap.cplx.Modules.SupplyChain.Outputs;
 
 namespace rambap.cplx.Modules.Costing.Outputs;
 public static partial class CostTables
@@ -23,16 +24,17 @@ public static partial class CostTables
                 IDColumns.GroupCNs(),
                 CommonColumns.ComponentTotalCount(),
                 IDColumns.ComponentParentCNs(),
-                IDColumns.PartCommonName(),
-                // Or part description ?
+                IDColumns.PartCommonName(), // Or part description ?
+                // Manufacturer Info
                 CommonColumns.Dashes(""),
                 IDColumns.PartNumber(),
-                // Manufacturer
+                ManufacturerColumns.PartManufacturer(),
                 DescriptionColumns.PartLink(), //#TODO : do not reference another concept here
+                // Supplier info
                 CommonColumns.Dashes(""),
-                // Supplier (chosen)
-                // Supplier SKU
-                // Supplier Link
+                CostColumns.SelectedOfferSupplier(),
+                CostColumns.SelectedOfferSKU(),
+                CostColumns.SelectedOfferLink(),
             ],
         };
 }

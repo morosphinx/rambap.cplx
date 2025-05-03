@@ -71,17 +71,17 @@ CN          	PN              	Component description    	Part Description
 
 - Bill of materials
 
-| #|Component CNs                  |Count|Locs                   |Part Common Name||PN              |Link||
-|-:|-------------------------------|----:|-----------------------|----------------||----------------|----||
-| 1|*                              |    1|                       |                ||ServerAssembly  |    ||
-| 1|*                              |    1|                       |                ||ServerAssembly  |    ||
-| 2|CAB                            |    1|*                      |                ||ServerCabinet36U|    ||
-| 3|R01, R02                       |    2|*, *                   |                ||RackTypeA       |    ||
-| 3|R01, R02                       |    2|*, *                   |                ||RackTypeA       |    ||
-| 4|GPU01, GPU02, GPU01, GPU02, GPU|    5|R01, R01, R02, R02, R03|                ||RTX999          |    ||
-| 5|R03                            |    1|*                      |                ||RackTypeB       |    ||
-|-:|-------------------------------|----:|-----------------------|----------------||----------------|----||
-|  |                               |     |                       |                ||TOTAL           |    ||
+| #|Component CNs                  |Count|Locs                   |Part Common Name||PN              |Manufacturer|Link||Supplier|SKU|Supplier Link|
+|-:|-------------------------------|----:|-----------------------|----------------||----------------|------------|----||--------|---|-------------|
+| 1|*                              |    1|                       |                ||ServerAssembly  |            |    ||        |   |             |
+| 1|*                              |    1|                       |                ||ServerAssembly  |            |    ||        |   |             |
+| 2|CAB                            |    1|*                      |                ||ServerCabinet36U|            |    ||        |   |             |
+| 3|R01, R02                       |    2|*, *                   |                ||RackTypeA       |            |    ||        |   |             |
+| 3|R01, R02                       |    2|*, *                   |                ||RackTypeA       |            |    ||        |   |             |
+| 4|GPU01, GPU02, GPU01, GPU02, GPU|    5|R01, R01, R02, R02, R03|                ||RTX999          |            |    ||        |   |             |
+| 5|R03                            |    1|*                      |                ||RackTypeB       |            |    ||        |   |             |
+|-:|-------------------------------|----:|-----------------------|----------------||----------------|------------|----||--------|---|-------------|
+|  |                               |     |                       |                ||TOTAL           |            |    ||        |   |             |
 
 - Cost Breakdown
 
