@@ -14,7 +14,7 @@ public static class ICDColumns
             i => i switch
             {
                 IPureComponentContent c => c.Component.CN,
-                IPropertyContent<ICDTableProperty> p => p.Property.Port.GetUpperUsage().Owner.CN ?? "",
+                IPropertyContent<ICDTableProperty> p => p.Property.Port.GetUpperUsage().Owner.Parent.CN ?? "",
                 _ => throw new NotImplementedException(),
             });
 

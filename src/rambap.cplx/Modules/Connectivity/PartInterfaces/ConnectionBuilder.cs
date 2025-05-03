@@ -113,9 +113,9 @@ public class ConnectionBuilder : ConnectivityBuilder
         ContextPart.AssertIsOwnerOrParent(target);
         var connection = new StructuralConnection(source, target)
         {
-            LeftPortInstance = source.Owner!.ImplementingInstance,
-            RigthPortInstance = target.Owner!.ImplementingInstance,
-            DeclaringInstance = ContextInstance
+            LeftPortComponent = source.Owner!.ImplementingComponent!,
+            RigthPortComponent = target.Owner!.ImplementingComponent!,
+            DeclaringComponent = ContextInstance.Parent
         };
         StructuralConnections.Add(connection);
         return connection;
@@ -137,9 +137,9 @@ public class ConnectionBuilder : ConnectivityBuilder
         // TODO : Test here that both connector are compatible
         var connection = new Mate(connectorA, connectorB)
         {
-            LeftPortInstance = connectorA.Owner!.ImplementingInstance!,
-            RigthPortInstance = connectorB.Owner!.ImplementingInstance!,
-            DeclaringInstance = ContextInstance
+            LeftPortComponent = connectorA.Owner!.ImplementingComponent!,
+            RigthPortComponent = connectorB.Owner!.ImplementingComponent!,
+            DeclaringComponent = ContextInstance.Parent
         };
         Connections.Add(connection);
         return connection;
@@ -155,12 +155,10 @@ public class ConnectionBuilder : ConnectivityBuilder
     /// <returns></returns>
     public Cable CableWith(Part cablePart, ISingleMateable connectorA, ISingleMateable connectorB)
     {
-
-
         // 1 - Assert with contextInstance that cablePart is a component or subcomponent of this.
         ContextPart.AssertIsASubComponent(cablePart);
         // 2 - Find in the instance of this part
-        Pinstance i = cablePart.ImplementingInstance;
+        Pinstance i = cablePart.ImplementingComponent!.Instance;
         // 3 - Assert that the instance connector is a Cable
         if (i.Connectivity() == null)
             throw new InvalidOperationException($"{cablePart} is not a Connectable part");
@@ -189,12 +187,12 @@ public class ConnectionBuilder : ConnectivityBuilder
         Connections.Remove(leftMate);
         Connections.Remove(rigthMate);
 
-        var cableComponent = cablePart.ImplementingInstance!.Parent!;
+        var cableComponent = cablePart.ImplementingComponent!;
         var cable = new Cable(cableComponent, leftMate, rigthMate)
         {
-            LeftPortInstance = leftMate.LeftPortInstance,
-            RigthPortInstance = rigthMate.RigthPortInstance,
-            DeclaringInstance = ContextInstance
+            LeftPortComponent = leftMate.LeftPortComponent,
+            RigthPortComponent = rigthMate.RigthPortComponent,
+            DeclaringComponent = ContextInstance.Parent
         };
         Connections.Add(cable);
         return cable;
@@ -218,9 +216,9 @@ public class ConnectionBuilder : ConnectivityBuilder
         ContextPart.AssertIsOwnerOrParent(wireablePortB);
         var connection = new Wire(wireablePortA, wireablePortB)
         {
-            LeftPortInstance = wireablePortA.Owner!.ImplementingInstance!,
-            RigthPortInstance = wireablePortB.Owner!.ImplementingInstance!,
-            DeclaringInstance = ContextInstance
+            LeftPortComponent = wireablePortA.Owner!.ImplementingComponent!,
+            RigthPortComponent = wireablePortB.Owner!.ImplementingComponent!,
+            DeclaringComponent = ContextInstance.Parent
         };
         Wirings.Add(connection);
         return connection;
@@ -254,9 +252,9 @@ public class ConnectionBuilder : ConnectivityBuilder
             Wirings.Remove(c);
         var twist = new Twist(twistedCablings)
         {
-            LeftPortInstance = path.Item1.Owner!.ImplementingInstance!,
-            RigthPortInstance = path.Item2.Owner!.ImplementingInstance!,
-            DeclaringInstance = ContextInstance
+            LeftPortComponent = path.Item1.Owner!.ImplementingComponent!,
+            RigthPortComponent = path.Item2.Owner!.ImplementingComponent!,
+            DeclaringComponent = ContextInstance.Parent
         };
         Wirings.Add(twist);
         return twist;
@@ -271,9 +269,9 @@ public class ConnectionBuilder : ConnectivityBuilder
             Wirings.Remove(c);
         var twist = new Shield(twistedCablings)
         {
-            LeftPortInstance = path.Item1.Owner!.ImplementingInstance!,
-            RigthPortInstance = path.Item2.Owner!.ImplementingInstance!,
-            DeclaringInstance = ContextInstance
+            LeftPortComponent = path.Item1.Owner!.ImplementingComponent!,
+            RigthPortComponent = path.Item2.Owner!.ImplementingComponent!,
+            DeclaringComponent = ContextInstance.Parent
         };
         Wirings.Add(twist);
         return twist;

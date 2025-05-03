@@ -97,12 +97,12 @@ public partial class Part
     internal Part? Parent  = null;
 
     /// <summary>
-    /// Instance that implement this part.
+    /// Component that implement this part.
     /// Required during Instante Property construction by some concepts,
     /// Such as ones that declare relationship PartProperties, taking Part as Parameters
     /// </summary>
     [CplxIgnore]
-    internal Pinstance? ImplementingInstance { get; set; }
+    internal Component? ImplementingComponent { get; set; }
 
     /// <summary>
     /// Data dynamicaly filled by concepts for instantiation purposes <br/>
@@ -129,7 +129,7 @@ public partial class Part
     public Component Instantiate()
         => Instantiate(new PartConfiguration());
     public Component Instantiate(PartConfiguration partConfiguration)
-        => new Component(new Pinstance(this, partConfiguration))
+        => new Component(this, partConfiguration)
         {
             CN = "*",
             Comment = $"ROOT COMPONENT",

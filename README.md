@@ -71,17 +71,17 @@ CN          	PN              	Component description    	Part Description
 
 - Bill of materials
 
-| #|PN              |Part Description       |Cost Name|Unit Cost|Count|Total Cost|
-|-:|----------------|-----------------------|---------|--------:|----:|---------:|
-| 1|ServerAssembly  |                       |Cables   |   500.00|    1|    500.00|
-| 1|ServerAssembly  |                       |Switches |  1000.00|    1|   1000.00|
-| 2|ServerCabinet36U|19' Rack cabinet 36U   |Buy      |  2000.00|    1|   2000.00|
-| 3|RackTypeA       |                       |Other    |  4500.00|    2|   9000.00|
-| 3|RackTypeA       |                       |Assembly |   400.00|    2|    800.00|
-| 4|RTX999          |9nth Gen GPU ; 9Go DRAM|Buy      |   999.00|    5|   4995.00|
-| 5|RackTypeB       |                       |Other    |  3000.00|    1|   3000.00|
-|-:|----------------|-----------------------|---------|--------:|----:|---------:|
-|  |TOTAL           |                       |         |         |     |  21295.00|
+| #|Count|Part Common Name|PN              |
+|-:|----:|----------------|----------------|
+| 1|    1|                |ServerAssembly  |
+| 1|    1|                |ServerAssembly  |
+| 2|    1|                |ServerCabinet36U|
+| 3|    2|                |RackTypeA       |
+| 3|    2|                |RackTypeA       |
+| 4|    5|                |RTX999          |
+| 5|    1|                |RackTypeB       |
+|-:|----:|----------------|----------------|
+|  |     |                |TOTAL           |
 
 - Cost Breakdown
 

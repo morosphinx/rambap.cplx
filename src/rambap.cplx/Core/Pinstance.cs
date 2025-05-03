@@ -1,101 +1,11 @@
-﻿using System.Reflection;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Reflection;
 using rambap.cplx.Attributes;
-using static rambap.cplx.Core.Support;
 
 namespace rambap.cplx.Core;
 
 /// <summary>
-/// Instantiated Component
-/// </summary>
-public class Component
-{
-    internal Component(Pinstance instance)
-    {
-        Instance = instance;
-        Instance.Parent = this;
-    }
-
-    /// <summary>
-    /// Definition if this component 
-    /// </summary>
-    /// Rigth now, Pinstances are created as unique C# class instance, due to Parts also begin created
-    /// as unique instances of the Part class, even when reused identicaly in diferent contexts.
-    /// This is wastefull, and could one day be optimised to allow components to share Pinstance class instances.
-    /// Therefore a Component IS NOT a Pinstance itself, but point to one.
-    public Pinstance Instance { get; }
-    internal Pinstance? Parent { get; init; } = null;
-
-    /// <summary>
-    /// Component Number : Identifier of this component in its owner
-    /// </summary>
-    public required string CN { get; init; }
-
-    public string CID(string separator = Core.CID.Separator)
-    {
-        if (Parent == null)
-            return CN;
-        else
-            return Parent!.CID() + separator + CN;
-    }
-
-    /// <summary>
-    /// Bubble to the topmost component, creating a stack of components with the root-most on top
-    /// </summary>
-    private Stack<Component> GetHierarchy()
-    {
-        Stack<Component> hierarchy = new();
-        var currentComponent = this;
-        do
-        {
-            hierarchy.Push(currentComponent);
-            currentComponent = currentComponent?.Parent?.Parent;
-        } while (currentComponent != null);
-        return hierarchy;
-    }
-
-    /// <summary>
-    /// Return the CID of the current component, removing all identifier not in the documentation perimeter from the CID
-    /// </summary>
-    public string CID(DocumentationPerimeter perimeter, string separator = Core.CID.Separator)
-    {
-        var hierarchy = GetHierarchy();
-        var currentComponent = hierarchy.Pop();
-        var CID = currentComponent.CN;
-        while (hierarchy.Count > 0
-            && perimeter.ShouldThisComponentInternalsBeSeen(currentComponent))
-        {
-            currentComponent = hierarchy.Pop();
-            CID += separator + currentComponent.CN;
-        }
-        return CID;
-    }
-
-    /// <summary>
-    /// Comment relative to this component - eg : his purpose or usage in its owner
-    /// </summary>
-    public string Comment { get; init; } = "";
-
-    /// <summary>
-    /// True if this component is public or internal from this part : eg, it is visible from outside the containing Part,
-    /// and therefore may be condidered to be part or the public interface of the Part.
-    /// </summary>
-    public required bool IsPublic { get; init; }
-
-    /// <summary>
-    /// Wrapper for <see cref="Pinstance.PN"/> <br/>
-    /// <inheritdoc cref="Pinstance.PN"/> 
-    /// </summary>
-    public string PN => Instance.PN;
-
-
-    /// <summary>
-    /// Immediate sub-Components of this component. All are owned by this component.
-    /// </summary>
-    public IEnumerable<Component> SubComponents => Instance.subComponents;
-}
-
-/// <summary>
-/// Part Instance. The realisation of a Part, with calculated properties and relations. <br/>
+/// Part Instance. The realisation of a Part Type, with calculated properties <br/>
 /// This class is called <see cref="Pinstance"/> to avoid confusion with C# class instance.
 /// </summary>
 public class Pinstance
@@ -120,9 +30,9 @@ public class Pinstance
 
     /// <summary>
     /// C# Class type of the Part used to create this <see cref="Pinstance"/><br/>
-    /// <b>Two Instances sharing a same PartType are not necessary equal</b>. 
+    /// <b>Two Instances sharing a same PartType are not necessary equal</b>., <br/> 
+    /// In the case parametric parts, with a parametered constructor, and no subclassing.
     /// </summary>
-    /// This is because Part may be edited in their constructor.
     public Type PartType { get; private init; }
 
     /// <summary> List of calculated properties of this instance <br/>
@@ -130,35 +40,19 @@ public class Pinstance
     public IEnumerable<IInstanceConceptProperty> Properties => properties;
     private List<IInstanceConceptProperty> properties { get; } = new();
 
-    // TODO : Store the subComponent list on the component itself,
-    // TODO : Using this imply Pinstance instance are unique,
-    internal List<Component> subComponents { get; } = new(); 
-
     /// <summary>
-    /// Component, if any, where this instance is used
+    /// Component where this instance is used <br/>
+    /// May be changed to a list of Component in the future, if the component / instance unicity relation is broken for optimisation
     /// </summary>
-    /// TODO : Using this imply Pinstance instance are unique,
     public Component Parent { get; internal set; }
-    public string CN => Parent.CN ;
-    public string CID(string separator = Core.CID.Separator)
-        => Parent.CID(separator);
-
-    private static string MakeCommment(IEnumerable<ComponentDescriptionAttribute> commentAttributes)
-        => string.Join("", commentAttributes.Select(c => c.Text));
 
     /// <summary> Use <see cref="System.Reflection"/> to analyse <see cref="Part"/> types and produces <see cref="Pinstance"/> </summary>
     /// <param name="template">The instantiated Part</param>
     /// <param name="conf">Configuration used to decide the component to use when encountering <see cref="IAlternative"/>s </param>
-#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
-    internal Pinstance(Part template, PartConfiguration conf)
-    // Parent Property is set when constructing the Component containing class. TODO : clean in some way
-#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
+    internal Pinstance(Component parent, Part template, PartConfiguration conf)
     {
+        Parent = parent;
         PartType = template.GetType();
-        if (template.ImplementingInstance != null)
-            throw new InvalidOperationException("A Pinstance has already been created with this part");
-        template.ImplementingInstance = this;
-        template.CplxImplicitInitialization(); // run the implicit init on this part and all subparts
 
         // Select part PN
         var PNAttribute = template.GetType().GetCustomAttribute(typeof(PNAttribute)) as PNAttribute;
@@ -205,42 +99,10 @@ public class Pinstance
             Revision = template.Revision;// Template Revision value is used
         }
 
-
-        // Create components from Parts properties/fields
-        ScanObjectContentFor<Part>(template,
-            (p, i) =>
-                subComponents.Add(
-                new Component(new Pinstance(p, conf))
-                {
-                    CN = p.CNOverride ??
-                        (i.IsFromAndEnumerable ? $"{i.Name}_{i.IndexInEnumerable:00}" : i.Name),
-                    Comment = MakeCommment(i.Comments),
-                    IsPublic = i.IsPublicOrAssembly,
-                    Parent = this,
-                }),
-            ignoredDerivedTypes : [typeof(IAlternative)] // Avoid matching on alternative, who are IEnumerable<Part>
-            );
-
-        // Select and create components from Alternatives properties/fields
-        ScanObjectContentFor<IAlternative>(template,
-            (a, i) =>
-            {
-                var selectedPart = conf.Decide(a)!;
-                subComponents.Add(
-                new Component(new Pinstance(selectedPart, conf))
-                {
-                    CN = selectedPart.CNOverride ??
-                        (i.IsFromAndEnumerable ? $"{i.Name}_{i.IndexInEnumerable:00}" : i.Name),
-                    Comment = MakeCommment(i.Comments),
-                    IsPublic=i.IsPublicOrAssembly,
-                    Parent = this,
-                });
-            });
-
         // Calculate Concepts properties
         foreach (var concept in Globals.EvaluatedConcepts)
         {
-            var property = concept.MakeBase(this, subComponents, template);
+            var property = concept.MakeBase(this, parent.SubComponents, template);
             if (property != null) properties.Add(property);
         }
     }

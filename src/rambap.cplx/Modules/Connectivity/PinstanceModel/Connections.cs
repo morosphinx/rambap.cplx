@@ -5,9 +5,9 @@ namespace rambap.cplx.Modules.Connectivity.PinstanceModel;
 
 public abstract class SignalPortConnection
 {
-    public required Pinstance DeclaringInstance { get; init; }
-    public required Pinstance LeftPortInstance { get; init; }
-    public required Pinstance RigthPortInstance { get; init; }
+    public required Component DeclaringComponent { get; init; }
+    public required Component LeftPortComponent { get; init; }
+    public required Component RigthPortComponent { get; init; }
 
     public abstract Port LeftPort { get; }
     public abstract Port RightPort { get; }

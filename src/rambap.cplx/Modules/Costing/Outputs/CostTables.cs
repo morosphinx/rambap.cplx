@@ -5,7 +5,7 @@ using rambap.cplx.Core;
 
 namespace rambap.cplx.Modules.Costing.Outputs;
 
-public static class CostTables
+public static partial class CostTables
 {
     /// <summary>
     /// Enumerate the instance native costs, OR return a single 0 if there is no cost.
@@ -27,31 +27,6 @@ public static class CostTables
         else
             return [new InstanceCost.NativeCostInfo("", 0)];
     }
-
-    /// <summary>
-    /// Table listing the amount and cost of each part kind in the instance
-    /// </summary>
-    /// <param name="recurse">If true, the entire component tree is returned. <br/>
-    /// If false, only the immediate components are returned.</param>
-    public static TableProducer<ICplxContent> BillOfMaterial(DocumentationPerimeter? perimeter = null)
-        => new()
-        {
-            Iterator = new PartTypesIterator<InstanceCost.NativeCostInfo>()
-            {
-                WriteBranches = false,
-                DocumentationPerimeter = perimeter ?? new(),
-                PropertyIterator = ListCostOr0
-            },
-            Columns = [
-                CommonColumns.LineTypeNumber(),
-                IDColumns.PartNumber(),
-                DescriptionColumns.PartDescription(),
-                CostColumns.CostName(),
-                CostColumns.UnitCost(),
-                CommonColumns.ComponentTotalCount(),
-                CostColumns.TotalCost(),
-            ],
-        };
 
     /// <summary>
     /// Table detailing the amount and duration of each individual Cost of the instance.
