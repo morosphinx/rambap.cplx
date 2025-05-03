@@ -8,24 +8,21 @@ namespace rambap.cplx.Modules.Costing.Outputs;
 public static partial class CostTables
 {
     /// <summary>
-    /// Enumerate the instance native costs, OR return a single 0 if there is no cost.
-    /// Used to display costless part in bill of materials
-    /// We want to be aware if something cost 0.0 in those
+    /// Enumerate a component costs point, 
+    /// Optionaly, return a single 0 if there is no cost, in order to have display for all parts.
     /// </summary>
-    /// <param name="c"></param>
-    /// <returns></returns>
-    private static IEnumerable<InstanceCost.NativeCostInfo> ListCostOr0(Core.Component c)
+    private static IEnumerable<InstanceCost.CostPoint> EnumerateCostPoints(Core.Component c, bool havePlaceholder)
     {
         if (c.Instance.Cost() is not null and var cost)
         {
-            var nativeCosts = cost.NativeCosts;
-            if (nativeCosts.Count == 0)
-                return [new InstanceCost.NativeCostInfo("", 0)];
-            else
-                return nativeCosts;
+            var allCostPoints = cost.AllCostPoints();
+            if(allCostPoints.Any())
+                return allCostPoints;
         }
+        if (havePlaceholder)
+            return [new InstanceCost.NativeCost(0, "")];
         else
-            return [new InstanceCost.NativeCostInfo("", 0)];
+            return [];
     }
 
     /// <summary>
@@ -34,14 +31,14 @@ public static partial class CostTables
     public static TableProducer<ICplxContent> CostBreakdown()
         => new()
         {
-            Iterator = new ComponentPropertyIterator<InstanceCost.NativeCostInfo>()
+            Iterator = new ComponentPropertyIterator<InstanceCost.CostPoint>()
             {
-                PropertyIterator = (c) => c.Instance.Cost()?.NativeCosts.AsEnumerable() ?? [],
+                PropertyIterator = (c) => EnumerateCostPoints(c,false),
                 GroupPNsAtSameLocation = true,
                 StackPropertiesSingleChildBranches = true,
             },
             Columns = [
-                IDColumns.ComponentNumberPrettyTree<InstanceCost.NativeCostInfo>(pc => pc.Property.name),
+                IDColumns.ComponentNumberPrettyTree<InstanceCost.CostPoint>(pc => pc.Property.Name),
                 CostColumns.LocalSumCost(),
                 IDColumns.ComponentID(),
                 IDColumns.PartNumber(),

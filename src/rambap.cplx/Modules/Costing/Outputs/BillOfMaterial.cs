@@ -12,11 +12,11 @@ public static partial class CostTables
     public static TableProducer<ICplxContent> BillOfMaterial(DocumentationPerimeter? perimeter = null)
         => new()
         {
-            Iterator = new PartTypesIterator<InstanceCost.NativeCostInfo>()
+            Iterator = new PartTypesIterator<InstanceCost.CostPoint>()
             {
                 WriteBranches = false,
                 DocumentationPerimeter = perimeter ?? new(),
-                PropertyIterator = ListCostOr0
+                PropertyIterator = (c) => EnumerateCostPoints(c, true),
             },
             Columns = [
                 CommonColumns.LineTypeNumber(),

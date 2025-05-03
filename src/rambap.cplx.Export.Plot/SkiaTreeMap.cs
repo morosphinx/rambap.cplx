@@ -11,10 +11,10 @@ public class SkiaTreeMap : IInstruction
     private static List<(string CN, decimal cost)> ListNativeCosts(string CN, Component compo)
     {
         List<(string, decimal)> costs = new();
-        if (compo.Instance.Cost()?.Native > 0)
-            costs.Add(($"{CN}\n{compo.PN}", compo.Instance.Cost()?.Native ?? 0));
+        if (compo.Instance.Cost()?.NativeCostSum > 0)
+            costs.Add(($"{CN}\n{compo.PN}", compo.Instance.Cost()?.NativeCostSum ?? 0));
         foreach(var c in compo.SubComponents)
-            if(c.Instance.Cost()?.Total > 0)
+            if(c.Instance.Cost()?.TotalCost > 0)
                 costs.AddRange(ListNativeCosts(c.CN, compo));
         return costs;
     }

@@ -1,22 +1,54 @@
 ﻿using rambap.cplx.Core;
 using rambap.cplx.PartProperties;
 using System.Collections.ObjectModel;
+using System.Xml.Linq;
 using static rambap.cplx.Core.Support;
+using static rambap.cplx.Modules.Costing.InstanceCost;
 
 namespace rambap.cplx.Modules.Costing;
 
 
 public class InstanceCost : IInstanceConceptProperty
 {
-    public record NativeCostInfo(string name, Cost value);
+    public abstract record CostPoint
+    {
+        public abstract Cost Value { get; }
+        public abstract string Name { get; }
+    }
+    public sealed record NativeCost(Cost value, string name) : CostPoint
+    {
+        public override Cost Value { get; } = value;
+        public override string Name { get; } = name;
+    }
+    public sealed record OfferCost(SupplierOffer offer) : CostPoint
+    {
+        public override Cost Value => Offer.Price.UnitPrice;
+        public override string Name => Offer.Supplier.Company.Name;
+        public SupplierOffer Offer { get; } = offer;
+    }
+    public sealed record SubcomponentCosts(Cost value) : CostPoint
+    {
+        public override Cost Value { get; } = value;
+        public override string Name => "Subcomponents";
+    }
 
-    public required ReadOnlyCollection<NativeCostInfo> NativeCosts { get; init; }
+    public required ReadOnlyCollection<NativeCost> NativeCosts { get; init; }
 
     /// <summary>
     /// List of offers to this part.<br/>
     /// Mutable, as offers may be added after instantiation through <see cref="Modules.SupplyChain.WorldModel.Quotation"/>
     /// </summary>
     public required List<SupplierOffer> AvailableOffers { get; init; }
+
+    public IEnumerable<CostPoint> AllCostPoints(bool includeSubComponents = false)
+    {
+        if(selectedOffer != null)
+            yield return new OfferCost(selectedOffer);
+        foreach(var n in NativeCosts)
+            yield return n;
+        if(includeSubComponents && SubcomponentCostSum > 0)
+            yield return new SubcomponentCosts(SubcomponentCostSum);
+    }
 
     private SupplierOffer? selectedOffer;
     public SupplierOffer? SelectedOffer
@@ -38,16 +70,14 @@ public class InstanceCost : IInstanceConceptProperty
         else return SelectedOffer!.Price.UnitPrice;
     }
 
-    public required decimal Native { get; init; }
-    public required decimal Composed { get; init; }
+    public decimal NativeCostSum => NativeCosts.Sum(c => c.value.Price);
+    public required decimal SubcomponentCostSum { get; init; }
 
-    public static bool SupplierCostIsReplacement { get; set; } = true;
-    
     /// <summary>
     /// Return the total cost of this PInstance, that is, the selected supplier offer,
     /// plus its other Costs and the Total Cost of its components
     /// </summary>
-    public decimal Total =>  Native + Composed + SupplierPrice().Price;
+    public decimal TotalCost =>  NativeCostSum + SubcomponentCostSum + SupplierPrice().Price;
 }
 
 internal class CostsConcept : IConcept<InstanceCost>
@@ -55,9 +85,9 @@ internal class CostsConcept : IConcept<InstanceCost>
     public override InstanceCost? Make(Pinstance instance, IEnumerable<Component> subcomponents, Part template)
     {
         // Calculate total native cost
-        List<InstanceCost.NativeCostInfo> nativeCosts = [];
+        List<InstanceCost.NativeCost> nativeCosts = [];
         ScanObjectContentFor<Cost>(template,
-            (c, i) => nativeCosts.Add(new(i.Name, c))
+            (c, i) => nativeCosts.Add(new(c,i.Name))
             );
 
         List<(string propName, Offer offer)> offers = [];
@@ -78,15 +108,13 @@ internal class CostsConcept : IConcept<InstanceCost>
         bool hasACost = anyComponentHasACost || hasNativeCosts || hasSupplierOffer;
         if (!hasACost) return null; // Do not add a cost property needlessly
 
-        decimal totalnativeCost = nativeCosts.Sum(c => c.value.Price);
-        decimal composedCost = subcomponents.Select(c => c.Instance.Cost()?.Total ?? 0).Sum();
+        decimal composedCost = subcomponents.Select(c => c.Instance.Cost()?.TotalCost ?? 0).Sum();
         return new InstanceCost()
         {
             NativeCosts = nativeCosts.AsReadOnly(),
             AvailableOffers = supplierOffers,
             SelectedOffer = supplierOffers.FirstOrDefault(),
-            Native = totalnativeCost,
-            Composed = composedCost
+            SubcomponentCostSum = composedCost
         };
     }
 }

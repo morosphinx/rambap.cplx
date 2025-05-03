@@ -28,6 +28,6 @@ public class TestSupplyChain1
         var p = new PartWithSupplier1();
         var c = p.Instantiate();
         var cost = c.Instance.Cost()!;
-        Assert.AreEqual(PartWithSupplier1.ExpectedCost, cost.Total);
+        Assert.AreEqual(PartWithSupplier1.ExpectedCost, cost.TotalCost);
     }
 }

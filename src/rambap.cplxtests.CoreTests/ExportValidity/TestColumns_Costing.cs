@@ -8,15 +8,15 @@ namespace rambap.cplxtests.CoreTests.ExportValidity;
 
 
 [TestClass]
-public class TestColumn_Costs : TestColumn_ExtensiveProperty<Cost, InstanceCost.NativeCostInfo>
+public class TestColumn_Costs : TestColumn_ExtensiveProperty<Cost, InstanceCost.NativeCost>
 {
-    protected override IEnumerable<InstanceCost.NativeCostInfo> PropertyIterator(Component component)
+    protected override IEnumerable<InstanceCost.NativeCost> PropertyIterator(Component component)
         => component.Instance.Cost()?.NativeCosts.AsEnumerable() ?? [];
 
     protected override IColumn<ICplxContent> GetTestedColumn()
         => CostColumns.TotalCost();
 
-    protected override string PropertyNaming(IPropertyContent<InstanceCost.NativeCostInfo> instanceProperty)
+    protected override string PropertyNaming(IPropertyContent<InstanceCost.NativeCost> instanceProperty)
         => instanceProperty.Property.name;
 
     protected override IEnumerable<IColumn<ICplxContent>> GetDebugColumns()
