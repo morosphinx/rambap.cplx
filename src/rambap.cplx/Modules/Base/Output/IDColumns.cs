@@ -56,15 +56,31 @@ public static class IDColumns
         => new DelegateColumn<ICplxContent>("CN", ColumnTypeHint.StringFormatable,
             i => i.Component.CN);
 
-    public static DelegateColumn<ICplxContent> GroupCNs(int maxColumnWidth = 50)
+    public static DelegateColumn<ICplxContent> GroupCNs(string delimiter = ", ", int maxColumnWidth = 50)
        => new DelegateColumn<ICplxContent>("Component CNs", ColumnTypeHint.StringFormatable,
             i =>
             {
                 var componentCNs = i.AllComponents().Select(c => c.component.CN);
                 return maxColumnWidth switch
                 {
-                    > 0 => JoinWithMaxLength(", ", componentCNs, maxColumnWidth),
-                    _ => string.Join(", ", componentCNs),
+                    > 0 => JoinWithMaxLength(delimiter, componentCNs, maxColumnWidth),
+                    _ => string.Join(delimiter, componentCNs),
+                };
+            });
+
+
+    public static DelegateColumn<ICplxContent> ComponentParentCNs(string delimiter = ", ", int maxColumnWidth = 50)
+        => new DelegateColumn<ICplxContent>("Locs", ColumnTypeHint.StringFormatable,
+            i =>
+            {
+                var allParentCNs = i.AllComponents()
+                    .Select(t => t.component)
+                    .Where(c => c.Parent != null)
+                    .Select(c => c.Parent!.CN);
+                return maxColumnWidth switch
+                {
+                    > 0 => JoinWithMaxLength(delimiter, allParentCNs, maxColumnWidth),
+                    _ => string.Join(delimiter, allParentCNs),
                 };
             });
 
@@ -80,7 +96,7 @@ public static class IDColumns
             i => "TOTAL"
             );
 
-    public static DelegateColumn<ICplxContent> GroupCIDs(int maxColumnWidth = 50)
+    public static DelegateColumn<ICplxContent> GroupCIDs(string delimiter = ", ", int maxColumnWidth = 50)
         => new DelegateColumn<ICplxContent>("Component CIDs", ColumnTypeHint.StringExact,
             i =>
             {
@@ -89,8 +105,8 @@ public static class IDColumns
                     .Select(s => CID.RemoveImplicitRoot(s));
                 return maxColumnWidth switch
                 {
-                    > 0 => JoinWithMaxLength(", ", componentCIDs, maxColumnWidth),
-                    _ => string.Join(", ", componentCIDs),
+                    > 0 => JoinWithMaxLength(delimiter, componentCIDs, maxColumnWidth),
+                    _ => string.Join(delimiter, componentCIDs),
                 };
             });
 
@@ -141,5 +157,15 @@ public static class IDColumns
             {
                 var loc = i.Location;
                 return $"dep{loc.Depth} - {loc.LocalItemIndex+1} of {loc.LocalItemCount} - {(loc.IsEnd ? "END" : "")}";
+            });
+
+    public static DelegateColumn<ICplxContent> PartCommonName(bool usePnAsBackup = false) =>
+        new DelegateColumn<ICplxContent>("Part Common Name", ColumnTypeHint.StringFormatable,
+            i =>
+            {
+                var instance = i.Component.Instance;
+                if (usePnAsBackup)
+                    return instance.CommonName != "" ? instance.CommonName : instance.PN;
+                else return instance.CommonName;
             });
 }

@@ -20,16 +20,16 @@ public static partial class CostTables
             },
             Columns = [
                 CommonColumns.LineTypeNumber(),
-                // Component CN
+                IDColumns.GroupCNs(),
                 CommonColumns.ComponentTotalCount(),
-                // Component parents CNs
-                DescriptionColumns.PartCommonName(),
+                IDColumns.ComponentParentCNs(),
+                IDColumns.PartCommonName(),
                 // Or part description ?
-                // Spacer
+                CommonColumns.Dashes(""),
                 IDColumns.PartNumber(),
                 // Manufacturer
-                // Manufacturer Link
-                // Spacer
+                DescriptionColumns.PartLink(), //#TODO : do not reference another concept here
+                CommonColumns.Dashes(""),
                 // Supplier (chosen)
                 // Supplier SKU
                 // Supplier Link
