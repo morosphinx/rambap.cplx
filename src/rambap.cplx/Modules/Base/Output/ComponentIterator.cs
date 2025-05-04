@@ -1,7 +1,7 @@
 ﻿using rambap.cplx.Core;
-using rambap.cplx.Export.Tables;
 using rambap.cplx.Attributes;
 using System.Reflection;
+using rambap.cplx.Modules.Base.TableModel;
 
 namespace rambap.cplx.Modules.Base.Output;
 

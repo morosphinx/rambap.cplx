@@ -1,5 +1,5 @@
 ﻿using rambap.cplx.Core;
-using rambap.cplx.Export.Tables;
+using rambap.cplx.Modules.Base.TableModel;
 using System;
 using System.Collections.Generic;
 using System.Linq;

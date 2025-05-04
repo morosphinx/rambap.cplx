@@ -4,7 +4,8 @@ using rambap.cplx.Export.Spreadsheet;
 using static rambap.cplx.Export.Generators;
 using rambap.cplx.Modules.Base.Output;
 using rambap.cplx.Modules.Costing;
-using rambap.cplx.Export.Tables;
+using rambap.cplx.Modules.Base.TableModel;
+using rambap.cplx.Export.CoreTables;
 
 namespace rambap.cplxtests.UsageTests.ExcelTemplates;
 
@@ -13,7 +14,7 @@ public class CplxExcelTemplateTests
 {
     public static IInstruction CplxCostingTemplate(Component c)
     {
-        var a = CostTables.BillOfMaterial();
+        var a = new BillOfMaterial();
         var b = a with { Columns = [] };
         return new ExcelTableFile_FromTemplate(c)
         {
@@ -36,7 +37,7 @@ public class CplxExcelTemplateTests
                         SheetName = "Parts",
                         ColStart = 1,
                         RowStart = 2,
-                        Table = CostTables.BillOfMaterial()
+                        Table = new BillOfMaterial()
                     },
                     new TableWriteInstruction(){
                         SheetName = "Tasks",
@@ -69,7 +70,7 @@ public class CplxExcelTemplateTests
 
     public static IInstruction CustomCostingTemplate(Component c)
     {
-        var CustomPartTable = CostTables.BillOfMaterial() with
+        var CustomPartTable = new BillOfMaterial() with
         {
             Columns = [
                     IDColumns.PartNumber(),

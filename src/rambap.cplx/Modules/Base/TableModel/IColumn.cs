@@ -1,7 +1,7 @@
 ﻿using rambap.cplx.Core;
 using System.Diagnostics.CodeAnalysis;
 
-namespace rambap.cplx.Export.Tables;
+namespace rambap.cplx.Modules.Base.TableModel;
 
 public enum ColumnTypeHint
 {

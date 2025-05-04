@@ -1,5 +1,4 @@
-﻿using rambap.cplx.Export.Tables;
-using rambap.cplx.Export.Text;
+﻿using rambap.cplx.Export.Text;
 using rambap.cplx.Modules.Connectivity.Outputs;
 using rambap.cplx.Modules.Connectivity.Templates;
 

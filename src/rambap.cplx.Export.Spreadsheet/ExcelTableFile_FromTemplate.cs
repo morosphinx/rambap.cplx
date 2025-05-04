@@ -5,7 +5,7 @@ using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Spreadsheet;
 
 using static rambap.cplx.Export.Spreadsheet.Helpers;
-using rambap.cplx.Export.Tables;
+using rambap.cplx.Modules.Base.TableModel;
 
 namespace rambap.cplx.Export.Spreadsheet;
 

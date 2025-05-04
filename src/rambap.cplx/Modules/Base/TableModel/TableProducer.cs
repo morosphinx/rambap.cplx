@@ -1,6 +1,34 @@
 ﻿using rambap.cplx.Core;
 
-namespace rambap.cplx.Export.Tables;
+namespace rambap.cplx.Modules.Base.TableModel;
+
+/// <summary>
+/// Basic table produced defining how to organise content, header lines, TODO : and table breaks
+/// </summary>
+public abstract record TableProducer : ITableProducer
+{
+    public abstract IEnumerable<IColumn> IColumns { get; }
+
+    public bool WriteHeaderLine { get; set; } = true;
+    public bool WriteTotalLine { get; set; } = false;
+    public bool TotalLineOnTop { get; set; } = false;
+
+    public IEnumerable<Line> MakeAllLines(Component rootComponent)
+    {
+        if (WriteHeaderLine)
+            yield return MakeHeaderLine();
+        if (WriteTotalLine && TotalLineOnTop)
+            yield return MakeTotalLine(rootComponent);
+        foreach (var contentLine in MakeContentLines(rootComponent))
+            yield return contentLine;
+        if (WriteTotalLine && !TotalLineOnTop)
+            yield return MakeTotalLine(rootComponent);
+    }
+
+    public abstract Line MakeHeaderLine();
+    public abstract IEnumerable<Line> MakeContentLines(Component rootComponent);
+    public abstract Line MakeTotalLine(Component rootComponent);
+}
 
 /// <summary>
 /// Definition of a Table to be displayed in a file
@@ -90,8 +118,6 @@ public record TableProducer<T> : TableProducer
             };
         }
     }
-
-
     private Line MakeBreakLine()
     {
         return new()

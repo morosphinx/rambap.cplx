@@ -1,8 +1,9 @@
 ﻿using rambap.cplx.Modules.Base.Output;
-using rambap.cplx.Export.Tables;
 using rambap.cplx.Core;
+using rambap.cplx.Modules.Base.TableModel;
+using rambap.cplx.Modules.Documentation.Outputs;
 
-namespace rambap.cplx.Modules.Documentation.Outputs;
+namespace rambap.cplx.Export.CoreTables;
 
 public static class SystemViewTables
 {
@@ -52,23 +53,5 @@ public static class SystemViewTables
                 DescriptionColumns.PartLink(),
             ],
         };
-
-    public static TableProducer<ICplxContent> BillOfMaterials()
-    => new()
-    {
-        Iterator = new PartTypesIterator<object>()
-        {
-            WriteBranches = true,
-        },
-        Columns = [
-            CommonColumns.LineTypeNumber(),
-            IDColumns.PartNumber(),
-            IDColumns.PartCommonName(usePnAsBackup : false),
-            CommonColumns.ComponentTotalCount(),
-            SupplyChain.Outputs.SupplierColumns.SupplierName(),
-            SupplyChain.Outputs.SupplierColumns.SupplierPN(),
-            SupplyChain.Outputs.SupplierColumns.SupplierLink(),
-        ],
-    };
 }
 

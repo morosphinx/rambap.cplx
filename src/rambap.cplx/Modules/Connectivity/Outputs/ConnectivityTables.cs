@@ -1,10 +1,10 @@
-﻿using rambap.cplx.Export.Tables;
-using rambap.cplx.Modules.Base.Output;
+﻿using rambap.cplx.Modules.Base.Output;
 using static rambap.cplx.Modules.Base.Output.CommonColumns;
 using static rambap.cplx.Modules.Connectivity.Outputs.ConnectionTableProperty;
 using static rambap.cplx.Modules.Connectivity.Outputs.ConnectionColumns;
 using rambap.cplx.Core;
 using rambap.cplx.Modules.Connectivity.PinstanceModel;
+using rambap.cplx.Modules.Base.TableModel;
 
 namespace rambap.cplx.Modules.Connectivity.Outputs;
 

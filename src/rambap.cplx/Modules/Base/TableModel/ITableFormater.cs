@@ -1,6 +1,6 @@
 ﻿using rambap.cplx.Core;
 
-namespace rambap.cplx.Export.Tables;
+namespace rambap.cplx.Modules.Base.TableModel;
 
 /// <summary>
 /// Define how to format table contents to a text file. <see cref="ITableProducer"/>

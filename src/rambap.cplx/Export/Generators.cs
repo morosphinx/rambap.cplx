@@ -1,9 +1,7 @@
 ﻿using rambap.cplx.Core;
+using rambap.cplx.Export.CoreTables;
 using rambap.cplx.Export.Text;
 using rambap.cplx.Modules.Base.Output;
-using rambap.cplx.Modules.Costing.Outputs;
-using System.Linq;
-using static rambap.cplx.Modules.Connectivity.Outputs.ConnectionColumns;
 
 namespace rambap.cplx.Export;
 
@@ -14,7 +12,7 @@ public static class FileGroups
         return [
                 ($"BOMR_{filenamePattern}.csv", new TxtTableFile(c)
                 {
-                    Table = CostTables.BillOfMaterial() with
+                    Table = new BillOfMaterial() with
                     {
                         WriteTotalLine = true,
                         TotalLineOnTop = true,
@@ -23,7 +21,7 @@ public static class FileGroups
                 }),
                 ($"RecurentCosts_{filenamePattern}.csv", new TxtTableFile(c)
                 {
-                    Table = CostTables.CostBreakdown() with
+                    Table = new CostBreakdown() with
                     {
                         WriteTotalLine = true,
                         TotalLineOnTop = true,
@@ -55,18 +53,18 @@ public static class FileGroups
         return [
                 ($"Tree_Detailled_{filenamePattern}.csv", new TxtTableFile(c)
                 {
-                    Table = Modules.Documentation.Outputs.SystemViewTables.ComponentTree_Detailled(),
+                    Table = CoreTables.SystemViewTables.ComponentTree_Detailled(),
                     Formater = new FixedWidthTableFormater()
                 }),
                 ($"Tree_Stacked_{filenamePattern}.csv", new TxtTableFile(c)
                 {
-                    Table = Modules.Documentation.Outputs.SystemViewTables.ComponentTree_Stacked(),
+                    Table = CoreTables.SystemViewTables.ComponentTree_Stacked(),
                     Formater = new FixedWidthTableFormater()
                 }),
                 // TODO : Fix performance issue when generating this file on the 1000x parts exemple
                 ($"Inventory_{filenamePattern}.csv", new TxtTableFile(c)
                 {
-                    Table = Modules.Documentation.Outputs.SystemViewTables.ComponentInventory(),
+                    Table = CoreTables.SystemViewTables.ComponentInventory(),
                     Formater = new MarkdownTableFormater()
                 }),
                 ];

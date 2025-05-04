@@ -2,7 +2,7 @@
 
 cplx Parts are C# classes, and can be parameterized by declaring a constructor with parameters.
 
-## Custom Constructors
+## Part Variants using class Constructors
 
 Declare a constructor
 Assign P/N, Revision and CommonName through properties => these takes precedence over the attributes
@@ -18,7 +18,7 @@ Best practices
 
 Enumerables work.
 
-## Alternatives
+## Part Alternatives
 
 Use alternatives to produces part variants at part instantiation
 

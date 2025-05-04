@@ -1,5 +1,5 @@
-﻿using rambap.cplx.Export.Tables;
-using rambap.cplx.Modules.Base.Output;
+﻿using rambap.cplx.Modules.Base.Output;
+using rambap.cplx.Modules.Base.TableModel;
 using static rambap.cplxtests.CoreTests.ExportValidity.TestColumn_Support;
 
 namespace rambap.cplxtests.CoreTests.ExportValidity;

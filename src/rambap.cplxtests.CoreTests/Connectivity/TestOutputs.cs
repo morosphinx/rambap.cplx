@@ -1,6 +1,6 @@
-﻿using rambap.cplx.Export.Tables;
-using rambap.cplx.Export.Text;
+﻿using rambap.cplx.Export.Text;
 using rambap.cplx.Modules.Base.Output;
+using rambap.cplx.Modules.Base.TableModel;
 using rambap.cplx.Modules.Connectivity.Outputs;
 
 namespace rambap.cplxtests.CoreTests.Connectivity;

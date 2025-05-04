@@ -1,5 +1,4 @@
 ﻿using rambap.cplx.Core;
-using System;
 
 namespace rambap.cplx.Modules.Base.Output;
 

@@ -1,5 +1,4 @@
-﻿using rambap.cplx.Core;
-using rambap.cplx.Export.Tables;
+﻿using rambap.cplx.Export.CoreTables;
 using rambap.cplx.Export.Text;
 
 namespace rambap.cplx.Export.Prodocs;
@@ -10,7 +9,7 @@ public class MdSystemView : TxtPInstanceFile
         => new TxtTableFile(Content)
         {
             Formater = new MarkdownTableFormater(),
-            Table = Modules.Documentation.Outputs.SystemViewTables.ComponentTree_Stacked()
+            Table = SystemViewTables.ComponentTree_Stacked()
         };
 
     public override string GetText() =>

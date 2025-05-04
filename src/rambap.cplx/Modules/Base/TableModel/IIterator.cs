@@ -1,6 +1,6 @@
 ﻿using rambap.cplx.Core;
 
-namespace rambap.cplx.Export.Tables;
+namespace rambap.cplx.Modules.Base.TableModel;
 
 /// <summary>
 /// Define an iteration from a Pinstance producing contents for a <see cref="TableProducer{T}"/>

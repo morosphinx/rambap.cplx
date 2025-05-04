@@ -141,10 +141,10 @@ public partial class Part
     /// <summary>
     /// <inheritdoc cref="Part.Instantiate()"/> <br/>
     /// </summary>
-    /// <param name="partConfiguration">Specify how <see cref="Alternatives{T}"/> parts should be chosen</param>
+    /// <param name="alternativesConfiguration">Specify how <see cref="Alternatives{T}"/> parts should be chosen</param>
     /// <returns><inheritdoc cref="Part.Instantiate()"/></returns>
-    public Component Instantiate(AlternativesConfiguration partConfiguration)
-        => new Component(this, partConfiguration)
+    public Component Instantiate(AlternativesConfiguration alternativesConfiguration)
+        => new Component(this, alternativesConfiguration)
         {
             CN = "*",
             Comment = $"ROOT COMPONENT",

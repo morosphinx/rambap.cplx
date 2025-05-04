@@ -1,10 +1,8 @@
 ﻿using rambap.cplx.Core;
-using rambap.cplx.Export.Tables;
+using rambap.cplx.Export.CoreTables;
 using rambap.cplx.Export.Text;
 using rambap.cplx.Modules.Base.Output;
 using rambap.cplx.Modules.Connectivity.Outputs;
-using rambap.cplx.Modules.Documentation.Outputs;
-using static rambap.cplx.Modules.Connectivity.Outputs.ConnectionTableProperty;
 
 namespace rambap.cplx.Export.Prodocs;
 

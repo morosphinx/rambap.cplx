@@ -1,8 +1,5 @@
-﻿using rambap.cplx.Export;
-using rambap.cplx.Export.Tables;
-using rambap.cplx.Export.Text;
-using rambap.cplx.Modules.Costing.Outputs;
-using rambap.cplx.Modules.Documentation.Outputs;
+﻿using rambap.cplx.Export.Text;
+using rambap.cplx.Export.CoreTables;
 using System.Runtime.CompilerServices;
 
 namespace rambap.cplxtests.UsageTests;
@@ -63,7 +60,7 @@ CPLX generate files assisting multiples aspects of the design process :
 {string.Join("\r\n",
     new MarkdownTableFormater() 
         .Format(
-        CostTables.BillOfMaterial() with { WriteTotalLine = true },
+        new BillOfMaterial() with { WriteTotalLine = true },
         Content))
 }
 
@@ -72,7 +69,7 @@ CPLX generate files assisting multiples aspects of the design process :
 {string.Join("\r\n",
     new MarkdownTableFormater()
         .Format(
-        CostTables.CostBreakdown() with { WriteTotalLine = true },
+        new CostBreakdown() with { WriteTotalLine = true },
         Content))
 }
 

@@ -1,7 +1,7 @@
-﻿using rambap.cplx.Modules.Costing.Outputs;
-using rambap.cplx.Core;
+﻿using rambap.cplx.Core;
 using rambap.cplx.Export.Spreadsheet;
 using rambap.cplx.Export.Text;
+using rambap.cplx.Export.CoreTables;
 
 namespace rambap.cplx.Export;
 
@@ -12,11 +12,11 @@ public class ExcelGenerators
         return [
                 ($"BOMR_{filenamePattern}.xlsx", new ExcelTableFile_CreatedNew(c)
                 {
-                    Table = CostTables.BillOfMaterial()
+                    Table = new BillOfMaterial()
                 }),
                 ($"RecurentCosts_{filenamePattern}.xlsx", new ExcelTableFile_CreatedNew(c)
                 {
-                    Table = CostTables.CostBreakdown()
+                    Table = new CostBreakdown()
                 }),
                 ($"BOTR_{filenamePattern}.xlsx", new ExcelTableFile_CreatedNew(c)
                 { 
@@ -34,15 +34,15 @@ public class ExcelGenerators
         return [
                 ($"Tree_Detailled_{filenamePattern}.csv", new ExcelTableFile_CreatedNew(c)
                 {
-                    Table = Modules.Documentation.Outputs.SystemViewTables.ComponentTree_Detailled()
+                    Table = CoreTables.SystemViewTables.ComponentTree_Detailled()
                 }),
                 ($"Tree_Stacked_{filenamePattern}.xlsx", new ExcelTableFile_CreatedNew(c)
                 {
-                    Table = Modules.Documentation.Outputs.SystemViewTables.ComponentTree_Stacked()
+                    Table = CoreTables.SystemViewTables.ComponentTree_Stacked()
                 }),
                 ($"Inventory_{filenamePattern}.xlsx", new ExcelTableFile_CreatedNew(c)
                 {
-                    Table = Modules.Documentation.Outputs.SystemViewTables.ComponentInventory()
+                    Table = CoreTables.SystemViewTables.ComponentInventory()
                 }),
                 ];
     }

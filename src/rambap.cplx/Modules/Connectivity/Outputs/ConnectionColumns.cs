@@ -1,6 +1,6 @@
 ﻿using rambap.cplx.Core;
-using rambap.cplx.Export.Tables;
 using rambap.cplx.Modules.Base.Output;
+using rambap.cplx.Modules.Base.TableModel;
 using rambap.cplx.Modules.Connectivity.PinstanceModel;
 using static rambap.cplx.Modules.Connectivity.Outputs.ConnectionTableProperty;
 

@@ -1,11 +1,6 @@
-﻿using rambap.cplx.Export.Tables;
-using rambap.cplx.Export.Text;
+﻿using rambap.cplx.Export.Text;
 using rambap.cplx.Modules.Base.Output;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using rambap.cplx.Modules.Base.TableModel;
 
 namespace rambap.cplxtests.CoreTests.ExportValidity;
 

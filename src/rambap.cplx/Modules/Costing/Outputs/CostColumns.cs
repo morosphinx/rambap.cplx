@@ -1,5 +1,5 @@
-﻿using rambap.cplx.Export.Tables;
-using rambap.cplx.Modules.Base.Output;
+﻿using rambap.cplx.Modules.Base.Output;
+using rambap.cplx.Modules.Base.TableModel;
 using rambap.cplx.PartProperties;
 
 namespace rambap.cplx.Modules.Costing.Outputs;
