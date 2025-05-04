@@ -11,7 +11,7 @@ public class Component
     private static string MakeCommment(IEnumerable<ComponentDescriptionAttribute> commentAttributes)
         => string.Join("", commentAttributes.Select(c => c.Text));
 
-    internal Component(Part template, PartConfiguration conf)
+    internal Component(Part template, AlternativesConfiguration conf)
     {
         if (template.ImplementingComponent != null)
             throw new InvalidOperationException("A Component has already been instantiated with this part");

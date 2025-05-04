@@ -49,7 +49,7 @@ public class Pinstance
     /// <summary> Use <see cref="System.Reflection"/> to analyse <see cref="Part"/> types and produces <see cref="Pinstance"/> </summary>
     /// <param name="template">The instantiated Part</param>
     /// <param name="conf">Configuration used to decide the component to use when encountering <see cref="IAlternative"/>s </param>
-    internal Pinstance(Component parent, Part template, PartConfiguration conf)
+    internal Pinstance(Component parent, Part template, AlternativesConfiguration conf)
     {
         Parent = parent;
         PartType = template.GetType();

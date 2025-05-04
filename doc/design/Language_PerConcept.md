@@ -4,7 +4,7 @@ cplx definitions are modular, and managed by ConceptsModules.
 
 Below are exemples for all Concepts defined in cplx.Core.
 
-## Cost Concept
+## [Cost Concept](Concept_Cost.md)
 
 The cost Concept calculate costs & manage supplier prices :
 ``` Csharp
@@ -47,7 +47,7 @@ class MultipacPRO4U : Part
 
 ## Task Concept
 
-## Conenctivity Concept
+## Connectivity Concept
 
 WiringPort NOT begin combine-able => implying the structural equivalent (connection port) they are assigned to is their path endpoint identity
 

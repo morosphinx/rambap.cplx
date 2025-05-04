@@ -36,10 +36,13 @@ TODO
 ``` Csharp
 [PN("5963_123")] // A part attribute
 class BENCH_002 : Part {
-	Cost Buy 9000 ; // A part property
+	Cost Buy = 9000 ; // A part property
     Part R01 ; // A component
 }
 ```
+[^2]
+
+[^2]:Assigning a value to components and cplx property fields is optional. cplx will call the default constructors during part instantiation.
 
 Start typing 'Part' to access auto-completion of properties and attributes.
 
@@ -60,3 +63,11 @@ var i = new Pinstance(p);
 var generator = new cplx.Export.Generators.ConfigureGenerator(Generators.Content.Costing, Generators.HierarchyMode.Flat);
 generator.Do(i, "C:\\DestinationFolder");
 ```
+
+## 6 - Other Ressources
+
+[cplx syntax detail](..\design\Language_Overview.md) in the documtentation.
+
+[C# Language documentation](https://learn.microsoft.com/en-us/dotnet/csharp/fundamentals/program-structure/). cplx Part declaration do not use the entire C# language, here are the most relevant pages : [namespaces](https://learn.microsoft.com/en-us/dotnet/csharp/fundamentals/program-structure/)
+
+[.NET Assemblies](https://learn.microsoft.com/en-us/dotnet/standard/assembly/) with the [Nuget package manager](https://learn.microsoft.com/en-us/nuget/what-is-nuget) are the expected way to share cplx designs and libraries.

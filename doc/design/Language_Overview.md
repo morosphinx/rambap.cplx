@@ -57,7 +57,7 @@ class Connector_156_4786A : Part {} // This will be the identifier in C# code
 
 ### Components
 
-Components are defined by adding fields or properties to a part[^2]
+Components are defined by adding fields or properties to a part[^2].[^3]
 
 ``` Csharp
 class BENCH_001 : Part {
@@ -68,10 +68,10 @@ class BENCH_001 : Part {
 
 [^2]:Can also be abbreviated
 ``` Csharp
-class BENCH_001 : Part {
 	RACK_597 C01, C02;
-}
 ```
+
+[^3]:Assigning a value the the RACK_597 field (the component) is not required. cplx will call the default constructors during part instantiation.
 
 ### Properties
 

@@ -47,5 +47,5 @@ public abstract class IConcept<T> : IConcept
     /// </summary>
     protected static PCD GetPartConceptInitialisationData<PCD>(Part part)
         where PCD : new()
-        => part.GetConteptInitialisationData<PCD>();
+        => part.GetContceptInitialisationData<PCD>();
 }

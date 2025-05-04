@@ -105,11 +105,15 @@ public partial class Part
     internal Component? ImplementingComponent { get; set; }
 
     /// <summary>
-    /// Data dynamicaly filled by concepts for instantiation purposes <br/>
+    /// Data dynamicaly filled by concepts for any purposes, before Pinstance construction<br/>
     /// </summary>
     [CplxIgnore]
     private List<object> ConceptInitialisationData { get; } = new();
-    internal T GetConteptInitialisationData<T>()
+
+    /// <summary>
+    /// Access a typed item T of the part internal <see cref="ConceptInitialisationData"/>
+    /// </summary>
+    internal T GetContceptInitialisationData<T>()
         where T : new()
     {
         if(! ConceptInitialisationData.OfType<T>().Any())
@@ -126,9 +130,20 @@ public partial class Part
     {
     }
 
+    /// <summary>
+    /// Run the cplx calculation on this Part <br/>
+    /// This can only be done once per Part.
+    /// </summary>
+    /// <returns>A component instance, that can be inspected and used to generate documentation</returns>
     public Component Instantiate()
-        => Instantiate(new PartConfiguration());
-    public Component Instantiate(PartConfiguration partConfiguration)
+        => Instantiate(new AlternativesConfiguration());
+
+    /// <summary>
+    /// <inheritdoc cref="Part.Instantiate()"/> <br/>
+    /// </summary>
+    /// <param name="partConfiguration">Specify how <see cref="Alternatives{T}"/> parts should be chosen</param>
+    /// <returns><inheritdoc cref="Part.Instantiate()"/></returns>
+    public Component Instantiate(AlternativesConfiguration partConfiguration)
         => new Component(this, partConfiguration)
         {
             CN = "*",
