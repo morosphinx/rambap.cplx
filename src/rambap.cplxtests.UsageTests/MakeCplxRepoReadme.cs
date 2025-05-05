@@ -50,7 +50,7 @@ CPLX generate files assisting multiples aspects of the design process :
 ```
 {string.Join("\r\n",
     new FixedWidthTableFormater().Format(
-        SystemViewTables.ComponentTree_Detailled(),
+        new ComponentTree_Detailled(),
         Content))
 }
 ```

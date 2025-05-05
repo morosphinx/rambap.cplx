@@ -1,6 +1,6 @@
 ﻿using rambap.cplx.Core;
-using rambap.cplx.Modules.Base.TableModel;
 using rambap.cplx.Modules.Base.Output;
+using rambap.cplx.Modules.Base.TableModel;
 using rambap.cplx.Modules.Documentation.Outputs;
 using rambap.cplx.Modules.SupplyChain.Outputs;
 using rambap.cplx.Modules.Costing;
@@ -25,20 +25,20 @@ public record class BillOfMaterial : TableProducer<ICplxContent>
         };
         Columns = [
             CommonColumns.LineTypeNumber(),
-                IDColumns.GroupCNs(),
-                CommonColumns.ComponentTotalCount(),
-                IDColumns.ComponentParentCNs(),
-                IDColumns.PartCommonName(), // Or part description ?
-                // Manufacturer Info
-                CommonColumns.Dashes(""),
-                IDColumns.PartNumber(),
-                ManufacturerColumns.PartManufacturer(),
-                DescriptionColumns.PartLink(), //#TODO : do not reference another concept here
-                // Supplier info
-                CommonColumns.Dashes(""),
-                CostColumns.SelectedOfferSupplier(),
-                CostColumns.SelectedOfferSKU(),
-                CostColumns.SelectedOfferLink(),
-            ];
+            IDColumns.GroupCNs(),
+            CommonColumns.ComponentTotalCount(),
+            IDColumns.ComponentParentCNs(),
+            IDColumns.PartCommonName(), // Or part description ?
+            // Manufacturer Info
+            CommonColumns.Dashes(""),
+            IDColumns.PartNumber(),
+            ManufacturerColumns.PartManufacturer(),
+            DescriptionColumns.PartLink(), //#TODO : do not reference another concept here
+            // Supplier info
+            CommonColumns.Dashes(""),
+            CostColumns.SelectedOfferSupplier(),
+            CostColumns.SelectedOfferSKU(),
+            CostColumns.SelectedOfferLink(),
+        ];
     }
 }

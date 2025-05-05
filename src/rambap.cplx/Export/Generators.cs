@@ -30,7 +30,7 @@ public static class FileGroups
                 }),
                 ($"BOTR_{filenamePattern}.csv", new TxtTableFile(c)
                 {
-                    Table = TaskTables.BillOfTasks() with
+                    Table = new BillOfTasks() with
                     {
                         WriteTotalLine = true,
                         TotalLineOnTop = true,
@@ -38,7 +38,7 @@ public static class FileGroups
                     Formater = new MarkdownTableFormater(),
                 }),
                 ($"RecurentTasks_{filenamePattern}.csv", new TxtTableFile(c) {
-                    Table = TaskTables.TaskBreakdown() with
+                    Table = new TaskBreakdown() with
                     {
                         WriteTotalLine = true,
                         TotalLineOnTop = true,
@@ -53,18 +53,18 @@ public static class FileGroups
         return [
                 ($"Tree_Detailled_{filenamePattern}.csv", new TxtTableFile(c)
                 {
-                    Table = CoreTables.SystemViewTables.ComponentTree_Detailled(),
+                    Table = new ComponentTree_Detailled(),
                     Formater = new FixedWidthTableFormater()
                 }),
                 ($"Tree_Stacked_{filenamePattern}.csv", new TxtTableFile(c)
                 {
-                    Table = CoreTables.SystemViewTables.ComponentTree_Stacked(),
+                    Table = new ComponentTree_Stacked(),
                     Formater = new FixedWidthTableFormater()
                 }),
                 // TODO : Fix performance issue when generating this file on the 1000x parts exemple
                 ($"Inventory_{filenamePattern}.csv", new TxtTableFile(c)
                 {
-                    Table = CoreTables.SystemViewTables.ComponentInventory(),
+                    Table = new ComponentInventory(),
                     Formater = new MarkdownTableFormater()
                 }),
                 ];
@@ -75,17 +75,17 @@ public static class FileGroups
         return [
                 ($"Connections_{filenamePattern}.csv", new TxtTableFile(c)
                 {
-                    Table = Modules.Connectivity.Outputs.ConnectivityTables.ConnectionTable(),
+                    Table = new ConnectionTable(),
                     Formater = new MarkdownTableFormater()
                 }),
                 ($"Wirings_{filenamePattern}.csv", new TxtTableFile(c)
                 {
-                    Table = Modules.Connectivity.Outputs.ConnectivityTables.WiringTable(),
+                    Table = new WiringTable(),
                     Formater = new MarkdownTableFormater()
                 }),
                 ($"ICD_{filenamePattern}.csv", new TxtTableFile(c)
                 {
-                    Table = Modules.Connectivity.Outputs.ConnectivityTables.InterfaceControlDocumentTable(),
+                    Table = new PortICD(),
                     Formater = new MarkdownTableFormater()
                 }),
                 ];

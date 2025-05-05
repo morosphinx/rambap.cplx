@@ -122,4 +122,66 @@ public class ConnectionTableProperty
             .Distinct();
         return string.Join(separator, signalNames);
     }
+
+    public enum ConnectionCategory
+    {
+        Assembly,
+        Wiring
+    }
+
+    public static IEnumerable<ConnectionTableProperty> GetConnectivityTableProperties(
+        Component c,
+        ConnectionCategory iteratedConnectionCategory)
+    {
+        var instance = c.Instance;
+        var connectivity = instance.Connectivity()!; // Throw if no connectivity definition
+        var connections = GetAllConnections(instance, iteratedConnectionCategory);
+        // var connectionsFlattened = connections.SelectMany(c => c.Connections);
+
+        // TODO / TBD : grouping previously happenned at global level. npt equivalent to grouping in
+        // post trandform ?
+
+        var connectionsGrouped = ConnectionHelpers.GroupConnectionsByPath(connections);
+
+        foreach (var group in connectionsGrouped)
+        {
+            var groupLeftConnector = group.LeftTopMost;
+            var groupRightConnector = group.RigthTopMost;
+            foreach (var connection in group.Connections)
+            {
+                bool shouldReverse = connection.LeftPort.GetUpperUsage() != groupLeftConnector;
+                if (shouldReverse)
+                    yield return new ConnectionTableProperty()
+                    {
+                        Connection = connection,
+                        // Invert left/Rigth of group
+                        LeftUpperUsagePort = groupRightConnector,
+                        RigthUpperUsagePort = groupLeftConnector
+                    };
+                else
+                    yield return new ConnectionTableProperty()
+                    {
+                        Connection = connection,
+                        LeftUpperUsagePort = groupLeftConnector,
+                        RigthUpperUsagePort = groupRightConnector
+                    };
+            }
+        }
+    }
+
+    public static IEnumerable<SignalPortConnection> GetAllConnections(Pinstance instance, ConnectionCategory connectionKind)
+    {
+        // Return all connection, NOT flattening grouped ones (Twisting / Sielding)
+        switch (connectionKind)
+        {
+            case ConnectionCategory.Assembly:
+                foreach (var c in instance.Connectivity()?.Connections ?? [])
+                    yield return c;
+                break;
+            case ConnectionCategory.Wiring:
+                foreach (var c in instance.Connectivity()?.Wirings ?? [])
+                    yield return c;
+                break;
+        }
+    }
 }

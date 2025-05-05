@@ -43,7 +43,7 @@ public class CplxExcelTemplateTests
                         SheetName = "Tasks",
                         ColStart = 1,
                         RowStart = 2,
-                        Table = TaskTables.BillOfTasks()
+                        Table = new BillOfTasks()
                     }
                 ]
         };
@@ -81,7 +81,7 @@ public class CplxExcelTemplateTests
                     CostColumns.TotalCost(),
                 ]
         };
-        var CustomTaskTable = TaskTables.BillOfTasks() with
+        var CustomTaskTable = new BillOfTasks() with
         {
             Columns = [
                     IDColumns.PartNumber(),

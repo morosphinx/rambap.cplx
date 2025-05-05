@@ -9,7 +9,7 @@ public class MdSystemView : TxtPInstanceFile
         => new TxtTableFile(Content)
         {
             Formater = new MarkdownTableFormater(),
-            Table = SystemViewTables.ComponentTree_Stacked()
+            Table = new ComponentTree_Stacked()
         };
 
     public override string GetText() =>

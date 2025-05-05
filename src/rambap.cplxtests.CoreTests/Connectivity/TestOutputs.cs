@@ -1,7 +1,7 @@
-﻿using rambap.cplx.Export.Text;
+﻿using rambap.cplx.Export.CoreTables;
+using rambap.cplx.Export.Text;
 using rambap.cplx.Modules.Base.Output;
 using rambap.cplx.Modules.Base.TableModel;
-using rambap.cplx.Modules.Connectivity.Outputs;
 
 namespace rambap.cplxtests.CoreTests.Connectivity;
 
@@ -32,7 +32,7 @@ internal static class TestOutputs
 
         Console.WriteLine("");
         Console.WriteLine("Connectivity");
-        var connectiontable = ConnectivityTables.ConnectionTable();
+        var connectiontable = new ConnectionTable();
         AddDebugInfoTo(connectiontable);
         var connectionFile = new TxtTableFile(component)
         {
@@ -43,7 +43,7 @@ internal static class TestOutputs
 
         Console.WriteLine("");
         Console.WriteLine("Wirings");
-        var wiringtable = ConnectivityTables.WiringTable();
+        var wiringtable = new WiringTable();
         AddDebugInfoTo(wiringtable);
         var wiringFile = new TxtTableFile(component)
         {
@@ -54,7 +54,7 @@ internal static class TestOutputs
 
         Console.WriteLine("");
         Console.WriteLine("ICD");
-        var ICDtable = ConnectivityTables.InterfaceControlDocumentTable();
+        var ICDtable = new PortICD();
         AddDebugInfoTo(ICDtable);
         var ICDfile = new TxtTableFile(component)
         {

@@ -20,11 +20,11 @@ public class ExcelGenerators
                 }),
                 ($"BOTR_{filenamePattern}.xlsx", new ExcelTableFile_CreatedNew(c)
                 { 
-                    Table = TaskTables.BillOfTasks()
+                    Table = new BillOfTasks()
                 }),
                 ($"Tasks_{filenamePattern}.xlsx", new ExcelTableFile_CreatedNew(c)
                 {
-                    Table = TaskTables.TaskBreakdown()
+                    Table = new TaskBreakdown()
                 }),
                 ];
     }
@@ -34,15 +34,15 @@ public class ExcelGenerators
         return [
                 ($"Tree_Detailled_{filenamePattern}.csv", new ExcelTableFile_CreatedNew(c)
                 {
-                    Table = CoreTables.SystemViewTables.ComponentTree_Detailled()
+                    Table = new ComponentTree_Detailled()
                 }),
                 ($"Tree_Stacked_{filenamePattern}.xlsx", new ExcelTableFile_CreatedNew(c)
                 {
-                    Table = CoreTables.SystemViewTables.ComponentTree_Stacked()
+                    Table = new ComponentTree_Stacked()
                 }),
                 ($"Inventory_{filenamePattern}.xlsx", new ExcelTableFile_CreatedNew(c)
                 {
-                    Table = CoreTables.SystemViewTables.ComponentInventory()
+                    Table = new ComponentInventory()
                 }),
                 ];
     }

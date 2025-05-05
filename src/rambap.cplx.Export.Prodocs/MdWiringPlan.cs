@@ -14,7 +14,7 @@ public class MdWiringPlan : TxtPInstanceFile
         => new TxtTableFile(Content)
         {
             Formater = new MarkdownTableFormater(),
-            Table = SystemViewTables.ComponentInventory(new DocumentationPerimeter_SinglePart())
+            Table = new ComponentInventory(new DocumentationPerimeter_SinglePart())
         };
 
     private static bool BreakOnPathChange(ConnectionTableProperty p1, ConnectionTableProperty p2)
@@ -27,7 +27,7 @@ public class MdWiringPlan : TxtPInstanceFile
         => new TxtTableFile(Content)
         {
             Formater = new MarkdownTableFormater(),
-            Table = ConnectivityTables.WiringTable(new DocumentationPerimeter_SinglePart())
+            Table = new WiringTable(new DocumentationPerimeter_SinglePart())
             with
             {
                 AddTableBreakCondition = (l1, l2) =>
