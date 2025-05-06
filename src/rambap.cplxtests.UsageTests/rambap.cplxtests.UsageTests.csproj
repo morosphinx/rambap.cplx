@@ -48,6 +48,7 @@
 
   <ItemGroup>
     <Folder Include="BreakoutBox\out\" />
+    <Folder Include="Temp01\" />
   </ItemGroup>
 
 </Project>

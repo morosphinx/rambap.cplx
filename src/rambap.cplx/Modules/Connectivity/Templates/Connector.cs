@@ -45,7 +45,7 @@ public abstract class Connector : Part, IPartConnectable, ISingleMateable
     public int PinCount => WireablePorts.Count;
 
     /// <summary>
-    /// Return the wireable Port with the *_1-based_* pin index 
+    /// Return the wireable Port with <b>_1-based_</b> pin index 
     /// </summary>
     /// <param name="oneIndex">1-based pin index.<br/>
     /// Eg : the first pin is GetPin(1), the last pint is Pin(PinCount)</param>
@@ -58,6 +58,31 @@ public abstract class Connector : Part, IPartConnectable, ISingleMateable
             throw new InvalidOperationException($"Invalid index. Use 1-based index to access pins. The first pin is {nameof(Pin)}(1). The last pin is {nameof(Pin)}({PinCount})");
         return WireablePorts[oneBasedIndex - 1];
     }
+
+    /// <summary>
+    /// Return a list of wireable Ports with <b>_1-based_</b> pin indexes  
+    /// </summary>
+    /// <param name="oneBaseIndexes">1-based pin indexes.<br/>
+    /// Eg : the first pin is GetPin(1), the last pint is Pin(PinCount)</param>
+    // This return a list in order to evaluate and raise exceptions immediatly
+    public List<WireablePort> Pin(params int[] oneBaseIndexes)
+        => [.. oneBaseIndexes.Select(Pin)];
+
+    // Utility wrappers arround the this.SignalOf() extension
+
+    /// <summary>
+    /// Return a signal assigned to each <b>_1-based_</b> pin indexes  
+    /// </summary>
+    /// <param name="indexes">1-based pin indexes.</param>
+    public Signal SignalOf(params int[] indexes)
+        => this.SignalOf(Pin(indexes));
+    /// <summary>
+    /// <inheritdoc cref="SignalOf(int[])"/>
+    /// </summary>
+    /// <param name="indexes"><inheritdoc cref="SignalOf(int[])"/></param>
+    public Signal SignalOf(IEnumerable<int> indexes)
+        => this.SignalOf(Pin([.. indexes]));
+
 
     public void Assembly_Ports(PortBuilder Do)
     {

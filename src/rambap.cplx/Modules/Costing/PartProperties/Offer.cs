@@ -36,13 +36,16 @@ public record class Offer
     /// </summary>
     public string? SKU { get; init; }
 
+    /// <summary>
+    /// Link to the supplier website or catalog
+    /// </summary>
     public string? Link { get; init; }
 
+    /// <summary>
+    /// Price and conditions for this offer
+    /// </summary>
     public required PriceTag Price { get; init; }
 
-    // Various part syntax attemps, for now
-
-    // Does not set required member, need to specify the Price
     public Offer() { }
 
     public static implicit operator Offer(decimal price) => new() { Price = price };
@@ -50,12 +53,43 @@ public record class Offer
     public static implicit operator Offer(int price) => new() { Price = price };
 }
 
+/// <summary>
+/// A cost and conditions for an <see cref="Offer"/> <br/>
+/// Include packing details and delay<br/>
+/// Do not add this property on a Part. add instead an <see cref="Offer"/>
+/// </summary>
 public sealed record PriceTag
 {
-    public uint Amount { get; init; } = 1;
+    /// <summary>
+    /// Cost to pay for the delivery of one unit, <br/> <b>or</b>
+    /// Cost for a pack of this unit if <see cref="PackUnitCount"/> is not 1
+    /// </summary>
     public required Cost Cost { get; init; }
+
+    /// <summary>
+    /// If > 1, this price tag refer to a pack of unit
+    /// </summary>
+    public uint PackUnitCount { get; init; } = 1;
+
+    /// <summary>
+    /// Ideal cost of a single unit <br/>
+    /// </summary>
+    /// <remarks>
+    /// This does not takes into account additional unit that need to be brought due to either :<br/>
+    /// - Packing : <see cref="PackUnitCount"/><br/>
+    /// - Minimum order quantities <see cref="PackMOQ"/>
+    /// </remarks>
+    public Cost UnitPrice => Cost.Price / PackUnitCount;
+
+    /// <summary>
+    /// Minimum order quantity, per pack
+    /// </summary>
+    public uint PackMOQ { get; init; } = 1;
+
+    /// <summary>
+    /// Delivery delay for the complete buy order
+    /// </summary>
     public TimeSpan? DeliveryDelay { get; init; }
-    public Cost UnitPrice => Cost.Price / Amount;
 
     public static implicit operator PriceTag(decimal price) => new() { Cost = price };
     public static implicit operator PriceTag(double price) => new() { Cost = price };
