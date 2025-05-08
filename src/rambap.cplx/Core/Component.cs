@@ -15,7 +15,7 @@ public class Component
     {
         if (template.ImplementingComponent != null)
             throw new InvalidOperationException("A Component has already been instantiated with this part");
-        template.CplxImplicitInitialization(); // run the implicit init on this part and all subparts
+        template.CplxImplicitInitialization(parent?.Template); // run the implicit init on this part and all subparts
         template.ImplementingComponent = this;
         // Set relationships
         Parent = parent;
@@ -49,8 +49,10 @@ public class Component
                     IsPublic = i.IsPublicOrAssembly,
                 });
             });
-        // Run the concept calculations
+        // Set the instance now, so that the Component <-> instance relation is correct before calculations
         Instance = new Pinstance(this, template, conf);
+        // Run the concept calculations
+        Instance.RunConceptEvaluation();
     }
 
     /// <summary>
@@ -141,8 +143,6 @@ public class Component
             CN = $"@AUTO:{(string.IsNullOrEmpty(part.CNOverride) ? backupCN : part.CNOverride)}",
             IsPublic = false,
         };
-        // Set part Parent : In component construction parent is set to null, as we do not restart initialisation : todo, fix
-        part.Parent = this.Template;
         // TBD / TODO : add to another component list ? 
         subComponents.Add(newComponent);
     }

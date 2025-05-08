@@ -33,8 +33,10 @@ public class InstanceConnectivity : IInstanceConceptProperty
 
 internal class ConnectionConcept : IConcept<InstanceConnectivity>
 {
-    public override InstanceConnectivity? Make(Pinstance instance, IEnumerable<Component> subcomponents, Part template)
+    public override InstanceConnectivity? Make(Component component)
     {
+        var template = component.Template;
+        var instance = component.Instance;
         // Take a signalPort and implement it
         // Note that SignalPorts are do not have 1-1 relation to PropertyOrFieldInfo
         // For exemple in the case of expression backed properties
@@ -113,7 +115,7 @@ internal class ConnectionConcept : IConcept<InstanceConnectivity>
         if (template is IPartConnectable a1)
         {
             // User defined exposition are created from here
-            var portBuilder = new PortBuilder(instance, template);
+            var portBuilder = new PortBuilder(component);
             a1.Assembly_Ports(portBuilder);
         }
 
@@ -137,7 +139,7 @@ internal class ConnectionConcept : IConcept<InstanceConnectivity>
         if (template is IPartConnectable a3)
         {
             // User defined connections are created from here
-            var connectionBuilder = new ConnectionBuilder(instance, template);
+            var connectionBuilder = new ConnectionBuilder(component);
             a3.Assembly_Connections(connectionBuilder);
 
             selfDefinedConnection = connectionBuilder.Connections;
@@ -170,12 +172,6 @@ internal class ConnectionConcept : IConcept<InstanceConnectivity>
             if (connectivity.Wireables.Count > 1)
                 throw new InvalidDataException($"{part} implement {nameof(ISingleWireable)} but has more than one {nameof(WireablePort)}");
     }
-
-    private void RunSignalAssignation(Part template)
-    {
-
-    }
-
 
     internal class ImplicitSignalDirectory : List<ImplicitAssignedSignal>;
     internal static ImplicitAssignedSignal GetSignalFromLocalDir(Part part, IEnumerable<ISingleWireable> ports)

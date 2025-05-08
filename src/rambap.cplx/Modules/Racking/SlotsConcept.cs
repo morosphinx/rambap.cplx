@@ -14,8 +14,9 @@ public class InstanceMechanicalAssembly : IInstanceConceptProperty
 internal class SlotConcept : IConcept<InstanceMechanicalAssembly>
 {
     // TODO : cleanup variables names, too much receptacle
-    public override InstanceMechanicalAssembly? Make(Pinstance instance, IEnumerable<Component> subcomponents, Part template)
+    public override InstanceMechanicalAssembly? Make(Component component)
     {
+        var template = component.Template;
         List<(string name, MechanicalReceptacle receptacle)> receptacles = new();
         ScanObjectContentFor<MechanicalReceptacle>(template,
             (p, i) =>

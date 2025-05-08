@@ -98,11 +98,14 @@ public class Pinstance
         {
             Revision = template.Revision;// Template Revision value is used
         }
+    }
 
+    internal void RunConceptEvaluation()
+    {
         // Calculate Concepts properties
         foreach (var concept in Globals.EvaluatedConcepts)
         {
-            var property = concept.MakeBase(this, parent.SubComponents, template);
+            var property = concept.MakeBase(Parent);
             if (property != null) properties.Add(property);
         }
     }

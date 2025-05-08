@@ -82,8 +82,9 @@ public class InstanceCost : IInstanceConceptProperty
 
 internal class CostsConcept : IConcept<InstanceCost>
 {
-    public override InstanceCost? Make(Pinstance instance, IEnumerable<Component> subcomponents, Part template)
+    public override InstanceCost? Make(Component component)
     {
+        var template = component.Template;
         // Calculate total native cost
         List<InstanceCost.NativeCost> nativeCosts = [];
         ScanObjectContentFor<Cost>(template,
@@ -97,11 +98,12 @@ internal class CostsConcept : IConcept<InstanceCost>
             o => new SupplierOffer()
             {
                 Supplier = o.offer.Supplier ?? o.propName,
-                SKU = o.offer.SKU ?? instance.PN,
+                SKU = o.offer.SKU ?? component.PN,
                 Link = o.offer.Link,
                 Price = o.offer.Price,
             }).ToList();
 
+        var subcomponents = component.SubComponents;
         bool anyComponentHasACost = subcomponents.Where(c => c.Instance.Cost() != null).Any();
         bool hasNativeCosts = nativeCosts.Count() > 0;
         bool hasSupplierOffer = offers.Count() > 0;

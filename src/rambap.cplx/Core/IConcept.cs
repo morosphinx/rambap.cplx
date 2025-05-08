@@ -19,11 +19,9 @@ public interface IConcept
     /// 2 - Access subcomponents to consolidate properties of subcomponents and calculate relations. <br/>
     /// 3 - Add the Concept property to the Pinstance
     /// </summary>
-    /// <param name="instance">A partialy initialised instance that this concept may act on</param>
-    /// <param name="subcomponents">Initialised subcomponents of the Part</param>
-    /// <param name="template">The template of the instance</param>
-    /// <returns>A newly created property to be added to this instance, or null if none is to be added</returns>
-    internal IInstanceConceptProperty? MakeBase(Pinstance instance, IEnumerable<Component> subcomponents, Part template);
+    /// <param name="component">A component ongoing initialisation. SubComponent are initialised</param>
+    /// <returns>A newly created property to be added to this component instance, or null if none is to be added</returns>
+    internal IInstanceConceptProperty? MakeBase(Component component);
 }
 
 /// <summary>
@@ -34,13 +32,12 @@ public abstract class IConcept<T> : IConcept
     where T : IInstanceConceptProperty
 {
     /// <summary>Wrap a typed implementation of <see cref="IConcept.MakeBase(Pinstance)"/></summary>
-    public IInstanceConceptProperty? MakeBase(Pinstance instance, IEnumerable<Component> subcomponents, Part template)
-        => Make(instance, subcomponents, template);
+    public IInstanceConceptProperty? MakeBase(Component component) => Make(component);
 
     /// <summary>Typed implementation of <see cref="IConcept.MakeBase(Pinstance)"/><br/>
     /// <inheritdoc cref="IConcept.MakeBase(Pinstance, IEnumerable{Component}, Part)"/>
     /// </summary>
-    public abstract T? Make(Pinstance instance, IEnumerable<Component> subcomponents, Part template);
+    public abstract T? Make(Component component);
 
     /// <summary>
     /// Expose GetPartConceptInitialisationData as a non-internal method, for concepts defined outside of this assembly

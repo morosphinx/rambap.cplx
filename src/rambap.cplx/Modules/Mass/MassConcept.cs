@@ -16,8 +16,9 @@ public class InstanceMass : IInstanceConceptProperty
 
 internal class MassConcept : IConcept<InstanceMass>
 {
-    public override InstanceMass? Make(Pinstance instance, IEnumerable<Component> subcomponents, Part template)
+    public override InstanceMass? Make(Component component)
     {
+        var template = component.Template;
         // Calculate total native mass
         List<InstanceMass.NativeMassInfo> nativeMasses = [];
         ScanObjectContentFor<Mass_kg>(template,
@@ -29,7 +30,7 @@ internal class MassConcept : IConcept<InstanceMass>
         {
             NativeMasses = nativeMasses,
             Native = totalnativeMass,
-            Composed = subcomponents.Select(c => c.Instance.Mass()?.Total ?? 0)
+            Composed = component.SubComponents.Select(c => c.Instance.Mass()?.Total ?? 0)
                         .Select(m => m.mass_kg).Sum()
         };
     }

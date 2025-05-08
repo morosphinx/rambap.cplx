@@ -7,9 +7,25 @@ public partial class Part
 {
     internal bool HasDoneCplxImplicitInitialisation { get; private set; } = false;
 
-    internal class InitialisationContext
+    /// <summary>
+    /// Store the state of part initialisation as a stack, and raise error in case of part recursion
+    /// </summary>
+    /// <param name="rootContext"><inheritdoc cref="InitialisationContext.RootContext"/></param>
+    internal class InitialisationContext(Part? rootContext = null)
     {
+        /// <summary>
+        /// Parent part to the part that started the initialisation, or null if started on a root part
+        /// </summary>
+        private Part? RootContext { get; } = rootContext;
+
+        /// <summary>
+        /// Stack of all classes initialised by this context
+        /// </summary>
         private Stack<Part> ClassStack = [];
+
+        /// <summary>
+        /// Stack of all types initialised by this context
+        /// </summary>
         private Stack<Type> TypeStack = [];
         public void StartInitFor(Part newPart)
         {
@@ -27,7 +43,7 @@ public partial class Part
         }
 
         public Part? CurrentLocationPart()
-            => ClassStack.Count > 0 ? ClassStack.Peek() : null;
+            => ClassStack.Count > 0 ? ClassStack.Peek() : RootContext;
 
         public void EndedInit()
         {
@@ -39,6 +55,8 @@ public partial class Part
 
     internal void CplxImplicitInitialization()
         => CplxImplicitInitialization(new InitialisationContext());
+    internal void CplxImplicitInitialization(Part? rootContext)
+        => CplxImplicitInitialization(new InitialisationContext(rootContext));
 
     /// <summary>
     /// Initialise implicit constructs ommited in the cplx syntax

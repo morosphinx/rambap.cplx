@@ -42,8 +42,9 @@ public class InstanceDocumentation : IInstanceConceptProperty
 
 internal class DocumentationConcept : IConcept<InstanceDocumentation>
 {
-    public override InstanceDocumentation? Make(Pinstance instance, IEnumerable<Component> subcomponents, Part template)
+    public override InstanceDocumentation? Make(Component component)
     {
+        var template = component.Template;
         List<NamedText> descriptions = new();
         // Add description defined in attributes
         var descattrs = template.GetType().GetCustomAttributes<PartDescriptionAttribute>(); // TODO / TBD : inherit ?
@@ -79,7 +80,7 @@ internal class DocumentationConcept : IConcept<InstanceDocumentation>
         Func<Component, IEnumerable<(string, IInstruction)>>? makeAdditionDocuments = null;
         if(template is IPartAdditionalDocuments a)
         {
-            var documentationBuilder = new DocumentationBuilder(instance, template);
+            var documentationBuilder = new DocumentationBuilder(component.Instance, template);
             a.Additional_Documentation(documentationBuilder);
             // TODO : this keep the DocumentationBuilder in memory. Is it ok ? 
             makeAdditionDocuments =

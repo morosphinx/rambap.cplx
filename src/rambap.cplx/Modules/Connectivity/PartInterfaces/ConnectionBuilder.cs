@@ -12,20 +12,21 @@ public abstract class ConnectivityBuilder
     /// <summary>
     /// The owning part implementing <see cref="IPartConnectable"/> we are currently processing
     /// </summary>
-    internal Part ContextPart { get; }
+    internal Part ContextPart => ContextComponent.Template;
 
     /// <summary>
     /// Instance of the part we are currently processing. <br/>
     /// We need this to access calculated subcomponent information. <br/>
     /// Properties on this Pinstance Are note complete
     /// </summary>
-    internal Pinstance ContextInstance { get; }
+    internal Pinstance ContextInstance => ContextComponent.Instance;
+
+    internal Component ContextComponent { get; }
 
     // Internal constructor, prevent usage from outside assembly
-    internal ConnectivityBuilder(Pinstance instance, Part part)
+    internal ConnectivityBuilder(Component contextComponent)
     {
-        ContextPart = part;
-        ContextInstance = instance;
+        ContextComponent = contextComponent;
     }
 }
 
@@ -36,7 +37,7 @@ public abstract class ConnectivityBuilder
 /// </summary>
 public class PortBuilder : ConnectivityBuilder
 {
-    internal PortBuilder(Pinstance instance, Part part) : base(instance, part) { }
+    internal PortBuilder(Component contextComponent) : base(contextComponent) { }
 
     /// <summary>
     /// Define a connector as an exposition of another. Typical use case : <br/>
@@ -87,7 +88,7 @@ public class PortBuilder : ConnectivityBuilder
 /// </summary>
 public class ConnectionBuilder : ConnectivityBuilder
 {
-    internal ConnectionBuilder(Pinstance instance, Part part) : base(instance, part) { }
+    internal ConnectionBuilder(Component contextComponent) : base(contextComponent) { }
 
     internal List<StructuralConnection> StructuralConnections { get; } = [];
     internal List<AssemblingConnection> Connections { get; } = [];
@@ -98,10 +99,10 @@ public class ConnectionBuilder : ConnectivityBuilder
         if (!Connections.Contains(cabling))
             throw new InvalidOperationException($"Cabling {cabling} is not owned by this");
     }
-    private void AssertOwnThisWiring(PinJunction wiring)
+    private void AssertOwnThisWire(WirePart wire)
     {
-        if (!Wirings.Contains(wiring))
-            throw new InvalidOperationException($"Wiring {wiring} is not owned by this");
+        if (!ContextComponent.SubComponents.Contains(wire.ImplementingComponent))
+            throw new InvalidOperationException($"Wire {wire} is not owned by this component");
     }
 
     public StructuralConnection StructuralConnection(ConnectablePort source, WireablePort target)
@@ -221,25 +222,27 @@ public class ConnectionBuilder : ConnectivityBuilder
     /// <param name="wireableA">Left side connector. Must be owed by this part or one of it components</param>
     /// <param name="wireableB">Rigth side connector. Must be owed by this part or one ofits components</param>
     /// <returns>Object representing the created wire</returns>
-    public void Wire(ISingleWireable wireableA, ISingleWireable wireableB)
+    public WirePart Wire(ISingleWireable wireableA, ISingleWireable wireableB)
         => Wire(wireableA, wireableB, GetCreatePlaceholderWireSpool(), 100);
 
-    public void Wire(ISingleWireable wireableA, ISingleWireable wireableB, WireSpool wireSpool, double length)
+    public WirePart Wire(ISingleWireable wireableA, ISingleWireable wireableB, WireSpool wireSpool, double length)
     {
         ContextPart.AssertIsOwnerOrParent(wireableA.SingleWireablePort);
         ContextPart.AssertIsOwnerOrParent(wireableB.SingleWireablePort);
         ContextPart.AssertIsASubComponent(wireSpool);
 
-        WirePart wire = new WirePart()
+        WirePart createdWire = new WirePart()
         {
             Length = length,
             Origin = wireSpool
         };
         var contextComponent = this.ContextInstance.Parent;
-        contextComponent.AddConceptPart(wire);
+        contextComponent.AddConceptPart(createdWire);
 
-        Wire(wireableA, wire.LeftPort);
-        Wire(wire.RightPort, wireableB);
+        Wire(wireableA, createdWire.LeftPort);
+        Wire(createdWire.RightPort, wireableB);
+
+        return createdWire;
     }
 
     public void Wire(WireEnd wireEnd, ISingleWireable wireable)
@@ -284,10 +287,12 @@ public class ConnectionBuilder : ConnectivityBuilder
     public void Wire(Signal signalA, Signal signalB)
         => Wire(signalA, signalB, GetCreatePlaceholderWireSpool(), 100);
 
-    public void Wire(Signal signalA, Signal signalB, WireSpool wireSpool, double length)
+    public List<WirePart> Wire(Signal signalA, Signal signalB, WireSpool wireSpool, double length)
     {
         ContextPart.AssertIsOwnerOrParent(signalA);
         ContextPart.AssertIsOwnerOrParent(signalB);
+
+        List<WirePart> createdWires = [];
 
         // All port assigned to the signals must be wireable or wireEnd
         var signalPortsA = signalA.Assignations;
@@ -298,7 +303,9 @@ public class ConnectionBuilder : ConnectivityBuilder
         {
             foreach (var portB in signalPortsB.OfType<WireablePort>())
             {
-                Wire(portA, portB, wireSpool, length);
+                // This is the only case where we need to create new wires
+                var newWire = Wire(portA, portB, wireSpool, length);
+                createdWires.Add(newWire);
             }
             foreach (var wireEndB in signalPortsB.OfType<WireEnd>())
             {
@@ -316,9 +323,10 @@ public class ConnectionBuilder : ConnectivityBuilder
                 Wire(wireEndA, wireEndB);
             }
         }
+        return createdWires;
     }
 
-    //public Twist Twist(IEnumerable<WiringSet> twistedCablings)
+    //public Twist Twist(IEnumerable<WirePart> twistedCablings)
     //{
     //    foreach (var c in twistedCablings)
     //        AssertOwnThisWiring(c);
