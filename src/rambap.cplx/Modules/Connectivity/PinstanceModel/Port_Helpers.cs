@@ -9,7 +9,7 @@ using System.Xml.Linq;
 namespace rambap.cplx.Modules.Connectivity.PinstanceModel;
 
 // Helper methods to manipulate a Pinstance Port
-public partial class Port
+public abstract partial class Port
 {
     internal IEnumerable<Port> GetExpositionColumn()
     {

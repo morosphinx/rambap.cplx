@@ -14,7 +14,7 @@ public class InstanceConnectivity : IInstanceConceptProperty
     public required List<Port> Connectors { get; init; }
     public required List<Port> Wireables { get; init; }
     public required List<AssemblingConnection> Connections { get; init; }
-    public required List<WiringAction> Wirings { get; init; }
+    public required List<WiringConnection> Wirings { get; init; }
 
     public required List<PSignal> Signals { get; init; }
 
@@ -39,12 +39,17 @@ internal class ConnectionConcept : IConcept<InstanceConnectivity>
         // Note that SignalPorts are do not have 1-1 relation to PropertyOrFieldInfo
         // For exemple in the case of expression backed properties
         Port? MakePort(SignalPort p, PropertyOrFieldInfo s){ // TODO : _Not_ have property or field info used here ? confusion with part property autoconstruction
-            var newPort = new Port(
-                /// Unbacked Property use the property name as the exposed connector name, otherwise default to <see cref="Part.CplxImplicitInitialization"/> method
-                label : s.Type == PropertyOrFieldType.UnbackedProperty ? s.Name : p.Name ?? s.Name,
-                owner : instance,
-                isPublic : s.IsPublicOrAssembly
-            );
+            // Unbacked Property use the property name as the exposed connector name, otherwise default to <see cref="Part.CplxImplicitInitialization"/> method
+            var label = s.Type == PropertyOrFieldType.UnbackedProperty ? s.Name : p.Name ?? s.Name;
+            var isPublic = s.IsPublicOrAssembly;
+
+            Port newPort = p switch
+            {
+                ConnectablePort c1 => new CConnectablePort(label, instance, isPublic),
+                WireablePort c1 => new CWireablePort(label, instance, isPublic),
+                WireEnd c1 => new CWireEnd(label, instance, isPublic),
+                _ => throw new NotImplementedException(),
+            };
             if (p.Implementations.TryPeek(out var partPort))
             {
                 // There is an implementation, check that it's not on this part already
@@ -83,6 +88,12 @@ internal class ConnectionConcept : IConcept<InstanceConnectivity>
                 if (newPort != null)
                     portsWireable.Add(newPort);
             }, acceptUnbacked:  true);
+        ScanObjectContentFor<WireEnd>(template,
+            (p, s) => {
+                var newPort = MakePort(p, s);
+                if (newPort != null)
+                    portsWireable.Add(newPort);
+            }, acceptUnbacked: true);
 
         var signals = new List<Signal>();
         ScanObjectContentFor<Signal>(template,
@@ -122,7 +133,7 @@ internal class ConnectionConcept : IConcept<InstanceConnectivity>
         }
         // Apply wiring and connection construction, defined in IPartConnectable
         List<AssemblingConnection> selfDefinedConnection = [];
-        List<WiringAction> selfDefinedWirings = [];
+        List<WiringConnection> selfDefinedWirings = [];
         if (template is IPartConnectable a3)
         {
             // User defined connections are created from here

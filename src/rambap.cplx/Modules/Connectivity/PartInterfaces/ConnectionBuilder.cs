@@ -1,6 +1,7 @@
 ﻿using rambap.cplx.Core;
 using rambap.cplx.PartProperties;
 using rambap.cplx.Modules.Connectivity.PinstanceModel;
+using rambap.cplx.Modules.Connectivity.Templates;
 
 #pragma warning disable IDE0130 // Namespace does not match folder structure
 namespace rambap.cplx.PartInterfaces;
@@ -90,14 +91,14 @@ public class ConnectionBuilder : ConnectivityBuilder
 
     internal List<StructuralConnection> StructuralConnections { get; } = [];
     internal List<AssemblingConnection> Connections { get; } = [];
-    internal List<WiringAction> Wirings { get; } = [];
+    internal List<WiringConnection> Wirings { get; } = [];
 
     private void AssertOwnThisCabling(Mate cabling)
     {
         if (!Connections.Contains(cabling))
             throw new InvalidOperationException($"Cabling {cabling} is not owned by this");
     }
-    private void AssertOwnThisWiring(WiringAction wiring)
+    private void AssertOwnThisWiring(PinJunction wiring)
     {
         if (!Wirings.Contains(wiring))
             throw new InvalidOperationException($"Wiring {wiring} is not owned by this");
@@ -200,6 +201,18 @@ public class ConnectionBuilder : ConnectivityBuilder
 
 
 
+    private PlaceholderWireSpool? PlaceholderWireSpool;
+    private PlaceholderWireSpool GetCreatePlaceholderWireSpool()
+    {
+        if(PlaceholderWireSpool == null)
+        {
+            PlaceholderWireSpool = new PlaceholderWireSpool();
+            var contextComponent = this.ContextInstance.Parent;
+            contextComponent.AddConceptPart(PlaceholderWireSpool);
+        }
+        return PlaceholderWireSpool!;
+    }
+
 
     /// <summary>
     /// Connect connectorA and connectorB using a non descript, signal carrying wire <br/>
@@ -208,74 +221,136 @@ public class ConnectionBuilder : ConnectivityBuilder
     /// <param name="wireableA">Left side connector. Must be owed by this part or one of it components</param>
     /// <param name="wireableB">Rigth side connector. Must be owed by this part or one ofits components</param>
     /// <returns>Object representing the created wire</returns>
-    public Wire Wire(ISingleWireable wireableA, ISingleWireable wireableB)
+    public void Wire(ISingleWireable wireableA, ISingleWireable wireableB)
+        => Wire(wireableA, wireableB, GetCreatePlaceholderWireSpool(), 100);
+
+    public void Wire(ISingleWireable wireableA, ISingleWireable wireableB, WireSpool wireSpool, double length)
     {
-        var wireablePortA = wireableA.SingleWireablePort;
-        var wireablePortB = wireableB.SingleWireablePort;
-        ContextPart.AssertIsOwnerOrParent(wireablePortA);
-        ContextPart.AssertIsOwnerOrParent(wireablePortB);
-        var connection = new Wire(wireablePortA, wireablePortB)
+        ContextPart.AssertIsOwnerOrParent(wireableA.SingleWireablePort);
+        ContextPart.AssertIsOwnerOrParent(wireableB.SingleWireablePort);
+        ContextPart.AssertIsASubComponent(wireSpool);
+
+        WirePart wire = new WirePart()
         {
-            LeftPortComponent = wireablePortA.Owner!.ImplementingComponent!,
-            RigthPortComponent = wireablePortB.Owner!.ImplementingComponent!,
-            DeclaringComponent = ContextInstance.Parent
+            Length = length,
+            Origin = wireSpool
         };
-        Wirings.Add(connection);
-        return connection;
+        var contextComponent = this.ContextInstance.Parent;
+        contextComponent.AddConceptPart(wire);
+
+        Wire(wireableA, wire.LeftPort);
+        Wire(wire.RightPort, wireableB);
     }
 
-    public List<Wire> Wire(Signal signalA, Signal signalB)
+    public void Wire(WireEnd wireEnd, ISingleWireable wireable)
+        => Wire(wireable, wireEnd);
+    public void Wire(ISingleWireable wireable, WireEnd wireEnd)
+    {
+        ContextPart.AssertIsOwnerOrParent(wireable.SingleWireablePort);
+        ContextPart.AssertIsOwnerOrParent(wireEnd);
+
+        CWireablePort pa = (CWireablePort)wireable.SingleWireablePort.LocalImplementation;
+        CWireEnd pb = (CWireEnd)wireEnd.LocalImplementation;
+
+        var junction = new PinJunction()
+        {
+            WireablePort = pa,
+            LeftPortComponent = pa.Owner.Parent,
+            WireEndPort = pb,
+            RigthPortComponent = pb.Owner.Parent,
+            DeclaringComponent = ContextInstance.Parent,
+        };
+        Wirings.Add(junction);
+    }
+
+    public void Wire(WireEnd wireEndA, WireEnd wireEndB)
+    {
+
+        CWireEnd pa = (CWireEnd)wireEndA.LocalImplementation;
+        CWireEnd pb = (CWireEnd)wireEndB.LocalImplementation;
+
+        var junction = new WireJunction()
+        {
+            LeftWireEnd = pa,
+            LeftPortComponent = pa.Owner.Parent,
+            RigthWireEnd = pb,
+            RigthPortComponent = pb.Owner.Parent,
+            DeclaringComponent = ContextInstance.Parent,
+        };
+        Wirings.Add(junction);
+    }
+
+
+    public void Wire(Signal signalA, Signal signalB)
+        => Wire(signalA, signalB, GetCreatePlaceholderWireSpool(), 100);
+
+    public void Wire(Signal signalA, Signal signalB, WireSpool wireSpool, double length)
     {
         ContextPart.AssertIsOwnerOrParent(signalA);
         ContextPart.AssertIsOwnerOrParent(signalB);
-        List<Wire> wires = [];
-        // All port assigned to the signals must be wireable
-        var leftPorts = signalA.Assignations.Cast<ISingleWireable>();
-        var rigthPorts = signalB.Assignations.Cast<ISingleWireable>();
+
+        // All port assigned to the signals must be wireable or wireEnd
+        var signalPortsA = signalA.Assignations;
+        var signalPortsB = signalB.Assignations;
         // TODO : behavior when wiring signal defined targetting / from other subparts ?
-        foreach (var wireableA in leftPorts)
+        // Only link publicly visible ports ?
+        foreach (var portA in signalPortsA.OfType<WireablePort>())
         {
-            foreach (var wireableB in rigthPorts)
+            foreach (var portB in signalPortsB.OfType<WireablePort>())
             {
-                wires.Add(Wire(wireableA,wireableB));
+                Wire(portA, portB, wireSpool, length);
+            }
+            foreach (var wireEndB in signalPortsB.OfType<WireEnd>())
+            {
+                Wire(portA, wireEndB);
             }
         }
-        return wires;
+        foreach (var wireEndA in signalPortsA.OfType<WireEnd>())
+        {
+            foreach (var PortB in signalPortsB.OfType<WireablePort>())
+            {
+                Wire(wireEndA, PortB);
+            }
+            foreach (var wireEndB in signalPortsB.OfType<WireEnd>())
+            {
+                Wire(wireEndA, wireEndB);
+            }
+        }
     }
 
-    public Twist Twist(IEnumerable<WiringAction> twistedCablings)
-    {
-        foreach (var c in twistedCablings)
-            AssertOwnThisWiring(c);
-        var path = WiringAction.GetCommonPathOrThrow(twistedCablings);
-        foreach (var c in twistedCablings)
-            Wirings.Remove(c);
-        var twist = new Twist(twistedCablings)
-        {
-            LeftPortComponent = path.Item1.Owner!.ImplementingComponent!,
-            RigthPortComponent = path.Item2.Owner!.ImplementingComponent!,
-            DeclaringComponent = ContextInstance.Parent
-        };
-        Wirings.Add(twist);
-        return twist;
-    }
+    //public Twist Twist(IEnumerable<WiringSet> twistedCablings)
+    //{
+    //    foreach (var c in twistedCablings)
+    //        AssertOwnThisWiring(c);
+    //    var path = WiringSet.GetCommonPathOrThrow(twistedCablings);
+    //    foreach (var c in twistedCablings)
+    //        Wirings.Remove(c);
+    //    var twist = new Twist(twistedCablings)
+    //    {
+    //        LeftPortComponent = path.Item1.Owner!.ImplementingComponent!,
+    //        RigthPortComponent = path.Item2.Owner!.ImplementingComponent!,
+    //        DeclaringComponent = ContextInstance.Parent
+    //    };
+    //    Wirings.Add(twist);
+    //    return twist;
+    //}
 
-    public Shield Shield(IEnumerable<WiringAction> twistedCablings)
-    {
-        foreach (var c in twistedCablings)
-            AssertOwnThisWiring(c);
-        var path = WiringAction.GetCommonPathOrThrow(twistedCablings);
-        foreach (var c in twistedCablings)
-            Wirings.Remove(c);
-        var twist = new Shield(twistedCablings)
-        {
-            LeftPortComponent = path.Item1.Owner!.ImplementingComponent!,
-            RigthPortComponent = path.Item2.Owner!.ImplementingComponent!,
-            DeclaringComponent = ContextInstance.Parent
-        };
-        Wirings.Add(twist);
-        return twist;
-    }
+    //public Shield Shield(IEnumerable<WiringSet> twistedCablings)
+    //{
+    //    foreach (var c in twistedCablings)
+    //        AssertOwnThisWiring(c);
+    //    var path = WiringSet.GetCommonPathOrThrow(twistedCablings);
+    //    foreach (var c in twistedCablings)
+    //        Wirings.Remove(c);
+    //    var twist = new Shield(twistedCablings)
+    //    {
+    //        LeftPortComponent = path.Item1.Owner!.ImplementingComponent!,
+    //        RigthPortComponent = path.Item2.Owner!.ImplementingComponent!,
+    //        DeclaringComponent = ContextInstance.Parent
+    //    };
+    //    Wirings.Add(twist);
+    //    return twist;
+    //}
 
     public void AssignTo(Signal signal, SignalPort port)
     {

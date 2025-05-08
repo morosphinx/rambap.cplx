@@ -86,10 +86,8 @@ public class ConnectionTableProperty
         Structural,
         Mate,
         Cable,
-        Wire,
-        Bundle,
-        Twist,
-        Shield,
+        PinJunction,
+        WireJunction,
     }
 
     public ConnectionKind GetConnectionKind
@@ -98,10 +96,8 @@ public class ConnectionTableProperty
             StructuralConnection => ConnectionKind.Structural,
             Mate => ConnectionKind.Mate,
             Cable => ConnectionKind.Cable,
-            Wire => ConnectionKind.Wire,
-            Bundle => ConnectionKind.Bundle,
-            Twist => ConnectionKind.Twist,
-            Shield => ConnectionKind.Shield,
+            PinJunction => ConnectionKind.PinJunction,
+            WireJunction => ConnectionKind.WireJunction,
             _ => throw new NotImplementedException(),
         };
 

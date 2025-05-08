@@ -144,7 +144,7 @@ public partial class Part
     /// <param name="alternativesConfiguration">Specify how <see cref="Alternatives{T}"/> parts should be chosen</param>
     /// <returns><inheritdoc cref="Part.Instantiate()"/></returns>
     public Component Instantiate(AlternativesConfiguration alternativesConfiguration)
-        => new Component(this, alternativesConfiguration)
+        => new Component(null, this, alternativesConfiguration)
         {
             CN = "*",
             Comment = $"ROOT COMPONENT",

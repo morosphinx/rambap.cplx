@@ -10,7 +10,7 @@ namespace rambap.cplx.Modules.Connectivity.PinstanceModel;
 /// Port are can implement either <see cref="WireablePort"/> or <see cref="ConnectablePort"/>,
 /// those differ only by their use in<see cref="PartInterfaces.ConnectivityBuilder"/>
 /// </remarks>
-public partial class Port
+public abstract partial class Port
 {    
     /// <summary>
     /// Identifier of this port, visible from outside this interface
@@ -165,6 +165,21 @@ public partial class Port
         else return false;
     }
 }
+
+public class CConnectablePort : Port
+{
+    public CConnectablePort(string label, Pinstance owner, bool isPublic) : base(label, owner, isPublic){}
+}
+
+public class CWireablePort : Port
+{
+    public CWireablePort(string label, Pinstance owner, bool isPublic) : base(label, owner, isPublic) { }
+}
+public class CWireEnd : Port
+{
+    public CWireEnd(string label, Pinstance owner, bool isPublic) : base(label, owner, isPublic) { }
+}
+
 
 internal abstract class PortDefinition
 {

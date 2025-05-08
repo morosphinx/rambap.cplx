@@ -159,10 +159,11 @@ public class BasicUseCases
 
         public void Assembly_Connections(ConnectionBuilder Do)
         {
-            Do.Twist([
-                Do.Wire(C01.Pin(1), C02.Pin(4)),
-                Do.Wire(C01.Pin(2), C02.Pin(3)),
-            ]);
+            throw new NotImplementedException();
+            // Do.Twist([
+            //     Do.Wire(C01.Pin(1), C02.Pin(4)),
+            //     Do.Wire(C01.Pin(2), C02.Pin(3)),
+            // ]);
         }
     }
 

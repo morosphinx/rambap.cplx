@@ -46,6 +46,10 @@ public class WireablePort : SignalPort, ISingleWireable
     public WireablePort SingleWireablePort => this;
 }
 
+public class WireEnd : SignalPort
+{
+}
+
 
     /* Dead code moved to Pintance model Port.cs, to clean
     public static bool AreCompatible(SignalPort A, SignalPort B)

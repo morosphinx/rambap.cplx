@@ -11,24 +11,26 @@ public class Component
     private static string MakeCommment(IEnumerable<ComponentDescriptionAttribute> commentAttributes)
         => string.Join("", commentAttributes.Select(c => c.Text));
 
-    internal Component(Part template, AlternativesConfiguration conf)
+    internal Component(Component? parent, Part template, AlternativesConfiguration conf)
     {
         if (template.ImplementingComponent != null)
             throw new InvalidOperationException("A Component has already been instantiated with this part");
         template.CplxImplicitInitialization(); // run the implicit init on this part and all subparts
         template.ImplementingComponent = this;
+        // Set relationships
+        Parent = parent;
+        Template = template;
 
         // Create components from Parts properties/fields
         ScanObjectContentFor<Part>(template,
             (p, i) =>
                 subComponents.Add(
-                new Component(p, conf)
+                new Component(this, p, conf)
                 {
                     CN = p.CNOverride ??
                         (i.IsFromAndEnumerable ? $"{i.Name}_{i.IndexInEnumerable:00}" : i.Name),
                     Comment = MakeCommment(i.Comments),
                     IsPublic = i.IsPublicOrAssembly,
-                    Parent = this,
                 }),
             ignoredDerivedTypes: [typeof(IAlternative)] // Avoid matching on alternative, who are IEnumerable<Part>
             );
@@ -39,16 +41,15 @@ public class Component
             {
                 var selectedPart = conf.Decide(a)!;
                 subComponents.Add(
-                new Component(selectedPart, conf)
+                new Component(this, selectedPart, conf)
                 {
                     CN = selectedPart.CNOverride ??
                         (i.IsFromAndEnumerable ? $"{i.Name}_{i.IndexInEnumerable:00}" : i.Name),
                     Comment = MakeCommment(i.Comments),
                     IsPublic = i.IsPublicOrAssembly,
-                    Parent = this,
                 });
             });
-
+        // Run the concept calculations
         Instance = new Pinstance(this, template, conf);
     }
 
@@ -65,7 +66,11 @@ public class Component
     /// Component that contains this component in his SubComponents <br/>
     /// If null, this is the root component.
     /// </summary>
-    internal Component? Parent { get; init; } = null;
+    internal Component? Parent { get; }
+
+    // TODO : define if relevant to keep. Needed if we want to add more parts to the component during
+    // concept calculation, as this require setting the parent part
+    internal Part Template { get; }
 
     /// <summary>
     /// Component Number : Identifier of this component in its owner
@@ -127,7 +132,22 @@ public class Component
     /// Immediate sub-Components of this component. All are owned by this component.
     /// </summary>
     public IEnumerable<Component> SubComponents => subComponents;
-    internal List<Component> subComponents { get; } = new();
+    internal void AddConceptPart(Part part)
+    {
+        // Create Component
+        var backupCN = subComponents.Count.ToString();
+        var newComponent = new Component(this, part, new AlternativesConfiguration())
+        {
+            CN = $"@AUTO:{(string.IsNullOrEmpty(part.CNOverride) ? backupCN : part.CNOverride)}",
+            IsPublic = false,
+        };
+        // Set part Parent : In component construction parent is set to null, as we do not restart initialisation : todo, fix
+        part.Parent = this.Template;
+        // TBD / TODO : add to another component list ? 
+        subComponents.Add(newComponent);
+    }
+
+    private List<Component> subComponents { get; } = new();
 
     /// <summary>
     /// Wrapper for <see cref="Pinstance.PN"/> <br/>
