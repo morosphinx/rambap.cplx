@@ -21,12 +21,12 @@ public class SignalBuilder
         ContextInstance = instance;
     }
 
-    public void Assign(Signal signal, SignalPort to)
+    public void Assign(Signal signal, PartPort to)
     {
         AssignBase(signal, to);
     }
 
-    internal static void AssignBase(Signal signal, SignalPort to)
+    internal static void AssignBase(Signal signal, PartPort to)
     {
         if (!signal.Assignations.Contains(to))
         {

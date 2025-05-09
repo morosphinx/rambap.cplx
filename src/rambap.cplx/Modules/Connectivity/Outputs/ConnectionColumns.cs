@@ -2,6 +2,7 @@
 using rambap.cplx.Modules.Base.Output;
 using rambap.cplx.Modules.Base.TableModel;
 using rambap.cplx.Modules.Connectivity.PinstanceModel;
+using System.Reflection.Emit;
 using static rambap.cplx.Modules.Connectivity.Outputs.ConnectionTableProperty;
 
 namespace rambap.cplx.Modules.Connectivity.Outputs;
@@ -103,7 +104,8 @@ public static class ConnectionColumns
             format,
             c => c.Connection switch
             {
-                Cable cable=> getter.Invoke(cable.CableComponent),
+                // TEMP DISABLE
+                // Cable cable=> getter.Invoke(cable.CableComponent),
                 _ => "",
             });
 
@@ -117,7 +119,8 @@ public static class ConnectionColumns
             format,
             c => c.Connection switch
             {
-                Cable => getter.Invoke(c.GetCableConnectionComponent(side)!),
+                // TEMP DISABLE
+                // Cable => getter.Invoke(c.GetCableConnectionComponent(side)!),
                 _ => "",
             });
 
@@ -131,7 +134,8 @@ public static class ConnectionColumns
             format,
             c => c.Connection switch
             {
-                Cable => getter.Invoke(c.GetCableConnectionPort(side)!),
+                // TEMP DISABLE
+                // Cable => getter.Invoke(c.GetCableConnectionPort(side)!),
                 _ => "",
             });
 

@@ -55,30 +55,32 @@ public class ConnectionTableProperty
 
     public Component? GetCableConnectionComponent(PortSide side)
     {
-        if (Connection is Cable c)
-        {
-            return side switch
-            {
-                PortSide.Left => c.LeftMate.RightPort.Owner.Parent,
-                PortSide.Rigth => c.RigthMate.LeftPort.Owner.Parent,
-                _ => throw new NotImplementedException(),
-            };
-
-        } else return null;
+        // if (Connection is Cable c)
+        // {
+        //     return side switch
+        //     {
+        //         PortSide.Left => c.LeftMate.RightPort.Owner.Parent,
+        //         PortSide.Rigth => c.RigthMate.LeftPort.Owner.Parent,
+        //         _ => throw new NotImplementedException(),
+        //     };
+        // 
+        // } else return null;
+        return null; // TEMP DISABLE
     }
     public Port? GetCableConnectionPort(PortSide side)
     {
-        if (Connection is Cable c)
-        {
-            return side switch
-            {
-                PortSide.Left => c.LeftMate.RightPort,
-                PortSide.Rigth => c.RigthMate.LeftPort,
-                _ => throw new NotImplementedException(),
-            };
-
-        }
-        else return null;
+        // if (Connection is Cable c)
+        // {
+        //     return side switch
+        //     {
+        //         PortSide.Left => c.LeftMate.RightPort,
+        //         PortSide.Rigth => c.RigthMate.LeftPort,
+        //         _ => throw new NotImplementedException(),
+        //     };
+        // 
+        // }
+        // else return null;
+        return null; // TEMP DISABLE
     }
 
     public enum ConnectionKind
@@ -95,7 +97,6 @@ public class ConnectionTableProperty
         {
             StructuralConnection => ConnectionKind.Structural,
             Mate => ConnectionKind.Mate,
-            Cable => ConnectionKind.Cable,
             PinJunction => ConnectionKind.PinJunction,
             WireJunction => ConnectionKind.WireJunction,
             _ => throw new NotImplementedException(),

@@ -10,7 +10,7 @@ namespace rambap.cplx.PartProperties;
 /// A port, generaly electrical, that can carry a signal<br/>
 /// Do not declare on a Part, instead declare either a <see cref="ConnectablePort"/> or an <see cref="WireablePort"/>
 /// </summary>
-public abstract class SignalPort : IPartProperty
+public abstract class PartPort : IPartProperty
 {
     /// <summary>
     /// A stack of Pinstance's <see cref="Port"/> e
@@ -31,7 +31,7 @@ public abstract class SignalPort : IPartProperty
 /// To be then used by Parts implementing <see cref="PartInterfaces.IPartConnectable"/> <br/>
 /// Define <see cref="ConnectablePort"/> as public when they can be seen and used from outside the Part.
 /// </summary>
-public class ConnectablePort : SignalPort, ISingleMateable
+public sealed class ConnectablePort : PartPort, ISingleMateable
 {
     public ConnectablePort SingleMateablePort => this;
 }
@@ -41,12 +41,12 @@ public class ConnectablePort : SignalPort, ISingleMateable
 /// To be then used by Parts implementing <see cref="PartInterfaces.IPartConnectable"/> <br/>
 /// Define <see cref="ConnectablePort"/> as public when they can be seen and used from outside the Part.
 /// </summary>
-public class WireablePort : SignalPort, ISingleWireable
+public sealed class WireablePort : PartPort, ISingleWireable
 {
     public WireablePort SingleWireablePort => this;
 }
 
-public class WireEnd : SignalPort
+public sealed class WireEnd : PartPort
 {
 }
 

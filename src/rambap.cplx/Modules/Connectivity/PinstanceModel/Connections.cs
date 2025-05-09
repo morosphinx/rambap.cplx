@@ -11,7 +11,6 @@ public abstract class SignalPortConnection
 
     public abstract Port LeftPort { get; }
     public abstract Port RightPort { get; }
-    public abstract bool IsExclusive { get; }
 
     public Port GetOtherSide(Port thisSide)
     {
@@ -35,14 +34,11 @@ public class StructuralConnection : SignalPortConnection
     }
     public override Port LeftPort => ConnectedPort;
     public override Port RightPort => WiringPort;
-    public override bool IsExclusive => false;
 }
 
-public abstract class AssemblingConnection : SignalPortConnection { }
-
-public class Mate : AssemblingConnection
+public class Mate : SignalPortConnection
 {
-    internal Mate(SignalPort leftConnectedPort, SignalPort rigthConnectedPort)
+    internal Mate(PartPort leftConnectedPort, PartPort rigthConnectedPort)
     {
         LeftConnectedPort = leftConnectedPort.LocalImplementation;
         RigthConnectedPort = rigthConnectedPort.LocalImplementation;
@@ -58,25 +54,4 @@ public class Mate : AssemblingConnection
 
     public override Port LeftPort => LeftConnectedPort;
     public override Port RightPort => RigthConnectedPort;
-    public override bool IsExclusive => true;
-}
-
-public class Cable : AssemblingConnection
-{
-    public override Port LeftPort => LeftMate.LeftPort;
-    public override Port RightPort => RigthMate.RightPort;
-    public override bool IsExclusive => true;
-
-    public Mate LeftMate { get; }
-    public Mate RigthMate { get; }
-
-    public Component CableComponent { get; }
-
-    internal Cable(Component cable, Mate leftMate, Mate rigthMate)
-    {
-        CableComponent = cable;
-        LeftMate = leftMate;
-        RigthMate = rigthMate;
-    }
-
 }

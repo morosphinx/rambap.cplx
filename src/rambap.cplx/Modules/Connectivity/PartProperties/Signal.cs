@@ -15,7 +15,7 @@ public class Signal : IPartProperty
         Implementation = new(label, owner, isPublic);
     }
 
-    internal List<SignalPort> Assignations { get; } = [];
+    internal List<PartPort> Assignations { get; } = [];
 }
 
 internal class ImplicitAssignedSignal : Signal

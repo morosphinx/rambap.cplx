@@ -12,8 +12,9 @@ public class InstanceConnectivity : IInstanceConceptProperty
     public bool IsACable { get; init; } = true;
 
     public required List<Port> Connectors { get; init; }
+    public required List<Mate> Connections { get; init; }
+
     public required List<Port> Wireables { get; init; }
-    public required List<AssemblingConnection> Connections { get; init; }
     public required List<WiringConnection> Wirings { get; init; }
 
     public required List<PSignal> Signals { get; init; }
@@ -40,7 +41,7 @@ internal class ConnectionConcept : IConcept<InstanceConnectivity>
         // Take a signalPort and implement it
         // Note that SignalPorts are do not have 1-1 relation to PropertyOrFieldInfo
         // For exemple in the case of expression backed properties
-        Port? MakePort(SignalPort p, PropertyOrFieldInfo s){ // TODO : _Not_ have property or field info used here ? confusion with part property autoconstruction
+        Port? MakePort(PartPort p, PropertyOrFieldInfo s){ // TODO : _Not_ have property or field info used here ? confusion with part property autoconstruction
             // Unbacked Property use the property name as the exposed connector name, otherwise default to <see cref="Part.CplxImplicitInitialization"/> method
             var label = s.Type == PropertyOrFieldType.UnbackedProperty ? s.Name : p.Name ?? s.Name;
             var isPublic = s.IsPublicOrAssembly;
@@ -134,7 +135,7 @@ internal class ConnectionConcept : IConcept<InstanceConnectivity>
             a2.Assembly_Signals(signalBuilder);
         }
         // Apply wiring and connection construction, defined in IPartConnectable
-        List<AssemblingConnection> selfDefinedConnection = [];
+        List<Mate> selfDefinedConnection = [];
         List<WiringConnection> selfDefinedWirings = [];
         if (template is IPartConnectable a3)
         {

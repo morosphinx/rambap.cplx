@@ -25,6 +25,18 @@ public abstract partial class Port
     private IEnumerable<Port> GetExpositionChilds()
         => Definition is PortDefinition_Exposed def ? def.ExposedPort.GetExpositionChilds() : [];
 
+    internal IEnumerable<SignalPortConnection> ExpositionColumnConnection()
+        => GetExpositionColumn().SelectMany(c => c.Connections);
+
+    public bool IsExpositionColumnUsageCombined()
+        => Usage switch
+        {
+            PortUsage_CombinedInto => true,
+            PortUsage_ExposedAs u => u.User.IsExpositionColumnUsageCombined(),
+            null => false,
+            _ => throw new NotImplementedException(),
+        };
+
 
     public bool HasImmediateStructuralEquivalence =>
         Connections.OfType<StructuralConnection>().Any();
@@ -44,13 +56,13 @@ public abstract partial class Port
             throw new InvalidOperationException("No Structural equivalence on this port");
     }
 
+
+
     public PSignal? GetUpperSignal()
         => GetExpositionColumn()
             .Select(p => p.AssignedSignal)
             .Where(s => s != null)
             .FirstOrDefault();
-
-    // TBD : make public ?
     public Port GetUpperUsage()
     {
         return Usage switch

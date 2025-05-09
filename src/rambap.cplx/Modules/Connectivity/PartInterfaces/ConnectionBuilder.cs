@@ -76,9 +76,9 @@ public class PortBuilder : ConnectivityBuilder
     }
     // Helper methods
     // The second connectable port CANNOT be an ISingleWireablePart,
-    // Because it must be owned by the part, checked by AssertIsOwner()
+    // Because it must be a property owned by the part, checked by AssertIsOwner()
     public void ExposeAs(ISingleWireable sourcePart, WireablePort target)
-    => ExposeAs(sourcePart.SingleWireablePort, target);
+        => ExposeAs(sourcePart.SingleWireablePort, target);
 }
 
 
@@ -91,13 +91,13 @@ public class ConnectionBuilder : ConnectivityBuilder
     internal ConnectionBuilder(Component contextComponent) : base(contextComponent) { }
 
     internal List<StructuralConnection> StructuralConnections { get; } = [];
-    internal List<AssemblingConnection> Connections { get; } = [];
+    internal List<Mate> Connections { get; } = [];
     internal List<WiringConnection> Wirings { get; } = [];
 
-    private void AssertOwnThisCabling(Mate cabling)
+    private void AssertOwnThisMate(Mate mate)
     {
-        if (!Connections.Contains(cabling))
-            throw new InvalidOperationException($"Cabling {cabling} is not owned by this");
+        if (!Connections.Contains(mate))
+            throw new InvalidOperationException($"Mate {mate} is not owned by this component");
     }
     private void AssertOwnThisWire(WirePart wire)
     {
@@ -127,10 +127,9 @@ public class ConnectionBuilder : ConnectivityBuilder
     /// Mate connectorA and connectorB, or represent an implicit signal connection betweenconnectors.<br/>
     /// ConnectorA and ConnectorB are physicaly distinct connection points. <br/>
     /// </summary>
-    /// <param name="connectorA">Left side connector. Must be owed by this part or one of it components</param>
-    /// <param name="connectorB">Rigth side connector. Must be owed by this part or one ofits components</param>
-    /// <returns>Object representing the created wire</returns>
-    public Mate Mate(ISingleMateable mateableA, ISingleMateable mateableB)
+    /// <param name="connectorA">Left side connector. Must be owed by this part or one of its components</param>
+    /// <param name="connectorB">Rigth side connector. Must be owed by this part or one of its components</param>
+    public void Mate(ISingleMateable mateableA, ISingleMateable mateableB)
     {
         var connectorA = mateableA.SingleMateablePort;
         var connectorB = mateableB.SingleMateablePort;
@@ -144,7 +143,6 @@ public class ConnectionBuilder : ConnectivityBuilder
             DeclaringComponent = ContextInstance.Parent
         };
         Connections.Add(connection);
-        return connection;
     }
 
 
@@ -155,7 +153,7 @@ public class ConnectionBuilder : ConnectivityBuilder
     /// <param name="connectorA"></param>
     /// <param name="connectorB"></param>
     /// <returns></returns>
-    public Cable CableWith(Part cablePart, ISingleMateable connectorA, ISingleMateable connectorB)
+    public void CableWith(Part cablePart, ISingleMateable connectorA, ISingleMateable connectorB)
     {
         // 1 - Assert with contextInstance that cablePart is a component or subcomponent of this.
         ContextPart.AssertIsASubComponent(cablePart);
@@ -169,14 +167,13 @@ public class ConnectionBuilder : ConnectivityBuilder
         //   b - Both must NOT be connected yet (fully connectable, no connected subPort)
         if (ci.Connectors.Count() != 2)
             throw new InvalidOperationException($"{cablePart} must have exacly two connectors");
-        if (ci.Connectors.Any(c => !c.CanAddExclusiveConnection))
-            throw new InvalidOperationException($"{cablePart} is already connected elsewhere");
-        // Check that connector A and  connectorB are also not connected ?
-        // This is all to prevent the mates from begin created if any of them may fail
+
+        // TODO Check here that both ports are ready for a new mating connection
+        // This is all to prevent the mates from begin created if one of them may fail
 
         var cons = ci.Connectors.OrderBy(c => c.Label).ToList();
-        var cableLeft = (ISingleMateable) cons[0].ImplementedPort!;
-        var cableRigth = (ISingleMateable)cons[1].ImplementedPort!;
+        var cableLeftPort = (ISingleMateable) cons[0].ImplementedPort!;
+        var cableRigthPort = (ISingleMateable) cons[1].ImplementedPort!;
         // TODO : 
         // 4 - Test both direction for connection validity. If one is valid, good.
         // If none are valid, crash
@@ -184,20 +181,8 @@ public class ConnectionBuilder : ConnectivityBuilder
 
         // 5 - If all good, create both matings (call the Mate() function) and return the mates
         // Etablish // with format of wire (WirePort A, WirePort B, Wire Definition) : we are doing something similar
-        var leftMate = Mate(connectorA, cableLeft);
-        var rigthMate = Mate(cableRigth, connectorB);
-        Connections.Remove(leftMate);
-        Connections.Remove(rigthMate);
-
-        var cableComponent = cablePart.ImplementingComponent!;
-        var cable = new Cable(cableComponent, leftMate, rigthMate)
-        {
-            LeftPortComponent = leftMate.LeftPortComponent,
-            RigthPortComponent = rigthMate.RigthPortComponent,
-            DeclaringComponent = ContextInstance.Parent
-        };
-        Connections.Add(cable);
-        return cable;
+        Mate(connectorA, cableLeftPort);
+        Mate(cableRigthPort, connectorB);
     }
 
 
@@ -326,13 +311,12 @@ public class ConnectionBuilder : ConnectivityBuilder
         return createdWires;
     }
 
-    //public Twist Twist(IEnumerable<WirePart> twistedCablings)
+    //public void Twist(IEnumerable<WirePart> twistedCablings)
     //{
     //    foreach (var c in twistedCablings)
-    //        AssertOwnThisWiring(c);
+    //        AssertOwnThisWire(c);
     //    var path = WiringSet.GetCommonPathOrThrow(twistedCablings);
-    //    foreach (var c in twistedCablings)
-    //        Wirings.Remove(c);
+    //    
     //    var twist = new Twist(twistedCablings)
     //    {
     //        LeftPortComponent = path.Item1.Owner!.ImplementingComponent!,
@@ -360,7 +344,7 @@ public class ConnectionBuilder : ConnectivityBuilder
     //    return twist;
     //}
 
-    public void AssignTo(Signal signal, SignalPort port)
+    public void AssignTo(Signal signal, PartPort port)
     {
         throw new NotImplementedException();
         // port.Signal = signal;

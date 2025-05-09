@@ -5,7 +5,7 @@ namespace rambap.cplx.Modules.Connectivity.PinstanceModel;
 
 public abstract class WiringConnection : SignalPortConnection
 {
-    private static (SignalPort, SignalPort) GetCommonPathOrThrow(IEnumerable<PinJunction> connections)
+    private static (PartPort, PartPort) GetCommonPathOrThrow(IEnumerable<PinJunction> connections)
     {
         // Check that all items share the same path
         var leftTopMosts = connections.Select(t => t.LeftPort.GetUpperUsage());
@@ -23,7 +23,6 @@ public class PinJunction : WiringConnection
 
     public override Port LeftPort => WireablePort;
     public override Port RightPort => WireEndPort;
-    public override bool IsExclusive => false;
 }
 
 public class WireJunction : WiringConnection
@@ -33,7 +32,6 @@ public class WireJunction : WiringConnection
 
     public override Port LeftPort => LeftWireEnd;
     public override Port RightPort => RigthWireEnd;
-    public override bool IsExclusive => false;
 }
 
 //public abstract class WireableGrouping : WiringAction
