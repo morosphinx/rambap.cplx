@@ -100,6 +100,33 @@ class ConnectedPart : Part
     public ConnectablePort APort;
 }
 
+public class PortSignalDef : PropertyGroup<Connector>
+{
+    public Signal RX => Part.SignalOf(2);
+    public Signal TX => Part.SignalOf(3);
+    public Signal GND => Part.SignalOf(5);
+}
+class GenPin : Pin { }
+class GenConnector : Connector<GenPin>
+{
+    public GenConnector() : base(9){ }
+}
+class GenConnectorWithSignal : GenConnector
+{
+    public PortSignalDef Signals;
+}
+class BlackBox_Type9 : Part, IPartConnectable
+{
+    public GenConnectorWithSignal J01;
+    public GenConnectorWithSignal J02;
+
+    public void Assembly_Connections(ConnectionBuilder Do)
+    {
+        Do.Wire(J01.Signals.RX, J02.Signals.TX);
+        Do.Wire(J01.Signals.TX, J02.Signals.RX);
+        Do.Wire(J01.Signals.GND, J02.Signals.GND);
+    }
+}
 
 [TestClass]
 public class TestBlackBoxesICDs
@@ -126,4 +153,5 @@ public class TestBlackBoxesICDs
     [TestMethod] public void BB7A() => TestBlackBoxICD(new BlackBox_Type7A());
     [TestMethod] public void BB7B() => TestBlackBoxICD(new BlackBox_Type7B());
     [TestMethod] public void BB8() => TestBlackBoxICD(new BlackBox_Type8());
+    [TestMethod] public void BB9() => TestBlackBoxICD(new BlackBox_Type9());
 }

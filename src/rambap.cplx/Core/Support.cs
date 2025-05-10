@@ -1,6 +1,8 @@
 ﻿using rambap.cplx.Attributes;
+using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using static rambap.cplx.Core.Support;
 
 // Unit testing access some internal properties : 
 [assembly: InternalsVisibleTo("rambap.cplxtests.CoreTests")]
@@ -122,88 +124,90 @@ internal static class Support
         // Object's field and properties are evaluated, starting with the parent classes.
         foreach (var evalType in typeStack)
         {
-            // Search type and parent for all fields assignable to T that does not have the CplxIgnore Attribute
-            var relevantFields = GetRelevantFields<T>(evalType, ignoredDerivedTypes);
-            foreach (var rf in relevantFields)
-            {
-                var f = rf.Item1;
-                bool isPublicOrAssembly = f.IsPublic || f.IsAssembly;
-                var rename = f.GetCustomAttribute<RenameAttribute>()?.Name;
-                var isEnumerable = rf.Item2.IsEnumerable;
-                PropertyOrFieldInfo info = new()
-                {
-                    Name = rename ?? f.Name,
-                    Comments = f.GetCustomAttributes<ComponentDescriptionAttribute>(),
-                    IsPublicOrAssembly = isPublicOrAssembly,
-                    Type = PropertyOrFieldType.Field,
-                    IsFromAndEnumerable = isEnumerable,
-                    IndexInEnumerable = 0,
-                };
-                if (isEnumerable)
-                {
-                    int idx = 0;
-                    var val = f.GetValue(obj) as IEnumerable<T>;
-                    if (val != null)
-                        foreach(var i in val)
-                            onData(i!, info with { IndexInEnumerable = idx ++ });
-
-                } else
-                {
-                    var val = f.GetValue(obj) as T;
-                    if (val is null && constructNulls)
-                    {
-                        // Construct non enumerable properties
-                        val = constructor(f.FieldType, info);
-                        f.SetValue(obj, val);
-                    }
-                    if (val != null || acceptNulls)
-                        onData(val!, info); // TBD : Throw on null, even if accept nulls ?
-                }
-            }
-
-            // Search type and parent for all properties assignable to T that does not have the CplxIgnore Attribute
-            var relevantProperties = GetRelevantProperties<T>(evalType, ignoredDerivedTypes);
+            // Search type and parent for all fields or properties assignable to T that does not have the CplxIgnore Attribute
+            var validMembers = GetRelevantMembers<T>(evalType, ignoredDerivedTypes);
             if (!includeUnbackedProperties)
             {
                 // Avoid matching expression bodied properties, such as "Part Name => Other ;"/
                 // Expression bodied properties have a get accessor, no set, and cannot be initialised
-                relevantProperties = relevantProperties.Where(v => v.Item2.IsBacked);
+                validMembers = validMembers
+                    .Where(v => v.memberInfo is not PropertyInfo || v.scanInfo.IsBacked);
             }
-
-            foreach (var rp in relevantProperties)
+            foreach (var m in validMembers)
             {
-                var p = rp.Item1;
-                var isBacked = rp.Item2.IsBacked;
-                bool isPublicOrAssembly = p.GetMethod!.IsPublic || p.GetMethod!.IsAssembly;
-                var rename = p.GetCustomAttribute<RenameAttribute>()?.Name;
-                var isEnumerable = rp.Item2.IsEnumerable;
-                PropertyOrFieldInfo info = new()
+                // Create a struct to pack the info to the rest of cplx
+                var member = m.memberInfo;
+                bool isPublicOrAssembly = member switch
                 {
-                    Name = rename ?? p.Name,
-                    Comments = p.GetCustomAttributes<ComponentDescriptionAttribute>(),
+                    FieldInfo f => f.IsPublic || f.IsAssembly,
+                    PropertyInfo p => p.GetMethod!.IsPublic || p.GetMethod!.IsAssembly,
+                    _ => throw new NotImplementedException()
+                };
+                var rename = member.GetCustomAttribute<RenameAttribute>()?.Name;
+                var isEnumerable = m.scanInfo.IsEnumerable;
+                var cplxMemberType = member switch
+                {
+                    FieldInfo f => PropertyOrFieldType.Field,
+                    PropertyInfo p => m.scanInfo.IsBacked
+                        ? PropertyOrFieldType.BackedProperty
+                        : PropertyOrFieldType.UnbackedProperty,
+                    _ => throw new NotImplementedException()
+                };
+                PropertyOrFieldInfo cplxInfo = new()
+                {
+                    Name = rename ?? member.Name,
+                    Comments = member.GetCustomAttributes<ComponentDescriptionAttribute>(),
                     IsPublicOrAssembly = isPublicOrAssembly,
-                    Type = isBacked ? PropertyOrFieldType.BackedProperty : PropertyOrFieldType.UnbackedProperty,
+                    Type = cplxMemberType,
                     IsFromAndEnumerable = isEnumerable,
                     IndexInEnumerable = 0,
+                };
+
+                // Work on the object itself
+                object? reflexionValue = member switch
+                {
+                    FieldInfo f => f.GetValue(obj),
+                    PropertyInfo p => p.GetValue(obj),
+                    _ => throw new NotImplementedException()
+                };
+                Type reflexionType = member switch
+                {
+                    FieldInfo f => f.FieldType,
+                    PropertyInfo p => p.PropertyType,
+                    _ => throw new NotImplementedException()
                 };
                 if (isEnumerable)
                 {
                     int idx = 0;
-                    var val = p.GetValue(obj) as IEnumerable<T>;
-                    if (val != null) 
-                        foreach (var i in val)
-                            onData(i!, info with { IndexInEnumerable = idx++ });
-                }
-                else
+                    var val = reflexionValue as IEnumerable<T>;
+                    // Do not auto-contruct enumerable
+                    // Empty enumerables do not carry any meaning for cplx
+                    if (val != null)
+                        foreach(var i in val)
+                            onData(i!, cplxInfo with { IndexInEnumerable = idx ++ });
+
+                } else
                 {
-                    var val = p.GetValue(obj) as T;
+                    var val = reflexionValue as T;
                     if (val is null && constructNulls)
                     {
-                        val = constructor(p.PropertyType, info);
-                        p.SetValue(obj, val); // Will throw if no set accessor ({get;} only, or unbacked)
+                        // Auto construct the property or field
+                        val = constructor(reflexionType, cplxInfo);
+                        switch (member)
+                        {
+                            case FieldInfo f: f.SetValue(obj, val); break;
+                            case PropertyInfo p:
+                                // TBD : check that it realy throw in case of unbacked
+                                // Previously we init-ed all field before all properties
+                                // this isn't the case. What happen if the backing field
+                                // is after the backed property in the declaration ?
+                                p.SetValue(obj, val); // Will throw if no set accessor ({get;} only, or unbacked)
+                                break;
+                            default: throw new NotImplementedException();
+                        }
                     }
                     if (val != null || acceptNulls)
-                        onData(val!, info);
+                        onData(val!, cplxInfo); // TBD : Throw on null, even if accept nulls ?
                 }
             }
         }
@@ -216,50 +220,64 @@ internal static class Support
     const BindingFlags SearchFlags =
         BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly;
 
-    record CplxRelevantFieldInfo(bool IsEnumerable);
-    private static IEnumerable<(FieldInfo, CplxRelevantFieldInfo)> GetRelevantFields<T>(
-        Type type, IEnumerable<Type>? ignoredDerivedTypes = null)
+    record CplxRelevantMemberInfo(bool IsEnumerable, bool IsBacked);
+    private static IEnumerable<(MemberInfo memberInfo, CplxRelevantMemberInfo scanInfo)> GetRelevantMembers<T>(
+        Type scannedType, IEnumerable<Type>? ignoredDerivedTypes = null)
         where T : class
     {
-        var flags = SearchFlags;
-        var fields = type.GetFields(flags)
-            .Where(f =>
-               f.GetCustomAttribute<CplxIgnoreAttribute>() == null 
-            && f.GetCustomAttribute<CompilerGeneratedAttribute>() == null); // Avoid matching fields backing auto-generated properties 
-        foreach (var f in fields)
+        var flags = SearchFlags ;
+        var validMembers = scannedType.GetMembers(flags)
+            .Where(m => m switch
+            {
+                FieldInfo f => true,
+                PropertyInfo p => p.GetMethod != null, // Only consider get-able properties
+                _ => false
+            })
+            .Where(m => m.GetCustomAttribute<CplxIgnoreAttribute>() == null
+                     && m.GetCustomAttribute<CompilerGeneratedAttribute>() == null); // Avoid matching auto-generated properties
+        var membersWithType =
+            validMembers.Select<MemberInfo, (MemberInfo info, Type type)>(m => m switch
+            {
+                FieldInfo f => (f,f.FieldType),
+                PropertyInfo p => (p, p.PropertyType),
+                _ => throw new NotImplementedException(),
+            });
+        foreach (var m in validMembers)
         {
-            if (ignoredDerivedTypes?.Any(t => f.FieldType.IsAssignableTo(t)) ?? false)
-                /**/ ;// Do nothing, ignored type
-            else if (f.FieldType.IsAssignableTo(typeof(T)))
-                yield return (f, new(false));
-            else if (f.FieldType.IsAssignableTo(typeof(IEnumerable<T>)))
-                yield return (f, new(true));
+            var memberType = m switch
+            {
+                FieldInfo f => f.FieldType,
+                PropertyInfo p => p.PropertyType,
+                _ => throw new NotImplementedException()
+            };
+            if (ignoredDerivedTypes?.Any(t => memberType.IsAssignableTo(t)) ?? false)
+                continue ;// Do nothing, ignored type
+            else if (memberType.IsAssignableTo(typeof(T)))
+            {
+                bool isBacked = false;
+                if (m is PropertyInfo p)
+                    isBacked = HasBackingField<T>(p);
+                yield return (m, new(false, isBacked));
+
+            }
+            else if (memberType.IsAssignableTo(typeof(IEnumerable<T>)))
+            {
+                bool isBacked = false;
+                if (m is PropertyInfo p)
+                    isBacked = HasBackingField<IEnumerable<T>>(p);
+                yield return (m, new(true, isBacked));
+            }
+            // Cases of property groups
+            // else if (memberType.IsAssignableTo(typeof(PropertyGroup)))
+            // {
+            //     GetRelevantMembers<T>(memberType, ignoredDerivedTypes);
+            // }
+            // else if (memberType.IsAssignableTo(typeof(IEnumerable<PropertyGroup>)))
+            // {
+            // 
+            // }
         }
     }
-
-
-    record CplxRelevantPropertyInfo(bool IsEnumerable, bool IsBacked);
-    private static IEnumerable<(PropertyInfo, CplxRelevantPropertyInfo)> GetRelevantProperties<T>(
-        Type type, IEnumerable<Type>? ignoredDerivedTypes = null)
-        where T : class
-    {
-        var flags = SearchFlags;
-        var properties = type.GetProperties(flags)
-            .Where(p =>
-               p.GetMethod != null // Only consider get-able properties
-            && p.GetCustomAttribute<CplxIgnoreAttribute>() == null
-            && p.GetCustomAttribute<CompilerGeneratedAttribute>() == null); // Avoid matching auto-generated properties
-        foreach (var p in properties)
-        {
-            if(ignoredDerivedTypes?.Any(t => p.PropertyType.IsAssignableTo(t)) ?? false)
-                /**/ ;// Do nothing, ignored type
-            else if (p.PropertyType.IsAssignableTo(typeof(T)))
-                yield return (p, new(false, HasBackingField<T>(p)));
-            else if (p.PropertyType.IsAssignableTo(typeof(IEnumerable<T>)))
-                yield return (p, new(true, HasBackingField<IEnumerable<T>>(p)));
-        }
-    }
-
 
     /// <summary>
     /// Test if the property has a backing field
