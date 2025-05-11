@@ -137,12 +137,7 @@ internal static class Support
             {
                 // Create a struct to pack the info to the rest of cplx
                 var member = m.memberInfo;
-                bool isPublicOrAssembly = member switch
-                {
-                    FieldInfo f => f.IsPublic || f.IsAssembly,
-                    PropertyInfo p => p.GetMethod!.IsPublic || p.GetMethod!.IsAssembly,
-                    _ => throw new NotImplementedException()
-                };
+                bool isPublicOrAssembly = m.scanInfo.IsOverallPublic;
                 var rename = member.GetCustomAttribute<RenameAttribute>()?.Name;
                 var isEnumerable = m.scanInfo.IsEnumerable;
                 var cplxMemberType = member switch
@@ -163,13 +158,15 @@ internal static class Support
                     IndexInEnumerable = 0,
                 };
 
-                // Work on the object itself
-                object? reflexionValue = member switch
+                // Depile the eventual PropertyGroup to get to the property and its container
+                object propertyContainer = obj;
+                var getterCount = m.scanInfo.getters.Count;
+                foreach (var getter in m.scanInfo.getters.Take(getterCount - 1))
                 {
-                    FieldInfo f => f.GetValue(obj),
-                    PropertyInfo p => p.GetValue(obj),
-                    _ => throw new NotImplementedException()
-                };
+                    propertyContainer = getter(propertyContainer)!;
+                }
+                object? propertyValue = m.scanInfo.getters.Last().Invoke(propertyContainer);
+
                 Type reflexionType = member switch
                 {
                     FieldInfo f => f.FieldType,
@@ -179,7 +176,7 @@ internal static class Support
                 if (isEnumerable)
                 {
                     int idx = 0;
-                    var val = reflexionValue as IEnumerable<T>;
+                    var val = propertyValue as IEnumerable<T>;
                     // Do not auto-contruct enumerable
                     // Empty enumerables do not carry any meaning for cplx
                     if (val != null)
@@ -188,23 +185,12 @@ internal static class Support
 
                 } else
                 {
-                    var val = reflexionValue as T;
+                    var val = propertyValue as T;
                     if (val is null && constructNulls)
                     {
                         // Auto construct the property or field
                         val = constructor(reflexionType, cplxInfo);
-                        switch (member)
-                        {
-                            case FieldInfo f: f.SetValue(obj, val); break;
-                            case PropertyInfo p:
-                                // TBD : check that it realy throw in case of unbacked
-                                // Previously we init-ed all field before all properties
-                                // this isn't the case. What happen if the backing field
-                                // is after the backed property in the declaration ?
-                                p.SetValue(obj, val); // Will throw if no set accessor ({get;} only, or unbacked)
-                                break;
-                            default: throw new NotImplementedException();
-                        }
+                        m.scanInfo.setter(propertyContainer, val);
                     }
                     if (val != null || acceptNulls)
                         onData(val!, cplxInfo); // TBD : Throw on null, even if accept nulls ?
@@ -220,9 +206,17 @@ internal static class Support
     const BindingFlags SearchFlags =
         BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly;
 
-    record CplxRelevantMemberInfo(bool IsEnumerable, bool IsBacked);
+    record CplxRelevantMemberInfo(
+        bool IsEnumerable,
+        List<Func<object,object?>> getters, // To be called in order from the root object to the properties. Takes into account eventual PropertyGroups
+        Action<object, object> setter, // To be called on the part or propertygroup containing the property
+        bool IsBacked,
+        bool IsOverallPublic); // False if the property or any group that contains it is not public.
     private static IEnumerable<(MemberInfo memberInfo, CplxRelevantMemberInfo scanInfo)> GetRelevantMembers<T>(
-        Type scannedType, IEnumerable<Type>? ignoredDerivedTypes = null)
+        Type scannedType,
+        IEnumerable<Type>? ignoredDerivedTypes = null,
+        bool IsInPrivatePropertyGroup = false,
+        List<Func<object, object?>> baseGetters = null)
         where T : class
     {
         var flags = SearchFlags ;
@@ -250,14 +244,39 @@ internal static class Support
                 PropertyInfo p => p.PropertyType,
                 _ => throw new NotImplementedException()
             };
+            bool memberPublic = IsPublicOrAssemblyGetter(m) && !IsInPrivatePropertyGroup ;
+
+            // Define getter
+            Func<object, object?> getter = m switch
+            {
+                FieldInfo f => f.GetValue,
+                PropertyInfo p => p.GetValue,
+                _ => throw new NotImplementedException()
+            };
+            if (baseGetters == null) baseGetters = [];
+            List<Func<object, object?>> getters = [.. baseGetters, getter];
+
+            Action<object, object> setter = m switch
+            {
+                FieldInfo f => f.SetValue,
+                // TBD : check that it realy throw in case of unbacked
+                // Previously we init-ed all field before all properties
+                // this isn't the case. What happen if the backing field
+                // is after the backed property in the declaration ?
+                PropertyInfo p => p.SetValue, // Will throw if no set accessor ({get;} only, or unbacked)
+                _ => throw new NotImplementedException()
+
+            };
+
             if (ignoredDerivedTypes?.Any(t => memberType.IsAssignableTo(t)) ?? false)
                 continue ;// Do nothing, ignored type
+
             else if (memberType.IsAssignableTo(typeof(T)))
             {
                 bool isBacked = false;
                 if (m is PropertyInfo p)
                     isBacked = HasBackingField<T>(p);
-                yield return (m, new(false, isBacked));
+                yield return (m, new(false, getters, setter, isBacked, memberPublic));
 
             }
             else if (memberType.IsAssignableTo(typeof(IEnumerable<T>)))
@@ -265,18 +284,33 @@ internal static class Support
                 bool isBacked = false;
                 if (m is PropertyInfo p)
                     isBacked = HasBackingField<IEnumerable<T>>(p);
-                yield return (m, new(true, isBacked));
+                yield return (m, new(true, getters, setter, isBacked, memberPublic));
             }
             // Cases of property groups
-            // else if (memberType.IsAssignableTo(typeof(PropertyGroup)))
-            // {
-            //     GetRelevantMembers<T>(memberType, ignoredDerivedTypes);
-            // }
-            // else if (memberType.IsAssignableTo(typeof(IEnumerable<PropertyGroup>)))
-            // {
-            // 
-            // }
+            else if (memberType.IsAssignableTo(typeof(PropertyGroup)))
+            {
+                bool isPublicPopertyGroup = IsPublicOrAssemblyGetter(m);
+                bool nextIsPrivate = IsInPrivatePropertyGroup || ! isPublicPopertyGroup;
+                foreach (var propM in GetRelevantMembers<T>(memberType, ignoredDerivedTypes, nextIsPrivate, getters))
+                {
+                    yield return propM; // TBD : Return Location information ?
+                }
+            }
+            else if (memberType.IsAssignableTo(typeof(IEnumerable<PropertyGroup>)))
+            {
+                throw new NotImplementedException($"{nameof(IEnumerable<PropertyGroup>)} are not supported");
+            }
         }
+    }
+
+    public static bool IsPublicOrAssemblyGetter(MemberInfo member)
+    {
+        return member switch
+        {
+            FieldInfo f => f.IsPublic || f.IsAssembly,
+            PropertyInfo p => p.GetMethod!.IsPublic || p.GetMethod!.IsAssembly,
+            _ => throw new NotImplementedException()
+        };
     }
 
     /// <summary>

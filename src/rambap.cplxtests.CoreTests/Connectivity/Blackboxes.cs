@@ -100,7 +100,7 @@ class ConnectedPart : Part
     public ConnectablePort APort;
 }
 
-public class PortSignalDef : PropertyGroup<Connector>
+class PortSignalDef : PropertyGroup<Connector>
 {
     public Signal RX => Part.SignalOf(2);
     public Signal TX => Part.SignalOf(3);
@@ -113,7 +113,7 @@ class GenConnector : Connector<GenPin>
 }
 class GenConnectorWithSignal : GenConnector
 {
-    public PortSignalDef Signals;
+    public PortSignalDef Signals = new();
 }
 class BlackBox_Type9 : Part, IPartConnectable
 {
