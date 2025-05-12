@@ -56,6 +56,38 @@ public class ImplicitPartConstruction
     }
     class MidLvlPart : Part { }
 
+    
+    class PropertyGroup1 : PropertyGroup
+    {
+        public MidLvlPart PG11;
+        public MidLvlPart PG12;
+    }
+    class PropertyGroup2 : PropertyGroup
+    {
+        public MidLvlPart PG21;
+        public MidLvlPart PG22;
+        PropertyGroup3 G3;
+    }
+    class PropertyGroup3 : PropertyGroup
+    {
+        public MidLvlPart PG31;
+        public MidLvlPart PG32;
+    }
+    class TopLevelPartWithPropertyGroups : Part
+    {
+        PropertyGroup1 G1;
+        PropertyGroup2 G2;
+        public static List<string> ExpectedComponents =>
+            [
+                nameof(PropertyGroup1.PG11),
+                nameof(PropertyGroup1.PG12),
+                nameof(PropertyGroup2.PG21),
+                nameof(PropertyGroup2.PG22),
+                nameof(PropertyGroup3.PG31),
+                nameof(PropertyGroup3.PG32),
+            ];
+    }
+
 
     /// <summary>
     /// Test classes with all different ways to declare a part as a component of another, with inheritance
@@ -150,6 +182,17 @@ public class ImplicitPartConstruction
         Assert.AreEqual(TopLvlPart_ListMode.ExpectedTotalPartCount, component.SubComponents.Select(c => c.CN).Distinct().Count());
     }
 
+    [TestMethod]
+    public void TestPropertyGroupComponentCreation()
+    {
+        var part = new TopLevelPartWithPropertyGroups();
+        var component = part.Instantiate();
+        foreach (var subcomp_cn in TopLevelPartWithPropertyGroups.ExpectedComponents)
+        {
+            Assert.IsTrue(component.SubComponents.Any(c => c.CN == subcomp_cn));
+        }
+        Assert.AreEqual(TopLevelPartWithPropertyGroups.ExpectedComponents.Count, component.SubComponents.Count());
+    }
 
     /// <summary>
     /// Test that component marked with <see cref="CplxIgnoreAttribute"/> are properly ignored

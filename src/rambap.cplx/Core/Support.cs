@@ -287,7 +287,7 @@ internal static class Support
                 yield return (m, new(true, getters, setter, isBacked, memberPublic));
             }
             // Cases of property groups
-            else if (memberType.IsAssignableTo(typeof(PropertyGroup)))
+            else if (memberType.IsAssignableTo(typeof(AbstractPropertyGroup)))
             {
                 bool isPublicPopertyGroup = IsPublicOrAssemblyGetter(m);
                 bool nextIsPrivate = IsInPrivatePropertyGroup || ! isPublicPopertyGroup;
@@ -296,9 +296,9 @@ internal static class Support
                     yield return propM; // TBD : Return Location information ?
                 }
             }
-            else if (memberType.IsAssignableTo(typeof(IEnumerable<PropertyGroup>)))
+            else if (memberType.IsAssignableTo(typeof(IEnumerable<AbstractPropertyGroup>)))
             {
-                throw new NotImplementedException($"{nameof(IEnumerable<PropertyGroup>)} are not supported");
+                throw new NotImplementedException($"{nameof(IEnumerable<AbstractPropertyGroup>)} are not supported");
             }
         }
     }

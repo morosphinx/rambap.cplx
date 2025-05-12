@@ -69,13 +69,18 @@ public partial class Part
             Parent = initContext.CurrentLocationPart();
             // Add current part location info to the initContext
             initContext.StartInitFor(this);
-            // Create all properties group
-            // TODO : This only create the first layer of property groups. Need to create the others
-            ScanObjectContentFor<PropertyGroup>(this,
-                (p, i) =>
-                {
-                    p.SetPart(this);
-                },
+
+            // Create all properties groups, recursively
+            // TODO : 
+            void InitPropertyGroup(AbstractPropertyGroup p)
+            {
+                p.SetPart(this);
+                ScanObjectContentFor<AbstractPropertyGroup>(p,
+                    (p, i) => InitPropertyGroup(p),
+                    AutoContent.ConstructIfNulls);
+            }
+            ScanObjectContentFor<AbstractPropertyGroup>(this,
+                (p, i) => InitPropertyGroup(p),
                 AutoContent.ConstructIfNulls);
             
             // Create Part properties/fields if null
