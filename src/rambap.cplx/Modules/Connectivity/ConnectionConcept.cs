@@ -6,32 +6,6 @@ using rambap.cplx.Modules.Connectivity.PinstanceModel;
 
 namespace rambap.cplx.Modules.Connectivity;
 
-public class InstanceConnectivity : IInstanceConceptProperty
-{
-    // TODO : set definition somewhere in the Part
-    public bool IsACable { get; init; } = true;
-
-    public required List<Port> Connectors { get; init; }
-    public required List<Mate> Connections { get; init; }
-
-    public required List<Port> Wireables { get; init; }
-    public required List<WiringConnection> Wirings { get; init; }
-
-    public required List<PSignal> Signals { get; init; }
-
-    public enum DisplaySide
-    {
-        Left,
-        Rigth,
-        Both,
-    }
-
-    internal InstanceConnectivity()
-    {
-
-    }
-}
-
 internal class ConnectionConcept : IConcept<InstanceConnectivity>
 {
     public override InstanceConnectivity? Make(Component component)
@@ -136,7 +110,7 @@ internal class ConnectionConcept : IConcept<InstanceConnectivity>
         }
         // Apply wiring and connection construction, defined in IPartConnectable
         List<Mate> selfDefinedConnection = [];
-        List<WiringConnection> selfDefinedWirings = [];
+        List<IWiringConnection> selfDefinedWirings = [];
         if (template is IPartConnectable a3)
         {
             // User defined connections are created from here
@@ -155,7 +129,7 @@ internal class ConnectionConcept : IConcept<InstanceConnectivity>
                 Connectors = portsConnectable,
                 Wireables = portsWireable,
                 Connections = selfDefinedConnection,
-                Wirings = selfDefinedWirings,
+                WiringConnections = selfDefinedWirings,
                 Signals = signals.Select(s => s.Implementation!).ToList(),
             };
             CheckInterfaceContracts(template, connectivity);

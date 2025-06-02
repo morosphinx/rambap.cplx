@@ -115,12 +115,18 @@ public abstract partial class Port
         AssertCanAddConnection(connection);
         connections.Add(connection);
     }
+
+    public abstract Port GetUpperEndpointIdentityPort();
 }
 
 public class CConnectablePort : Port
 {
     public CConnectablePort(string label, Pinstance owner, bool isPublic) : base(label, owner, isPublic){}
     protected override bool CanBeCombined => true;
+
+    public override Port GetUpperEndpointIdentityPort()
+        => GetUpperExposition();
+
     protected override void AssertCanAddConnection(SignalPortConnection connection)
     {
         // Connectable port can have :
@@ -155,6 +161,9 @@ public class CWireablePort : Port
 {
     public CWireablePort(string label, Pinstance owner, bool isPublic) : base(label, owner, isPublic) { }
     protected override bool CanBeCombined => false;
+    public override Port GetUpperEndpointIdentityPort()
+        => GetShallowestStructuralEquivalence().GetUpperExposition();
+
     protected override void AssertCanAddConnection(SignalPortConnection connection)
     {
         // Wireable port can have :
@@ -180,6 +189,8 @@ public class CWireEnd : Port
 {
     public CWireEnd(string label, Pinstance owner, bool isPublic) : base(label, owner, isPublic) { }
     protected override bool CanBeCombined => false;
+    public override Port GetUpperEndpointIdentityPort()
+        => GetUpperUsage() ;
     protected override void AssertCanAddConnection(SignalPortConnection connection)
     {
         // Wire end may have EITHER :

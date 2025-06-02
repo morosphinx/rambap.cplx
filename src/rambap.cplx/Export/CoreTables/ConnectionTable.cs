@@ -16,8 +16,7 @@ public record class ConnectionTable : TableProducer<ICplxContent>
     {
         Iterator = new ComponentPropertyIterator<ConnectionTableProperty>()
         {
-            PropertyIterator = c => GetConnectivityTableProperties(
-                c, ConnectionCategory.Assembly),
+            PropertyIterator = c => GetConnectionTableProperty(c),
             WriteBranches = false,
             DocumentationPerimeter = perimeter ?? new(),
         };

@@ -1,5 +1,6 @@
 ﻿using rambap.cplx.Attributes;
 using rambap.cplx.Core;
+using rambap.cplx.PartInterfaces;
 using rambap.cplx.PartProperties;
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
@@ -52,7 +53,7 @@ public class PlaceholderWireSpool : WireSpool
     public PlaceholderWireSpool() { }
 }
 
-public class WirePart : Part
+public class WirePart : Part, IPartConnectable
 {
     [CplxIgnore]
     public required WireSpool Origin { get; init; } // Not a subcomponent
@@ -63,4 +64,8 @@ public class WirePart : Part
     public WireEnd LeftPort;
     public WireEnd RightPort;
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
+    public void Assembly_Connections(ConnectionBuilder Do)
+    {
+        Do.StructuralWire(LeftPort, RightPort, Origin);
+    }
 }

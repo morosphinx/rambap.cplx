@@ -2,7 +2,7 @@
 using rambap.cplx.Modules.Base.TableModel;
 using rambap.cplx.Modules.Base.Output;
 using static rambap.cplx.Modules.Base.Output.CommonColumns;
-using static rambap.cplx.Modules.Connectivity.Outputs.ConnectionTableProperty;
+using static rambap.cplx.Modules.Connectivity.Outputs.WiringTableProperty;
 using static rambap.cplx.Modules.Connectivity.Outputs.ConnectionColumns;
 using System.Diagnostics.CodeAnalysis;
 using rambap.cplx.Modules.Connectivity.Outputs;
@@ -14,10 +14,9 @@ public record class WiringTable : TableProducer<ICplxContent>
     [SetsRequiredMembers]
     public  WiringTable(DocumentationPerimeter? perimeter = null)
     {
-        Iterator = new ComponentPropertyIterator<ConnectionTableProperty>()
+        Iterator = new ComponentPropertyIterator<WiringTableProperty>()
         {
-            PropertyIterator = c => GetConnectivityTableProperties(
-                c, ConnectionCategory.Wiring),
+            PropertyIterator = c => GetWiringTableProperty(c),
             WriteBranches = false,
             DocumentationPerimeter = perimeter ?? new(),
         };

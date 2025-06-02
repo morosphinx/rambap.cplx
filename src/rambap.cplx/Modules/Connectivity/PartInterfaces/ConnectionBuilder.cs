@@ -92,7 +92,7 @@ public class ConnectionBuilder : ConnectivityBuilder
 
     internal List<StructuralConnection> StructuralConnections { get; } = [];
     internal List<Mate> Connections { get; } = [];
-    internal List<WiringConnection> Wirings { get; } = [];
+    internal List<IWiringConnection> Wirings { get; } = [];
 
     private void AssertOwnThisMate(Mate mate)
     {
@@ -113,7 +113,7 @@ public class ConnectionBuilder : ConnectivityBuilder
             throw new InvalidOperationException("Port cannot have a structural definition if its exposed");
         ContextPart.AssertIsOwnerOrParent(source);
         ContextPart.AssertIsOwnerOrParent(target);
-        var connection = new StructuralConnection(source, target)
+        var connection = new StructuralConnection((CConnectablePort) source.LocalImplementation, (CWireablePort) target.LocalImplementation)
         {
             LeftPortComponent = source.Owner!.ImplementingComponent!,
             RigthPortComponent = target.Owner!.ImplementingComponent!,
@@ -131,12 +131,12 @@ public class ConnectionBuilder : ConnectivityBuilder
     /// <param name="connectorB">Rigth side connector. Must be owed by this part or one of its components</param>
     public void Mate(ISingleMateable mateableA, ISingleMateable mateableB)
     {
-        var connectorA = mateableA.SingleMateablePort;
-        var connectorB = mateableB.SingleMateablePort;
+        var connectorA = mateableA.SingleMateablePort ;
+        var connectorB = mateableB.SingleMateablePort ;
         ContextPart.AssertIsOwnerOrParent(connectorA);
         ContextPart.AssertIsOwnerOrParent(connectorB);
         // TODO : Test here that both connector are compatible
-        var connection = new Mate(connectorA, connectorB)
+        var connection = new Mate((CConnectablePort) connectorA.LocalImplementation, (CConnectablePort) connectorB.LocalImplementation)
         {
             LeftPortComponent = connectorA.Owner!.ImplementingComponent!,
             RigthPortComponent = connectorB.Owner!.ImplementingComponent!,
@@ -240,11 +240,9 @@ public class ConnectionBuilder : ConnectivityBuilder
         CWireablePort pa = (CWireablePort)wireable.SingleWireablePort.LocalImplementation;
         CWireEnd pb = (CWireEnd)wireEnd.LocalImplementation;
 
-        var junction = new PinJunction()
+        var junction = new PinJunction(pa, pb)
         {
-            WireablePort = pa,
             LeftPortComponent = pa.Owner.Parent,
-            WireEndPort = pb,
             RigthPortComponent = pb.Owner.Parent,
             DeclaringComponent = ContextInstance.Parent,
         };
@@ -253,15 +251,12 @@ public class ConnectionBuilder : ConnectivityBuilder
 
     public void Wire(WireEnd wireEndA, WireEnd wireEndB)
     {
-
         CWireEnd pa = (CWireEnd)wireEndA.LocalImplementation;
         CWireEnd pb = (CWireEnd)wireEndB.LocalImplementation;
 
-        var junction = new WireJunction()
+        var junction = new WireJunction(pa, pb)
         {
-            LeftWireEnd = pa,
             LeftPortComponent = pa.Owner.Parent,
-            RigthWireEnd = pb,
             RigthPortComponent = pb.Owner.Parent,
             DeclaringComponent = ContextInstance.Parent,
         };
@@ -309,6 +304,21 @@ public class ConnectionBuilder : ConnectivityBuilder
             }
         }
         return createdWires;
+    }
+
+    internal void StructuralWire(WireEnd wireEndA, WireEnd wireEndB, WireSpool wireSpool)
+    {
+        CWireEnd pa = (CWireEnd)wireEndA.LocalImplementation;
+        CWireEnd pb = (CWireEnd)wireEndB.LocalImplementation;
+
+        var junction = new StructuralWire(pa, pb)
+        {
+            LeftPortComponent = pa.Owner.Parent,
+            RigthPortComponent = pb.Owner.Parent,
+            DeclaringComponent = ContextInstance.Parent,
+            WireSpool = wireSpool,
+        };
+        Wirings.Add(junction);
     }
 
     //public void Twist(IEnumerable<WirePart> twistedCablings)

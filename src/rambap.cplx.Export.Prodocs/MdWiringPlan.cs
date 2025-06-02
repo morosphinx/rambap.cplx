@@ -18,10 +18,10 @@ public class MdWiringPlan : TxtPInstanceFile
         };
 
     private static bool BreakOnPathChange(ConnectionTableProperty p1, ConnectionTableProperty p2)
-        => p1.LeftUpperUsagePort.GetShallowestStructuralEquivalence().GetUpperUsage()
-            != p2.LeftUpperUsagePort.GetShallowestStructuralEquivalence().GetUpperUsage()
-        || p1.RigthUpperUsagePort.GetShallowestStructuralEquivalence().GetUpperUsage()
-            != p2.RigthUpperUsagePort.GetShallowestStructuralEquivalence().GetUpperUsage();
+        => p1.LeftIdentityPort.GetShallowestStructuralEquivalence().GetUpperUsage()
+            != p2.LeftIdentityPort.GetShallowestStructuralEquivalence().GetUpperUsage()
+        || p1.RigthIdentityPort.GetShallowestStructuralEquivalence().GetUpperUsage()
+            != p2.RigthIdentityPort.GetShallowestStructuralEquivalence().GetUpperUsage();
 
     private TxtTableFile WiringTable
         => new TxtTableFile(Content)

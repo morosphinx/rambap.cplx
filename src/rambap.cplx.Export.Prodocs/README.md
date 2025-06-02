@@ -7,8 +7,16 @@ A library of common production files that can be generated from [cplx](https://w
 Most files are markdown. ~~Turn those to pdf using [Pandoc](https://pandoc.org/)~~
 - Or not, see [this issue](https://github.com/jgm/pandoc/issues/922). 
 
+Alternatives :
+
+
 TODO :
 - Links to grind [pandoc_md_flavor](https://pandoc.org/MANUAL.html#pandocs-markdown). [Workarounds](https://tex.stackexchange.com/questions/595615/how-can-i-reformat-a-table-using-markdown-pandoc-pdf)
+- Evaluate alternatives
+    - Write markdown, render with pandoc
+    - Write html, use a browser
+    - Write [asciidoc](https://asciidoc.org/), use [Asciidoctor-pdf](https://docs.asciidoctor.org/)
+    - Write LaTeX
 
 ## How to use
 

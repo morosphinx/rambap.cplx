@@ -134,8 +134,8 @@ public class WiredComposedSignalSyntax
         var connectivity = component.Instance.Connectivity();
         Assert.IsNotNull(connectivity);
 
-        Assert.IsTrue(connectivity.Wirings.Count() == 1);
-        var wiring = connectivity.Wirings.Single();
+        Assert.IsTrue(connectivity.WiringConnections.Count() == 1);
+        var wiring = connectivity.WiringConnections.Single();
         var lcomponent = component.SubComponents.ElementAt(0).Instance;
         var rcomponent = component.SubComponents.ElementAt(1).Instance;
 

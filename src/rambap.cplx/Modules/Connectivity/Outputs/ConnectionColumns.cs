@@ -143,6 +143,6 @@ public static class ConnectionColumns
         => MakeConnectivityColumn(
             "Kind",
             true,
-            c => c.GetConnectionKind.ToString()
+            c => c.ConnectionKind.ToString()
             );
 }
