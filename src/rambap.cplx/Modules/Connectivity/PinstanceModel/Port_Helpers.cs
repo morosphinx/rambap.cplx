@@ -25,7 +25,7 @@ public abstract partial class Port
     private IEnumerable<Port> GetExpositionChilds()
         => Definition is PortDefinition_Exposed def ? def.ExposedPort.GetExpositionChilds() : [];
 
-    internal IEnumerable<SignalPortConnection> ExpositionColumnConnection()
+    internal IEnumerable<SignalPortConnection> ExpositionColumnConnections()
         => GetExpositionColumn().SelectMany(c => c.Connections);
 
     public bool IsExpositionColumnUsageCombined()

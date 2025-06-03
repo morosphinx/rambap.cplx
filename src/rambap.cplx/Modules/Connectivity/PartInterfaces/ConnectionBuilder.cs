@@ -219,7 +219,7 @@ public class ConnectionBuilder : ConnectivityBuilder
         WirePart createdWire = new WirePart()
         {
             Length = length,
-            Origin = wireSpool
+            Origin = wireSpool,
         };
         var contextComponent = this.ContextInstance.Parent;
         contextComponent.AddConceptPart(createdWire);

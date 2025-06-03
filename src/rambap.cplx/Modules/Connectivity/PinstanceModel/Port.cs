@@ -140,14 +140,14 @@ public class CConnectablePort : Port
                     if (IsExpositionColumnUsageCombined())
                         throw new InvalidOperationException($"Cannot add {nameof(Mate)} to this {nameof(ConnectablePort)}, "
                             + "the port is combined with other ports. It cannot be mated independently");
-                    if (ExpositionColumnConnection().OfType<Mate>().Any())
+                    if (ExpositionColumnConnections().OfType<Mate>().Any())
                         throw new InvalidOperationException($"Cannot add {nameof(Mate)} to this {nameof(ConnectablePort)}, "
                             + "there is already a defined structural connection");
                     break;
                 }
             case StructuralConnection s:
                 {
-                    if (ExpositionColumnConnection().OfType<StructuralConnection>().Any())
+                    if (ExpositionColumnConnections().OfType<StructuralConnection>().Any())
                         throw new InvalidOperationException($"Cannot add {nameof(StructuralConnection)} to this {nameof(ConnectablePort)}, "
                             + "there is already a defined structural connection");
                     break;
@@ -176,7 +176,7 @@ public class CWireablePort : Port
                 break;
             case StructuralConnection s:
                 {
-                    if (ExpositionColumnConnection().OfType<StructuralConnection>().Any())
+                    if (ExpositionColumnConnections().OfType<StructuralConnection>().Any())
                         throw new InvalidOperationException($"Cannot add {nameof(StructuralConnection)} to this {nameof(WireablePort)}, "
                             + "there is already a defined structural connection");
                     break;
@@ -203,16 +203,23 @@ public class CWireEnd : Port
         {
             case PinJunction m:
                 {
-                    if (ExpositionColumnConnection().Any())
+                    if (ExpositionColumnConnections().Where(c => c is not StructuralWire).Any())
                         throw new InvalidOperationException($"Cannot add {nameof(PinJunction)} to this {nameof(WireEnd)}, "
                             +"it is already connected somewhere else");
                     break;
                 }
             case WireJunction wire:
                 {
-                    if(ExpositionColumnConnection().OfType<PinJunction>().Any())
+                    if(ExpositionColumnConnections().OfType<PinJunction>().Any())
                         throw new InvalidOperationException($"Cannot add {nameof(WireJunction)} to this {nameof(WireEnd)}, "
                             + "it is already part of a pin junction");
+                    break;
+                }
+            case StructuralWire st:
+                {
+                    if (ExpositionColumnConnections().OfType<StructuralWire>().Any())
+                        throw new InvalidOperationException($"Cannot add {nameof(StructuralWire)} to this {nameof(WireEnd)}, "
+                            + "There is already a structural wire connection");
                     break;
                 }
             default: throw new InvalidOperationException($"{nameof(WireEnd)} cannot use connection type {connection.GetType()}");

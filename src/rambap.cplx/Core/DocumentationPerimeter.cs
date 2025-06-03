@@ -43,7 +43,7 @@ public sealed record class DocumentationPerimeter_WithInclusion : DocumentationP
 }
 
 
-public sealed record class DocumentationPerimeter_SinglePart : DocumentationPerimeter
+public sealed record class DocumentationPerimeter_SinglePartAndItsContents : DocumentationPerimeter
 {
     public override bool ShouldThisComponentInternalsBeSeen(Component component)
     {

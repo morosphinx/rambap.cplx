@@ -119,7 +119,6 @@ public class InstanceConnectivity : IInstanceConceptProperty
         foreach (var c in WiringConnections)
         {
             if (connectionDic.ContainsKey(c)) continue; // Already part of a groupId, skip
-            connectionDic[c] = currentGroupid;
             PropagateGroupID(c, currentGroupid, connectionDic);
             currentGroupid += 1;
         }

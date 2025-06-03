@@ -102,7 +102,7 @@ public class ConnectionTableProperty : ConnectivityTableProperty
     public static IEnumerable<ConnectionTableProperty> GetConnectionTableProperty(Component c)
     {
         var instance = c.Instance;
-        var connections = instance.Connectivity()!.Connections ?? [];
+        var connections = instance.Connectivity()?.Connections ?? [];
 
         var connectionsGrouped = ConnectionHelpers.GroupConnectionsByPath(connections);
 
@@ -166,7 +166,7 @@ public class WiringTableProperty : ConnectivityTableProperty
     public static IEnumerable<WiringTableProperty> GetWiringTableProperty(Component c)
     {
         var instance = c.Instance;
-        var meshes = instance.Connectivity()!.GetWireMeshes() ?? [];
+        var meshes = instance.Connectivity()?.GetWireMeshes() ?? [];
 
         foreach (var m in meshes)
         {

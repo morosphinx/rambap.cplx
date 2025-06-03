@@ -26,7 +26,7 @@ public abstract class SignalPortConnection<P1, P2> : SignalPortConnection
     where P2 : Port
 {
     public override Port LeftPort => LeftPort_Typed;
-    public override Port RightPort => LeftPort_Typed;
+    public override Port RightPort => RightPort_Typed;
     protected P1 LeftPort_Typed { get; }
     protected P2 RightPort_Typed { get; }
     internal SignalPortConnection(P1 portL, P2 portR)

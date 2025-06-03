@@ -10,13 +10,13 @@ namespace rambap.cplx.Modules.Connectivity.Outputs;
 public static class ConnectionColumns
 {
     public static DelegateColumn<ICplxContent> MakeConnectivityColumn(
-        string columnName, bool format, Func<ConnectionTableProperty, string> getter)
+        string columnName, bool format, Func<ConnectivityTableProperty, string> getter)
         => new DelegateColumn<ICplxContent>(
             columnName,
             format ? ColumnTypeHint.StringFormatable : ColumnTypeHint.StringExact,
             i => i switch
             {
-                IPropertyContent<ConnectionTableProperty> c => getter(c.Property),
+                IPropertyContent<ConnectivityTableProperty> c => getter(c.Property),
                 _ => throw new NotImplementedException(),
             });
 
@@ -102,12 +102,14 @@ public static class ConnectionColumns
         => MakeConnectivityColumn(
             title,
             format,
-            c => c.Connection switch
-            {
-                // TEMP DISABLE
-                // Cable cable=> getter.Invoke(cable.CableComponent),
-                _ => "",
-            });
+            c => ""
+            //c => c.Connection switch
+            //{
+            //    // TEMP DISABLE
+            //    // Cable cable=> getter.Invoke(cable.CableComponent),
+            //    _ => "",
+            //}
+            );
 
     public static DelegateColumn<ICplxContent> CableConnector(
             PortSide side,
@@ -117,12 +119,14 @@ public static class ConnectionColumns
         => MakeConnectivityColumn(
             title,
             format,
-            c => c.Connection switch
-            {
-                // TEMP DISABLE
-                // Cable => getter.Invoke(c.GetCableConnectionComponent(side)!),
-                _ => "",
-            });
+            c => ""
+            //c => c.Connection switch
+            //{
+            //    // TEMP DISABLE
+            //    // Cable => getter.Invoke(c.GetCableConnectionComponent(side)!),
+            //    _ => "",
+            //}
+            );
 
     public static DelegateColumn<ICplxContent> CablePort(
            PortSide side,
@@ -132,12 +136,14 @@ public static class ConnectionColumns
         => MakeConnectivityColumn(
             title,
             format,
-            c => c.Connection switch
-            {
-                // TEMP DISABLE
-                // Cable => getter.Invoke(c.GetCableConnectionPort(side)!),
-                _ => "",
-            });
+            c => ""
+            //c => c.Connection switch
+            //{
+            //    // TEMP DISABLE
+            //    // Cable => getter.Invoke(c.GetCableConnectionPort(side)!),
+            //    _ => "",
+            //}
+            );
 
     public static DelegateColumn<ICplxContent> ConnectionKind()
         => MakeConnectivityColumn(

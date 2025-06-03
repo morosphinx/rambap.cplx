@@ -12,15 +12,20 @@ namespace rambap.cplx.Export.CoreTables;
 public record class WiringTable : TableProducer<ICplxContent>
 {
     [SetsRequiredMembers]
-    public  WiringTable(DocumentationPerimeter? perimeter = null)
+    public WiringTable(DocumentationPerimeter? perimeter = null)
     {
         Iterator = new ComponentPropertyIterator<WiringTableProperty>()
         {
             PropertyIterator = c => GetWiringTableProperty(c),
             WriteBranches = false,
-            DocumentationPerimeter = perimeter ?? new(),
+            DocumentationPerimeter = perimeter ?? new DocumentationPerimeter_SinglePartAndItsContents(),
         };
-        ContentTransform = cs => cs.Where(c => c is not IPureComponentContent);
+        // TODO : Fix : there is currently no way to stop recursion on subcompoennt, and yet recurse
+        // properties. (mosstly to ensure costing table stay valid)
+        // as a result, subcomponent (the wires !) get included, and displayed
+        // They polute display.
+        ContentTransform = cs => cs.Where(c => c is not IPureComponentContent
+            && ! (c is ILeafContent e && e.IsLeafBecause == LeafCause.RecursionBreak ));
         Columns = [
             ConnectedComponent(PortSide.Left,PortIdentity.UpperUsage,"CN", c => c.CN),
             ConnectedStructuralEquivalenceTopmostPort(PortSide.Left,"Connector", p => p.Label),
@@ -30,7 +35,7 @@ public record class WiringTable : TableProducer<ICplxContent>
             ConnectedStructuralEquivalenceTopmostPort(PortSide.Rigth,"Connector", p => p.Label),
             ConnectedPort(PortSide.Rigth,PortIdentity.UpperExposition,"Pin",p => p.FullDefinitionName()),
             Dashes("--"),
-            MakeConnectivityColumn("Signal", false, c => c.GetLikelySignal()),
+            // MakeConnectivityColumn("Signal", false, c => c.GetLikelySignal()), // Disabled, only 
         ];
     }
 }
