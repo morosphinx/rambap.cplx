@@ -125,7 +125,7 @@ public class CConnectablePort : Port
     protected override bool CanBeCombined => true;
 
     public override Port GetUpperEndpointIdentityPort()
-        => GetUpperExposition();
+        => GetUpperUsage();
 
     protected override void AssertCanAddConnection(SignalPortConnection connection)
     {
@@ -162,7 +162,7 @@ public class CWireablePort : Port
     public CWireablePort(string label, Pinstance owner, bool isPublic) : base(label, owner, isPublic) { }
     protected override bool CanBeCombined => false;
     public override Port GetUpperEndpointIdentityPort()
-        => GetShallowestStructuralEquivalence().GetUpperExposition();
+        => GetShallowestStructuralEquivalence().GetUpperUsage();
 
     protected override void AssertCanAddConnection(SignalPortConnection connection)
     {

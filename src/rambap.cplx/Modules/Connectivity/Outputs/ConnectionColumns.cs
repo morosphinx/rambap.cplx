@@ -19,20 +19,7 @@ public static class ConnectionColumns
                 IPropertyContent<ConnectivityTableProperty> c => getter(c.Property),
                 _ => throw new NotImplementedException(),
             });
-
-    public static DelegateColumn<ICplxContent> ConnectedPort(
-            PortSide side,
-            PortIdentity identity,
-            string title,
-            Func<Port, string> getter,
-            bool format = false)
-        => MakeConnectivityColumn(
-            title,
-            format,
-            c => getter(c.GetConnectedPort(side,identity))
-            );
-
-    public static DelegateColumn<ICplxContent> ConnectedComponent(
+    public static DelegateColumn<ICplxContent> LinkedComponent(
             PortSide side,
             PortIdentity identity,
             string title,
@@ -41,25 +28,37 @@ public static class ConnectionColumns
         => MakeConnectivityColumn(
             title,
             format,
-            c => getter(c.GetConnectedComponent(side, identity))
+            c => getter(c.GetLinkedComponent(side, identity))
             );
 
-    public static DelegateColumn<ICplxContent> ConnectedStructuralEquivalenceTopmostComponent(
+    public static DelegateColumn<ICplxContent> LinkedPort(
+            PortSide side,
+            PortIdentity identity,
+            string title,
+            Func<Port, string> getter,
+            bool format = false)
+        => MakeConnectivityColumn(
+            title,
+            format,
+            c => getter(c.GetLinkPort(side,identity))
+            );
+
+    public static DelegateColumn<ICplxContent> EndpointComponent(
             PortSide side,
             string title,
             Func<Component?, string> getter,
             bool format = false)
-        => ConnectedStructuralEquivalenceTopmostPort(
-            side,
+        => MakeConnectivityColumn(
             title,
-            i => 
+            format,
+            c =>
             {
-                var component = i.Owner.Parent;
+                var endpointPort = c.GetEndpointPort(side);
+                var component = endpointPort.Owner.Parent;
                 return getter(component);
-            },
-            format);
+            });
 
-    public static DelegateColumn<ICplxContent> ConnectedStructuralEquivalenceTopmostPort(
+    public static DelegateColumn<ICplxContent> EndpointPort(
             PortSide side,
             string title,
             Func<Port, string> getter,
@@ -69,30 +68,9 @@ public static class ConnectionColumns
             format,
             c =>
             {
-                var port = c.GetConnectedPort(side,PortIdentity.Self);
-                if (!port.HasStructuralEquivalence) return "-";
-                var structuralequiv = port.GetShallowestStructuralEquivalence();
-                var stuctequivtop = structuralequiv.GetUpperUsage();
-                return getter(stuctequivtop);
+                var endpointPort = c.GetEndpointPort(side);
+                return getter(endpointPort);
             });
-
-    public static DelegateColumn<ICplxContent> ConnectedStructuralEquivalence(
-            PortSide side,
-            string title,
-            Func<Port, string> getter,
-            bool format = false)
-        => MakeConnectivityColumn(
-            title,
-            format ,
-            c =>
-            {
-                var port = c.GetConnectedPort(side, PortIdentity.Self);
-                if (!port.HasStructuralEquivalence) return "-";
-                var structuralequiv = port.GetShallowestStructuralEquivalence();
-                return getter(structuralequiv);
-            });
-
-
 
 
     public static DelegateColumn<ICplxContent> CablePart(

@@ -18,22 +18,26 @@ public record class WiringTable : TableProducer<ICplxContent>
         {
             PropertyIterator = c => GetWiringTableProperty(c),
             WriteBranches = false,
+            StackPropertiesSingleChildBranches = false, 
             DocumentationPerimeter = perimeter ?? new DocumentationPerimeter_SinglePartAndItsContents(),
         };
-        // TODO : Fix : there is currently no way to stop recursion on subcompoennt, and yet recurse
-        // properties. (mosstly to ensure costing table stay valid)
-        // as a result, subcomponent (the wires !) get included, and displayed
-        // They polute display.
-        ContentTransform = cs => cs.Where(c => c is not IPureComponentContent
-            && ! (c is ILeafContent e && e.IsLeafBecause == LeafCause.RecursionBreak ));
+        ContentTransform = cs
+            => cs.Where(c => c is not IPureComponentContent); // Remove branch items
         Columns = [
-            ConnectedComponent(PortSide.Left,PortIdentity.UpperUsage,"CN", c => c.CN),
-            ConnectedStructuralEquivalenceTopmostPort(PortSide.Left,"Connector", p => p.Label),
-            ConnectedPort(PortSide.Left,PortIdentity.UpperExposition,"Pin",p => p.FullDefinitionName()),
+            // 
+            // The link end on the connector, on the unexposed pin connector
+            LinkedComponent(PortSide.Left,PortIdentity.UpperUsage,"CN", c => c.CN),
+            // The endpoint component is the connector container, that expose its port
+            EndpointPort(PortSide.Left,"Connector", p => p.Label),
+            // A connector C01, that has an exposed connectable port J01
+            //    J01 is the endpoint identity, is part of the * component. The Endpoint component is *
+            //    Wireable / pin of the connector are not exposed, and thus are upperused by C01. The link endpoint id C01
+            //
+            LinkedPort(PortSide.Left,PortIdentity.UpperExposition,"Pin",p => p.FullDefinitionName()),
             Dashes("--"),
-            ConnectedComponent(PortSide.Rigth,PortIdentity.UpperUsage,"CN", c => c.CN),
-            ConnectedStructuralEquivalenceTopmostPort(PortSide.Rigth,"Connector", p => p.Label),
-            ConnectedPort(PortSide.Rigth,PortIdentity.UpperExposition,"Pin",p => p.FullDefinitionName()),
+            LinkedComponent(PortSide.Rigth,PortIdentity.UpperUsage,"CN", c => c.CN),
+            EndpointPort(PortSide.Rigth,"Connector", p => p.Label),
+            LinkedPort(PortSide.Rigth,PortIdentity.UpperExposition,"Pin",p => p.FullDefinitionName()),
             Dashes("--"),
             // MakeConnectivityColumn("Signal", false, c => c.GetLikelySignal()), // Disabled, only 
         ];

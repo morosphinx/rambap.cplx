@@ -42,12 +42,23 @@ public abstract class ConnectivityTableProperty
     public required bool ShowReverted { get; init; } // TODO
     public abstract ConnectionKind ConnectionKind { get; }
 
-    public Port GetConnectedPort(PortSide side, PortIdentity identity)
+    public Port GetEndpointPort(PortSide side)
     {
         var sidePort = side switch
         {
             PortSide.Left => LeftIdentityPort,
             PortSide.Rigth => RigthIdentityPort,
+            _ => throw new NotImplementedException(),
+        };
+        return sidePort;
+    }
+
+    public Port GetLinkPort(PortSide side, PortIdentity identity)
+    {
+        var sidePort = side switch
+        {
+            PortSide.Left => LeftLinkPort,
+            PortSide.Rigth => RigthLinkPort,
             _ => throw new NotImplementedException(),
         };
         var identityPort = identity switch
@@ -61,8 +72,8 @@ public abstract class ConnectivityTableProperty
         return identityPort;
     }
 
-    public Component GetConnectedComponent(PortSide side, PortIdentity identity)
-        => GetConnectedPort(side, identity).Owner.Parent;
+    public Component GetLinkedComponent(PortSide side, PortIdentity identity)
+        => GetLinkPort(side, identity).Owner.Parent;
 
     public PSignal? GetUpperSignal(PortSide side)
     {
