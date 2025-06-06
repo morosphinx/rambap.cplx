@@ -230,6 +230,28 @@ public class ConnectionBuilder : ConnectivityBuilder
         return createdWire;
     }
 
+    public WirePart WirePre(ISingleWireable wireable, WireEnd destination)
+        => WirePre(wireable, destination, GetCreatePlaceholderWireSpool(), 100);
+    public WirePart WirePre(ISingleWireable wireable, WireEnd destination, WireSpool wireSpool, double length)
+    {
+        ContextPart.AssertIsOwnerOrParent(wireable.SingleWireablePort);
+        ContextPart.AssertIsASubComponent(wireSpool);
+
+        WirePart createdWire = new WirePart()
+        {
+            Length = length,
+            Origin = wireSpool,
+        };
+
+        var contextComponent = this.ContextInstance.Parent;
+        contextComponent.AddConceptPart(createdWire);
+
+        Wire(wireable, createdWire.LeftPort);
+        destination.LocalImplementation.DefineAsAnExpositionOf(createdWire.RightPort.LocalImplementation);
+
+        return createdWire;
+    }
+
     public void Wire(WireEnd wireEnd, ISingleWireable wireable)
         => Wire(wireable, wireEnd);
     public void Wire(ISingleWireable wireable, WireEnd wireEnd)
