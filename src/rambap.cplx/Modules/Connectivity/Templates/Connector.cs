@@ -104,7 +104,7 @@ public abstract class Connector : Part, IPartConnectable, ISingleMateable
 }
 
 /// <summary>
-/// Template part for an electrical connector w
+/// Template part for an electrical connector with typed pins
 /// </summary>
 /// <typeparam name="T"></typeparam>
 public abstract class Connector<T> : Connector, IPartConnectable, ISingleMateable

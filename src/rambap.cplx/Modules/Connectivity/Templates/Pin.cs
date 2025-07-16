@@ -5,6 +5,9 @@ using rambap.cplx.PartProperties;
 
 namespace rambap.cplx.Modules.Connectivity.Templates;
 
+/// <summary>
+/// A signal carrying part of a <see cref="Connector">, that can be mated on one side and wired on the other
+/// </summary>
 public abstract class Pin : Part, IPartConnectable, ISingleMateable, ISingleWireable
 {
     // Fields are filled by cplx
