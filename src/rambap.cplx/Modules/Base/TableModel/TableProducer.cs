@@ -140,7 +140,7 @@ public record TableProducer<T> : TableProducer
         // Apply content transform
         if(ContentTransform is not null)
             contents = ContentTransform(contents);
-        // Add additional breaks f required
+        // Add additional breaks if required
         T? previousContent = default;
         foreach (var c in contents)
         {

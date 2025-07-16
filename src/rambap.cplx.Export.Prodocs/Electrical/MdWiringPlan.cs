@@ -4,7 +4,7 @@ using rambap.cplx.Export.Text;
 using rambap.cplx.Modules.Base.Output;
 using rambap.cplx.Modules.Connectivity.Outputs;
 
-namespace rambap.cplx.Export.Prodocs;
+namespace rambap.cplx.Export.Prodocs.Electrical;
 
 public class MdWiringPlan : TxtPInstanceFile
 {
@@ -17,11 +17,9 @@ public class MdWiringPlan : TxtPInstanceFile
             Table = new ComponentInventory(new DocumentationPerimeter_SinglePartAndItsContents())
         };
 
-    private static bool BreakOnPathChange(ConnectionTableProperty p1, ConnectionTableProperty p2)
-        => p1.LeftIdentityPort.GetShallowestStructuralEquivalence().GetUpperUsage()
-            != p2.LeftIdentityPort.GetShallowestStructuralEquivalence().GetUpperUsage()
-        || p1.RigthIdentityPort.GetShallowestStructuralEquivalence().GetUpperUsage()
-            != p2.RigthIdentityPort.GetShallowestStructuralEquivalence().GetUpperUsage();
+    private static bool BreakOnPathChange(ConnectivityTableProperty p1, ConnectivityTableProperty p2)
+        => p1.LeftEndpointPort != p2.LeftEndpointPort
+        || p1.RigthEndpointPort != p2.RigthEndpointPort;
 
     private TxtTableFile WiringTable
         => new TxtTableFile(Content)
@@ -31,8 +29,8 @@ public class MdWiringPlan : TxtPInstanceFile
             with
             {
                 AddTableBreakCondition = (l1, l2) =>
-                    BreakOnPathChange((l1 as LeafProperty<ConnectionTableProperty>)!.Property,
-                                      (l2 as LeafProperty<ConnectionTableProperty>)!.Property)
+                    BreakOnPathChange((l1 as IPropertyContent<ConnectivityTableProperty>)!.Property,
+                                      (l2 as IPropertyContent<ConnectivityTableProperty>)!.Property)
             },
         };
 

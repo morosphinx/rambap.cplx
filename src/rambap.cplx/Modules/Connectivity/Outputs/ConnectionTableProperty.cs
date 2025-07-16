@@ -1,7 +1,5 @@
-﻿using rambap.cplx.PartProperties;
+﻿using rambap.cplx.Core;
 using rambap.cplx.Modules.Connectivity.PinstanceModel;
-using rambap.cplx.Core;
-using rambap.cplx.Modules.Base.Output;
 using static rambap.cplx.Modules.Connectivity.PinstanceModel.InstanceConnectivity;
 
 namespace rambap.cplx.Modules.Connectivity.Outputs;
@@ -31,23 +29,56 @@ public enum ConnectionKind
     WireMesh,
 }
 
+/// <summary>
+/// Reprsent a link in an exported table
+/// </summary>
 public abstract class ConnectivityTableProperty
 {
-    public Port LeftIdentityPort => LeftLinkPort.GetUpperEndpointIdentityPort();
-    public Port RigthIdentityPort => RigthLinkPort.GetUpperEndpointIdentityPort();
-
+    /// <summary>
+    /// The left Linked port
+    /// </summary>
     public abstract Port LeftLinkPort { get; }
+
+    /// <summary>
+    /// The rigth Linked port
+    /// </summary>
     public abstract Port RigthLinkPort { get; }
 
+    /// <summary>
+    /// The relevant endpoint that contains the <see cref="LeftLinkPort"/>. <br/>
+    /// This is either the port itself or the most relevant connector that contains it
+    /// </summary>
+    public Port LeftEndpointPort => LeftLinkPort.GetUpperEndpointIdentityPort();
+
+    /// <summary>
+    /// The relevant endpoint that contains the <see cref="RigthLinkPort"/>. <br/>
+    /// This is either the port itself or the most relevant connector that contains it
+    /// </summary>
+    public Port RigthEndpointPort => RigthLinkPort.GetUpperEndpointIdentityPort();
+
+    /// <summary>
+    /// If true, method that return a port based on <see cref="PortSide"/> return the other port instead <br/>
+    /// Used to control the link direction display
+    /// </summary>
     public required bool ShowReverted { get; init; } // TODO
+    private PortSide MayRevert(PortSide side)
+        => side switch
+        {
+            _ when !ShowReverted => side,
+            PortSide.Left => PortSide.Rigth,
+            PortSide.Rigth => PortSide.Left,
+            _ => throw new NotImplementedException(),
+        };
+
     public abstract ConnectionKind ConnectionKind { get; }
 
     public Port GetEndpointPort(PortSide side)
     {
-        var sidePort = side switch
+        var effectiveSide = MayRevert(side);
+        var sidePort = effectiveSide switch
         {
-            PortSide.Left => LeftIdentityPort,
-            PortSide.Rigth => RigthIdentityPort,
+            PortSide.Left => LeftEndpointPort,
+            PortSide.Rigth => RigthEndpointPort,
             _ => throw new NotImplementedException(),
         };
         return sidePort;
@@ -55,7 +86,8 @@ public abstract class ConnectivityTableProperty
 
     public Port GetLinkPort(PortSide side, PortIdentity identity)
     {
-        var sidePort = side switch
+        var effectiveSide = MayRevert(side);
+        var sidePort = effectiveSide switch
         {
             PortSide.Left => LeftLinkPort,
             PortSide.Rigth => RigthLinkPort,
@@ -73,11 +105,15 @@ public abstract class ConnectivityTableProperty
     }
 
     public Component GetLinkedComponent(PortSide side, PortIdentity identity)
-        => GetLinkPort(side, identity).Owner.Parent;
+    {
+        var effectiveSide = MayRevert(side);
+        return GetLinkPort(effectiveSide, identity).Owner.Parent;
+    }
 
     public PSignal? GetUpperSignal(PortSide side)
     {
-        return side switch
+        var effectiveSide = MayRevert(side);
+        return effectiveSide switch
         {
             PortSide.Left => LeftLinkPort.GetUpperSignal(),
             PortSide.Rigth => RigthLinkPort.GetUpperSignal(),
