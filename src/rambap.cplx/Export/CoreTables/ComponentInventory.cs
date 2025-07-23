@@ -6,7 +6,7 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace rambap.cplx.Export.CoreTables;
 
-public record class ComponentInventory : TableProducer<ICplxContent>
+public record class ComponentInventory : TableProducer<IContent>
 {
     [SetsRequiredMembers]
     public ComponentInventory(DocumentationPerimeter? perimeter = null)

@@ -11,7 +11,7 @@ namespace rambap.cplx.Export.CoreTables;
 /// <summary>
 /// Table listing the amount and duration of all tasks kind in the instance
 /// </summary>
-public record class BillOfTasks : TableProducer<ICplxContent>
+public record class BillOfTasks : TableProducer<IContent>
 {
     [SetsRequiredMembers]
     public BillOfTasks()

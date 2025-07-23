@@ -21,7 +21,7 @@ public class TestPartTypesIterator
 
         var debugTable = new TxtTableFile(component)
         {
-            Table = new TableProducer<ICplxContent>()
+            Table = new TableProducer<IContent>()
             {
                 Columns =
                 [

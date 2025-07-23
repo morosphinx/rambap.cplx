@@ -1,62 +1,48 @@
 ﻿using rambap.cplx.Core;
+using rambap.cplx.Modules.Connectivity.Templates;
+using static rambap.cplx.Export.Generators;
 
 namespace rambap.cplx.Modules.Base.Output;
 
 /// <summary>
 /// Information about the location in the component tree where a <see cref="CplxContent"/> was created
 /// </summary>
-public record RecursionLocation()
+public record ContentLocation()
 {
     public required string CIN { get; init; }
     public required int Multiplicity { get; init; }
     public required int Depth { get; init; }
+}
+
+public record FlattenedContentLocation()
+{
     public required int LocalItemIndex { get; init; }
     public int LocalItemCount { get; internal set; }
     public bool IsEnd { get; internal set; }
-}
-
-public class LocationBuilder()
-{
-    public required RecursionLocation LocationFrom { get; init; }
-
-    public required int TotalSubItemCount { get; init; }
-
-    public int CurrentSubItemIndex { get; private set; } = 0;
-
-    public RecursionLocation GetNextSubItem()
-    {
-        return LocationFrom with
-        {
-            Depth = LocationFrom.Depth + 1,
-            LocalItemIndex = CurrentSubItemIndex++,
-            LocalItemCount = TotalSubItemCount,
-        };
-    }
-
-    public RecursionLocation GetNextSubItem(string CNappend, int multiplicty = 1)
-    {
-        return GetNextSubItem() with
-        {
-            CIN = CID.Append(LocationFrom.CIN, CNappend),
-            Multiplicity = LocationFrom.Multiplicity * multiplicty,
-        };
-    }
 }
 
 /// <summary>
 /// Main abstraction used to represent data contained in a cplx table line <br/>
 /// Is a data of single component, or a data of a group of component whose relevant characteristics are all equal.
 /// </summary>
-public interface ICplxContent
+public interface IContent
 {
-    RecursionLocation Location { get; }
+    IEnumerable<IContent> SubContents { get; }
+
+
+    ContentLocation Location { get; }
+    ContentLocation GetNextLocation();
     Component Component { get; }
+
+    public LeafCause IsLeafBecause { get; }
+    bool IsLeaf { get; }
+
 
     bool IsGrouping { get; }
     int ComponentLocalCount { get; }
     int ComponentTotalCount { get; }
 
-    IEnumerable<(RecursionLocation location, Component component)> AllComponents();
+    IEnumerable<Component> AllComponents();
 
     public bool AllComponentsMatch<T>(Func<Component, T> getter);
     public bool AllComponentsMatch<T>(Func<Component, T> getter, out T coherentValue);
@@ -66,58 +52,85 @@ public interface ICplxContent
 /// <summary>
 /// Content of a Iterated table representing a component or group of component
 /// </summary>
-public abstract class CplxContent : ICplxContent
+public class CplxContent : IContent
 {
-    public RecursionLocation Location { get; init; }
-    public Component Component { get; }
+    public LeafCause IsLeafBecause => GetLeafCause();
+    protected virtual LeafCause GetLeafCause()
+    {
+        if (SubContents.Any())
+            return LeafCause.NotALeaf_Continued;
+        if (IsRecursionBreak)
+            return LeafCause.RecursionBreak;
+        if (!SubContents.Any())
+            return LeafCause.NoChild;
+        else
+            throw new NotImplementedException();
+    }
 
-    // This should be faster than calling AllComponents().Count(), witch iterate an enumerable
-    public bool IsGrouping => GroupedComponents.Count > 0;
-    public int ComponentLocalCount => 1 + GroupedComponents.Count;
+    public bool IsLeaf => SubContents.Count() == 0;
+    public bool IsBranch => !IsLeaf;
+    public bool IsRecursionBreak => !ContentIterator.ShouldRecurse(this);
+
+    public IEnumerable<IContent> SubContents => ComputeSubcontents();
+    public IEnumerable<IContent> ComputeSubcontents()
+    {
+        if (IsRecursionBreak)
+            yield break;
+        foreach (var subContent in ContentIterator.MakeSubContent(this))
+            yield return subContent;
+    }
+
+    public ContentLocation Location { get; init; }
+    public ContentLocation GetNextLocation()
+    {
+        var localCN = Component.CN;
+        var localMultiplicity = ComponentLocalCount;
+        var localLocation = Location;
+        return new ContentLocation()
+        {
+            CIN = CID.Append(Location.CIN, localCN),
+            Multiplicity = Location.Multiplicity * localMultiplicity,
+            Depth = Location.Depth + 1,
+        };
+    }
+
+    public Component Component => GroupedComponents.First();
+    public bool IsGrouping => GroupedComponents.Count > 1;
+    public int ComponentLocalCount => GroupedComponents.Count;
     public int ComponentTotalCount => Location.Multiplicity * ComponentLocalCount;
 
     // On construction, grouped component are assumed to be all instance of the same, value equal definition
     // TODO : ensure this is true. How ? The issue can happens if someone edit an instance or part
     // Without producing an unique PN for it
-    private List<(RecursionLocation, Component)> GroupedComponents { get; init; } = [];
-    public IEnumerable<(RecursionLocation location, Component component)> AllComponents()
-    {
-        yield return (Location, Component);
-        foreach (var component in GroupedComponents)
-            yield return component;
-    }
+    private List<Component> GroupedComponents { get; init; } = [];
+    public IEnumerable<Component> AllComponents() => GroupedComponents;
+
+
+    public required IContentIterator ContentIterator { private get; init; }
+
 
     public bool AllComponentsMatch<T>(Func<Component, T> getter)
     {
-        return AllComponentsMatch<T>(getter, out T _);
+        return AllComponentsMatch(getter, out T _);
     }
     public bool AllComponentsMatch<T>(Func<Component, T> getter, out T coherentValue)
     {
         // Parts may be edited, without changing the PN => This would be a mistake, detect it
-        var values = AllComponents().Select(c => getter(c.component));
+        var values = AllComponents().Select(getter);
         var disctinctCount = values.Distinct().Count();
         var valuesAreCoherent = disctinctCount <= 1;
         coherentValue = values.First();
         return valuesAreCoherent;
     }
 
-    public CplxContent(RecursionLocation loc, Component comp)
-    {
-        Location = loc;
-        Component = comp;
-    }
-    public CplxContent(RecursionLocation loc, IEnumerable<Component> allComponents)
-        : this(allComponents.Select(c => (loc, c))) { }
-
-    public CplxContent(IEnumerable<(RecursionLocation loc, Component comp)> allComponents)
+    public CplxContent(ContentLocation loc, Component comp)
+        : this(loc, [comp]) { }
+    public CplxContent(ContentLocation loc, IEnumerable<Component> allComponents)
     {
         if (!allComponents.Any())
             throw new InvalidOperationException($"{nameof(CplxContent)} must be created with at least one component");
-        var mainComponent = allComponents.First();
-        Location = mainComponent.loc;
-        Component = mainComponent.comp;
-        var otherComponents = allComponents.Skip(1);
-        GroupedComponents = [.. otherComponents];
+        Location = loc;
+        GroupedComponents = [.. allComponents];
     }
 }
 
@@ -126,6 +139,8 @@ public abstract class CplxContent : ICplxContent
 /// </summary>
 public enum LeafCause
 {
+    NotALeaf_Continued,
+
     /// <summary>
     /// Recursion was here stopped on user-defined purpose
     /// </summary>
@@ -143,99 +158,34 @@ public enum LeafCause
 }
 
 /// <summary>
-/// A content of a component Tree representing a component. Has no child content
-/// </summary>
-public sealed class LeafComponent : CplxContent, IPureComponentContent, ILeafContent
-{
-    public LeafComponent(RecursionLocation loc, Component comp)
-        : base(loc, comp)
-    { }
-
-    public LeafComponent(RecursionLocation loc, IEnumerable<Component> allComponents)
-        : base(loc, allComponents)
-    { }
-
-    public LeafComponent(IEnumerable<(RecursionLocation loc, Component comp)> allComponents)
-        : base(allComponents)
-    { }
-
-    public required LeafCause IsLeafBecause { get; init; }
-}
-
-/// <summary>
-/// A content of a component Tree representing a component. Has descendants, either <see cref="LeafComponent"/> or <see cref="IPropertyContent"/>
-/// </summary>
-public sealed class BranchComponent : CplxContent, IPureComponentContent, IBranchContent
-{
-    public BranchComponent(RecursionLocation loc, Component comp)
-    : base(loc, comp)
-    { }
-
-    public BranchComponent(RecursionLocation loc, IEnumerable<Component> allComponents)
-    : base(loc, allComponents)
-    { }
-
-    public BranchComponent(IEnumerable<(RecursionLocation loc, Component comp)> allComponents)
-        : base(allComponents)
-    { }
-}
-
-public sealed class LeafProperty<T> : CplxContent, IPropertyContent<T>, ILeafContent
-{
-    public LeafProperty(RecursionLocation loc, Component comp)
-        : base(loc, comp)
-    { }
-
-    public LeafProperty(RecursionLocation loc, IEnumerable<Component> allComponents)
-        : base(loc, allComponents)
-    { }
-
-    public LeafProperty(IEnumerable<(RecursionLocation loc, Component comp)> allComponents)
-        : base(allComponents)
-    { }
-
-    public required T Property { get; init; }
-    public required LeafCause IsLeafBecause { get; init; }
-}
-
-public sealed class BranchProperty<T> : CplxContent, IPropertyContent<T>, IBranchContent
-{
-    public BranchProperty(RecursionLocation loc, Component comp)
-        : base(loc, comp)
-    { }
-
-    public BranchProperty(RecursionLocation loc, IEnumerable<Component> allComponents)
-        : base(loc, allComponents)
-    { }
-
-    public BranchProperty(IEnumerable<(RecursionLocation loc, Component comp)> allComponents)
-        : base(allComponents)
-    { }
-
-    public required T Property { get; init; }
-}
-
-public interface IPureComponentContent : ICplxContent
-{
-}
-
-/// <summary>
 /// A content of a component Tree representing a property of a component.
 /// </summary>
-public interface IPropertyContent<out T> : ICplxContent
+public interface IPropertyContent<out T> : IContent
 {
     /// <summary>
     /// Property value. Is owned by the Component
     /// </summary>
     T Property { get; }
-
 }
 
-public interface ILeafContent : ICplxContent
+public sealed class BranchProperty<T> : CplxContent, IPropertyContent<T>
 {
-    LeafCause IsLeafBecause { get; }
+    public bool IsSingleStackedPropertyChild { private get; init; } = false;
+    public required T Property { get; init; }
+
+    protected override LeafCause GetLeafCause()
+    {
+        if(IsSingleStackedPropertyChild)
+            return LeafCause.SingleStackedPropertyChild
+        else 
+            return base.GetLeafCause();
+    }
+    public BranchProperty(ContentLocation loc, Component comp)
+        : base(loc, comp)
+    { }
+
+    public BranchProperty(ContentLocation loc, IEnumerable<Component> allComponents)
+        : base(loc, allComponents)
+    { }
 }
 
-public interface IBranchContent : ICplxContent
-{
-}

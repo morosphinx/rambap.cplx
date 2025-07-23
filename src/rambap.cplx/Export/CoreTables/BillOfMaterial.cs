@@ -12,7 +12,7 @@ namespace rambap.cplx.Export.CoreTables;
 /// <summary>
 /// Produces a Bill Of Material Table (BOM)
 /// </summary>
-public record class BillOfMaterial : TableProducer<ICplxContent>
+public record class BillOfMaterial : TableProducer<IContent>
 {
     [SetsRequiredMembers]
     public BillOfMaterial(DocumentationPerimeter? perimeter = null)

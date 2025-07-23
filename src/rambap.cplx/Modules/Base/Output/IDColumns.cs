@@ -45,19 +45,19 @@ public static class IDColumns
 
     // PN is displayed as exact
 
-    public static DelegateColumn<ICplxContent> PartNumber()
-        => new DelegateColumn<ICplxContent>("PN", ColumnTypeHint.StringExact,
+    public static DelegateColumn<IContent> PartNumber()
+        => new DelegateColumn<IContent>("PN", ColumnTypeHint.StringExact,
              i => i.Component.Instance.PN,
              i => "TOTAL");
 
     // CN are used as pretty / common name, they are formated
 
-    public static DelegateColumn<ICplxContent> ComponentNumber()
-        => new DelegateColumn<ICplxContent>("CN", ColumnTypeHint.StringFormatable,
+    public static DelegateColumn<IContent> ComponentNumber()
+        => new DelegateColumn<IContent>("CN", ColumnTypeHint.StringFormatable,
             i => i.Component.CN);
 
-    public static DelegateColumn<ICplxContent> GroupCNs(string delimiter = ", ", int maxColumnWidth = 50)
-       => new DelegateColumn<ICplxContent>("Component CNs", ColumnTypeHint.StringFormatable,
+    public static DelegateColumn<IContent> GroupCNs(string delimiter = ", ", int maxColumnWidth = 50)
+       => new DelegateColumn<IContent>("Component CNs", ColumnTypeHint.StringFormatable,
             i =>
             {
                 var componentCNs = i.AllComponents().Select(c => c.component.CN);
@@ -69,8 +69,8 @@ public static class IDColumns
             });
 
 
-    public static DelegateColumn<ICplxContent> ComponentParentCNs(string delimiter = ", ", int maxColumnWidth = 50)
-        => new DelegateColumn<ICplxContent>("Locs", ColumnTypeHint.StringFormatable,
+    public static DelegateColumn<IContent> ComponentParentCNs(string delimiter = ", ", int maxColumnWidth = 50)
+        => new DelegateColumn<IContent>("Locs", ColumnTypeHint.StringFormatable,
             i =>
             {
                 var allParentCNs = i.AllComponents()
@@ -86,8 +86,8 @@ public static class IDColumns
 
     // CID as displayed as non formatable in order to prevent adding spaces in a path like string
 
-    public static DelegateColumn<ICplxContent> ComponentID()
-        => new DelegateColumn<ICplxContent>("CID", ColumnTypeHint.StringExact,
+    public static DelegateColumn<IContent> ComponentID()
+        => new DelegateColumn<IContent>("CID", ColumnTypeHint.StringExact,
             i =>
             {
                 var CID = Core.CID.Append(i.Location.CIN, i.Component.CN);
@@ -96,8 +96,8 @@ public static class IDColumns
             i => "TOTAL"
             );
 
-    public static DelegateColumn<ICplxContent> GroupCIDs(string delimiter = ", ", int maxColumnWidth = 50)
-        => new DelegateColumn<ICplxContent>("Component CIDs", ColumnTypeHint.StringExact,
+    public static DelegateColumn<IContent> GroupCIDs(string delimiter = ", ", int maxColumnWidth = 50)
+        => new DelegateColumn<IContent>("Component CIDs", ColumnTypeHint.StringExact,
             i =>
             {
                 var componentCIDs = i.AllComponents()
@@ -110,8 +110,8 @@ public static class IDColumns
                 };
             });
 
-    public static DelegateColumn<ICplxContent> ComponentID_And_Property(string propname) =>
-        new DelegateColumn<ICplxContent>("CID", ColumnTypeHint.StringExact,
+    public static DelegateColumn<IContent> ComponentID_And_Property(string propname) =>
+        new DelegateColumn<IContent>("CID", ColumnTypeHint.StringExact,
             i =>
             {
                 var CID = Core.CID.Append(i.Location.CIN, i.Component.CN);
@@ -124,9 +124,9 @@ public static class IDColumns
             });
 
 
-    public static IColumn<ICplxContent> ComponentNumberPrettyTree()
+    public static IColumn<IContent> ComponentNumberPrettyTree()
         => ComponentNumberPrettyTree<object>(null);
-    public static IColumn<ICplxContent> ComponentNumberPrettyTree<T>(Func<IPropertyContent<T>, string>? propertyNaming)
+    public static IColumn<IContent> ComponentNumberPrettyTree<T>(Func<IPropertyContent<T>, string>? propertyNaming)
         => new ComponentPrettyTreeColumn()
         {
             Title = "CN",
@@ -138,9 +138,8 @@ public static class IDColumns
                 if(i is IPropertyContent<T> pc)
                 {
                     var propName = propertyNaming?.Invoke(pc) ?? "?";
-                    var shouldStillDisplayPN = pc is ILeafContent lc
-                        ? lc.IsLeafBecause == LeafCause.SingleStackedPropertyChild
-                        : true;
+                    var shouldStillDisplayPN = ! pc.IsLeaf
+                        || pc.IsLeafBecause == LeafCause.SingleStackedPropertyChild;
                     return shouldStillDisplayPN
                         ? $"{componentOrPartGroupName} / {propName}"
                         : $"/ {propName}";
@@ -151,16 +150,16 @@ public static class IDColumns
             }
         };
 
-    public static DelegateColumn<ICplxContent> ContentLocation()
-        => new DelegateColumn<ICplxContent>("Location", ColumnTypeHint.StringFormatable,
+    public static DelegateColumn<IContent> ContentLocation()
+        => new DelegateColumn<IContent>("Location", ColumnTypeHint.StringFormatable,
             i =>
             {
                 var loc = i.Location;
                 return $"dep{loc.Depth} - {loc.LocalItemIndex+1} of {loc.LocalItemCount} - {(loc.IsEnd ? "END" : "")}";
             });
 
-    public static DelegateColumn<ICplxContent> PartCommonName(bool usePnAsBackup = false) =>
-        new DelegateColumn<ICplxContent>("Part Common Name", ColumnTypeHint.StringFormatable,
+    public static DelegateColumn<IContent> PartCommonName(bool usePnAsBackup = false) =>
+        new DelegateColumn<IContent>("Part Common Name", ColumnTypeHint.StringFormatable,
             i =>
             {
                 var instance = i.Component.Instance;

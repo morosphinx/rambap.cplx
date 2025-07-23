@@ -5,37 +5,37 @@ namespace rambap.cplx.Modules.Base.Output;
 
 public static class CommonColumns
 {
-    public static DelegateColumn<ICplxContent> Dashes(string title)
-        => new DelegateColumn<ICplxContent>(
+    public static DelegateColumn<IContent> Dashes(string title)
+        => new DelegateColumn<IContent>(
             title,
             ColumnTypeHint.StringExact,
             i => new string('-', title.Length));
 
-    public static IColumn<ICplxContent> EmptyColumn(string title = "")
-        => new DelegateColumn<ICplxContent>(title, ColumnTypeHint.StringFormatable,
+    public static IColumn<IContent> EmptyColumn(string title = "")
+        => new DelegateColumn<IContent>(title, ColumnTypeHint.StringFormatable,
             i => "");
 
-    public static IColumn<ICplxContent> LineNumber()
-        => new LineNumberColumn<ICplxContent>();
+    public static IColumn<IContent> LineNumber()
+        => new LineNumberColumn<IContent>();
 
-    public static IColumn<ICplxContent> LineTypeNumber()
-        => new LineNumberColumnWithContinuation<ICplxContent>()
+    public static IColumn<IContent> LineTypeNumber()
+        => new LineNumberColumnWithContinuation<IContent>()
             { ContinuationCondition = (i, j) => i == null || i.Component != j.Component };
 
-    public static DelegateColumn<ICplxContent> ComponentDepth()
-        => new DelegateColumn<ICplxContent>("Depth", ColumnTypeHint.Numeric,
+    public static DelegateColumn<IContent> ComponentDepth()
+        => new DelegateColumn<IContent>("Depth", ColumnTypeHint.Numeric,
             i => i.Location.Depth.ToString());
 
-    public static DelegateColumn<ICplxContent> ComponentTotalCount(bool displayBranches = false)
-        => new DelegateColumn<ICplxContent>("Count", ColumnTypeHint.Numeric,
+    public static DelegateColumn<IContent> ComponentTotalCount(bool displayBranches = false)
+        => new DelegateColumn<IContent>("Count", ColumnTypeHint.Numeric,
             i => i switch
             {
                 BranchComponent bc when !displayBranches => "",
                 _ => i.ComponentTotalCount.ToString(),
             });
 
-    public static DelegateColumn<ICplxContent> ComponentComment() =>
-        new DelegateColumn<ICplxContent>("Component description", ColumnTypeHint.StringFormatable,
+    public static DelegateColumn<IContent> ComponentComment() =>
+        new DelegateColumn<IContent>("Component description", ColumnTypeHint.StringFormatable,
             i => i switch
             {
                 // In case of a group of component, only display if the components have the same comment
@@ -44,7 +44,7 @@ public static class CommonColumns
             });
 
 
-    public class ComponentPrettyTreeColumn : IColumn<ICplxContent>
+    public class ComponentPrettyTreeColumn : IColumn<IContent>
     {
         public required string Title { get; set; }
         public bool CanFormat = false;
@@ -52,7 +52,7 @@ public static class CommonColumns
             CanFormat ? ColumnTypeHint.StringFormatable : ColumnTypeHint.StringExact ;
 
         private List<bool> LevelDone { get; } = [];
-        public string CellFor(ICplxContent item)
+        public string CellFor(IContent item)
         {
             while (LevelDone.Count <= item.Location.Depth) LevelDone.Add(false);
             LevelDone[item.Location.Depth] = false;
@@ -78,7 +78,7 @@ public static class CommonColumns
         public void Reset() => LevelDone.Clear();
         public string TotalFor(Pinstance root) => "";
 
-        public required Func<ICplxContent, string> GetLocationText { get; init; }
+        public required Func<IContent, string> GetLocationText { get; init; }
     }
 }
 

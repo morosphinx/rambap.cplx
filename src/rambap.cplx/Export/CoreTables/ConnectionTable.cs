@@ -9,7 +9,7 @@ using rambap.cplx.Modules.Connectivity.Outputs;
 
 namespace rambap.cplx.Export.CoreTables;
 
-public record class ConnectionTable : TableProducer<ICplxContent>
+public record class ConnectionTable : TableProducer<IContent>
 {
     [SetsRequiredMembers]
     public ConnectionTable(DocumentationPerimeter? perimeter = null)
@@ -19,8 +19,9 @@ public record class ConnectionTable : TableProducer<ICplxContent>
             PropertyIterator = c => GetConnectionTableProperty(c),
             WriteBranches = false,
             DocumentationPerimeter = perimeter ?? new(),
+            StackPropertiesSingleChildBranches = false, // TBD : Was true, why ?
         };
-        ContentTransform = cs => cs.Where(c => c is not IPureComponentContent);
+        ContentTransform = cs => cs.Where(c => c.IsLeaf);
         Columns = [
             MakeConnectivityColumn("Signal", false, c => c.GetLikelySignal()),
             Dashes("--"),

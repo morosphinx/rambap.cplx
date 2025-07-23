@@ -6,7 +6,7 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace rambap.cplx.Export.CoreTables;
 
-public record class PortICD : TableProducer<ICplxContent>
+public record class PortICD : TableProducer<IContent>
 {
     // ICD Table
 

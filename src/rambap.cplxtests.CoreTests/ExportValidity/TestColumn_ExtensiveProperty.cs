@@ -20,7 +20,7 @@ public abstract class TestColumn_ExtensiveProperty<PART,ITER>
     /// <summary>
     /// Column whose sum will be checked
     /// </summary>
-    protected abstract IColumn<ICplxContent> GetTestedColumn();
+    protected abstract IColumn<IContent> GetTestedColumn();
 
     /// <summary>
     /// For debug, return an indentifier name of the tested Pinstance property
@@ -30,7 +30,7 @@ public abstract class TestColumn_ExtensiveProperty<PART,ITER>
     /// <summary>
     /// For debug, other columns to write to the output
     /// </summary>
-    protected abstract IEnumerable<IColumn<ICplxContent>> GetDebugColumns();
+    protected abstract IEnumerable<IColumn<IContent>> GetDebugColumns();
 
     /// <summary>
     /// For debug, other columns to write to the output
@@ -67,7 +67,7 @@ public abstract class TestColumn_ExtensiveProperty<PART,ITER>
                 PropertyIterator = PropertyIterator,
             });
 
-    private void TestSumCoherence_Iterator(IIterator<ICplxContent> iterator)
+    private void TestSumCoherence_Iterator(IContentIterator<IContent> iterator)
     {
         var part = GetTestPart();
         var component = part.Instantiate();

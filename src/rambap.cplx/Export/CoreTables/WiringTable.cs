@@ -9,7 +9,7 @@ using rambap.cplx.Modules.Connectivity.Outputs;
 
 namespace rambap.cplx.Export.CoreTables;
 
-public record class WiringTable : TableProducer<ICplxContent>
+public record class WiringTable : TableProducer<IContent>
 {
     [SetsRequiredMembers]
     public WiringTable(DocumentationPerimeter? perimeter = null)
@@ -22,7 +22,7 @@ public record class WiringTable : TableProducer<ICplxContent>
             DocumentationPerimeter = perimeter ?? new DocumentationPerimeter_SinglePartAndItsContents(),
         };
         ContentTransform = cs
-            => cs.Where(c => c is not IPureComponentContent); // Remove branch items
+            => cs.Where(c => c.IsLeaf); // Remove branch items
         Columns = [
             // 
             // The link end on the connector, on the unexposed pin connector

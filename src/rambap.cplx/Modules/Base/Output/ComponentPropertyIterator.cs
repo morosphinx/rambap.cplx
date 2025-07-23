@@ -10,78 +10,6 @@ namespace rambap.cplx.Modules.Base.Output;
 /// <typeparam name="P">Enumerated property Type.</typeparam>
 public class ComponentPropertyIterator<P> : ComponentIterator
 {
-    protected sealed class IterationItem_Property : IIterationItem
-    {
-        public required RecursionLocation Location { get; init; }
-
-        public required IEnumerable<Component> Components { get; init; }
-        public required P Property { get; init; }
-
-        public IEnumerable<ICplxContent> GetRecursionBreakContent()
-        {
-            yield return new LeafProperty<P>(Location, Components)
-            {
-                Property = Property,
-                IsLeafBecause = LeafCause.RecursionBreak
-            };
-        }
-
-        public IEnumerable<ICplxContent> GetRecursionContinueContent(List<IIterationItem> subItems)
-        {
-            bool isLeafDueToNoChild = subItems.Count == 0; ;
-            if (isLeafDueToNoChild)
-            {
-                yield return new LeafProperty<P>(Location, Components)
-                {
-                    Property = Property,
-                    IsLeafBecause = LeafCause.NoChild
-                };
-            }
-            else
-            {
-                yield return new BranchProperty<P>(Location, Components)
-                {
-                    Property = Property,
-                };
-            }
-        }
-    }
-
-    protected sealed class IterationItem_GroupWithSingleProperty : IIterationItem_ComponentGroup
-    {
-        public required RecursionLocation Location { get; init; }
-        public required IEnumerable<Component> Components { get; init; }
-        public required P Property { get; init; }
-
-        public IEnumerable<ICplxContent> GetRecursionBreakContent()
-        {
-            yield return new LeafComponent(Location, Components) { IsLeafBecause = LeafCause.RecursionBreak };
-        }
-
-        public IEnumerable<ICplxContent> GetRecursionContinueContent(List<IIterationItem> subItems)
-        {
-            bool isLeafDueToNoChild = subItems.Count == 0; ;
-            if (isLeafDueToNoChild)
-            {
-                yield return new LeafProperty<P>(Location, Components)
-                {
-                    Property = Property,
-                    IsLeafBecause = LeafCause.SingleStackedPropertyChild
-                };
-            } else
-            {
-                yield return new BranchProperty<P>(Location, Components)
-                {
-                    Property = Property,
-                };
-            }
-        }
-    }
-    protected sealed class IterationItem_GroupWithPrecomputedProperties : IterationItem_ComponentGroup
-    {
-        public required List<P> Properties { get; init; }
-    }
-
 
     /// <summary>
     /// Define a final level of iteration on of components
@@ -93,97 +21,56 @@ public class ComponentPropertyIterator<P> : ComponentIterator
 
     public Func<P, IEnumerable<P>>? PropertySubIterator { private get; init; }
 
-    protected override IEnumerable<IIterationItem> GetChilds(IIterationItem iterationTarget, LocationBuilder loc)
+    public override IEnumerable<IContent> MakeSubContent(IContent content)
     {
-        if (iterationTarget is IterationItem_ComponentGroup group)
+        if(content is not BranchProperty<P>)
         {
-            var localCN = group.MainComponent.CN;
-            var localMultiplicity = group.Components.Count();
-            var mainComponent = group.MainComponent;
-
-            // Properties of Components may have been precomputed by parent
-            var propertiesContents = group switch
+            // Is NOT a property content : regular component iteration first
+            foreach (var cg in base.MakeSubContent(content))
             {
-                IterationItem_GroupWithPrecomputedProperties p => p.Properties,
-                _ => PropertyIterator(mainComponent).ToList(),
-            };
-
-            foreach (var prop in propertiesContents)
-            {
-                var propLocation = loc.GetNextSubItem();
-                yield return new IterationItem_Property()
+                if (StackPropertiesSingleChildBranches)
                 {
-                    Components = group.Components,
-                    Location = propLocation,
-                    Property = prop,
-                };
-            }
-
-            // Components, same as parent except that it can return a SubComponentGroupWithSingleProperty
-            // in some specific cases
-            // prepare subcomponents contents. Group them by same PartType & PN if configured :
-            var subcomponentContents = GetSubcomponentsAsGroup(group);
-            foreach (var subgroup in subcomponentContents)
-            {
-                var subLocation = loc.GetNextSubItem(localCN, localMultiplicity);
-
-                var subgroupMainComponent = subgroup.First();
-                var subproperties = PropertyIterator(subgroupMainComponent).ToList();
-
-                if (StackPropertiesSingleChildBranches
-                    && subproperties.Count == 1 // Only a single property
-                    && !subgroupMainComponent.SubComponents.Any()) // No other child
-                {
-                    // If this would only have a single property as a child, return
-                    // A special item that will compact both the component and the property on a single line
-                    var item = new IterationItem_GroupWithSingleProperty()
-                    {
-                        Location = subLocation,
-                        Components = subgroup,
-                        Property = subproperties.Single()
-                    };
-                    yield return item;
-
+                    var mainComponent = cg.Component;
+                    // May stack the property if applicable
+                    var expectedChilds = base.MakeContent(mainComponent);
+                    var expectedProperties = PropertyIterator(mainComponent);
+                    if(expectedProperties.Count() == 1 && expectedChilds.Count() == 0)
+                        yield return new BranchProperty<P>(cg.Location,cg.AllComponents())
+                        {
+                            ContentIterator = this,
+                            Property = expectedProperties.Single(),
+                            IsSingleStackedPropertyChild = true,
+                        };
+                    else
+                        yield return cg;
                 }
                 else
-                {
-                    var item = new IterationItem_GroupWithPrecomputedProperties()
-                    {
-                        Location = subLocation,
-                        Components = subgroup,
-                        WriteComponentBranches = WriteBranches,
-                        Properties = subproperties,
-                    };
-                    yield return item;
-                }
+                    yield return cg;
             }
-        }
-        else if(iterationTarget is IterationItem_GroupWithSingleProperty soloSubPropItem
-            && PropertySubIterator != null)
-        {
-            var properties = PropertySubIterator(soloSubPropItem.Property);
-            foreach(var prop in properties)
+            // Iterate Properties
+            var propertiesContents = PropertyIterator(content.Component);
+            var nextLocation = content.GetNextLocation();
+            foreach (var prop in propertiesContents)
             {
-                var propLocation = loc.GetNextSubItem();
-                yield return new IterationItem_Property()
+                yield return new BranchProperty<P>(nextLocation, content.AllComponents())
                 {
-                    Components = soloSubPropItem.Components,
-                    Location = propLocation,
+                    ContentIterator = this,
                     Property = prop,
                 };
             }
         }
-        else if(iterationTarget is IterationItem_Property propItem
-            && PropertySubIterator != null)
+        else if(content is BranchProperty<P> bp)
         {
-            var properties = PropertySubIterator(propItem.Property);
-            foreach (var prop in properties)
+            // SubIterate properties
+            if (PropertySubIterator is null)
+                yield break;
+            var propertiesContents = PropertySubIterator(bp.Property);
+            var nextLocation = content.GetNextLocation();
+            foreach (var prop in propertiesContents)
             {
-                var propLocation = loc.GetNextSubItem();
-                yield return new IterationItem_Property()
+                yield return new BranchProperty<P>(nextLocation, content.AllComponents())
                 {
-                    Components = propItem.Components,
-                    Location = propLocation,
+                    ContentIterator = this,
                     Property = prop,
                 };
             }

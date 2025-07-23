@@ -9,7 +9,7 @@ namespace rambap.cplx.Export.CoreTables;
 /// <summary>
 /// Table detailing the amount and duration of each individual Recurent Task. <br/>
 /// </summary>
-public record class TaskBreakdown : TableProducer<ICplxContent>
+public record class TaskBreakdown : TableProducer<IContent>
 {
     [SetsRequiredMembers]
     public TaskBreakdown()

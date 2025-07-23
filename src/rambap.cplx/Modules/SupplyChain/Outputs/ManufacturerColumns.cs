@@ -5,8 +5,8 @@ namespace rambap.cplx.Modules.SupplyChain.Outputs;
 
 public static class ManufacturerColumns
 {
-    public static DelegateColumn<ICplxContent> PartManufacturer() =>
-        new DelegateColumn<ICplxContent>("Manufacturer", ColumnTypeHint.StringFormatable,
+    public static DelegateColumn<IContent> PartManufacturer() =>
+        new DelegateColumn<IContent>("Manufacturer", ColumnTypeHint.StringFormatable,
             i => i.Component.Instance.Manufacturer()?.Company?.Name ?? "");
 }
 

@@ -5,7 +5,7 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace rambap.cplx.Export.CoreTables;
 
-public record class ComponentTree_Detailled : TableProducer<ICplxContent>
+public record class ComponentTree_Detailled : TableProducer<IContent>
 {
     [SetsRequiredMembers]
     public ComponentTree_Detailled()
@@ -20,7 +20,7 @@ public record class ComponentTree_Detailled : TableProducer<ICplxContent>
     }
 }
 
-public record class ComponentTree_Stacked : TableProducer<ICplxContent>
+public record class ComponentTree_Stacked : TableProducer<IContent>
 {
     [SetsRequiredMembers]
     public ComponentTree_Stacked()

@@ -1,4 +1,5 @@
 ﻿using rambap.cplx.Core;
+using rambap.cplx.Modules.Base.Output;
 
 namespace rambap.cplx.Modules.Base.TableModel;
 
@@ -38,7 +39,7 @@ public abstract record TableProducer : ITableProducer
 public record TableProducer<T> : TableProducer
 {
     /// <summary> Iterator that select that lines content </summary>
-    public required IIterator<T> Iterator { get; init; }
+    public required IContentIterator<T> Iterator { get; init; }
 
     /// <summary> Definition of the columns of the table </summary>
     public required List<IColumn<T>> Columns { get; init; }

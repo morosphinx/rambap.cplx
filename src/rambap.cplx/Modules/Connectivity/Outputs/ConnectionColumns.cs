@@ -9,9 +9,9 @@ namespace rambap.cplx.Modules.Connectivity.Outputs;
 
 public static class ConnectionColumns
 {
-    public static DelegateColumn<ICplxContent> MakeConnectivityColumn(
+    public static DelegateColumn<IContent> MakeConnectivityColumn(
         string columnName, bool format, Func<ConnectivityTableProperty, string> getter)
-        => new DelegateColumn<ICplxContent>(
+        => new DelegateColumn<IContent>(
             columnName,
             format ? ColumnTypeHint.StringFormatable : ColumnTypeHint.StringExact,
             i => i switch
@@ -19,7 +19,7 @@ public static class ConnectionColumns
                 IPropertyContent<ConnectivityTableProperty> c => getter(c.Property),
                 _ => throw new NotImplementedException(),
             });
-    public static DelegateColumn<ICplxContent> LinkedComponent(
+    public static DelegateColumn<IContent> LinkedComponent(
             PortSide side,
             PortIdentity identity,
             string title,
@@ -31,7 +31,7 @@ public static class ConnectionColumns
             c => getter(c.GetLinkedComponent(side, identity))
             );
 
-    public static DelegateColumn<ICplxContent> LinkedPort(
+    public static DelegateColumn<IContent> LinkedPort(
             PortSide side,
             PortIdentity identity,
             string title,
@@ -43,7 +43,7 @@ public static class ConnectionColumns
             c => getter(c.GetLinkPort(side,identity))
             );
 
-    public static DelegateColumn<ICplxContent> EndpointComponent(
+    public static DelegateColumn<IContent> EndpointComponent(
             PortSide side,
             string title,
             Func<Component?, string> getter,
@@ -58,7 +58,7 @@ public static class ConnectionColumns
                 return getter(component);
             });
 
-    public static DelegateColumn<ICplxContent> EndpointPort(
+    public static DelegateColumn<IContent> EndpointPort(
             PortSide side,
             string title,
             Func<Port, string> getter,
@@ -73,7 +73,7 @@ public static class ConnectionColumns
             });
 
 
-    public static DelegateColumn<ICplxContent> CablePart(
+    public static DelegateColumn<IContent> CablePart(
             string title,
             Func<Component, string> getter,
             bool format = false)
@@ -89,7 +89,7 @@ public static class ConnectionColumns
             //}
             );
 
-    public static DelegateColumn<ICplxContent> CableConnector(
+    public static DelegateColumn<IContent> CableConnector(
             PortSide side,
             string title,
             Func<Component, string> getter,
@@ -106,7 +106,7 @@ public static class ConnectionColumns
             //}
             );
 
-    public static DelegateColumn<ICplxContent> CablePort(
+    public static DelegateColumn<IContent> CablePort(
            PortSide side,
            string title,
            Func<Port, string> getter,
@@ -123,7 +123,7 @@ public static class ConnectionColumns
             //}
             );
 
-    public static DelegateColumn<ICplxContent> ConnectionKind()
+    public static DelegateColumn<IContent> ConnectionKind()
         => MakeConnectivityColumn(
             "Kind",
             true,

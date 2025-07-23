@@ -10,7 +10,7 @@ namespace rambap.cplx.Export.CoreTables;
 /// <summary>
 /// Table detailing the amount of each individual Cost of the instance.
 /// </summary>
-public record class CostBreakdown : TableProducer<ICplxContent>
+public record class CostBreakdown : TableProducer<IContent>
 {
     /// <summary>
     /// Enumerate a component costs point, 
