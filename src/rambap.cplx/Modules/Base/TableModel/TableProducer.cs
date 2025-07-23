@@ -35,8 +35,9 @@ public abstract record TableProducer : ITableProducer
 /// Definition of a Table to be displayed in a file
 /// Output 2D string array
 /// </summary>
-/// <typeparam name="T">The type of all line of the table. This may be abstract</typeparam>
+/// <typeparam name="T">The type of all line of the table.</typeparam>
 public record TableProducer<T> : TableProducer
+    where T : IContent
 {
     /// <summary> Iterator that select that lines content </summary>
     public required IContentIterator<T> Iterator { get; init; }
@@ -138,8 +139,11 @@ public record TableProducer<T> : TableProducer
     public override IEnumerable<Line> MakeContentLines(Component rootComponent)
     {
         var contents = Iterator.MakeContent(rootComponent);
+        // TO FLAt :
+        var flatContents = contents.SelectMany(c => c.AsFlatContent());
+
         // Apply content transform
-        if(ContentTransform is not null)
+        if (ContentTransform is not null)
             contents = ContentTransform(contents);
         // Add additional breaks if required
         T? previousContent = default;

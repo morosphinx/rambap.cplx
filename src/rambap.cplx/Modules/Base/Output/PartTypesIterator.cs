@@ -8,7 +8,7 @@ namespace rambap.cplx.Modules.Base.Output;
 /// Output is structured like a list of <see cref="PartContent"/>.
 /// </summary>
 /// <typeparam name="P">Enumerated property Type. Set to object if none</typeparam>
-public class PartTypesIterator<P> : IContentIterator
+public class PartTypesIterator<P> : IContentIterator<IContent>
 {
 
     public bool WriteBranches { get; init; } = true;

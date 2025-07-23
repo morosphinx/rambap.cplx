@@ -9,7 +9,7 @@ namespace rambap.cplx.Modules.Base.Output;
 /// Produce an IEnumerable iterating over the component tree of an instance, and its properties <br/>
 /// Output is structured like a tree of <see cref="CplxContent"/>. <br/>
 /// </summary>
-public class ComponentIterator : IContentIterator
+public class ComponentIterator : IContentIterator<IContent>
 {
     /// <summary>
     /// If False, each subcomponent produce its own content.

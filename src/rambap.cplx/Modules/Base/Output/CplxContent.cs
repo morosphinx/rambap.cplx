@@ -18,7 +18,7 @@ public record FlattenedContentLocation()
 {
     public required int LocalItemIndex { get; init; }
     public int LocalItemCount { get; internal set; }
-    public bool IsEnd { get; internal set; }
+    public bool IsEnd => LocalItemCount-1 == LocalItemIndex;
 }
 
 /// <summary>
@@ -28,7 +28,8 @@ public record FlattenedContentLocation()
 public interface IContent
 {
     IEnumerable<IContent> SubContents { get; }
-
+    FlattenedContentLocation? LocationWhenFlattened { get; }
+    IEnumerable<IContent> AsFlatContent();
 
     ContentLocation Location { get; }
     ContentLocation GetNextLocation();
@@ -36,6 +37,7 @@ public interface IContent
 
     public LeafCause IsLeafBecause { get; }
     bool IsLeaf { get; }
+    bool IsBranch { get; }
 
 
     bool IsGrouping { get; }
@@ -106,9 +108,7 @@ public class CplxContent : IContent
     public IEnumerable<Component> AllComponents() => GroupedComponents;
 
 
-    public required IContentIterator ContentIterator { private get; init; }
-
-
+    public required IContentIterator<IContent> ContentIterator { private get; init; }
     public bool AllComponentsMatch<T>(Func<Component, T> getter)
     {
         return AllComponentsMatch(getter, out T _);
@@ -121,6 +121,25 @@ public class CplxContent : IContent
         var valuesAreCoherent = disctinctCount <= 1;
         coherentValue = values.First();
         return valuesAreCoherent;
+    }
+
+    public FlattenedContentLocation? LocationWhenFlattened { get; private set; }
+    public IEnumerable<IContent> AsFlatContent()
+    {
+        yield return this;
+        var subContents = SubContents.ToList();
+        int totalSubCount = subContents.Count;
+        int ctn = 0;
+        foreach(var sub in subContents)
+        {
+            ((CplxContent)sub).LocationWhenFlattened = new()
+            {
+                LocalItemIndex = ctn++,
+                LocalItemCount = totalSubCount,
+            };
+            foreach(var subcc in sub.AsFlatContent())
+                yield return subcc;
+        }
     }
 
     public CplxContent(ContentLocation loc, Component comp)
@@ -175,9 +194,9 @@ public sealed class BranchProperty<T> : CplxContent, IPropertyContent<T>
 
     protected override LeafCause GetLeafCause()
     {
-        if(IsSingleStackedPropertyChild)
-            return LeafCause.SingleStackedPropertyChild
-        else 
+        if (IsSingleStackedPropertyChild)
+            return LeafCause.SingleStackedPropertyChild;
+        else
             return base.GetLeafCause();
     }
     public BranchProperty(ContentLocation loc, Component comp)
