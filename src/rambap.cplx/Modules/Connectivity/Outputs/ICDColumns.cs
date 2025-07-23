@@ -14,8 +14,7 @@ public static class ICDColumns
             i => i switch
             {
                 IPropertyContent<ICDTableProperty> p => p.Property.Port.GetUpperUsage().Owner.Parent.CN ?? "",
-                BranchComponent c => c.Component.CN,
-                _ => throw new NotImplementedException(),
+                IContent c => c.Component.CN,
             });
 
     public static DelegateColumn<IContent> TopMostPortName()
@@ -25,8 +24,7 @@ public static class ICDColumns
             i => i switch
             {
                 IPropertyContent<ICDTableProperty> p => p.Property.Port.GetUpperUsage().Label,
-                BranchComponent c => "",
-                _ => throw new NotImplementedException(),
+                IContent c => "",
             });
 
     public static DelegateColumn<IContent> MostRelevantPortName()
@@ -36,8 +34,7 @@ public static class ICDColumns
             i => i switch
             {
                 IPropertyContent<ICDTableProperty> p => p.Property.Port.GetUpperExposition().Label,
-                BranchComponent c => "",
-                _ => throw new NotImplementedException(),
+                IContent c => "",
             });
 
     public static DelegateColumn<IContent> MostRelevantPortName_Regard()
@@ -47,8 +44,7 @@ public static class ICDColumns
             i => i switch
             {
                 IPropertyContent<ICDTableProperty> p => "",
-                BranchComponent c => "",
-                _ => throw new NotImplementedException(),
+                IContent c => "",
             });
 
     public static DelegateColumn<IContent> SelfPortName()
@@ -58,7 +54,6 @@ public static class ICDColumns
             i => i switch
             {
                 IPropertyContent<ICDTableProperty> p => p.Property.Port.Label,
-                BranchComponent c => "",
-                _ => throw new NotImplementedException(),
+                IContent c => "",
             });
 }

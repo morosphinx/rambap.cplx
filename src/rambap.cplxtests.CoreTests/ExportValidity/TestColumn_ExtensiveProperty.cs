@@ -53,27 +53,28 @@ public abstract class TestColumn_ExtensiveProperty<PART,ITER>
             new ComponentPropertyIterator<ITER>()
             {
                 DocumentationPerimeter = new DocumentationPerimeter_WithInclusion() { InclusionCondition = c => recursive},
-                WriteBranches = writeBranches,
                 PropertyIterator = PropertyIterator,
                 GroupPNsAtSameLocation = groupPNsAtSameLocation,
-            });
+            },
+            writeBranches);
 
     private void TestSumCoherence_PartTypeIterators(bool recursive, bool writeBranches)
         => TestSumCoherence_Iterator(
             new PartTypesIterator<ITER>()
             {
                 DocumentationPerimeter = new DocumentationPerimeter_WithInclusion() { InclusionCondition = c => recursive },
-                WriteBranches = writeBranches,
                 PropertyIterator = PropertyIterator,
-            });
+            },
+            writeBranches);
 
-    private void TestSumCoherence_Iterator(IContentIterator<IContent> iterator)
+    private void TestSumCoherence_Iterator(IContentIterator<IContent> iterator, bool writebranches)
     {
         var part = GetTestPart();
         var component = part.Instantiate();
         TestColumn_Support.TestDecimalColumn_SumCoherence<ITER>(
             component,
             iterator,
+            writebranches,
             DecimalPropertyPartExemple.ExpectedTotal_ExtensiveT,
             GetTestedColumn(),
             PropertyNaming,

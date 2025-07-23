@@ -17,9 +17,6 @@ public class ComponentIterator : IContentIterator<IContent>
     /// </summary>
     public bool GroupPNsAtSameLocation { get; init; } = false;
 
-    /// <summary> If true, return every component encountered when traversing the tree. Otherwise, return only the final leaf components and leaf properties. </summary>
-    public bool WriteBranches { get; init; } = true;
-
     /// <summary>
     /// Define when to recurse on components (will return properties items and subcomponents items) and when not to (will only return the component item)
     /// If null, always recurse
@@ -28,7 +25,7 @@ public class ComponentIterator : IContentIterator<IContent>
     public bool AlwaysRecurseDepth0 { get; set; } = true;
 
 
-    public virtual bool ShouldRecurse(IContent currentContent)
+    public virtual bool ShouldTryRecurse(IContent currentContent)
     {
         var mainComponent = currentContent.Component;
         var location = currentContent.Location;
@@ -39,10 +36,10 @@ public class ComponentIterator : IContentIterator<IContent>
         return mayRecursePastThis;
     }
 
-    protected IEnumerable<IEnumerable<Component>> MakeSubComponentGroups(IEnumerable<Component> components)
+    public static IEnumerable<IEnumerable<Component>> MakeSubComponentGroups(IEnumerable<Component> components, bool doGroups)
     {
         var subcomponents = components.First().SubComponents;
-        var subcomponentContents = GroupPNsAtSameLocation switch
+        var subcomponentContents = doGroups switch
         {
             false => subcomponents.Select<Component, IEnumerable<Component>>(c => [c]),
             true => subcomponents.GroupBy(c => (c.Instance.PartType, c.Instance.PN)).Select(g => g.Select(c => c)),
@@ -53,7 +50,7 @@ public class ComponentIterator : IContentIterator<IContent>
     public virtual IEnumerable<IContent> MakeSubContent(IContent content)
     {
         // prepare subcomponents contents. Group them by same PartType & PN if configured :
-        var subcomponentContents = MakeSubComponentGroups(content.AllComponents());
+        var subcomponentContents = MakeSubComponentGroups(content.AllComponents(), GroupPNsAtSameLocation);
         foreach (var i in subcomponentContents)
         {
             var subItemLocation = content.GetNextLocation() ;

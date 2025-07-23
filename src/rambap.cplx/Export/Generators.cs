@@ -212,7 +212,7 @@ public class FlattenedDocumentationTreeGenerator : IGenerator
                 InclusionCondition = c => SubComponentInclusionCondition?.Invoke(c) ?? false
             },
         };
-        var content = partTree.MakeContent(rootComponent);
+        var content = ((IContentIterator<IContent>) partTree).MakeContent_AsFlat(rootComponent);
         var partFolders = content.Select(c => c.Component)
                                  .Select(c => 
                                  (FileNamePatternFor(c),new Folder(

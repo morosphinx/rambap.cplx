@@ -19,10 +19,11 @@ public record class BillOfMaterial : TableProducer<IContent>
     {
         Iterator = new PartTypesIterator<InstanceCost.CostPoint>()
         {
-            WriteBranches = false,
             DocumentationPerimeter = perimeter ?? new(),
             PropertyIterator = (c) => CostBreakdown.EnumerateCostPoints(c, true),
         };
+        ContentTransform = cs
+            => cs.Where(c => c.IsLeaf); // Remove branch items
         Columns = [
             CommonColumns.LineTypeNumber(),
             IDColumns.GroupCNs(),

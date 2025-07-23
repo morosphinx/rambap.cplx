@@ -16,12 +16,12 @@ public record class ConnectionTable : TableProducer<IContent>
     {
         Iterator = new ComponentPropertyIterator<ConnectionTableProperty>()
         {
-            PropertyIterator = c => GetConnectionTableProperty(c),
-            WriteBranches = false,
+            PropertyIterator = GetConnectionTableProperty,
             DocumentationPerimeter = perimeter ?? new(),
             StackPropertiesSingleChildBranches = false, // TBD : Was true, why ?
         };
-        ContentTransform = cs => cs.Where(c => c.IsLeaf);
+        ContentTransform = cs
+            => cs.Where(c => c.IsLeaf); // Remove branch items
         Columns = [
             MakeConnectivityColumn("Signal", false, c => c.GetLikelySignal()),
             Dashes("--"),

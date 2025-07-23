@@ -11,9 +11,22 @@ public interface IContentIterator<out T>
     where T : IContent
 {
     IEnumerable<T> MakeContent(Component component);
+    IEnumerable<T> MakeContent_AsFlat(Component component)
+    {
+        var componentsItems = MakeContent(component);
+        return (IEnumerable<T>) componentsItems.SelectMany(c => c.AsFlatContent());
+    }
 
-    bool ShouldRecurse(IContent content);
+    bool ShouldTryRecurse(IContent content);
     IEnumerable<T> MakeSubContent(IContent content);
 }
 
 
+class DoNothingIterator : IContentIterator<IContent>
+{
+    public IEnumerable<IContent> MakeContent(Component component) => [];
+
+    public IEnumerable<IContent> MakeSubContent(IContent content) => [];
+
+    public bool ShouldTryRecurse(IContent content) => false;
+}

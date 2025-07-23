@@ -9,12 +9,13 @@ internal static class TestColumn_Support
     public static void TestDecimalColumn_SumCoherence<T>(
         Component component,
         IContentIterator<IContent> iterator,
+        bool writeBranches,
         decimal expectedTotal,
         IColumn<IContent> testedColumn,
         Func<IPropertyContent<T>, string> propertyNaming,
         IEnumerable<IColumn<IContent>> debugDataColumns)
     {
-        var res = iterator.MakeContent(component);
+        var res = iterator.MakeContent_AsFlat(component);
         var values = res.Select(testedColumn.CellFor);
         var total = values.Select(s => (s != "") ? Convert.ToDecimal(s) : 0M).Sum();
 
@@ -35,6 +36,8 @@ internal static class TestColumn_Support
                     testedColumn,
                 ],
                 Iterator = iterator,
+                ContentTransform = cs
+                    => cs.Where(c => (c.IsBranch && writeBranches) || c.IsLeaf) // Remove branch items if ! writeBranches
             },
             Formater = new FixedWidthTableFormater(),
         };

@@ -138,9 +138,7 @@ public record TableProducer<T> : TableProducer
     }
     public override IEnumerable<Line> MakeContentLines(Component rootComponent)
     {
-        var contents = Iterator.MakeContent(rootComponent);
-        // TO FLAt :
-        var flatContents = contents.SelectMany(c => c.AsFlatContent());
+        var contents = Iterator.MakeContent_AsFlat(rootComponent);
 
         // Apply content transform
         if (ContentTransform is not null)

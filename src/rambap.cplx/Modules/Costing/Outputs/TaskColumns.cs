@@ -13,9 +13,8 @@ public static class TaskColumns
             i => i switch
             {
                 IPropertyContent<InstanceTasks.NamedTask> lp => lp.Property.Name,
-                LeafComponent lc when lc.IsLeafBecause == LeafCause.RecursionBreak => "unit",
-                IPureComponentContent => "",
-                _ => throw new NotImplementedException()
+                IContent lc when lc.IsLeaf && lc.IsLeafBecause == LeafCause.RecursionBreak => "unit",
+                IContent => "",
             });
 
     public static DelegateColumn<IContent> TaskCategory()
@@ -23,8 +22,7 @@ public static class TaskColumns
             i => i switch
             {
                 IPropertyContent<InstanceTasks.NamedTask> lp => lp.Property.Category,
-                IPureComponentContent c => "",
-                _ => throw new NotImplementedException()
+                IContent c => "",
             });
 
     public static DelegateColumn<IContent> TaskRecurence()
@@ -32,10 +30,9 @@ public static class TaskColumns
             i => i switch
             {
                 IPropertyContent<InstanceTasks.NamedTask> lp => lp.Property.IsRecurent ? "*" : "",
-                LeafComponent lc => "?",
-                    // TODO : clarify LeafComponentBehavior, it's not possible to represent both NonRecurent and Recurent duration in the same total unambigiously
-                BranchComponent bc => "",
-                _ => throw new NotImplementedException()
+                IContent lc when lc.IsLeaf => "?",
+                // TODO : clarify LeafComponentBehavior, it's not possible to represent both NonRecurent and Recurent duration in the same total unambigiously
+                IContent bc => "",
             });
 
     public static DelegateColumn<IContent> TaskDuration()
@@ -43,8 +40,7 @@ public static class TaskColumns
             i => i switch
             {
                 IPropertyContent<InstanceTasks.NamedTask> lp => lp.Property.Duration_day.ToString(),
-                IPureComponentContent c => "",
-                _ => throw new NotImplementedException()
+                IContent c => "",
             });
 
     public static DelegateColumn<IContent> RecurentTaskUnitDuration()
@@ -52,9 +48,8 @@ public static class TaskColumns
             i => i switch
             {
                 IPropertyContent<InstanceTasks.NamedTask> lp => lp.Property.Duration_day.ToString(),
-                LeafComponent lc => lc.Component.Instance.Tasks()?.TotalRecurentTaskDuration.ToString() ?? "",
-                BranchComponent bc => "",
-                _ => throw new NotImplementedException()
+                IContent lc when lc.IsLeaf=> lc.Component.Instance.Tasks()?.TotalRecurentTaskDuration.ToString() ?? "",
+                IContent bc => "",
             });
 
     public static DelegateColumn<IContent> TaskCount()
@@ -63,8 +58,7 @@ public static class TaskColumns
             {
                 IPropertyContent<InstanceTasks.NamedTask> lp =>
                     lp.Property.IsRecurent ? i.ComponentTotalCount.ToString() : "",
-                IPureComponentContent c => "",
-                _ => throw new NotImplementedException()
+                IContent c => "",
             });
 
     public static DelegateColumn<IContent> TaskTotalDuration(bool includeNonRecurent)
@@ -75,7 +69,7 @@ public static class TaskColumns
                     (lp.ComponentTotalCount * lp.Property.Duration_day).ToString(),
                 IPropertyContent<InstanceTasks.NamedTask> lp when ! lp.Property.IsRecurent =>
                     lp.Property.Duration_day.ToString(),
-                LeafComponent lc =>
+                IContent lc when lc.IsLeaf =>
                     lc.AllComponentsMatch(c =>
                     {
                         var instanceTasks = c.Instance.Tasks();
@@ -88,7 +82,7 @@ public static class TaskColumns
                     }, out var value)
                         ? value.ToString()
                         : "error",
-                BranchComponent bc when ! includeNonRecurent => "", // Branch component have no property
+                IContent bc when ! includeNonRecurent => "", // Branch component have no property
                 _ => throw new NotImplementedException()
             },
             i =>
@@ -108,7 +102,7 @@ public static class TaskColumns
             {
                 IPropertyContent<InstanceTasks.NamedTask> lp when lp.Property.IsRecurent =>
                         lp.Property.Duration_day.ToString(), // Do not display multiplicity for properties : this is a local duration representation
-                BranchComponent when i.Component.Instance.Tasks() is not null =>
+                IContent when i.Component.Instance.Tasks() is not null =>
                     i.IsGrouping
                         ? $"{i.ComponentLocalCount}x: {i.Component.Instance.Tasks()!.TotalRecurentTaskDuration.ToString()}"
                         : i.Component.Instance.Tasks()!.TotalRecurentTaskDuration.ToString(),
@@ -124,11 +118,10 @@ public static class TaskColumns
             {
                 IPropertyContent<InstanceTasks.NamedTask> lp when ! lp.Property.IsRecurent =>
                     lp.Property.Duration_day.ToString(), // Do not display multiplicity for properties : this is a local duration representation
-                BranchComponent =>
+                IContent =>
                     i.Location.Depth == 0  || i.Component.Instance.Tasks() != null 
                         ? InstanceTasks.GetTotalNonRecurentTaskDurations(i.Component).ToString()
                         : "",
-                _ => ""
             }
         };
 }

@@ -18,7 +18,6 @@ public record class BillOfTasks : TableProducer<IContent>
     {
         Iterator = new PartTypesIterator<InstanceTasks.NamedTask>()
         {
-            WriteBranches = false,
             PropertyIterator =
             (i) =>
             {
@@ -30,6 +29,8 @@ public record class BillOfTasks : TableProducer<IContent>
                 else return [];
             }
         };
+        ContentTransform = cs
+            => cs.Where(c => c.IsLeaf); // Remove branch items
         Columns = [
             CommonColumns.LineTypeNumber(),
             IDColumns.PartNumber(),

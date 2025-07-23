@@ -12,13 +12,12 @@ public class TestComponentIterator
         var iterator = new ComponentIterator()
         {
             DocumentationPerimeter = new DocumentationPerimeter_WithInclusion() { InclusionCondition = c => recursive },
-            WriteBranches = writeBranches,
             GroupPNsAtSameLocation = groupAtSameLocation,
         };
 
         var part = new DecimalPropertyPartExemple<Cost>.Part_A();
         var component = part.Instantiate();
-        var res = iterator.MakeContent(component);
+        var res = ((IContentIterator<IContent>)iterator).MakeContent_AsFlat(component);
 
         var debugTable = new TxtTableFile(component)
         {
@@ -33,6 +32,8 @@ public class TestComponentIterator
                     IDColumns.GroupCNs(),
                     CommonColumns.ComponentTotalCount(),
                 ],
+                ContentTransform = cs
+                    => cs.Where(c => (c.IsBranch && writeBranches) || c.IsLeaf),// Remove branch items if ! writeBranches
                 Iterator = iterator,
             },
             Formater = new FixedWidthTableFormater(),

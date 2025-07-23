@@ -18,8 +18,9 @@ public class InstanceTasks : IInstanceConceptProperty
     public static decimal GetTotalNonRecurentTaskDurations(Component component)
     {
         decimal total = 0;
+        // Lance une itération à partir du composant pour trouver toutes les taches non récurente pour tous les types contenus
         var tree = new PartTypesIterator<object>();
-        foreach (var i in tree.MakeContent(component))
+        foreach (var i in ((IContentIterator<IContent>)tree).MakeContent_AsFlat(component))
         {
             var tasks = i.Component.Instance.Tasks();
             if (tasks != null)

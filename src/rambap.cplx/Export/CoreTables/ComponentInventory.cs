@@ -13,7 +13,6 @@ public record class ComponentInventory : TableProducer<IContent>
     {
         Iterator = new PartTypesIterator<object>()
         {
-            WriteBranches = true,
             DocumentationPerimeter = perimeter ?? new(),
         };
         Columns = [

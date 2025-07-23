@@ -47,7 +47,6 @@ public record class PortICD : TableProducer<IContent>
             {
                 InclusionCondition = c => c.IsPublic
             },
-            WriteBranches = true,
             GroupPNsAtSameLocation = false,
             StackPropertiesSingleChildBranches = false,
         };
@@ -55,7 +54,7 @@ public record class PortICD : TableProducer<IContent>
             c switch
             {
                 IPropertyContent<ICDTableProperty> lp => true,
-                _ => c.Component.IsPublic, // Private part are still present as leaf, we remove them
+                _ => c.Component.IsPublic, // Private may be present as leaf, we remove them
             });
         Columns = [
             IDColumns.ComponentNumberPrettyTree<ICDTableProperty>(

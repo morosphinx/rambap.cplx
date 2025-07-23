@@ -16,8 +16,7 @@ public record class WiringTable : TableProducer<IContent>
     {
         Iterator = new ComponentPropertyIterator<WiringTableProperty>()
         {
-            PropertyIterator = c => GetWiringTableProperty(c),
-            WriteBranches = false,
+            PropertyIterator = GetWiringTableProperty,
             StackPropertiesSingleChildBranches = false, 
             DocumentationPerimeter = perimeter ?? new DocumentationPerimeter_SinglePartAndItsContents(),
         };

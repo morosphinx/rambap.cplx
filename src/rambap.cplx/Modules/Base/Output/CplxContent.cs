@@ -35,9 +35,11 @@ public interface IContent
     ContentLocation GetNextLocation();
     Component Component { get; }
 
+
     public LeafCause IsLeafBecause { get; }
     bool IsLeaf { get; }
     bool IsBranch { get; }
+    bool IsRecursionBreak { get; }
 
 
     bool IsGrouping { get; }
@@ -71,7 +73,7 @@ public class CplxContent : IContent
 
     public bool IsLeaf => SubContents.Count() == 0;
     public bool IsBranch => !IsLeaf;
-    public bool IsRecursionBreak => !ContentIterator.ShouldRecurse(this);
+    public bool IsRecursionBreak => !ContentIterator.ShouldTryRecurse(this);
 
     public IEnumerable<IContent> SubContents => ComputeSubcontents();
     public IEnumerable<IContent> ComputeSubcontents()

@@ -12,8 +12,8 @@ public static class CostColumns
             i => i switch
             {
                 IPropertyContent<InstanceCost.CostPoint> lp => (lp.Property.Value.Price * lp.ComponentTotalCount).CostToString(),
-                BranchComponent lc when lc.IsLeaf => i.AllComponents().Select(c => c.component.Instance.Cost()?.TotalCost ?? 0).Sum().CostToString(),
-                BranchComponent bc when bc.IsBranch => "", // Do not display branch costs : subcosts are displayed in properties or component leafs
+                IContent lc when lc.IsLeaf => i.AllComponents().Select(c => c.Instance.Cost()?.TotalCost ?? 0).Sum().CostToString(),
+                IContent bc when bc.IsBranch => "", // Do not display branch costs : subcosts are displayed in properties or component leafs
                                           // And we want to keep the column total cost (when summing the cells themselves) correct
                 _ => throw new NotImplementedException(),
             },
@@ -24,9 +24,9 @@ public static class CostColumns
             i => i switch
             {
                 IPropertyContent<InstanceCost.CostPoint> lp => lp.Property.Name,
-                BranchComponent lc when lc.IsLeaf => "unit",
-                BranchComponent bc when displayBranches => "total per unit",
-                BranchComponent bc when !displayBranches => "",
+                IContent lc when lc.IsLeaf => "unit",
+                IContent bc when displayBranches => "total per unit",
+                IContent bc when !displayBranches => "",
                 _ => throw new NotImplementedException(),
             });
 
@@ -35,8 +35,8 @@ public static class CostColumns
             i => i switch
             {
                 IPropertyContent<InstanceCost.CostPoint> lp => lp.Property.Value.Price.CostToString(),
-                BranchComponent bc when bc.IsBranch && !displayBranches => "",
-                BranchComponent lc when lc.IsLeaf =>
+                IContent bc when bc.IsBranch && !displayBranches => "",
+                IContent lc when lc.IsLeaf =>
                     lc.AllComponentsMatch(c => c.Instance.Cost()?.TotalCost, out var value)
                         ? (value?.CostToString() ?? "")
                         : "error",
@@ -51,7 +51,7 @@ public static class CostColumns
             {
                 IPropertyContent<InstanceCost.CostPoint> lp =>
                     lp.Property.Value.Price.CostToString(), // Do not display multiplicity for properties : this is a local cost representation
-                BranchComponent when i.Component.Instance.Cost() is not null =>
+                IContent when i.Component.Instance.Cost() is not null =>
                     i.IsGrouping
                         ? $"{i.ComponentLocalCount}x: {i.Component.Instance.Cost()!.TotalCost.CostToString()}"
                         : i.Component.Instance.Cost()!.TotalCost.CostToString(),

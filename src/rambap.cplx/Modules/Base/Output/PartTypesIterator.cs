@@ -10,9 +10,6 @@ namespace rambap.cplx.Modules.Base.Output;
 /// <typeparam name="P">Enumerated property Type. Set to object if none</typeparam>
 public class PartTypesIterator<P> : IContentIterator<IContent>
 {
-
-    public bool WriteBranches { get; init; } = true;
-
     /// <summary>
     /// Define when to recurse on components (will return properties items and subcomponents items) and when not to (will only return the component item)
     /// If null, always recurse
@@ -39,60 +36,67 @@ public class PartTypesIterator<P> : IContentIterator<IContent>
         // Produce a tree table of All Components, stopping on recursing condition.
         var ComponentTable = new ComponentIterator()
         {
-            WriteBranches = true, // We want information about all tree components
             DocumentationPerimeter = DocumentationPerimeter,
             AlwaysRecurseDepth0 = false
             // No property iteration when iterating the component tree
             // => Will return only LeafComponent or BranchComponent
         };
-        var componentsItems = ComponentTable.MakeContent(component);
+        var componentsItems = ((IContentIterator<IContent>)ComponentTable).MakeContent_AsFlat(component);
+
         // All returned items of the tree table represent components (eg : No LeafProperty)
         // Group the components by Identity (PN & Type & content kind)
         var grouping_by_pn = componentsItems.GroupBy(ComponentTemplateUnicityIdentifier);
         // For each group, produce a PartTreeItem
-        foreach (var group in grouping_by_pn)
+        foreach (var pnGroup in grouping_by_pn)
         {
             // Groups have same PN, same PartType
-            var itemList = group.ToList();
-            var componentGroup = itemList.SelectMany(c => c.AllComponents());
-            var primaryItem = group.First();
-            // Recursion on the ComponentTree may depend on part location.
-            // So we may have a mix of BranchContent and LeafContent here
-            var shouldHideThisGroupContent = itemList.All(c => c.IsLeaf && c.IsLeafBecause == LeafCause.RecursionBreak) ;
-            if (shouldHideThisGroupContent)
+            var pnGroupComponents = pnGroup.SelectMany(c => c.AllComponents());
+            ContentLocation pnGroupLocation = new()
             {
-                // Group is solely made of LeafComponent that blocked recursion
-                // => We did not want to see what's inside
-                yield return new BranchComponent(componentGroup) { IsLeafBecause = LeafCause.RecursionBreak, _SubContent = [] };
+                CIN = $"",
+                Multiplicity = pnGroup.Sum(c => c.Location.Multiplicity),
+                Depth = 0,
+            };
+
+            // Recursion on the ComponentTree may depend on part location.
+            // So we may have a mix of broken and non broken recursion here
+            var isPnGroupRecursionBreak = pnGroup.All(c => c.IsRecursionBreak) ;
+            if (isPnGroupRecursionBreak)
+            {
+                // Group is solely made of content that blocked recursion
+                // => We do not want to see what's inside
+                yield return new CplxContent(pnGroupLocation, pnGroupComponents) {  ContentIterator = new DoNothingIterator() };
             }
             else
             {
-                if (IsAPropertyTable)
-                {
-                    var properties = PropertyIterator!.Invoke(primaryItem.Component);
-                    bool hasProperties = properties.Any();
-                    if (hasProperties)
-                    {
-                        // Part have has some property items that we want to enumerate into
-                        if (WriteBranches)
-                            yield return new BranchComponent(componentGroup) { _SubContent = /* ENUMERATE PROPERTIES BELLOW HERE */};
-
-                        // NOK :
-                        foreach (var prop in properties)
-                            yield return new BranchProperty<P>(componentGroup) { Property = prop, IsLeafBecause = LeafCause.NoChild , _SubContent = [] };
-                    } else
-                    {
-                        // Part have no property item child
-                        yield return new BranchComponent(componentGroup) { IsLeafBecause = LeafCause.NoChild , _SubContent = [] };
-                    }
-                }
-                else // Not a property table. All Components are returned as leaf with no child
-                {
-                    yield return new BranchComponent(componentGroup) { IsLeafBecause = LeafCause.NoChild, _SubContent = [] };
-                }
+                // PN Group may me recursed into
+                // => Return a content with this has Iterator, so we may SubIterate
+                yield return new CplxContent(pnGroupLocation, pnGroupComponents) { ContentIterator = this };
             }
         }
     }
+
+    public IEnumerable<IContent> MakeSubContent(IContent content)
+    {
+        // Iterate properties
+        if(PropertyIterator != null && ! content.IsRecursionBreak && content is not IPropertyContent<P>)
+        {
+            var propertiesContents = PropertyIterator(content.Component);
+            var nextLocation = content.GetNextLocation();
+            foreach (var prop in propertiesContents)
+            {
+                yield return new BranchProperty<P>(nextLocation, content.AllComponents())
+                {
+                    ContentIterator = this,
+                    Property = prop,
+                };
+            }
+        }
+        // TBD : subiterate properties ?
+    }
+
+    public bool ShouldTryRecurse(IContent content)
+        => true;
 }
 
 

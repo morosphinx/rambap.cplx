@@ -60,7 +60,7 @@ public static class IDColumns
        => new DelegateColumn<IContent>("Component CNs", ColumnTypeHint.StringFormatable,
             i =>
             {
-                var componentCNs = i.AllComponents().Select(c => c.component.CN);
+                var componentCNs = i.AllComponents().Select(c => c.CN);
                 return maxColumnWidth switch
                 {
                     > 0 => JoinWithMaxLength(delimiter, componentCNs, maxColumnWidth),
@@ -74,7 +74,6 @@ public static class IDColumns
             i =>
             {
                 var allParentCNs = i.AllComponents()
-                    .Select(t => t.component)
                     .Where(c => c.Parent != null)
                     .Select(c => c.Parent!.CN);
                 return maxColumnWidth switch
@@ -101,7 +100,7 @@ public static class IDColumns
             i =>
             {
                 var componentCIDs = i.AllComponents()
-                    .Select(c => CID.Append(c.location.CIN, c.component.CN))
+                    .Select(c => CID.Append(i.Location.CIN, c.CN))
                     .Select(s => CID.RemoveImplicitRoot(s));
                 return maxColumnWidth switch
                 {
@@ -155,7 +154,15 @@ public static class IDColumns
             i =>
             {
                 var loc = i.Location;
-                return $"dep{loc.Depth} - {loc.LocalItemIndex+1} of {loc.LocalItemCount} - {(loc.IsEnd ? "END" : "")}";
+                if(i.LocationWhenFlattened != null )
+                {
+                    var locf = i.LocationWhenFlattened;
+                    return $"dep{loc.Depth} - {locf.LocalItemIndex+1} of {locf.LocalItemCount} - {(locf.IsEnd ? "END" : "")}";
+                }
+                else
+                {
+                    return $"dep{loc.Depth}";
+                }
             });
 
     public static DelegateColumn<IContent> PartCommonName(bool usePnAsBackup = false) =>
