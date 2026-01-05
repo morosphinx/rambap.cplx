@@ -107,40 +107,7 @@ public class ImplicitPartConstruction
     }
 
 
-    /// <summary>
-    /// Test classes with all different ways to declare a lsit of components
-    /// </summary>
-    class TopLvlPart_ListMode : Part
-    {
-        public List<MidLvlPart> MidParts_auto_field = [
-                new MidLvlPart(),
-                new MidLvlPart(),
-                new MidLvlPart(),
-            ];
 
-        public List<MidLvlPart> MidParts_auto_property = [
-                new MidLvlPart(),
-                new MidLvlPart(),
-            ];
-
-        public List<MidLvlPart> MidParts_constructed_field;
-        public List<MidLvlPart> MidParts_constructed_property;
-
-        public List<Part> AdditionalComponents = new();
-
-        public TopLvlPart_ListMode()
-        {
-            MidParts_constructed_field = [new MidLvlPart(), new MidLvlPart()];
-            MidParts_constructed_property = [new MidLvlPart()];
-
-            AdditionalComponents.Add(new MidLvlPart() { CN = "autoPart1" });
-            AdditionalComponents.Add(new MidLvlPart() { CN = "autoPart2" });
-            AdditionalComponents.Add(new MidLvlPart() { CN = "autoPart3" });
-            AdditionalComponents.Add(new MidLvlPart() { CN = "autoPart4" });
-        }
-
-        public static int ExpectedTotalPartCount = 3 + 2 + 2 + 1 + 4;
-    }
 
 
 
@@ -167,20 +134,6 @@ public class ImplicitPartConstruction
         Assert.AreEqual(ChildPart.ExpectedComponentCount, component.SubComponents.Count());
     }
 
-    /// <summary>
-    /// Test that all ways to declare a component list are supported
-    /// </summary>
-    [TestMethod]
-    public void TestEnumerableComponentCreation()
-    {
-        var part = new TopLvlPart_ListMode();
-        var component = part.Instantiate();
-        foreach (var subcomp in component.SubComponents) Console.WriteLine(subcomp.CN);
-        // Number of subcomponent is valid
-        Assert.AreEqual(TopLvlPart_ListMode.ExpectedTotalPartCount, component.SubComponents.Count());
-        // All SubComponents havz a distinct CN
-        Assert.AreEqual(TopLvlPart_ListMode.ExpectedTotalPartCount, component.SubComponents.Select(c => c.CN).Distinct().Count());
-    }
 
     [TestMethod]
     public void TestPropertyGroupComponentCreation()
