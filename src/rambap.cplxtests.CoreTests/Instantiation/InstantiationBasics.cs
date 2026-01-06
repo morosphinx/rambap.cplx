@@ -23,6 +23,7 @@ public class PrivateNullField : InstantiationCheckPart
 [TestClass]
 public class NullProperty_Get : InstantiationCheckPart
 {
+#warning Invalid CPLX Syntax, not supported. Must be more explicit to user. Custom analyser ?
     public EmptyPart MyComponent { get; }
     public override IEnumerable<string> ExpectedCNs => [nameof(MyComponent)];
 }
@@ -88,8 +89,9 @@ public class ConstructedProperty : InstantiationCheckPart
 [TestClass]
 public class UnbackedProperty : InstantiationCheckPart
 {
+#warning Invalid CPLX Syntax, not supported. Must be more explicit to user. Custom analyser ?
     public EmptyPart MyComponent => new() { CN = "CN_01" };
-    public override IEnumerable<string> ExpectedCNs => ["CN_01"];
+    public override IEnumerable<string> ExpectedCNs => [];
 }
 
 [TestClass]

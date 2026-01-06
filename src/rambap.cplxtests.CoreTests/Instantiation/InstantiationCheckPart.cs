@@ -1,11 +1,4 @@
-﻿using rambap.cplx.Core;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace rambap.cplxtests.CoreTests.Instantiation;
+﻿namespace rambap.cplxtests.CoreTests.Instantiation;
 
 /// <summary>
 /// Part used for Test, declaring its expected components after CplxInitialisation
@@ -14,27 +7,44 @@ public abstract class InstantiationCheckPart : Part
 {
     public abstract IEnumerable<string> ExpectedCNs { get; }
     public virtual IEnumerable<string> ForbiddenCNs => [];
-    public virtual int ExpectedPartCount => ExpectedCNs.Count();
+    public virtual bool AllowUnexpected => false;
 
-    private static void AssertIsCoherent(Component component)
+    private void ListComponent(Component component)
     {
-        // Assert no duplicate CN
-        var subComponentCNs = component.SubComponents.Select(c => c.CN);
-        Assert.AreEqual(subComponentCNs.Count(), subComponentCNs.Distinct().Count());
+        Console.WriteLine($"Expected : {string.Join(" ", ExpectedCNs)}");
+        Console.WriteLine($"Forbidden : {string.Join(" ", ForbiddenCNs)}");
+        Console.WriteLine();
+        Console.WriteLine($"Found : {string.Join(" ", component.SubComponents.Select(c => c.CN))}");
+    }
+
+    private void AssertSubComponentCoherent(Component component)
+    {
         // Assert all subcomponent have correct parent
         Assert.IsTrue(component.SubComponents.All(c => c.Parent == component));
     }
-    private void AssertMatchExpectation(Component component)
+
+    private List<T> IntersectWithDuplicates<T>(IEnumerable<T> left, IEnumerable<T> right, out List<T> rightExclusion)
     {
+        var temp = right.ToList();
+        var intersection = left.Where(temp.Remove).ToList();
+        rightExclusion = temp;
+        return intersection;
+    }
+    private void AssertContentMatchExpectation(Component component)
+    {
+        var subcomponentCNs = component.SubComponents.Select(c => c.CN);
+        var allExpectedFound = IntersectWithDuplicates(
+            ExpectedCNs, subcomponentCNs, out var unexpected);
+        var areAllExpectedFound = allExpectedFound.Count == ExpectedCNs.Count();
+        var noUnexpected = unexpected.Count == 0;
+
         // All Expected CN must be found
+        Assert.IsTrue(areAllExpectedFound);
+        if(!AllowUnexpected) Assert.IsTrue(noUnexpected);
+
+        // All Forbidden CN must be missing
         foreach (var cn in ExpectedCNs)
             Assert.IsTrue(component.SubComponents.Any(c => c.CN == cn));
-        // All Forbiddent CN must be missing
-        foreach (var cn in ExpectedCNs)
-            Assert.IsTrue(component.SubComponents.Any(c => c.CN == cn));
-        // Check part count. Disabled if ExpectedPartCount < 0
-        if (ExpectedPartCount >= 0)
-            Assert.AreEqual(component.SubComponents.Count(), ExpectedPartCount);
     }
 
     public class EmptyPart : Part { }
@@ -43,7 +53,8 @@ public abstract class InstantiationCheckPart : Part
     public void TestSelfInstantiation()
     {
         var component = this.Instantiate();
-        AssertIsCoherent(component);
-        AssertMatchExpectation(component);
+        ListComponent(component);
+        AssertSubComponentCoherent(component);
+        AssertContentMatchExpectation(component);
     }
 }
