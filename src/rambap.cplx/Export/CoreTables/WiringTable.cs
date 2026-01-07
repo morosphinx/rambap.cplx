@@ -1,11 +1,11 @@
-﻿using rambap.cplx.Core;
-using rambap.cplx.Modules.Base.TableModel;
+﻿using rambap.cplx.Modules.Base.TableModel;
 using rambap.cplx.Modules.Base.Output;
 using static rambap.cplx.Modules.Base.Output.CommonColumns;
 using static rambap.cplx.Modules.Connectivity.Outputs.WiringTableProperty;
 using static rambap.cplx.Modules.Connectivity.Outputs.ConnectionColumns;
 using System.Diagnostics.CodeAnalysis;
 using rambap.cplx.Modules.Connectivity.Outputs;
+using rambap.cplx.Instantiation;
 
 namespace rambap.cplx.Export.CoreTables;
 

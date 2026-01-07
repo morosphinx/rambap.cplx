@@ -3,6 +3,7 @@ using rambap.cplx.Core;
 using rambap.cplx.Modules.Base.TableModel;
 using rambap.cplx.Modules.Connectivity.Outputs;
 using System.Diagnostics.CodeAnalysis;
+using rambap.cplx.Instantiation;
 
 namespace rambap.cplx.Export.CoreTables;
 

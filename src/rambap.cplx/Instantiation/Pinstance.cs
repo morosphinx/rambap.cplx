@@ -1,8 +1,8 @@
-﻿using System.Diagnostics.CodeAnalysis;
-using System.Reflection;
+﻿using System.Reflection;
 using rambap.cplx.Attributes;
+using rambap.cplx.Core;
 
-namespace rambap.cplx.Core;
+namespace rambap.cplx.Instantiation;
 
 /// <summary>
 /// Part Instance. The realisation of a Part Type, with calculated properties <br/>

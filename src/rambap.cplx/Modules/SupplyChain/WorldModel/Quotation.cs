@@ -1,4 +1,5 @@
 ﻿using rambap.cplx.Core;
+using rambap.cplx.Instantiation;
 using rambap.cplx.Modules.Costing;
 using rambap.cplx.PartProperties;
 

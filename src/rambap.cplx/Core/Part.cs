@@ -1,4 +1,5 @@
 ﻿using rambap.cplx.Attributes;
+using rambap.cplx.Instantiation;
 
 namespace rambap.cplx.Core;
 
@@ -7,7 +8,7 @@ namespace rambap.cplx.Core;
 /// </summary>
 /// <remarks>
 /// To define a system, subtype this class, and compose other Parts or properties into it.<br/>
-/// Parts are used to construct Components <see cref="Core.Pinstance">Instances</see>,
+/// Parts are used to construct Components <see cref="Instantiation.Pinstance">Instances</see>,
 /// and doing so calculate global properties of the system<br/>
 /// When composing a part into another :<br/>
 /// - ComponentNumber (CN) is the field or property name<br/>

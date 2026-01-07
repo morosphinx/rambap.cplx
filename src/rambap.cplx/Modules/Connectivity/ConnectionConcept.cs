@@ -3,6 +3,7 @@ using rambap.cplx.PartInterfaces;
 using rambap.cplx.PartProperties;
 using static rambap.cplx.Core.Support;
 using rambap.cplx.Modules.Connectivity.PinstanceModel;
+using rambap.cplx.Instantiation;
 
 namespace rambap.cplx.Modules.Connectivity;
 

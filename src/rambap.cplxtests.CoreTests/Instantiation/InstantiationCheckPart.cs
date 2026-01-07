@@ -1,4 +1,6 @@
-﻿namespace rambap.cplxtests.CoreTests.Instantiation;
+﻿using rambap.cplx.Instantiation;
+
+namespace rambap.cplxtests.CoreTests.Instantiation;
 
 /// <summary>
 /// Part used for Test, declaring its expected components after CplxInitialisation

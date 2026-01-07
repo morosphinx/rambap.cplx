@@ -1,7 +1,7 @@
 ﻿using rambap.cplx.Attributes;
 using System.Reflection;
 
-namespace rambap.cplx.Core;
+namespace rambap.cplx.Instantiation;
 
 /// <summary>
 /// Classify parts depending on their interest <br/>
@@ -10,7 +10,7 @@ namespace rambap.cplx.Core;
 /// </summary>
 /// <remarks>
 /// Default implementation consider all not in the root part's assembly to be COTS, <br/>
-/// as well as any part implementing the <see cref="cplx.Attributes.CplxHideContentsAttribute"/>
+/// as well as any part implementing the <see cref="CplxHideContentsAttribute"/>
 /// </remarks>
 public record class DocumentationPerimeter
 {

@@ -1,4 +1,4 @@
-﻿using rambap.cplx.Core;
+﻿using rambap.cplx.Instantiation;
 using System.Diagnostics.CodeAnalysis;
 
 namespace rambap.cplx.Modules.Base.TableModel;

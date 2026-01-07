@@ -1,4 +1,4 @@
-﻿using rambap.cplx.Core;
+﻿using rambap.cplx.Instantiation;
 using rambap.cplx.Modules.Connectivity.PinstanceModel;
 using static rambap.cplx.Modules.Connectivity.PinstanceModel.InstanceConnectivity;
 

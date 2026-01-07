@@ -6,6 +6,7 @@ using rambap.cplx.Modules.Base.Output;
 using rambap.cplx.Modules.Costing;
 using rambap.cplx.Modules.Base.TableModel;
 using rambap.cplx.Export.CoreTables;
+using rambap.cplx.Instantiation;
 
 namespace rambap.cplxtests.UsageTests.ExcelTemplates;
 

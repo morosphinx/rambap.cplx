@@ -1,10 +1,10 @@
-﻿using rambap.cplx.Core;
-using rambap.cplx.Modules.Mass;
+﻿using rambap.cplx.Modules.Mass;
 using rambap.cplx.Modules.Documentation;
 using rambap.cplx.Modules.Costing;
 using rambap.cplx.Modules.Racking;
 using rambap.cplx.Modules.SupplyChain;
 using rambap.cplx.Modules.Connectivity.PinstanceModel;
+using rambap.cplx.Instantiation;
 
 namespace rambap.cplx;
 

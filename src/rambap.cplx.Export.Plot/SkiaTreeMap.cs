@@ -1,6 +1,6 @@
 ﻿using SkiaSharp;
 using System.Drawing;
-using rambap.cplx.Core;
+using rambap.cplx.Instantiation;
 
 namespace rambap.cplx.Export.Plot;
 

@@ -1,7 +1,8 @@
 ﻿using rambap.cplx.Attributes;
+using rambap.cplx.Core;
 using static rambap.cplx.Core.Support;
 
-namespace rambap.cplx.Core;
+namespace rambap.cplx.Instantiation;
 
 /// <summary>
 /// Component Instance. The realisation of a Component in the hierarchy, with calculated relations

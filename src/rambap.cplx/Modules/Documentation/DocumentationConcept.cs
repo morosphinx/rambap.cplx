@@ -1,5 +1,4 @@
-﻿using rambap.cplx.Core;
-using rambap.cplx.Attributes;
+﻿using rambap.cplx.Attributes;
 using rambap.cplx.PartProperties;
 using System.Reflection;
 using static rambap.cplx.Modules.Documentation.InstanceDocumentation;
@@ -7,6 +6,7 @@ using static rambap.cplx.Core.Support;
 using rambap.cplx.PartInterfaces;
 using rambap.cplx.Export;
 using rambap.cplx.Modules.Costing;
+using rambap.cplx.Instantiation;
 
 namespace rambap.cplx.Modules.Documentation;
 

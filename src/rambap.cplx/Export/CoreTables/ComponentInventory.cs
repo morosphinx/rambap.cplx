@@ -1,8 +1,8 @@
-﻿using rambap.cplx.Core;
-using rambap.cplx.Modules.Base.TableModel;
+﻿using rambap.cplx.Modules.Base.TableModel;
 using rambap.cplx.Modules.Base.Output;
 using rambap.cplx.Modules.Documentation.Outputs;
 using System.Diagnostics.CodeAnalysis;
+using rambap.cplx.Instantiation;
 
 namespace rambap.cplx.Export.CoreTables;
 

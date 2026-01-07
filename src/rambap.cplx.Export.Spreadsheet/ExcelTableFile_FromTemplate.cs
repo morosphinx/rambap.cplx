@@ -1,11 +1,11 @@
-﻿using rambap.cplx.Core;
-using rambap.cplx.Export.Text;
+﻿using rambap.cplx.Export.Text;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Spreadsheet;
 
 using static rambap.cplx.Export.Spreadsheet.Helpers;
 using rambap.cplx.Modules.Base.TableModel;
+using rambap.cplx.Instantiation;
 
 namespace rambap.cplx.Export.Spreadsheet;
 

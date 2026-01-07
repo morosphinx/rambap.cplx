@@ -2,6 +2,7 @@
 using rambap.cplx.PartInterfaces;
 using rambap.cplx.Modules.Connectivity;
 using rambap.cplx.Modules.Connectivity.PinstanceModel;
+using rambap.cplx.Instantiation;
 
 #pragma warning disable IDE0130 // Namespace does not match folder structure
 namespace rambap.cplx.PartProperties;
