@@ -76,30 +76,33 @@ CN          	PN              	Component description    	Part Description
 | 1|*                              |    1|                       |                ||ServerAssembly  |            |    ||        |   |             |
 | 1|*                              |    1|                       |                ||ServerAssembly  |            |    ||        |   |             |
 | 2|CAB                            |    1|*                      |                ||ServerCabinet36U|            |    ||        |   |             |
-| 3|R01, R02                       |    2|*, *                   |                ||RackTypeA       |            |    ||        |   |             |
-| 3|R01, R02                       |    2|*, *                   |                ||RackTypeA       |            |    ||        |   |             |
-| 4|GPU01, GPU02, GPU01, GPU02, GPU|    5|R01, R01, R02, R02, R03|                ||RTX999          |            |    ||        |   |             |
+| 3|R01, R02                       |    8|*, *                   |                ||RackTypeA       |            |    ||        |   |             |
+| 3|R01, R02                       |    8|*, *                   |                ||RackTypeA       |            |    ||        |   |             |
+| 4|GPU01, GPU02, GPU01, GPU02, GPU|  125|R01, R01, R02, R02, R03|                ||RTX999          |            |    ||        |   |             |
 | 5|R03                            |    1|*                      |                ||RackTypeB       |            |    ||        |   |             |
 |-:|-------------------------------|----:|-----------------------|----------------||----------------|------------|----||--------|---|-------------|
 |  |                               |     |                       |                ||TOTAL           |            |    ||        |   |             |
 
 - Cost Breakdown
 
-|CN                     |SumCost        |CID      |PN              |Cost Name|Unit Cost|Count|Total Cost|
-|-----------------------|---------------|---------|----------------|---------|--------:|----:|---------:|
-| *                     | 21295.00      |/*       |ServerAssembly  |         |         |     |          |
-| ├─ / Cables           | ├─ 500.00     |/*       |ServerAssembly  |Cables   |   500.00|    1|    500.00|
-| ├─ / Switches         | ├─ 1000.00    |/*       |ServerAssembly  |Switches |  1000.00|    1|   1000.00|
-| ├─ CAB / Buy          | ├─ 2000.00    |CAB      |ServerCabinet36U|Buy      |  2000.00|    1|   2000.00|
-| ├─ 2x: RackTypeA      | ├─ 2x: 6898.00|R01      |RackTypeA       |         |         |     |          |
-| │  ├─ / Other         | │  ├─ 4500.00 |R01      |RackTypeA       |Other    |  4500.00|    2|   9000.00|
-| │  ├─ / Assembly      | │  ├─ 400.00  |R01      |RackTypeA       |Assembly |   400.00|    2|    800.00|
-| │  └─ 2x: RTX999 / Buy| │  └─ 999.00  |R01/GPU01|RTX999          |Buy      |   999.00|    4|   3996.00|
-| └─ R03                | └─ 3999.00    |R03      |RackTypeB       |         |         |     |          |
-|    ├─ / Other         |    ├─ 3000.00 |R03      |RackTypeB       |Other    |  3000.00|    1|   3000.00|
-|    └─ GPU / Buy       |    └─ 999.00  |R03/GPU  |RTX999          |Buy      |   999.00|    1|    999.00|
-|-----------------------|---------------|---------|----------------|---------|--------:|----:|---------:|
-|                       |               |TOTAL    |TOTAL           |         |         |     |  21295.00|
+|CN               |SumCost          |CID            |PN              |Cost Name|Unit Cost|Count|Total Cost|
+|-----------------|-----------------|---------------|----------------|---------|--------:|----:|---------:|
+| *               | 21295.00        |/*             |ServerAssembly  |         |         |     |          |
+| ├─ CAB          | ├─ 2000.00      |CAB            |ServerCabinet36U|         |         |     |          |
+| │  └─ / Buy     | │  └─ 2000.00   |CAB/CAB        |ServerCabinet36U|Buy      |  2000.00|    1|   2000.00|
+| ├─ 2x: RackTypeA| ├─ 2x: 6898.00  |R01            |RackTypeA       |         |         |     |          |
+| │  ├─ 2x: RTX999| │  ├─ 2x: 999.00|R01/GPU01      |RTX999          |         |         |     |          |
+| │  │  └─ / Buy  | │  │  └─ 999.00 |R01/GPU01/GPU01|RTX999          |Buy      |   999.00|    8|   7992.00|
+| │  ├─ / Other   | │  ├─ 4500.00   |R01/R01        |RackTypeA       |Other    |  4500.00|    4|  18000.00|
+| │  └─ / Assembly| │  └─ 400.00    |R01/R01        |RackTypeA       |Assembly |   400.00|    4|   1600.00|
+| ├─ R03          | ├─ 3999.00      |R03            |RackTypeB       |         |         |     |          |
+| │  ├─ GPU       | │  ├─ 999.00    |R03/GPU        |RTX999          |         |         |     |          |
+| │  │  └─ / Buy  | │  │  └─ 999.00 |R03/GPU/GPU    |RTX999          |Buy      |   999.00|    1|    999.00|
+| │  └─ / Other   | │  └─ 3000.00   |R03/R03        |RackTypeB       |Other    |  3000.00|    1|   3000.00|
+| ├─ / Cables     | ├─ 500.00       |*              |ServerAssembly  |Cables   |   500.00|    1|    500.00|
+| └─ / Switches   | └─ 1000.00      |*              |ServerAssembly  |Switches |  1000.00|    1|   1000.00|
+|-----------------|-----------------|---------------|----------------|---------|--------:|----:|---------:|
+|                 |                 |TOTAL          |TOTAL           |         |         |     |  21295.00|
 
 Ouputs are fully configurable. 
 

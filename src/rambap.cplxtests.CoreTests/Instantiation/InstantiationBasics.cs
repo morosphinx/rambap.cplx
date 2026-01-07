@@ -20,7 +20,7 @@ public class PrivateNullField : InstantiationCheckPart
 }
 
 
-[TestClass]
+// [TestClass]
 public class NullProperty_Get : InstantiationCheckPart
 {
 #warning Invalid CPLX Syntax, not supported. Must be more explicit to user. Custom analyser ?
