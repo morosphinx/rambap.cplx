@@ -45,7 +45,7 @@ internal class TasksConcept : IConcept<InstanceTasks>
 {
     public override InstanceTasks? Make(Component component)
     {
-        var template = component.Template;
+        var template = component.Instance.Template;
         List<NamedTask> nonRecurrentTasks = [];
         ScanObjectContentFor<NonRecurrentTask>(template,
             (t, p) => nonRecurrentTasks.Add(new(false, p.Name, t.Duration_day, t.Category))

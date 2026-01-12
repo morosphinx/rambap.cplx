@@ -44,7 +44,7 @@ internal class DocumentationConcept : IConcept<InstanceDocumentation>
 {
     public override InstanceDocumentation? Make(Component component)
     {
-        var template = component.Template;
+        var template = component.Instance.Template;
         List<NamedText> descriptions = new();
         // Add description defined in attributes
         var descattrs = template.GetType().GetCustomAttributes<PartDescriptionAttribute>(); // TODO / TBD : inherit ?

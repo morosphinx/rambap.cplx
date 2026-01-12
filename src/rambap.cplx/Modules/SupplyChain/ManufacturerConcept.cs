@@ -14,7 +14,7 @@ internal class ManufacturerConcept : IConcept<InstanceManufacturerInformation>
 {
     public override InstanceManufacturerInformation? Make(Component component)
     {
-        var template = component.Template;
+        var template = component.Instance.Template;
         // TODO : Handle case were multiples manufacturer are declared. Rigth now, multiples manufacturer override each other
         Manufacturer? manufacturer = null;
         ScanObjectContentFor<Manufacturer>(template,

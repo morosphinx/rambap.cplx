@@ -1,5 +1,6 @@
 ﻿using rambap.cplx.Attributes;
 using rambap.cplx.Core;
+using System.ComponentModel;
 using static rambap.cplx.Core.Support;
 
 namespace rambap.cplx.Instantiation;
@@ -9,51 +10,13 @@ namespace rambap.cplx.Instantiation;
 /// </summary>
 public class Component
 {
-    private static string MakeCommment(IEnumerable<ComponentDescriptionAttribute> commentAttributes)
-        => string.Join("", commentAttributes.Select(c => c.Text));
 
-    internal Component(Component? parent, Part template, AlternativesConfiguration conf)
+    internal Component(
+        Component? parent,
+        Pinstance template)
     {
-        if (template.ImplementingComponent != null)
-            throw new InvalidOperationException("A Component has already been instantiated with this part");
-        template.CplxImplicitInitialization(parent?.Template); // run the implicit init on this part and all subparts
-        template.ImplementingComponent = this;
-        // Set relationships
         Parent = parent;
-        Template = template;
-
-        // Create components from Parts properties/fields
-        ScanObjectContentFor<Part>(template,
-            (p, i) =>
-                subComponents.Add(
-                new Component(this, p, conf)
-                {
-                    CN = p.CNOverride ??
-                        (i.IsFromAndEnumerable ? $"{i.Name}_{i.IndexInEnumerable:00}" : i.Name),
-                    Comment = MakeCommment(i.Comments),
-                    IsPublic = i.IsPublicOrAssembly,
-                }),
-            ignoredDerivedTypes: [typeof(IAlternative)] // Avoid matching on alternative, who are IEnumerable<Part>
-            );
-
-        // Select and create components from Alternatives properties/fields
-        ScanObjectContentFor<IAlternative>(template,
-            (a, i) =>
-            {
-                var selectedPart = conf.Decide(a)!;
-                subComponents.Add(
-                new Component(this, selectedPart, conf)
-                {
-                    CN = selectedPart.CNOverride ??
-                        (i.IsFromAndEnumerable ? $"{i.Name}_{i.IndexInEnumerable:00}" : i.Name),
-                    Comment = MakeCommment(i.Comments),
-                    IsPublic = i.IsPublicOrAssembly,
-                });
-            });
-        // Set the instance now, so that the Component <-> instance relation is correct before calculations
-        Instance = new Pinstance(this, template, conf);
-        // Run the concept calculations
-        Instance.RunConceptEvaluation();
+        Instance = template;
     }
 
     /// <summary>
@@ -70,10 +33,6 @@ public class Component
     /// If null, this is the root component.
     /// </summary>
     internal Component? Parent { get; }
-
-    // TODO : define if relevant to keep. Needed if we want to add more parts to the component during
-    // concept calculation, as this require setting the parent part
-    internal Part Template { get; }
 
     /// <summary>
     /// Component Number : Identifier of this component in its owner
@@ -135,20 +94,30 @@ public class Component
     /// Immediate sub-Components of this component. All are owned by this component.
     /// </summary>
     public IEnumerable<Component> SubComponents => subComponents;
+    private List<Component> subComponents { get; } = new();
+
+    internal void AddComponent(Component component)
+    {
+        if (component.Parent != this)
+            throw new InvalidOperationException("Component's parent is wrong");
+        subComponents.Add(component);
+    }
+
     internal void AddConceptPart(Part part)
     {
         // Create Component
         var backupCN = subComponents.Count.ToString();
-        var newComponent = new Component(this, part, new AlternativesConfiguration())
+        var instance = new Pinstance(part);
+        var newComponent = new Component(this, instance)
         {
             CN = $"@AUTO:{(string.IsNullOrEmpty(part.CNOverride) ? backupCN : part.CNOverride)}",
             IsPublic = false,
         };
+        instance.SetUser(newComponent);
         // TBD / TODO : add to another component list ? 
         subComponents.Add(newComponent);
     }
 
-    private List<Component> subComponents { get; } = new();
 
     /// <summary>
     /// Wrapper for <see cref="Pinstance.PN"/> <br/>

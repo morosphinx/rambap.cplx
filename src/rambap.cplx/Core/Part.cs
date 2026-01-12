@@ -137,18 +137,19 @@ public partial class Part
     /// </summary>
     /// <returns>A component instance, that can be inspected and used to generate documentation</returns>
     public Component Instantiate()
-        => Instantiate(new AlternativesConfiguration());
+        => Instantiate(new CplxBuilder());
 
     /// <summary>
     /// <inheritdoc cref="Part.Instantiate()"/> <br/>
     /// </summary>
-    /// <param name="alternativesConfiguration">Specify how <see cref="Alternatives{T}"/> parts should be chosen</param>
+    /// <param name="builder">Specify non default build behavior. <br/>
+    /// See <see cref="CplxBuilder.AlternativesConfiguration"/> to contol Alternatives selection</param>
     /// <returns><inheritdoc cref="Part.Instantiate()"/></returns>
-    public Component Instantiate(AlternativesConfiguration alternativesConfiguration)
-        => new Component(null, this, alternativesConfiguration)
+    public Component Instantiate(CplxBuilder builder)
+        => builder.InstantiateComponent(null, this, new()
         {
             CN = "*",
             Comment = $"ROOT COMPONENT",
             IsPublic = true,
-        };
+        });
 }

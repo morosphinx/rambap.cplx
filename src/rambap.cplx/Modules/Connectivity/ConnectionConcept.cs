@@ -11,7 +11,7 @@ internal class ConnectionConcept : IConcept<InstanceConnectivity>
 {
     public override InstanceConnectivity? Make(Component component)
     {
-        var template = component.Template;
+        var template = component.Instance.Template;
         var instance = component.Instance;
         // Take a signalPort and implement it
         // Note that SignalPorts are do not have 1-1 relation to PropertyOrFieldInfo

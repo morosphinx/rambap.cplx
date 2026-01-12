@@ -18,7 +18,7 @@ internal class MassConcept : IConcept<InstanceMass>
 {
     public override InstanceMass? Make(Component component)
     {
-        var template = component.Template;
+        var template = component.Instance.Template;
         // Calculate total native mass
         List<InstanceMass.NativeMassInfo> nativeMasses = [];
         ScanObjectContentFor<Mass_kg>(template,

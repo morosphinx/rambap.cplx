@@ -54,7 +54,7 @@ public static class ConnectionColumns
             c =>
             {
                 var endpointPort = c.GetEndpointPort(side);
-                var component = endpointPort.Owner.Parent;
+                var component = endpointPort.Owner.User;
                 return getter(component);
             });
 

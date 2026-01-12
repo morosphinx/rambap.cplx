@@ -84,7 +84,7 @@ internal class CostsConcept : IConcept<InstanceCost>
 {
     public override InstanceCost? Make(Component component)
     {
-        var template = component.Template;
+        var template = component.Instance.Template;
         // Calculate total native cost
         List<InstanceCost.NativeCost> nativeCosts = [];
         ScanObjectContentFor<Cost>(template,

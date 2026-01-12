@@ -13,7 +13,7 @@ public abstract class ConnectivityBuilder
     /// <summary>
     /// The owning part implementing <see cref="IPartConnectable"/> we are currently processing
     /// </summary>
-    internal Part ContextPart => ContextComponent.Template;
+    internal Part ContextPart => ContextComponent.Instance.Template;
 
     /// <summary>
     /// Instance of the part we are currently processing. <br/>
@@ -118,7 +118,7 @@ public class ConnectionBuilder : ConnectivityBuilder
         {
             LeftPortComponent = source.Owner!.ImplementingComponent!,
             RigthPortComponent = target.Owner!.ImplementingComponent!,
-            DeclaringComponent = ContextInstance.Parent
+            DeclaringComponent = ContextInstance.User
         };
         StructuralConnections.Add(connection);
         return connection;
@@ -141,7 +141,7 @@ public class ConnectionBuilder : ConnectivityBuilder
         {
             LeftPortComponent = connectorA.Owner!.ImplementingComponent!,
             RigthPortComponent = connectorB.Owner!.ImplementingComponent!,
-            DeclaringComponent = ContextInstance.Parent
+            DeclaringComponent = ContextInstance.User
         };
         Connections.Add(connection);
     }
@@ -194,7 +194,7 @@ public class ConnectionBuilder : ConnectivityBuilder
         if(PlaceholderWireSpool == null)
         {
             PlaceholderWireSpool = new PlaceholderWireSpool();
-            var contextComponent = this.ContextInstance.Parent;
+            var contextComponent = this.ContextInstance.User;
             contextComponent.AddConceptPart(PlaceholderWireSpool);
         }
         return PlaceholderWireSpool!;
@@ -222,7 +222,7 @@ public class ConnectionBuilder : ConnectivityBuilder
             Length = length,
             Origin = wireSpool,
         };
-        var contextComponent = this.ContextInstance.Parent;
+        var contextComponent = this.ContextInstance.User;
         contextComponent.AddConceptPart(createdWire);
 
         Wire(wireableA, createdWire.LeftPort);
@@ -244,7 +244,7 @@ public class ConnectionBuilder : ConnectivityBuilder
             Origin = wireSpool,
         };
 
-        var contextComponent = this.ContextInstance.Parent;
+        var contextComponent = this.ContextInstance.User;
         contextComponent.AddConceptPart(createdWire);
 
         Wire(wireable, createdWire.LeftPort);
@@ -265,9 +265,9 @@ public class ConnectionBuilder : ConnectivityBuilder
 
         var junction = new PinJunction(pa, pb)
         {
-            LeftPortComponent = pa.Owner.Parent,
-            RigthPortComponent = pb.Owner.Parent,
-            DeclaringComponent = ContextInstance.Parent,
+            LeftPortComponent = pa.Owner.User,
+            RigthPortComponent = pb.Owner.User,
+            DeclaringComponent = ContextInstance.User,
         };
         Wirings.Add(junction);
     }
@@ -279,9 +279,9 @@ public class ConnectionBuilder : ConnectivityBuilder
 
         var junction = new WireJunction(pa, pb)
         {
-            LeftPortComponent = pa.Owner.Parent,
-            RigthPortComponent = pb.Owner.Parent,
-            DeclaringComponent = ContextInstance.Parent,
+            LeftPortComponent = pa.Owner.User,
+            RigthPortComponent = pb.Owner.User,
+            DeclaringComponent = ContextInstance.User,
         };
         Wirings.Add(junction);
     }
@@ -336,9 +336,9 @@ public class ConnectionBuilder : ConnectivityBuilder
 
         var junction = new StructuralWire(pa, pb)
         {
-            LeftPortComponent = pa.Owner.Parent,
-            RigthPortComponent = pb.Owner.Parent,
-            DeclaringComponent = ContextInstance.Parent,
+            LeftPortComponent = pa.Owner.User,
+            RigthPortComponent = pb.Owner.User,
+            DeclaringComponent = ContextInstance.User,
             WireSpool = wireSpool,
         };
         Wirings.Add(junction);

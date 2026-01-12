@@ -16,7 +16,7 @@ internal class SlotConcept : IConcept<InstanceMechanicalAssembly>
     // TODO : cleanup variables names, too much receptacle
     public override InstanceMechanicalAssembly? Make(Component component)
     {
-        var template = component.Template;
+        var template = component.Instance.Template;
         List<(string name, MechanicalReceptacle receptacle)> receptacles = new();
         ScanObjectContentFor<MechanicalReceptacle>(template,
             (p, i) =>

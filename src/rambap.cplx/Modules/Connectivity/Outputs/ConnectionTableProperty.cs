@@ -107,7 +107,7 @@ public abstract class ConnectivityTableProperty
     public Component GetLinkedComponent(PortSide side, PortIdentity identity)
     {
         var effectiveSide = MayRevert(side);
-        return GetLinkPort(effectiveSide, identity).Owner.Parent;
+        return GetLinkPort(effectiveSide, identity).Owner.User;
     }
 
     public PSignal? GetUpperSignal(PortSide side)

@@ -19,10 +19,17 @@ public abstract class InstantiationCheckPart : Part
         Console.WriteLine($"Found : {string.Join(" ", component.SubComponents.Select(c => c.CN))}");
     }
 
-    private void AssertSubComponentCoherent(Component component)
+    private void AssertComponentCoherent(Component component)
     {
         // Assert all subcomponent have correct parent
         Assert.IsTrue(component.SubComponents.All(c => c.Parent == component));
+        // Assert pinstance is properly set 
+        Assert.AreEqual(component, component.Instance.User);
+        // Test subComponents recursively
+        foreach(var subcomponent in component.SubComponents)
+        {
+            AssertComponentCoherent(subcomponent);
+        }
     }
 
     private List<T> IntersectWithDuplicates<T>(IEnumerable<T> left, IEnumerable<T> right, out List<T> rightExclusion)
@@ -56,7 +63,7 @@ public abstract class InstantiationCheckPart : Part
     {
         var component = this.Instantiate();
         ListComponent(component);
-        AssertSubComponentCoherent(component);
+        AssertComponentCoherent(component);
         AssertContentMatchExpectation(component);
     }
 }

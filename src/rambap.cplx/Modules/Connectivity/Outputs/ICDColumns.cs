@@ -13,7 +13,7 @@ public static class ICDColumns
             ColumnTypeHint.StringExact,
             i => i switch
             {
-                IPropertyContent<ICDTableProperty> p => p.Property.Port.GetUpperUsage().Owner.Parent.CN ?? "",
+                IPropertyContent<ICDTableProperty> p => p.Property.Port.GetUpperUsage().Owner.User.CN ?? "",
                 IContent c => c.Component.CN,
             });
 
